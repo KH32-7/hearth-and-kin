@@ -94,6 +94,9 @@ class CharacterNode {
   }
 }
 
+/** 직접 조작 인물이 새 위치를 따라가는 시간 (ms, 스냅샷 간격 정도) */
+const DIRECT_FOLLOW_MS = 40;
+
 export class CharacterView {
   readonly group = new THREE.Group();
   private nodes = new Map<number, CharacterNode>();
@@ -149,7 +152,7 @@ export class CharacterView {
       }
       n.snap = p;
       n.slab = pr.slab;
-      if (!advanced && n.motion) continue;
+      if (!advanced && n.motion && !p.direct) continue;
       const pts: number[] = [];
       // 현재 그려진 위치에서 시작해 trail을 따라감 → 끊김 없음
       pts.push(n.fx, n.fy);
@@ -176,6 +179,8 @@ export class CharacterView {
         const fresh = total - lag;
         let dur = duration;
         if (fresh > 0.5 && lag > 0.5) dur = Math.min(duration * 1.5, (total / fresh) * duration);
+        // 직접 조작(WASD): 스냅샷 간격(약 33ms)만큼만 따라감 → 키 입력에 바로 반응
+        if (p.direct) dur = DIRECT_FOLLOW_MS;
         n.motion = { pts, cum, total, start: nowMs, duration: dur };
       }
     }

@@ -225,6 +225,10 @@ export class Person {
   /** 부모 (가계도, M7 유전 입력) */
   mother = 0;
   father = 0;
+  /** 직접 조작 (WASD) 중인 방향. null = 조작 안 함. 저장하지 않는 입력 상태 (입력 로그 steer 로 재생) */
+  direct: { dx: number; dy: number } | null = null;
+  /** 마지막으로 입력 로그에 위치를 남긴 뒤 직접 조작으로 움직였는가 */
+  directMoved = false;
   /** 아기/유아 (M7 전까지는 엄마 곁에 숨어 지냄) */
   infant = false;
 

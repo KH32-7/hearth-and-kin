@@ -223,7 +223,7 @@
 - [x] 욕구 감소 느리게 (한 끼로 하루, 용변 하루 몇 번), 사흘 굶으면 사망
 - [x] 집·사는 장소·공공 건물·바깥 일터 살림 보강 `tools/world/ensure-home-basics.ts` (요강/식탁/찬장/물통 93개, 바깥 변소 9), 요강 내다 버리기, 화덕 옆에서 먹기, 노점에서 사 먹기
 - [x] 길 없는 부지(lot_22) 비움 + 연결 검사 `tools/world/check-connectivity.ts` (갇힌 사람 0)
-- [x] WASD 이동 / E 상호작용 (`src/game/DirectControl.ts`, sim 'steer'), 카메라 이동은 방향키, 실내 보기 V
+- [x] WASD 이동 / E 상호작용 (`src/game/DirectControl.ts`): 일반 2D 게임처럼 바로 반응 (대기열 없음, 워커가 매 프레임 이동, 벽 미끄러짐, 게임 1분에 4칸 = 배속을 따름), 틱 직전 위치를 입력 로그에 (재생 결정론 `tests/unit/direct-control.test.ts`), 카메라 이동은 방향키, 실내 보기 V
 - [x] 상호작용 물건 마우스 외곽선 (1px 금빛, 숨 쉬듯)
 - [x] 회귀: 유닛 175 통과, 봇 7일×10시드 (stuck/방치/실수/쓰러짐 0, 헛돎 0.029/인·일)
 - [ ] E2E 전체 다시 (앞 실행 도중 node_modules 가 지워져 뒤쪽이 못 돎. M0 선명도 1건 확인 필요)

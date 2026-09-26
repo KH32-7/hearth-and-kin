@@ -84,6 +84,7 @@ function snapshot(): Snapshot {
       id: p.id, name: p.name, x: p.x, y: p.y, trail: takeTrail(p.trail, p.x, p.y),
       ...(p.riding && p.action?.phase === 'walk' ? { riding: p.horse } : {}),
       facing: p.facing, pose: p.pose, anim: p.anim, outfit: p.outfit, carry: p.carry,
+      ...(p.direct ? { direct: true } : {}),
       hidden: p.hidden, underBlanket: p.underBlanket, sleeping: p.sleeping,
       needs: p.needsObject(),
       queue: p.queue.map((q) => ({ ...q })),
@@ -219,6 +220,26 @@ function relationsSnap(s: Simulation): RelationSnap[] {
   return out;
 }
 
+/** 직접 조작 인물들을 dt(ms) 만큼 움직임. 움직였으면 true */
+function moveDirect(dt: number): boolean {
+  if (!sim || !data) return false;
+  // 게임 1분에 directTilesPerMinute 칸 → 배속(1·3·10분/초, 모두 잘 때 자동 가속)을 그대로 따름
+  const perMin = (data.balance.movement as { directTilesPerMinute?: number }).directTilesPerMinute ?? 4;
+  const dist = (perMin * minutesPerSecond() * dt) / 1000;
+  let moved = false;
+  for (const p of sim.persons) if (p.direct && sim.directStep(p, dist)) moved = true;
+  return moved;
+}
+
+/** 틱 직전: 그동안 직접 조작으로 움직인 위치를 입력 로그에 남김 (같은 시드 + 같은 로그 = 같은 결과) */
+function flushDirect(): void {
+  if (!sim) return;
+  for (const p of sim.persons) {
+    if (!p.directMoved) continue;
+    sim.apply({ kind: 'directPos', personId: p.id, x: p.x, y: p.y, facing: p.facing });
+  }
+}
+
 function loop(): void {
   const now = performance.now();
   const dt = Math.min(250, now - last);
@@ -227,8 +248,11 @@ function loop(): void {
     const mps = minutesPerSecond();
     acc += (dt / 1000) * mps;
     let ticked = 0;
+    // 직접 조작 (WASD): 틱을 기다리지 않고 매 프레임 바로 움직임 (속도는 배속을 따름, 일시정지면 멈춤)
+    if (!paused && speed > 0 && moveDirect(dt)) pendingSnap = true;
     try {
       while (acc >= 1 && ticked < 60) {
+        flushDirect();
         sim.tick();
         acc -= 1;
         ticked++;

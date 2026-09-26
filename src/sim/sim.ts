@@ -98,8 +98,10 @@ export type SimIntent =
   | { kind: 'forceLod'; lod: 'full' | 'simple' | 'summary' | null }
   /** 이사 (18-5): 마을의 빈 집 부지를 사서 옮김. 살던 집은 되팔기 비율로 팔림 */
   | { kind: 'moveHouse'; lot: string }
-  /** 직접 조작 (WASD): 그 방향 몇 칸 앞으로 걸어감. dx = dy = 0 이면 그 자리에 섬 */
-  | { kind: 'steer'; personId: number; dx: number; dy: number };
+  /** 직접 조작 (WASD) 방향: 누른 방향이 바뀔 때만. dx = dy = 0 이면 멈춤 (조작 끝) */
+  | { kind: 'steer'; personId: number; dx: number; dy: number }
+  /** 직접 조작 위치: 워커가 틱 직전에 그동안 움직인 위치를 남김 (재생 결정론) */
+  | { kind: 'directPos'; personId: number; x: number; y: number; facing: 'up' | 'down' | 'left' | 'right' };
 
 export interface LoggedIntent {
   tick: number;
@@ -390,6 +392,8 @@ export class Simulation {
         return this.queueGoto(intent.personId, intent.x, intent.y);
       case 'steer':
         return this.steer(intent.personId, intent.dx, intent.dy);
+      case 'directPos':
+        return this.directPos(intent.personId, intent.x, intent.y, intent.facing);
       case 'cancel':
         this.cancelQueueItem(intent.personId, intent.queueItemId);
         return true;
@@ -576,50 +580,100 @@ export class Simulation {
   }
 
   /**
-   * 직접 조작 (WASD): 하던 일과 대기열을 멈추고 그 방향으로 걸을 수 있는 데까지(최대 steerTiles 칸) 걸어감.
-   * 벽/가구 앞에서 멈추고, 대각선이 막히면 한 축으로. 잠시(steerHoldMinutes) 자율이 끼어들지 않음. dx = dy = 0 이면 섬
+   * 직접 조작 (WASD, 일반 2D 게임처럼): 방향을 누르는 동안 워커가 실제 시간에 맞춰 directStep 으로 움직임.
+   * 시작할 때 하던 일과 대기열을 멈추고, 조작 중에는 자율/일과가 끼어들지 않음. 떼면(0,0) 그 자리에 서고
+   * 잠시(steerHoldMinutes) 자율을 쉼. 대기열에는 아무것도 넣지 않음
    */
   steer(personId: number, dx: number, dy: number): { ok: boolean } {
     const p = this.persons.find((q) => q.id === personId);
     if (!p || p.collapse || p.status !== 'available') return { ok: false };
-    const M = this.data.balance.movement as { steerTiles?: number; steerHoldMinutes?: number };
-    this.releaseEngaged(p);
-    if (p.action) this.abortAction(p, 'player_override');
-    p.queue = [];
-    this.world.release(p.id);
-    p.pose = 'stand';
-    p.sleeping = false;
-    p.underBlanket = false;
-    p.idleUntil = this.world.minute + (M.steerHoldMinutes ?? 20);
-    if (!dx && !dy) {
-      p.anim = 'idle';
+    const M = this.data.balance.movement as { steerHoldMinutes?: number };
+    const dxs = Math.sign(dx);
+    const dys = Math.sign(dy);
+    if (!dxs && !dys) {
+      if (p.direct) {
+        p.direct = null;
+        p.anim = 'idle';
+        p.idleUntil = this.world.minute + (M.steerHoldMinutes ?? 20);
+      }
       return { ok: true };
     }
-    const g = this.world.grid;
-    const reach = (sx: number, sy: number): [number, number] | null => {
-      let x = p.cellX();
-      let y = p.cellY();
-      let moved = false;
-      for (let k = 0; k < (M.steerTiles ?? 3); k++) {
-        const nx = x + sx;
-        const ny = y + sy;
-        if (!g.inBounds(nx, ny) || !g.walkable(g.idx(nx, ny))) break;
-        // 대각선은 모서리를 자르지 않음 (A* 규칙과 같게)
-        if (sx && sy && (!g.walkable(g.idx(x + sx, y)) || !g.walkable(g.idx(x, y + sy)))) break;
-        x = nx;
-        y = ny;
-        moved = true;
-      }
-      return moved ? [x, y] : null;
-    };
-    const to = reach(dx, dy) ?? (dx && dy ? reach(dx, 0) ?? reach(0, dy) : null);
-    if (to) {
-      p.facing = dx > 0 ? 'right' : dx < 0 ? 'left' : dy > 0 ? 'down' : 'up';
-      return this.queueGoto(p.id, to[0], to[1]);
+    if (!p.direct) {
+      this.releaseEngaged(p);
+      if (p.action) this.abortAction(p, 'player_override');
+      p.queue = [];
+      this.world.release(p.id);
+      p.pose = 'stand';
+      p.sleeping = false;
+      p.underBlanket = false;
+      p.riding = false;
     }
-    // 막힌 방향: 그쪽을 바라보기만
-    p.facing = dx > 0 ? 'right' : dx < 0 ? 'left' : dy > 0 ? 'down' : 'up';
-    return { ok: false };
+    p.direct = { dx: dxs, dy: dys };
+    p.facing = dxs > 0 ? 'right' : dxs < 0 ? 'left' : dys > 0 ? 'down' : 'up';
+    return { ok: true };
+  }
+
+  /** 걸을 수 있는 칸인가 (직접 조작 충돌): 벽/가구/물/잠긴 문 */
+  private directWalkable(p: Person, x: number, y: number): boolean {
+    const g = this.world.grid;
+    const cx = Math.floor(x);
+    const cy = Math.floor(y);
+    if (!g.inBounds(cx, cy)) return false;
+    const i = g.idx(cx, cy);
+    if (!g.walkable(i)) return false;
+    const lk = g.lock[i];
+    if (lk) {
+      const who = this.walker(p);
+      if (!who.family && (lk === 1 || !who.rankOk)) return false;
+    }
+    return true;
+  }
+
+  /**
+   * 직접 조작 한 걸음 (워커가 매 프레임 부름, 입력 로그에는 틱 직전 directPos 로 남음): dist 칸만큼 누른 방향으로.
+   * 막히면 축별로 미끄러짐 (벽을 따라 비껴감). 몸 반지름만큼 벽에서 떨어짐. 움직였으면 true
+   */
+  directStep(p: Person, dist: number): boolean {
+    const d = p.direct;
+    if (!d || (!d.dx && !d.dy) || dist <= 0) return false;
+    const n = d.dx && d.dy ? Math.SQRT1_2 : 1;
+    const R = 0.3;
+    const x0 = p.x;
+    const y0 = p.y;
+    const ok = (x: number, y: number) =>
+      this.directWalkable(p, x - R, y - R) && this.directWalkable(p, x + R, y - R) && this.directWalkable(p, x - R, y + R) && this.directWalkable(p, x + R, y + R);
+    // 배속이 높아도 벽을 건너뛰지 않게 0.2칸씩 나눠 충돌 검사
+    const steps = Math.max(1, Math.ceil(dist / 0.2));
+    const vx = (d.dx * n * dist) / steps;
+    const vy = (d.dy * n * dist) / steps;
+    for (let k = 0; k < steps; k++) {
+      const bx = p.x;
+      const by = p.y;
+      if (vx && ok(p.x + vx, p.y)) p.x += vx;
+      if (vy && ok(p.x, p.y + vy)) p.y += vy;
+      if (p.x === bx && p.y === by) break;
+    }
+    if (p.x === x0 && p.y === y0) {
+      p.anim = 'idle';
+      return false;
+    }
+    p.anim = 'walk';
+    p.facing = d.dx > 0 ? 'right' : d.dx < 0 ? 'left' : d.dy > 0 ? 'down' : 'up';
+    p.directMoved = true;
+    return true;
+  }
+
+  /** 직접 조작 위치 적용 (입력 로그 재생): 걸을 수 있는 칸이면 그 자리로 */
+  directPos(personId: number, x: number, y: number, facing: 'up' | 'down' | 'left' | 'right'): { ok: boolean } {
+    const p = this.persons.find((q) => q.id === personId);
+    if (!p || !this.directWalkable(p, x, y)) return { ok: false };
+    if (p.trail.length === 0) p.trail.push(p.x, p.y);
+    p.x = x;
+    p.y = y;
+    p.facing = facing;
+    p.trail.push(x, y);
+    p.directMoved = false;
+    return { ok: true };
   }
 
   /** 다른 사람의 자율 대화에 붙잡혀 있으면 그 대화를 끝냄 (플레이어 명령/취소가 우선) */
@@ -887,6 +941,8 @@ export class Simulation {
         return;
       }
     }
+    // 직접 조작 중: 자율·일과·출근이 끼어들지 않음 (움직임은 워커가 directStep 으로)
+    if (p.direct) return;
     if (this.careerDue(p)) this.goToWork(p);
     else if (!p.action && !p.queue.length && this.autonomyEnabled) this.onsiteWork(p);
     if (p.careerEvent && this.world.minute - p.careerEvent.since >= 120) {

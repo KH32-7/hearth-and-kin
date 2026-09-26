@@ -19,9 +19,9 @@
     "pathFailExcludeMinutes": 60,
     "pathFailLimit": 3,
     "$walk": "걷기 게임 1분에 2칸 = 1배속에서 초당 2칸 (심즈 걸음 템포, 사용자 2026-09-26)",
-    "steerTiles": 3,
     "steerHoldMinutes": 20,
-    "$steer": "직접 조작(WASD): 한 번에 앞으로 잡는 칸 수, 멈춘 뒤 자율이 끼어들지 않는 분"
+    "$steer": "직접 조작(WASD): 게임 1분에 가는 칸 수 (배속을 따름: 1배속 초당 4칸, 2배속 12, 3배속 40), 멈춘 뒤 자율이 끼어들지 않는 게임 분",
+    "directTilesPerMinute": 4
   },
   "autonomy": {
     "topK": 5,

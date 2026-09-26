@@ -1,6 +1,6 @@
 /**
- * 직접 조작 (사용자 요청 2026-09-26): WASD 로 조작 인물을 걷게 하고, E 로 가까운 물건과 상호작용.
- * 키를 누르고 있는 동안 그 방향 몇 칸 앞을 목적지로 계속 갱신 (sim 'steer' 의도 → 입력 로그에 남음).
+ * 직접 조작 (사용자 요청 2026-09-26): WASD 로 조작 인물을 일반 2D 게임처럼 바로 움직이고, E 로 가까운 물건과 상호작용.
+ * 누른 방향이 바뀔 때만 sim 'steer' 의도를 보냄 (대기열에 "여기로 가기"를 쌓지 않음). 실제 이동은 워커가 실제 시간으로.
  * 카메라 이동은 방향키, 실내 보기 전환은 V.
  */
 export interface DirectHost {
@@ -16,14 +16,10 @@ export interface DirectHost {
 }
 
 const DIRS: Record<string, [number, number]> = { w: [0, -1], a: [-1, 0], s: [0, 1], d: [1, 0] };
-/** 방향을 다시 보내는 간격 (ms): 걷는 동안 목적지를 앞으로 밀어 줌 */
-const RESEND_MS = 220;
 
 export class DirectControl {
   private held = new Set<string>();
-  private sent = '';
-  private sentAt = 0;
-  private moving = false;
+  private sent = '0,0';
 
   constructor(private host: DirectHost) {}
 
@@ -53,8 +49,8 @@ export class DirectControl {
     this.held.clear();
   }
 
-  /** 매 프레임 */
-  update(now: number): void {
+  /** 매 프레임: 누른 방향이 바뀌었으면 한 번 보냄 */
+  update(_now: number): void {
     const id = this.host.selectedId();
     let dx = 0;
     let dy = 0;
@@ -66,19 +62,9 @@ export class DirectControl {
     dy = Math.sign(dy);
     if (id === null) return;
     const key = `${dx},${dy}`;
-    if (dx || dy) {
-      if (key !== this.sent || now - this.sentAt >= RESEND_MS) {
-        this.host.steer(id, dx, dy);
-        this.sent = key;
-        this.sentAt = now;
-        if (!this.moving) this.host.follow();
-        this.moving = true;
-      }
-    } else if (this.moving) {
-      // 키를 떼면 그 자리에 섬
-      this.host.steer(id, 0, 0);
-      this.moving = false;
-      this.sent = '';
-    }
+    if (key === this.sent) return;
+    if (this.sent === '0,0') this.host.follow();
+    this.host.steer(id, dx, dy);
+    this.sent = key;
   }
 }
