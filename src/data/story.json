@@ -129,15 +129,248 @@
     "splitChance": 0.25
   },
   "rumor": {
-    "$comment": "14-6 장소 접촉 전파. 한 시간마다 같은 장소에 있는 두 사람 사이 전파 확률 = base × 장소 배수. 집에서는 식구끼리 저녁에. 29-1: 큰 추문이 인구 절반까지 3~7일",
-    "base": 0.015,
-    "householdEvening": 0.5,
-    "maxPairsPerPlace": 40,
-    "forgetDays": 14,
+    "$comment": "14-6 소문 네트워크. 하루 1회 장소별 접촉 전파: 모르는 사람 각자 P = 1-(1-p)^(하루 접촉 수 × k/N), p = base × 장소 배수(town places.spread) × 세기, 수다쟁이 k 2배. 집은 저녁 식구끼리(householdEvening 배수). 29-1: 큰 추문이 인구 절반까지 3~7일. kinds: good 좋은 소문, rep 평판 무게(0 = 소식), strength 기본 세기",
+    "base": 0.15,
+    "householdEvening": 2,
     "eveningHours": [
       19,
       21
-    ]
+    ],
+    "contactsPerHour": 0.6,
+    "maxContactsPerDay": 3,
+    "gossipMult": 2,
+    "gossipTraits": [
+      "gossip"
+    ],
+    "decayPerDay": 0.92,
+    "coverDecay": 0.75,
+    "forgetStrength": 0.12,
+    "forgetDays": 21,
+    "talkGossip": 0.6,
+    "talkOther": 0.08,
+    "reachSteps": [
+      0.25,
+      0.5
+    ],
+    "hear": {
+      "$comment": "들은 사람의 대상에 대한 변화 = 값 × rep × 세기(1 상한) (나쁜 소문은 부호 반대). 퍼짐 문턱마다 가문 명성 fameStep × rep",
+      "respect": 6,
+      "friendship": 2,
+      "fameStep": 8,
+      "churchBad": 2
+    },
+    "kinds": {
+      "scandal": {
+        "good": false,
+        "rep": 1.5,
+        "strength": 1.6
+      },
+      "affair": {
+        "good": false,
+        "rep": 2,
+        "strength": 1.8
+      },
+      "secret_lover": {
+        "good": false,
+        "rep": 1.2,
+        "strength": 1.4
+      },
+      "bastard": {
+        "good": false,
+        "rep": 1.5,
+        "strength": 1.5
+      },
+      "elopement": {
+        "good": false,
+        "rep": 1.5,
+        "strength": 1.7
+      },
+      "theft": {
+        "good": false,
+        "rep": 1.2,
+        "strength": 1.3
+      },
+      "poaching": {
+        "good": false,
+        "rep": 0.8,
+        "strength": 1.1
+      },
+      "servant_thief": {
+        "good": false,
+        "rep": 0.5,
+        "strength": 1
+      },
+      "bribery": {
+        "good": false,
+        "rep": 1.2,
+        "strength": 1.3
+      },
+      "false_weights": {
+        "good": false,
+        "rep": 1,
+        "strength": 1.2
+      },
+      "drunkard": {
+        "good": false,
+        "rep": 0.6,
+        "strength": 1
+      },
+      "cowardice": {
+        "good": false,
+        "rep": 1,
+        "strength": 1.2
+      },
+      "heresy": {
+        "good": false,
+        "rep": 1.5,
+        "strength": 1.4
+      },
+      "debt": {
+        "good": false,
+        "rep": 0.8,
+        "strength": 1.1
+      },
+      "neglect": {
+        "good": false,
+        "rep": 1,
+        "strength": 1.2
+      },
+      "above_station": {
+        "good": false,
+        "rep": 0.7,
+        "strength": 1
+      },
+      "arrogance": {
+        "good": false,
+        "rep": 0.6,
+        "strength": 0.9
+      },
+      "duel_refused": {
+        "good": false,
+        "rep": 1,
+        "strength": 1.2
+      },
+      "jilted": {
+        "good": false,
+        "rep": 0.5,
+        "strength": 1.1
+      },
+      "brawl": {
+        "good": false,
+        "rep": 0.5,
+        "strength": 1
+      },
+      "lost_heirloom": {
+        "good": false,
+        "rep": 0.8,
+        "strength": 1.1
+      },
+      "family_quarrel": {
+        "good": false,
+        "rep": 0.5,
+        "strength": 1
+      },
+      "slander": {
+        "good": false,
+        "rep": 1,
+        "strength": 1.2
+      },
+      "fallen_house": {
+        "good": false,
+        "rep": 1.5,
+        "strength": 1.4
+      },
+      "hasty_remarriage": {
+        "good": false,
+        "rep": 0.5,
+        "strength": 1
+      },
+      "disgrace": {
+        "good": false,
+        "rep": 1,
+        "strength": 1.2
+      },
+      "convicted": {
+        "good": false,
+        "rep": 1.5,
+        "strength": 1.5
+      },
+      "embezzlement": {
+        "good": false,
+        "rep": 2,
+        "strength": 1.6
+      },
+      "annulment": {
+        "good": false,
+        "rep": 0.8,
+        "strength": 1.3
+      },
+      "separation": {
+        "good": false,
+        "rep": 0.6,
+        "strength": 1.1
+      },
+      "charity": {
+        "good": true,
+        "rep": 1,
+        "strength": 1.1
+      },
+      "masterpiece": {
+        "good": true,
+        "rep": 1,
+        "strength": 1.2
+      },
+      "bravery": {
+        "good": true,
+        "rep": 1,
+        "strength": 1.2
+      },
+      "fair_judgment": {
+        "good": true,
+        "rep": 0.8,
+        "strength": 1
+      },
+      "generous_feast": {
+        "good": true,
+        "rep": 0.8,
+        "strength": 1.2
+      },
+      "love_match": {
+        "good": true,
+        "rep": 0.5,
+        "strength": 1.1
+      },
+      "good_parent": {
+        "good": true,
+        "rep": 0.6,
+        "strength": 0.9
+      },
+      "piety": {
+        "good": true,
+        "rep": 0.8,
+        "strength": 1
+      },
+      "rising_house": {
+        "good": true,
+        "rep": 1,
+        "strength": 1.2
+      },
+      "miracle": {
+        "good": true,
+        "rep": 1.5,
+        "strength": 1.5
+      },
+      "duel_won": {
+        "good": true,
+        "rep": 0.8,
+        "strength": 1.2
+      },
+      "acquitted": {
+        "good": true,
+        "rep": 0.5,
+        "strength": 1
+      }
+    }
   },
   "news": {
     "keep": 40
@@ -146,7 +379,16 @@
     "$comment": "성/여관/교회/방앗간/수도원처럼 가문이 사는 장소 안에서 그 가문만 쓰는 물건 (defId, 끝이 *면 앞부분 일치). 나머지(제단, 긴 의자, 우물, 노점)는 누구나",
     "$publicPlaces": "사는 사람 전용 물건 중 이 장소 종류에서는 누구나 쓰는 것 (손님이 드나드는 곳의 요강)",
     "publicPlaces": {
-      "chamber_pot*": ["inn", "church", "guild_hall", "bathhouse", "market", "craft_street", "mill", "well_square"]
+      "chamber_pot*": [
+        "inn",
+        "church",
+        "guild_hall",
+        "bathhouse",
+        "market",
+        "craft_street",
+        "mill",
+        "well_square"
+      ]
     },
     "residentOnly": [
       "bed*",

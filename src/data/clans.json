@@ -1,0 +1,282 @@
+{
+  "$comment": "가문 규칙 (GDD 16-1, 16-4 ~ 16-7). src/sim/house/{clans,honor,inheritance,heirlooms,servants}.ts 가 zod 로 검증. 돈은 동화(파딩). 기간은 {value, scale}: absolute = 게임 날, lifespan = 수명 배수를 곱함(감쇠는 나눔). 문장 key 는 src/i18n/ko/clans_m8.json",
+  "fame": {
+    "$comment": "가문 명성 0~1000, 단계 6 (16-4). start = 시작 형편별 (몰락/보통/부유), wealthStart = 마을 가문 people.json wealth 별",
+    "min": 0,
+    "max": 1000,
+    "tiers": [
+      { "id": "dishonored", "min": 0 },
+      { "id": "suspect", "min": 100 },
+      { "id": "ordinary", "min": 250 },
+      { "id": "respected", "min": 500 },
+      { "id": "renowned", "min": 700 },
+      { "id": "legendary", "min": 900 }
+    ],
+    "start": { "ruined": 200, "normal": 300, "wealthy": 400 },
+    "wealthStart": { "poor": 200, "normal": 300, "rich": 400 },
+    "tierUpMoodlet": "fame_proud",
+    "dishonoredMoodlet": "dishonored_shame"
+  },
+  "honor": {
+    "$comment": "개인 명예 −500~500: 그 인물 행동에서 나온 가문 명성 변화가 같은 부호로 쌓임. modifiers: 특성(trait)·보상(reward = counters 'reward:<id>') 배수. tags 가 있으면 그 태그가 붙은 사건에만. titles: 높은 min 부터 첫 번째로 맞는 칭호 (null = 칭호 없음)",
+    "min": -500,
+    "max": 500,
+    "modifiers": [
+      { "id": "chivalry", "kind": "reward", "lossMult": 0.5, "fameLossMult": 0.5 },
+      { "id": "cunning", "kind": "trait", "tags": ["exposed"], "lossMult": 2, "fameLossMult": 2 },
+      { "id": "just", "kind": "trait", "tags": ["deed"], "gainMult": 1.5 }
+    ],
+    "titles": [
+      { "min": 300, "key": "honor.title.honored" },
+      { "min": 100, "key": "honor.title.decent" },
+      { "min": -99, "key": null },
+      { "min": -299, "key": "honor.title.shamed" },
+      { "min": -500, "key": "honor.title.disgraced" }
+    ]
+  },
+  "church": { "min": -100, "max": 100, "decayPerDay": { "value": 0.5, "scale": "lifespan" } },
+  "karma": { "min": -100, "max": 100 },
+  "morale": { "min": 0, "max": 100, "start": 50, "toward": 50, "perDay": { "value": 1, "scale": "absolute" } },
+  "events": {
+    "$comment": "명예를 올리고 깎는 사건 (16-4). 평판 4종 변화 + 태그 (deed = 선행, exposed = 거짓·음모가 들킴, scandal = 추문)",
+    "feast": { "fame": 15, "morale": 1, "tags": ["deed"] },
+    "donation": { "fame": 5, "church": 3, "karma": 3, "tags": ["deed"] },
+    "church_building": { "fame": 30, "church": 10, "karma": 5, "tags": ["deed"] },
+    "masterpiece": { "fame": 25 },
+    "tourney_placed": { "fame": 30 },
+    "good_marriage": { "fame": 20 },
+    "public_good_deed": { "fame": 10, "karma": 5, "tags": ["deed"] },
+    "good_rumor": { "fame": 5 },
+    "bishop": { "fame": 120, "church": 20 },
+    "affair_exposed": { "fame": -40, "church": -15, "karma": -10, "tags": ["scandal"] },
+    "bastard_known": { "fame": -25, "church": -10, "tags": ["scandal"] },
+    "debt_default": { "fame": -20 },
+    "crime": { "fame": -50, "karma": -10 },
+    "public_shame": { "fame": -15 },
+    "duel_refused": { "fame": -25 },
+    "sumptuary_violation": { "fame": -10 },
+    "bad_rumor": { "fame": -5 },
+    "shabby_living": { "fame": -5 },
+    "treasury_misuse": { "fame": -30, "morale": -10, "tags": ["exposed"] },
+    "lie_exposed": { "fame": -15, "tags": ["exposed"] },
+    "elopement": { "fame": -60, "church": -10, "tags": ["scandal"] }
+  },
+  "rewards": {
+    "$comment": "가문 보상 (16-1): 명성 단계 minTier 이상 + 조건(가문 사람 중 skill 레벨 이상)일 때 가족 전원 효과. skillXp 는 분류(category, skills.json) 또는 스킬 목록",
+    "list": [
+      { "id": "smith_house", "minTier": "respected", "memberSkill": { "skill": "smithing", "level": 5 }, "skillXp": { "category": "craft", "mult": 1.1 } },
+      { "id": "carpenter_house", "minTier": "respected", "memberSkill": { "skill": "carpentry", "level": 5 }, "skillXp": { "category": "craft", "mult": 1.1 } },
+      { "id": "farmer_house", "minTier": "respected", "memberSkill": { "skill": "farming", "level": 5 }, "skillXp": { "skills": ["farming", "animal_care"], "mult": 1.1 } },
+      { "id": "scholar_house", "minTier": "respected", "memberSkill": { "skill": "reading", "level": 5 }, "skillXp": { "category": "learning", "mult": 1.1 } },
+      { "id": "minstrel_house", "minTier": "respected", "memberSkill": { "skill": "music", "level": 5 }, "skillXp": { "category": "art", "mult": 1.1 } },
+      { "id": "warrior_house", "minTier": "renowned", "memberSkill": { "skill": "martial", "level": 5 }, "skillXp": { "category": "body", "mult": 1.1 } },
+      { "id": "pious_house", "minTier": "respected", "memberSkill": { "skill": "faith", "level": 5 }, "churchGainMult": 1.2 },
+      { "id": "good_name", "minTier": "respected", "loanRateMult": 0.9, "matchQuality": 1 },
+      { "id": "great_name", "minTier": "renowned", "loanRateMult": 0.8, "matchQuality": 2 },
+      { "id": "legend_name", "minTier": "legendary", "fameLossMult": 0.8, "matchQuality": 3 },
+      { "id": "shunned", "maxTier": "dishonored", "loanRateMult": 1.5, "matchQuality": -2 }
+    ]
+  },
+  "motto": {
+    "$comment": "가훈 (16-1): 최대 20자, 키워드 태그를 골라 연결. 태그의 소원이 가족(청소년 이상)에게 하루 wishChancePerDay 확률로 생김. 그 소원을 이루면 inspiredMoodlet",
+    "maxLength": 20,
+    "maxTags": 2,
+    "wishChancePerDay": 0.15,
+    "inspiredMoodlet": "motto_inspired",
+    "minStages": ["teen", "young", "adult", "elder"],
+    "tags": {
+      "faith": ["wish_pray", "wish_attend_mass", "wish_hear_sermon", "wish_confess"],
+      "labor": ["wish_make_something", "wish_chop_wood", "wish_tend_plants", "wish_bring_harvest"],
+      "family": ["wish_family_time", "wish_hug", "wish_teach_child", "wish_cozy_evening"],
+      "honor": ["wish_raise_fame", "wish_kind_deed", "wish_live_by_motto"],
+      "learning": ["wish_read_book", "wish_study", "wish_learn_letters"],
+      "wealth": ["wish_count_coins", "wish_go_market", "wish_repay_debt", "wish_buy_field"],
+      "valor": ["wish_exercise", "wish_enter_tourney", "wish_go_hunting"],
+      "hospitality": ["wish_feast", "wish_host_feast", "wish_chat", "wish_visit_inn"],
+      "charity": ["wish_do_charity", "wish_comfort_someone", "wish_kind_deed"],
+      "craft": ["wish_make_something", "wish_be_creative", "wish_mend_chair", "wish_whittle"]
+    }
+  },
+  "names": {
+    "$comment": "가문명 (16-1): 자유민 이상. noNameEstates 는 가문명 없이 시작 (농노). 신분 상승 때 가문명을 얻는 연출",
+    "noNameEstates": ["serf"],
+    "gotNameMoodlet": "got_family_name"
+  },
+  "tree": { "generations": 5 },
+  "relations": {
+    "$comment": "가문 간 관계 (16-6): 점수 −100~100 → 단계 5. 혼인 → 동맹, 원한·추문 → 원수. 원수 자율(하루 확률): 험담·거래 거부·혼사 방해·고발. 동맹: 혼사 우대, 빚 보증, 잔치 참석, 어려울 때 도움",
+    "levels": [
+      { "id": "ally", "min": 60 },
+      { "id": "friendly", "min": 20 },
+      { "id": "neutral", "min": -19 },
+      { "id": "rival", "min": -59 },
+      { "id": "enemy", "min": -100 }
+    ],
+    "levelScore": { "ally": 70, "friendly": 35, "neutral": 0, "rival": -35, "enemy": -70 },
+    "marriage": 70,
+    "grudge": -30,
+    "scandal": -25,
+    "allyMoodlet": "clan_alliance_joy",
+    "enemyMoodlet": "clan_enemy_anger",
+    "enemy": {
+      "actionChancePerDay": 0.06,
+      "actions": { "gossip": 3, "refuse_trade": 2, "block_match": 1, "accuse": 1 },
+      "gossipRumor": "slander",
+      "gossipStrength": 0.5,
+      "tradeBanDays": { "value": 7, "scale": "absolute" },
+      "blockMatchDays": { "value": 14, "scale": "absolute" }
+    },
+    "ally": {
+      "matchBonus": 0.25,
+      "friendlyMatchBonus": 0.1,
+      "rivalMatchPenalty": 0.15,
+      "enemyMatchPenalty": 0.5,
+      "guaranteeMaxS": 0.5,
+      "helpChancePerDay": 0.2,
+      "helpMoneyS": 0.05,
+      "helpCooldown": { "value": 14, "scale": "absolute" }
+    },
+    "nonClanHouseholds": ["h_parish", "h_monastery"],
+    "major": [
+      { "key": "h_player", "fame": null, "law": "primogeniture", "heraldry": { "shield": "heater", "division": "per_fess", "tinctures": ["azure", "argent"], "charge": "wheat", "chargeTincture": "or" }, "motto": null, "mottoTags": [] },
+      { "key": "h_ashford", "fame": 720, "law": "primogeniture", "heraldry": { "shield": "heater", "division": "quarterly", "tinctures": ["gules", "or"], "charge": "tower", "chargeTincture": "sable" }, "motto": "clan.motto.h_ashford", "mottoTags": ["honor", "valor"] },
+      { "key": "h_montbray", "fame": 560, "law": "primogeniture", "heraldry": { "shield": "kite", "division": "per_bend", "tinctures": ["sable", "argent"], "charge": "sword", "chargeTincture": "or" }, "motto": "clan.motto.h_montbray", "mottoTags": ["valor"] },
+      { "key": "h_fenwick", "fame": 520, "law": "will", "heraldry": { "shield": "french", "division": "per_pale", "tinctures": ["vert", "or"], "charge": "ship", "chargeTincture": "argent" }, "motto": "clan.motto.h_fenwick", "mottoTags": ["wealth"] },
+      { "key": "h_fletcher", "fame": 480, "law": "equal", "heraldry": { "shield": "french", "division": "chief", "tinctures": ["azure", "or"], "charge": "arrow", "chargeTincture": "or" }, "motto": "clan.motto.h_fletcher", "mottoTags": ["wealth", "craft"] },
+      { "key": "h_blackthorn", "fame": 450, "law": "primogeniture", "heraldry": { "shield": "heater", "division": "plain", "tinctures": ["sable", "sable"], "charge": "anvil", "chargeTincture": "argent" }, "motto": "clan.motto.h_blackthorn", "mottoTags": ["craft", "labor"] },
+      { "key": "h_weyland", "fame": 330, "law": "equal", "heraldry": { "shield": "oval", "division": "per_chevron", "tinctures": ["purpure", "argent"], "charge": "rose", "chargeTincture": "gules" }, "motto": "clan.motto.h_weyland", "mottoTags": ["craft"] },
+      { "key": "h_tolbert", "fame": 380, "law": "will", "heraldry": { "shield": "iberian", "division": "fess", "tinctures": ["or", "sable"], "charge": "key", "chargeTincture": "sable" }, "motto": "clan.motto.h_tolbert", "mottoTags": ["wealth"] },
+      { "key": "h_millbrook", "fame": 300, "law": "equal", "heraldry": { "shield": "heater", "division": "per_fess", "tinctures": ["azure", "argent"], "charge": "wheel", "chargeTincture": "or" }, "motto": "clan.motto.h_millbrook", "mottoTags": ["labor"] },
+      { "key": "h_haswell", "fame": 320, "law": "equal", "heraldry": { "shield": "round", "division": "plain", "tinctures": ["tenne", "tenne"], "charge": "grapes", "chargeTincture": "argent" }, "motto": "clan.motto.h_haswell", "mottoTags": ["hospitality"] },
+      { "key": "h_stonebridge", "fame": 310, "law": "equal", "heraldry": { "shield": "heater", "division": "cross", "tinctures": ["argent", "gules"], "charge": null, "chargeTincture": "or" }, "motto": "clan.motto.h_stonebridge", "mottoTags": ["family"] },
+      { "key": "h_oakfield", "fame": 340, "law": "primogeniture", "heraldry": { "shield": "heater", "division": "plain", "tinctures": ["vert", "vert"], "charge": "acorn", "chargeTincture": "or" }, "motto": "clan.motto.h_oakfield", "mottoTags": ["learning"] },
+      { "key": "h_cooper", "fame": 300, "law": "equal", "heraldry": { "shield": "french", "division": "per_saltire", "tinctures": ["or", "gules"], "charge": null, "chargeTincture": "sable" }, "motto": "clan.motto.h_cooper", "mottoTags": ["craft"] },
+      { "key": "h_ambrey", "fame": 290, "law": "equal", "heraldry": { "shield": "heater", "division": "per_bend_sinister", "tinctures": ["tenne", "argent"], "charge": "horseshoe", "chargeTincture": "sable" }, "motto": "clan.motto.h_ambrey", "mottoTags": ["labor"] },
+      { "key": "h_greenleaf", "fame": 300, "law": "equal", "heraldry": { "shield": "oval", "division": "plain", "tinctures": ["argent", "argent"], "charge": "tree", "chargeTincture": "vert" }, "motto": "clan.motto.h_greenleaf", "mottoTags": ["family", "charity"] }
+    ],
+    "pairs": [
+      { "a": "h_ashford", "b": "h_montbray", "level": "ally" },
+      { "a": "h_ashford", "b": "h_tolbert", "level": "friendly" },
+      { "a": "h_ashford", "b": "h_fenwick", "level": "rival" },
+      { "a": "h_fenwick", "b": "h_fletcher", "level": "rival" },
+      { "a": "h_fenwick", "b": "h_tolbert", "level": "friendly" },
+      { "a": "h_blackthorn", "b": "h_weyland", "level": "friendly" },
+      { "a": "h_blackthorn", "b": "h_ambrey", "level": "rival" },
+      { "a": "h_millbrook", "b": "h_tolbert", "level": "enemy" },
+      { "a": "h_millbrook", "b": "h_haswell", "level": "friendly" },
+      { "a": "h_montbray", "b": "h_oakfield", "level": "friendly" },
+      { "a": "h_stonebridge", "b": "h_oakfield", "level": "rival" },
+      { "a": "h_cooper", "b": "h_fletcher", "level": "ally" },
+      { "a": "h_greenleaf", "b": "h_haswell", "level": "friendly" },
+      { "a": "h_player", "b": "h_millbrook", "level": "friendly" }
+    ]
+  },
+  "inheritance": {
+    "$comment": "상속 (16-5). laws 3. estateLaw: 귀족·기사는 영지 법을 따름 (바꿀 수 없음). defaults = 계승 순위 설정 (사생아·성직자·출가한 딸 뒤로, 남자 우선 여부). othersShare = 장자상속에서 첫째가 아닌 자녀 한 명 몫 (돈 비율, 합계 상한 othersCap). 유언장: 읽기 스킬 또는 사제 (priestFee 동화). dispute: 형제 우정 < friendshipBelow + 몫 차이(총재산 대비) > shareGapAbove + 가문 애정 < affectionBelow → inheritance_dispute 카드",
+    "laws": ["primogeniture", "equal", "will"],
+    "defaultLaw": "primogeniture",
+    "estateLaw": { "noble": "primogeniture", "knight": "primogeniture" },
+    "defaults": { "bastardsLast": true, "clergyLast": true, "marriedDaughtersLast": true, "malePreference": false },
+    "othersShare": 0.1,
+    "othersCap": 0.4,
+    "minHeadStage": "young",
+    "adultStages": ["young", "adult", "elder"],
+    "splitAdultsOnPrimogeniture": true,
+    "will": { "readingLevel": 2, "priestFee": 24, "fallback": "primogeniture", "writtenMoodlet": null },
+    "dispute": {
+      "friendshipBelow": 0,
+      "shareGapAbove": 0.4,
+      "affectionBelow": 40,
+      "chance": 1,
+      "card": "inheritance_dispute",
+      "flags": ["sibling_rivalry", "recent_inheritance"],
+      "flagDays": { "value": 7, "scale": "absolute" },
+      "disownOption": 2
+    },
+    "moodlets": { "newHead": "new_head_of_house", "received": "inheritance_received", "slighted": "inheritance_slighted" },
+    "recentDays": { "value": 7, "scale": "absolute" }
+  },
+  "heirlooms": {
+    "$comment": "가보 (16-5): 최대 10. 쓰면 ancestors_memory + 관련 스킬 경험치 +useXpBonus (손상이면 효과 × damagedEffectMult). 팔면 가족 전원 슬픔 + 명성. 지정 해제 −20. skills/materials = 물건·재료 id → 관련 스킬·수리 재료, repairSkills = 재료 → 수리 스킬. recovery = 잃은 까닭별 되찾기 카드, 하루 확률",
+    "max": 10,
+    "useMoodlet": "ancestors_memory",
+    "useXpBonus": 0.2,
+    "damagedEffectMult": 0.5,
+    "useMemoryImportance": 2,
+    "designateMemoryImportance": 3,
+    "sellFame": -30,
+    "sellMoodlet": "heirloom_sold_grief",
+    "sellRumor": "fallen_house",
+    "undesignateFame": -20,
+    "undesignateMoodlet": "disowned_ancestors_guilt",
+    "damagedMoodlet": "heirloom_damaged",
+    "lostMoodlet": "heirloom_lost_grief",
+    "recoveredMoodlet": "heirloom_recovered",
+    "lostRumor": "lost_heirloom",
+    "skills": {
+      "anvil": "smithing", "forge": "smithing", "lute": "music", "bookshelf": "reading", "loom": "needlework", "spinning_wheel": "needlework",
+      "workbench": "carpentry", "oven": "baking", "hearth": "cooking", "brew_vat": "brewing", "knife": "cooking", "axe": "carpentry", "sickle": "farming", "scythe": "farming", "shears": "animal_care"
+    },
+    "materials": {
+      "anvil": "metal", "forge": "metal", "candlestick": "metal", "knife": "metal", "axe": "metal", "sickle": "metal", "scythe": "metal", "shears": "metal", "horseshoes": "metal",
+      "tapestry": "cloth", "cloak": "cloth", "tunic": "cloth", "hood": "cloth", "rug": "cloth", "linen": "cloth", "cloth": "cloth"
+    },
+    "defaultMaterial": "wood",
+    "repairSkills": { "wood": "carpentry", "metal": "smithing", "cloth": "needlework" },
+    "repairLevel": 2,
+    "damageKinds": { "fire": "scorched", "wear": "cracked", "card": "scorched" },
+    "recovery": {
+      "stolen": ["heirloom_thief_tracked", "heirloom_found_at_market", "lost_heirloom_rumor"],
+      "seized": ["heirloom_auction", "heirloom_found_at_market"],
+      "confiscated": ["heirloom_auction"],
+      "chancePerDay": 0.08,
+      "firstAfter": { "value": 2, "scale": "absolute" }
+    },
+    "seizeCount": 1,
+    "splitApproveFriendship": 30
+  },
+  "servants": {
+    "$comment": "하인 (16-7): 상인 이상, 역할 6, 가정 인원 상한에 포함. wagePerDay 동화, 급여는 payEvery 마다 한꺼번에. duties = 자율 담당 상호작용 태그 (dutyAdMult 배). 충성 0~100: 급여·대우 → 낮으면 도둑질(가보 포함)·소문 유출",
+    "hireEstates": ["merchant", "knight", "noble"],
+    "householdCap": 12,
+    "roles": {
+      "maid": { "duties": ["clean"], "wagePerDay": 2 },
+      "cook": { "duties": ["cook", "bake"], "wagePerDay": 3 },
+      "nurse": { "duties": ["family"], "wagePerDay": 3, "careBaby": true },
+      "groom": { "duties": ["horse"], "wagePerDay": 2, "careHorse": true },
+      "steward": { "duties": ["reckon", "duty"], "wagePerDay": 5 },
+      "guard": { "duties": ["guard"], "wagePerDay": 4 }
+    },
+    "payEvery": { "value": 7, "scale": "absolute" },
+    "dutyAdMult": 3,
+    "minStages": ["teen", "young", "adult", "elder"],
+    "loyalty": {
+      "start": 60,
+      "paid": 3,
+      "unpaid": -15,
+      "treatmentMult": 0.25,
+      "towardFriendshipPerDay": 0.05,
+      "theftBelow": 30,
+      "theftChancePerDay": 0.05,
+      "heirloomShare": 0.35,
+      "moneyStealS": 0.01,
+      "caughtChance": 0.5,
+      "leakBelow": 40,
+      "leakChancePerDay": 0.04,
+      "leakRumors": ["family_quarrel", "debt", "drunkard"],
+      "leakStrength": 0.4,
+      "quitBelow": 10
+    },
+    "wellServedMoodlet": "well_served",
+    "wellServedLoyalty": 60,
+    "theftMoodlet": "servant_theft_anger",
+    "theftRumor": "servant_thief",
+    "caughtCard": "servant_caught_stealing",
+    "stolenCard": "heirloom_stolen",
+    "romanceCard": "servant_romance_scandal",
+    "romanceFlag": "servant_romance",
+    "romanceAbove": 40,
+    "romanceFame": -15,
+    "dismissFlag": "servant_dismissed"
+  }
+}

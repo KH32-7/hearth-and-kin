@@ -151,7 +151,7 @@ export interface StoryData {
   pregnancy: { perCoitus: number; coitusPerDay: Record<string, number>; fertileAge: [number, number]; declineFromAge: number; stageDays: number; twins: number; lossChance: number; maternalDeath: number; birthCooldownDays: number; declineYears: number; declineFloor: number };
   population: { target: number; feedbackMin: number; feedbackMax: number; immigrateBelow: number; emigrateAbove: number; migrationCheckDays: number; immigrantFamily: [number, number]; immigrantFreemanChance: number };
   household: { cap: number; controllableCap: number; splitChance: number };
-  rumor: { base: number; householdEvening: number; maxPairsPerPlace: number; forgetDays: number; eveningHours?: [number, number] };
+  rumor: import('../town/rumors').RumorData;
   news: { keep: number };
   town?: { residentOnly: string[]; publicPlaces?: Record<string, string[]>; playerRoamHours?: [number, number]; playerRoamTiles?: number; sellBackRate?: number };
   npcPantry?: { refillMinutes: number };
@@ -379,15 +379,17 @@ function mergeFamilyContent(raw: { interactions: unknown; social?: unknown; inne
   if (!f) return;
   const cc = f.childcare as { social?: Record<string, unknown>; interactions?: Record<string, unknown> } | undefined;
   const preg = f.pregnancy as { social?: Record<string, unknown>; interactions?: Record<string, unknown> } | undefined;
+  // M9 사회 구조 (소문 대응, 구애·혼례, 범죄·재판 …): social / interactions 묶음이 있는 파일
+  const soc = [f.society, f.courtship, f.justice, f.policy] as ({ social?: Record<string, unknown>; interactions?: Record<string, unknown> } | undefined)[];
   const addTo = (base: unknown, extra: Record<string, unknown>[]): unknown => {
     const b = (base as { interactions?: Record<string, unknown> } | undefined) ?? { interactions: {} };
     const merged: Record<string, unknown> = { ...(b.interactions ?? {}) };
     for (const e of extra) for (const [k, v] of Object.entries(e)) if (!k.startsWith('$')) merged[k] = v;
     return { ...b, interactions: merged };
   };
-  const ia = [cc?.interactions, preg?.interactions].filter((x): x is Record<string, unknown> => !!x);
+  const ia = [cc?.interactions, preg?.interactions, ...soc.map((x) => x?.interactions)].filter((x): x is Record<string, unknown> => !!x);
   if (ia.length) raw.interactions = addTo(raw.interactions, ia);
-  const so = [cc?.social, preg?.social].filter((x): x is Record<string, unknown> => !!x);
+  const so = [cc?.social, preg?.social, ...soc.map((x) => x?.social)].filter((x): x is Record<string, unknown> => !!x);
   if (so.length && raw.social) raw.social = addTo(raw.social, so);
   const inner = raw.inner as { moodlets?: { moodlets?: Record<string, unknown> }; thoughts?: { thoughts?: unknown[] }; wishes?: { wishes?: unknown[] } } | undefined;
   if (inner) {

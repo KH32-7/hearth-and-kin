@@ -686,13 +686,21 @@ export class Town {
     if (minute % (this.host.data.story?.lod.simpleNeedsMinutes ?? 10) === 0) this.expectedNeeds(p, b, 10);
   }
 
+  /**
+   * 일과표상 장소 (소문 접촉 통계, 14-6): 세밀도와 무관하게 모든 인물을 같은 식으로 셈.
+   * 집이면 home:<가구>, 공공 장소면 그 id, 그 밖(부지 밖 일터, 길)은 null
+   */
+  schedulePlace(p: Person, minute: number): string | null {
+    const at = this.resolveAt(p, this.blockAt(p, minute));
+    return at === 'home' ? `home:${p.household}` : this.placeById.has(at) ? at : null;
+  }
+
   /** 요약 인물: 10분마다 욕구만 (집에 있음) */
   summaryTick(p: Person, minute: number): void {
     if (minute % 10 !== 0) return;
     const b = this.blockAt(p, minute);
     // 요약 인물도 일과표상 장소에 '있는 것으로' 셈 (소문/만남 통계가 세밀도와 무관하게, 13-6)
-    const at = this.resolveAt(p, b);
-    p.place = at === 'home' ? `home:${p.household}` : this.placeById.has(at) ? at : null;
+    p.place = this.schedulePlace(p, minute);
     this.expectedNeeds(p, b, 10);
   }
 

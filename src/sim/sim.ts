@@ -331,7 +331,8 @@ export class Simulation {
     }
     // 조작 가문 아기·유아는 실제로 집에 있음 (M7): 아기는 요람/엄마 품, 유아는 엄마 곁
     for (const p of this.persons) if (p.infant && (p.household === 1 || !this.town)) this.showInfant(p);
-    this.rumors = this.town && data.story ? new Rumors(new Rng((seed * 977 + 3) >>> 0), data.story.rumor, this.town) : null;
+    this.rumors = this.town && data.story ? new Rumors(new Rng((seed * 977 + 3) >>> 0), data.story.rumor, this.town, this.rumorHost()) : null;
+    if (this.rumors) this.registerRumorGates();
     for (const h of data.town?.people?.households ?? []) for (const m of h.members) this.namePool[m.sex].push(m.name);
     this.fire = data.build
       ? new Fire({
@@ -677,6 +678,8 @@ export class Simulation {
   /** 생애 단계·임신 조건 (15-4, 15-5, 15-1): 플레이어 명령과 자율에 같은 규칙 */
   stageAllows(p: Person, interactionId: string, tags: readonly string[]): boolean {
     if (p.lifeStage === 'baby') return false;
+    const gate = (this.data.interactions[interactionId]?.requires as { gate?: string } | undefined)?.gate;
+    if (gate && !this.gateOk(gate, p, null)) return false;
     if (this.childcare && !this.childcare.allowInteraction(p, interactionId, tags)) return false;
     if (this.pregnancy && !this.data.social[interactionId] && !this.pregnancy.interactionAllowed(p, interactionId, null)) return false;
     return true;
@@ -1170,8 +1173,13 @@ export class Simulation {
     // 생애 단계 (15-4, 15-5): 유아는 유아 행동만, 아동은 어른 전용 빼고
     const cc = this.childcare;
     const preg = this.pregnancy;
-    const stageAllow = (cc && (p.lifeStage === 'toddler' || p.lifeStage === 'child')) || preg
-      ? (ci: { id: string; def: { tags?: string[] } }) => (!cc || cc.allowInteraction(p, ci.id, ci.def.tags ?? [])) && (!preg || preg.interactionAllowed(p, ci.id, null))
+    const stageAllow = (cc && (p.lifeStage === 'toddler' || p.lifeStage === 'child')) || preg || this.gates.size
+      ? (ci: { id: string; def: { tags?: string[]; requires?: unknown } }) => {
+          if (cc && !cc.allowInteraction(p, ci.id, ci.def.tags ?? [])) return false;
+          if (preg && !preg.interactionAllowed(p, ci.id, null)) return false;
+          const g = (ci.def.requires as { gate?: string } | undefined)?.gate;
+          return !g || this.gateOk(g, p, null);
+        }
       : null;
     const allow2 = stageAllow || allow
       ? (ci: never) => (!stageAllow || stageAllow(ci)) && (!allow || (allow as (x: never) => boolean)(ci))
@@ -1629,6 +1637,7 @@ export class Simulation {
     if (iaId.startsWith('recipe.')) this.recipeDone(p, iaId.slice(7), target ?? null);
     if (iaId.startsWith('service.')) this.serviceDone(p, iaId);
     if (iaId.startsWith('farm.') && target) this.farmDone(p, iaId, target);
+    if (iaId === 'altar.public_penance') this.publicPenance(p);
     const wasSleep = !!step.sleep;
     const bed = this.world.byUid.get(a.stepObj)?.defId;
     this.finishAction(p, true, 'done');
@@ -2417,7 +2426,111 @@ export class Simulation {
     }
     if (t.visitor?.leaving) return { ok: false, reasonKey: 'reason.target_busy' };
     if (p.visitor?.leaving && def !== this.data.social['social.farewell']) return { ok: false, reasonKey: 'reason.target_busy' };
+    const gate = (def.requires as { gate?: string }).gate;
+    if (gate && !this.gateOk(gate, p, t)) return { ok: false, reasonKey: `reason.${gate}` };
     return checkSocialRequires(this.rel, p, t, def, this.world.stock);
+  }
+
+  /**
+   * 이름 붙은 조건 (requires.gate): 사회·물건 상호작용이 sim 상태(소문, 혼인, 원한, 재판 …)를 볼 때.
+   * M9 모듈이 gates 에 등록. t 는 사회 상호작용 상대 (물건이면 null)
+   */
+  readonly gates = new Map<string, (p: Person, t: Person | null) => boolean>();
+  gateOk(gate: string, p: Person, t: Person | null): boolean {
+    const f = this.gates.get(gate);
+    return f ? f(p, t) : false;
+  }
+
+  /** 소문 호스트 (14-6): 들은 사람의 존중/우정, 퍼짐 문턱의 가문 명예, 자기 가문 소문을 전해 들음 */
+  private rumorHost(): import('./town/rumors').RumorHost {
+    const H = () => this.data.story?.rumor.hear ?? { respect: 6, friendship: 2, fameStep: 8, churchBad: 2 };
+    const subjectsOf = (r: import('./town/rumors').Rumor): Person[] => r.subjects.map((id) => this.persons.find((q) => q.id === id)).filter((q): q is Person => !!q);
+    return {
+      onHear: (r, listener, sign) => {
+        if (!r.rep) return;
+        const h = H();
+        const k = r.rep * Math.min(1, r.strength) * (r.good ? 1 : -1) * sign;
+        for (const s of subjectsOf(r)) {
+          if (s === listener) continue;
+          this.rel.addRespect(listener.id, s.id, Math.round(h.respect * k));
+          const f = Math.round(h.friendship * k);
+          if (f && this.rel.get(listener.id, s.id)?.met) this.rel.change(listener.id, s.id, { friendship: f }, this.world.day());
+        }
+      },
+      onReach: (r) => {
+        const h = H();
+        this.addFame(r.household, Math.round(h.fameStep * r.rep * (r.good ? 1 : -1)), `rumor_${r.good ? 'good' : 'bad'}`);
+        if (!r.good) for (const s of subjectsOf(r)) s.churchRep = Math.max(-100, s.churchRep - h.churchBad * r.rep);
+      },
+      onAware: (r, p) => {
+        if (!r.rep) return;
+        if (p.household === 1) this.notice(p, 'rumor_heard', { kind: `rumor.kind.${r.kind}`, n: r.knownBy.size, ...r.args });
+        this.inner?.event(p, 'rumor_heard');
+        if (this.inner && !p.hidden && p.lifeStage !== 'baby' && p.lifeStage !== 'toddler') this.inner.addMoodlet(p, r.good ? 'fame_proud' : 'heard_rumor_about_me', {});
+      },
+    };
+  }
+
+  /** 소문 대응 조건 (14-6) */
+  private registerRumorGates(): void {
+    const R = () => this.rumors;
+    // 해명하기: 우리 가문의 나쁜 소문을 식구가 전해 들었고, 상대가 그 소문을 앎
+    this.gates.set('explain_rumor', (p, t) => !!t && t.household !== p.household && !!R()?.list.some((r) => r.household === p.household && r.aware.size > 0 && !r.good && r.rep > 0 && r.knownBy.has(t.id)));
+    // 소문 낸 사람 따지기: 상대가 우리 가문 소문을 처음 낸 사람
+    this.gates.set('confront_rumor', (p, t) => !!t && !!R()?.list.some((r) => r.household === p.household && r.aware.size > 0 && r.origin === t.id));
+    // 교회에서 공개 참회: 우리 가문의 나쁜 소문이 아직 셈
+    this.gates.set('public_penance', (p) => !!R()?.list.some((r) => r.household === p.household && r.aware.size > 0 && !r.good && r.rep > 0 && r.strength > 0.5));
+    // 험담 퍼뜨리기(거짓 소문): 싫어하는 사람이 있을 때
+    this.gates.set('has_grudge_target', (p, t) => !!t && this.persons.some((q) => q !== p && q !== t && q.household !== p.household && (this.rel.get(p.id, q.id)?.friendship ?? 0) <= -20));
+  }
+
+  /** 소문 대응과 거짓 소문 (14-6): 사회 상호작용이 끝났을 때 */
+  private rumorSocial(p: Person, t: Person, id: string, ok: boolean, tags: readonly string[]): void {
+    const R = this.rumors;
+    if (!R) return;
+    const day = this.world.day();
+    if (ok && id === 'social.spread_rumor') {
+      // 교활/심술: 싫어하는 사람에 대한 거짓 소문
+      let worst: Person | null = null;
+      let wf = -20;
+      for (const q of this.persons) {
+        if (q === p || q === t || q.household === p.household || q.infant) continue;
+        const f = this.rel.get(p.id, q.id)?.friendship ?? 0;
+        if (f <= wf) {
+          wf = f;
+          worst = q;
+        }
+      }
+      if (worst) {
+        R.add('slander', [worst], { a: worst.name }, day, 1, [p, t], { truth: false, origin: p.id });
+        if (!p.traits.includes('mean') && this.rng.next() < 0.5) this.inner?.addMoodlet(p, 'spread_lie_guilt', {});
+      }
+    } else if (ok && id === 'social.explain_rumor') {
+      const r = R.strongestAbout(p.household, t);
+      if (r && R.explain(r, t, 0.9)) this.notice(p, 'rumor_explained', { target: t.name, kind: `rumor.kind.${r.kind}` });
+        this.inner?.addMoodlet(p, 'cleared_name_relief', {});
+    } else if (ok && id === 'social.confront_rumormonger') {
+      for (const r of [...R.list]) {
+        if (r.household !== p.household || r.origin !== t.id) continue;
+        R.confront(r);
+        // 거짓 소문을 낸 게 드러나면 소문 낸 사람이 망신 (주변에는 소문으로)
+        if (!r.truth) R.add('disgrace', [t], { a: t.name }, day, 0.7, [p, t], { origin: p.id });
+      }
+    } else if (ok && tags.includes('charity')) {
+      const wit = this.persons.filter((q) => q !== p && q !== t && q.lod === 'full' && !q.infant && Math.hypot(q.x - p.x, q.y - p.y) < 8).slice(0, 3);
+      if (wit.length && this.rng.next() < 0.5) R.add('charity', [p], { a: p.name }, day, 1, [t, ...wit]);
+    }
+    if (ok && p.lod === 'full' && t.lod === 'full') R.talk(p, t, tags.includes('gossip'));
+  }
+
+  /** 교회 공개 참회 (14-6): 가문의 나쁜 소문이 크게 약해지고 교회 평판이 오름 */
+  private publicPenance(p: Person): void {
+    const hit = this.rumors?.penance(p.household) ?? [];
+    p.churchRep = Math.min(100, p.churchRep + 5);
+    if (hit.length) this.addFame(p.household, 3, 'penance');
+    this.inner?.addMoodlet(p, 'public_penance_relief', {});
+    const wit = this.persons.filter((q) => q !== p && !q.infant && q.lod === 'full' && Math.hypot(q.x - p.x, q.y - p.y) < 10);
+    if (this.rumors && wit.length) this.rumors.add('piety', [p], { a: p.name }, this.world.day(), 0.6, wit);
   }
 
   /** 사람을 눌렀을 때 원형 메뉴 */
@@ -2723,6 +2836,7 @@ export class Simulation {
       for (const e of out.events) inner.event(p, e.replace(/^event:/, ''));
       inner.thought(t, `action_done:${id}`);
     }
+    this.rumorSocial(p, t, id, ok, def.tags);
   }
 
   /** 처음 만남: 첫인상 (14-2). 이미 만났으면 아무 일 없음 */
@@ -3679,7 +3793,7 @@ export class Simulation {
     }
     if (this.judge) {
       this.judge.daily();
-      this.rumors?.daily(day);
+      this.rumors?.daily(day, this.persons);
     }
     const w = this.world;
     if (day > 0) {
@@ -4355,7 +4469,7 @@ export class Simulation {
       rumor: (subject, kind, good, strength) => {
         if (!this.rumors) return;
         const fam = this.persons.filter((x) => x.household === subject.household);
-        this.rumors.add(kind, [subject], { a: subject.name }, this.world.day(), strength * (good ? 1 : 1.2), fam);
+        this.rumors.add(kind, [subject], { a: subject.name }, this.world.day(), strength, fam, { good });
       },
       chronicle: (trigger, subjects) => {
         this.chronicleLog.push({ day: this.world.day(), trigger, subjects: subjects.map((x) => x.id) });
@@ -4508,6 +4622,7 @@ export class Simulation {
       for (const k of Object.keys(p.childSkills).sort()) parts.push(k, p.childSkills[k], (p.childSkillXp[k] ?? 0).toFixed(3));
       if (p.direct) parts.push(`d${p.direct.dx},${p.direct.dy}`);
     }
+    this.rumors?.hashParts(parts);
     this.rel.hashParts(parts);
     this.econ?.hashParts(parts);
     let h = 0x811c9dc5;

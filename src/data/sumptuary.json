@@ -83,14 +83,14 @@
     "$comment": "집행관(NPC 역할) 또는 사제 시야 안에서만. 확률 = base × 등급 격차 × 명성 보정, 게임 1시간마다",
     "every": { "value": 60, "scale": "absolute" },
     "base": 0.2,
-    "watcherRoles": ["bailiff", "priest"],
+    "watcherRoles": ["bailiff", "priest", "abbot"],
     "fameMult": {
-      "disgrace": 1.5,
+      "dishonored": 1.5,
       "suspect": 1,
-      "plain": 1,
+      "ordinary": 1,
       "respected": 1,
       "renowned": 0.5,
-      "legend": 0.5
+      "legendary": 0.5
     }
   },
   "penalty": {

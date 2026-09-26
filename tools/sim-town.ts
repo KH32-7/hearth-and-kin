@@ -63,7 +63,7 @@ for (let s = 1; s <= SEEDS; s++) {
     sim.tick();
     if (t === 3 * 1440 && sim.rumors) {
       const subj = sim.persons.find((p) => p.household !== 1 && p.lifeStage === 'adult');
-      if (subj) scandal = sim.rumors.add('scandal', [subj], { a: subj.name }, sim.world.day(), 1.6, [subj, ...sim.persons.filter((q) => q.household === subj.household)]);
+      if (subj) scandal = sim.rumors.add('scandal', [subj], { a: subj.name }, sim.world.day(), 1, [subj, ...sim.persons.filter((q) => q.household === subj.household), ...sim.persons.filter((q) => q.household !== subj.household && !q.infant).slice(0, 1)]);
     }
     if (t % 1440 === 0) {
       const n = sim.persons.length;

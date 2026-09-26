@@ -1,0 +1,55 @@
+{
+  "$comment": "M9 사회 구조 상호작용 (GDD 14-6 소문 대응 …). social 은 social.json 에, interactions 는 interactions 에 합쳐짐 (simData mergeFamilyContent). requires.gate = sim 이 등록한 이름 붙은 조건",
+  "social": {
+    "social.explain_rumor": {
+      "nameKey": "ia.social_explain_rumor",
+      "icon": "social",
+      "category": "friendly",
+      "tags": ["social", "rumor", "talk"],
+      "minutes": 20,
+      "needs": { "social": 0.8 },
+      "targetNeeds": { "social": 0.5 },
+      "ads": { "social": 14 },
+      "base": 50,
+      "requires": { "met": true, "gate": "explain_rumor" },
+      "traitMods": { "sociable": 15, "just": 5, "cunning": 5, "introvert": -10 },
+      "targetTraitMods": { "suspicious": -15, "gossip": -10, "kind": 10 },
+      "topics": ["gossip", "family"],
+      "success": { "friendship": 2, "romance": 0, "respect": 3, "moodlets": [], "targetMoodlets": [], "flagsAdd": [], "events": ["event:rumor_explained"] },
+      "failure": { "friendship": -2, "romance": 0, "respect": -2, "moodlets": ["scolded"], "targetMoodlets": [], "flagsAdd": [], "events": [] }
+    },
+    "social.confront_rumormonger": {
+      "nameKey": "ia.social_confront_rumormonger",
+      "icon": "emo.angry",
+      "category": "mean",
+      "tags": ["social", "rumor", "mean"],
+      "minutes": 15,
+      "needs": { "social": 0.5 },
+      "targetNeeds": { "social": 0.3 },
+      "ads": { "social": 12, "fun": 4 },
+      "base": 55,
+      "requires": { "met": true, "gate": "confront_rumor" },
+      "traitMods": { "brave": 15, "hot_tempered": 10, "just": 10, "coward": -20 },
+      "targetTraitMods": { "cunning": -10, "brave": -10 },
+      "topics": ["gossip"],
+      "success": { "friendship": -8, "romance": 0, "respect": 4, "moodlets": [], "targetMoodlets": ["caught_lying"], "flagsAdd": [], "events": ["event:rumor_confronted"] },
+      "failure": { "friendship": -12, "romance": 0, "respect": -3, "moodlets": ["argued"], "targetMoodlets": ["argued"], "flagsAdd": [], "events": ["event:fight_broke_out"] }
+    }
+  },
+  "interactions": {
+    "altar.public_penance": {
+      "nameKey": "ia.altar_public_penance",
+      "icon": "emo.pious",
+      "objects": ["church_altar"],
+      "tags": ["pray", "humble", "penance"],
+      "requires": { "gate": "public_penance" },
+      "hours": [6, 20],
+      "skill": "faith",
+      "steps": [
+        { "at": "target", "slot": "front", "anim": "idle", "minutes": 40, "needs": { "social": 0.1 } }
+      ],
+      "ads": { "social": 6, "fun": 2 },
+      "moodlets": []
+    }
+  }
+}

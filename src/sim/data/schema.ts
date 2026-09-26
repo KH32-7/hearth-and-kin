@@ -100,6 +100,8 @@ export const requiresSchema = z.object({
   targetMin: numRecord.optional(),
   targetMax: numRecord.optional(),
   stock: numRecord.optional(),
+  /** sim 이 등록한 이름 붙은 조건 (M9: 소문, 혼인, 재판 …) */
+  gate: z.string().optional(),
   exists: objectQuery.optional(),
   /** 가진 돈이 이 값(파딩) 이상 (M4) */
   money: z.number().optional(),

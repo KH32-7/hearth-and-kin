@@ -114,7 +114,9 @@ describe('M6 마을', () => {
     const sim = town(2);
     sim.apply({ kind: 'forceLod', lod: 'summary' });
     const subj = sim.persons.find((p) => p.household !== 1 && p.lifeStage === 'adult')!;
-    const r = sim.rumors!.add('scandal', [subj], { a: subj.name }, sim.world.day(), 1.6, [subj]);
+    // 나쁜 소문은 주인공 가문이 퍼뜨리지 않음 (14-6): 목격자 한 명이 퍼뜨리기 시작
+    const witness = sim.persons.find((p) => p.household !== subj.household && p.household !== 1 && p.lifeStage === 'adult')!;
+    const r = sim.rumors!.add('scandal', [subj], { a: subj.name }, sim.world.day(), 1, [subj, witness]);
     for (let i = 0; i < 5 * 1440; i++) sim.tick();
     expect(r.knownBy.size).toBeGreaterThan(20);
   });

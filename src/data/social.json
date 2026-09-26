@@ -3344,6 +3344,7 @@
       "base": 55,
       "requires": {
         "met": true,
+        "gate": "has_grudge_target",
         "actorTraitsAny": [
           "cunning",
           "mean",

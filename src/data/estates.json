@@ -144,7 +144,7 @@
     "knightRevoke": { "from": "knight", "to": "freeman" },
     "fame": { "bankruptcy": -60, "felony": -120, "guildExpulsion": -40, "knightRevoke": -100 }
   },
-  "fameTiers": ["disgrace", "suspect", "plain", "respected", "renowned", "legend"],
+  "fameTiers": ["dishonored", "suspect", "ordinary", "respected", "renowned", "legendary"],
   "effects": {
     "$comment": "무드렛(moodlets_m7.json), 연대기 삽화 트리거, 마을 소식 종류, 사건 카드",
     "riseMoodlet": "estate_risen",

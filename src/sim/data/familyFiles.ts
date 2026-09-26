@@ -22,5 +22,7 @@ export const FAMILY_FILES: Record<string, string> = {
   sumptuary: 'sumptuary.json',
   houses: 'clans.json',
   society: 'society.json',
+  courtship: 'courtship.json',
+  justice: 'justice.json',
   policy: 'policy.json',
 };
