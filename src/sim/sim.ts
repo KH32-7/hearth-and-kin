@@ -31,6 +31,7 @@ import { DeathRules, parseDeathRules, type SetDeathRulesIntent } from './health/
 import { express, geneticsFrom, inherit, randomGenome, type GeneticsData } from './family/genetics';
 import { namesFrom, pickName, type NamesData } from './family/names';
 import { memberRuntime, validateFamily, type FamilySpec } from './family/creation';
+import { Cards } from './story/cards';
 import { Rumors } from './town/rumors';
 import type { LifeStage } from './people/person';
 import { NEED_INDEX, Person } from './people/person';
@@ -115,6 +116,8 @@ export type SimIntent =
   | { kind: 'setAgingOff'; personId?: number; household?: number; off: boolean }
   | { kind: 'setLifespan'; preset: string }
   | { kind: 'putDownBaby'; babyId: number }
+  /** 사건 카드 선택 (24-1): 대기 중인 카드 순번, 선택지 번호 */
+  | { kind: 'cardChoice'; seq: number; option: number }
   /** 캐릭터 만들기 (10-1): 만들기 사양으로 조작 가문을 새로 꾸림 (검증 실패면 거부). 기존 조작 가문 식구는 떠남 */
   | { kind: 'createFamily'; spec: FamilySpec }
   /** 진통 선택 (15-2): 산파 부르기 / 가족이 받기 / 혼자 */
@@ -320,6 +323,7 @@ export class Simulation {
     this.judge = data.story && (this.town || this.lifecycle) ? new LifeJudge(this.judgeHostRef, data.story) : null;
     const dr = parseDeathRules(data.family.deathRules);
     if (dr) this.deathRules = new DeathRules(dr);
+    if (data.family.events) this.cards = new Cards(this.cardsHost(new Rng((seed * 1223 + 57) >>> 0)), data.family.events);
     const pd = parsePregnancy(data.family.pregnancy);
     if (pd && this.judge) {
       this.pregnancy = new PregnancySystem(this.pregnancyHost(new Rng((seed * 409 + 97) >>> 0)), pd);
@@ -496,6 +500,10 @@ export class Simulation {
         void _k;
         this.deathRules.apply(rest as SetDeathRulesIntent);
         return { ok: true };
+      }
+      case 'cardChoice': {
+        const r = this.cards?.choose(intent.seq, intent.option);
+        return r ? { ok: true, result: r } : { ok: false };
       }
       case 'createFamily':
         return this.createFamily(intent.spec);
@@ -3834,6 +3842,7 @@ export class Simulation {
     const lc = this.lifecycle;
     const cc = this.childcare;
     if (lc && hour === lc.d.birthday.hour) lc.morning();
+    this.cards?.hourly();
     if (this.pregnancy) {
       this.pregnancy.tick();
       // 입덧 (15-1 초기): 아침에 깨면
@@ -4245,12 +4254,87 @@ export class Simulation {
     if (head && household === 1) this.notice(head, delta >= 0 ? 'fame_up' : 'fame_down', { n: Math.abs(delta), reason: `fame.reason.${reason}` });
   }
 
-  /** 사건 카드 제안 (M14 카드 엔진 전: 조작 가문에게 알림 + 기록) */
+  /** 사건 카드 (24-1 최소 엔진, story/cards.ts): 카드 데이터가 없으면 알림 + 기록만 */
+  cards: Cards | null = null;
   readonly cardLog: { day: number; personId: number; cardId: string; vars: Record<string, string | number> }[] = [];
-  offerCard(p: Person, cardId: string, vars: Record<string, string | number> = {}): void {
+  /** 가문(가구) 상태 플래그 (카드 결과 flag: has_feud, affair …) */
+  readonly householdFlags = new Map<number, Set<string>>();
+  offerCard(p: Person, cardId: string, vars: Record<string, string | number> = {}, other: Person | null = null): void {
     this.cardLog.push({ day: this.world.day(), personId: p.id, cardId, vars });
     if (this.cardLog.length > 200) this.cardLog.shift();
+    if (this.cards?.defs.has(cardId)) {
+      this.cards.offer(p, cardId, vars, other, true);
+      return;
+    }
     if (p.household === 1) this.notice(p, 'card', { card: cardId, ...vars });
+  }
+
+  private cardsHost(rng: Rng): import('./story/cards').CardsHost {
+    const sim = this;
+    const S = (q: Person): number => {
+      const est = (this.data.economy as { estates?: Record<string, { target?: { net?: number } }> } | null)?.estates?.[q.estate];
+      // 한 인생 저축 S = 일 순수입 × 48일 × 수명 배수 (17-4), 파딩
+      return Math.round((est?.target?.net ?? 6 * 4) * 48 * this.settings.lifespan);
+    };
+    return {
+      get persons() {
+        return sim.persons;
+      },
+      rng,
+      minute: () => this.world.minute,
+      day: () => this.world.day(),
+      season: () => this.world.season,
+      controlled: (q) => q.household === 1,
+      flags: (q) => {
+        const f = new Set(this.familyFlags(q));
+        for (const x of this.householdFlags.get(q.household) ?? []) f.add(x);
+        return f;
+      },
+      fame: (q) => 300 + (this.fame.get(q.household) ?? 0),
+      money: (q) => this.econ?.account(q.household)?.money ?? 0,
+      savingsS: S,
+      skillLevel: (q, sk) => this.skills?.level(q, sk) ?? 0,
+      moodlet: (q, id) => this.addEngineMoodlet(q, id),
+      addMoney: (q, amount, reason) => {
+        const a = this.econ?.account(q.household);
+        if (!a) return;
+        if (amount >= 0) this.econ!.earn(a, amount, reason, false);
+        else this.econ!.spend(a, -amount, reason);
+      },
+      reputation: (q, d, reason) => {
+        if (d.fame) this.addFame(q.household, d.fame, reason);
+        if (d.church) q.churchRep = Math.max(-100, Math.min(100, q.churchRep + d.church));
+        if (d.karma) q.karma = Math.max(-100, Math.min(100, q.karma + d.karma));
+        if (d.honor) q.honor = Math.max(-500, Math.min(500, q.honor + d.honor));
+      },
+      relation: (a, b, d) => {
+        this.rel.change(a.id, b.id, { friendship: d.friendship ?? 0, romance: d.romance ?? 0 }, this.world.day());
+        if (d.respect) this.rel.addRespect(b.id, a.id, d.respect);
+      },
+      memory: (q, kind, importance, valence, withPerson) => {
+        q.memories.push({ kind, minute: this.world.minute, valence, importance, withPerson, objectUid: 0 });
+      },
+      rumor: (subject, kind, good, strength) => {
+        if (!this.rumors) return;
+        const fam = this.persons.filter((x) => x.household === subject.household);
+        this.rumors.add(kind, [subject], { a: subject.name }, this.world.day(), strength * (good ? 1 : 1.2), fam);
+      },
+      chronicle: (trigger, subjects) => {
+        this.chronicleLog.push({ day: this.world.day(), trigger, subjects: subjects.map((x) => x.id) });
+      },
+      heirloom: (q, what) => this.heirloomEvent(q, what),
+      setFlag: (q, flag) => {
+        const set = this.householdFlags.get(q.household) ?? new Set<string>();
+        set.add(flag);
+        this.householdFlags.set(q.household, set);
+      },
+      notice: (q, kind, args) => this.notice(q, kind, args),
+    };
+  }
+
+  /** 가보 사건 훅 (16-5): M8 가보 모듈 연결 전에는 기록만 */
+  heirloomEvent(p: Person, what: 'damage' | 'lose' | 'recover'): void {
+    this.chronicleLog.push({ day: this.world.day(), trigger: `heirloom_${what}`, subjects: [p.id] });
   }
 
   /**
