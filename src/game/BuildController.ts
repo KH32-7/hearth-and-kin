@@ -14,7 +14,7 @@ import type { LotDef, ObjectDef } from '../sim/core/types';
 import type { Snapshot } from '../sim/protocol';
 import { ESTATE_RANK } from '../sim/social/relations';
 import { LEVELS, slabStride } from '../sim/world/lot';
-import { placeRect, type GameRenderer } from '../render/GameRenderer';
+import { placeRect, type GameRenderer, staticGroup } from '../render/GameRenderer';
 import { makeSpriteMaterial, setUvRect } from '../render/SpriteMaterial';
 import type { WorldView } from '../render/WorldView';
 import { BUY_CATEGORIES, BuildPanel, TOOL_PARTS, type BuildTool, type CatalogItem, type GameMode, type PartEntry, formatPrice } from '../ui/BuildPanel';
@@ -44,7 +44,7 @@ export class BuildController {
   readonly panel: BuildPanel;
   mode: GameMode = 'live';
   private tool: BuildTool = 'wall';
-  private group = new THREE.Group();
+  private group = staticGroup();
   private cellMeshes: THREE.Mesh[] = [];
   private ghost: { mesh: THREE.Mesh; mat: THREE.ShaderMaterial; defId: string; variant?: string } | null = null;
   private held: { defId: string; variant?: string; rot: number; moveUid: number | null; crafted?: string } | null = null;

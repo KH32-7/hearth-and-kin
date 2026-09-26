@@ -28,11 +28,13 @@ export class GameRenderer {
     this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     this.renderer.setClearColor(0x1b1612, 1);
     this.camera = new THREE.OrthographicCamera(0, 1, 0, -1, -1000, 1000);
+    this.scene.matrixAutoUpdate = false;
     if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('fx') === '0') this.fx.enabled = false;
     this.resize();
   }
 
   resize(): void {
+    this.rectCache = null;
     const w = this.canvas.clientWidth || window.innerWidth;
     const h = this.canvas.clientHeight || window.innerHeight;
     const dpr = window.devicePixelRatio || 1;
@@ -120,8 +122,10 @@ export class GameRenderer {
     return { x, y: -yUp };
   }
 
+  /** 캔버스 화면 사각형 (한 프레임 동안 재사용: 사람마다 부르던 getBoundingClientRect 가 레이아웃을 강제함) */
+  private rectCache: DOMRect | null = null;
   worldToScreen(x: number, y: number): { x: number; y: number } {
-    const rect = this.canvas.getBoundingClientRect();
+    const rect = (this.rectCache ??= this.canvas.getBoundingClientRect());
     const bufW = this.renderer.domElement.width;
     const bufH = this.renderer.domElement.height;
     const dpr = this.renderer.getPixelRatio();
@@ -134,6 +138,7 @@ export class GameRenderer {
   readonly fx = new PostFX();
 
   render(): void {
+    this.rectCache = null;
     if (this.fx.enabled) this.fx.render(this.renderer, this.scene, this.camera);
     else {
       this.camera.layers.set(0);
@@ -144,7 +149,17 @@ export class GameRenderer {
 }
 
 /** 세계 픽셀 → three 좌표에 스프라이트 사각형 배치 (왼쪽 위 기준) */
+/** 움직이지 않는 묶음: 행렬을 매 프레임 다시 계산하지 않음 (자식 행렬도 강제 갱신되지 않게) */
+export function staticGroup(): THREE.Group {
+  const g = new THREE.Group();
+  g.matrixAutoUpdate = false;
+  return g;
+}
+
 export function placeRect(mesh: THREE.Object3D, left: number, top: number, w: number, h: number): void {
   mesh.position.set(left + w / 2, -(top + h / 2), 0);
   mesh.scale.set(w, h, 1);
+  // 행렬은 자리를 바꿀 때만 계산 (장면 8천여 개를 매 프레임 다시 계산하던 것이 2·3배속 멈칫의 큰 몫)
+  mesh.matrixAutoUpdate = false;
+  mesh.updateMatrix();
 }

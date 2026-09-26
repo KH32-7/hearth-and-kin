@@ -12,7 +12,7 @@ import { Grid } from '../sim/world/grid';
 import { LEVELS, SLABS, isGapRow, slabOfRow, slabStride } from '../sim/world/lot';
 import type { Assets } from './Assets';
 import type { SpriteRef, TileRef, WorldPack } from './artpack';
-import { placeRect } from './GameRenderer';
+import { placeRect, staticGroup } from './GameRenderer';
 import terrainJson from '../data/artpacks/terrain.json';
 import { TerrainTiler, type TerrainData } from './terrainTiles';
 import { WaterView } from './WaterView';
@@ -103,14 +103,14 @@ const quad = new THREE.PlaneGeometry(1, 1);
 const hash2 = (x: number, y: number) => (((x * 73856093) ^ (y * 19349663)) >>> 0);
 
 export class WorldView {
-  readonly group = new THREE.Group();
+  readonly group = staticGroup();
   readonly tile: number;
   private textures = new Map<string, THREE.Texture>();
   private imageEls = new Map<string, HTMLImageElement>();
   private walls: WallNode[] = [];
   private objs = new Map<number, ObjNode>();
   private layers: Layer[] = [];
-  private roofGroup = new THREE.Group();
+  private roofGroup = staticGroup();
   private roofMats: THREE.ShaderMaterial[] = [];
   cutaway: CutawayMode = 'cut';
   private glowTex: THREE.Texture;
@@ -141,7 +141,7 @@ export class WorldView {
     this.story = h || 80;
     this.fenceIds = new Set(Object.entries(pack.walls).filter(([, w]) => (w as { fence?: boolean }).fence).map(([k]) => k));
     for (let s = 0; s < SLABS; s++) {
-      const g = new THREE.Group();
+      const g = staticGroup();
       this.group.add(g);
       this.layers.push({ slab: s, level: LEVELS[s], group: g, ground: null, tint: 1 });
     }
@@ -480,7 +480,7 @@ export class WorldView {
     const key = `${slab}:${i}`;
     let g = this.shellGroups.get(key);
     if (!g) {
-      g = new THREE.Group();
+      g = staticGroup();
       g.visible = this.revealed.has(i);
       this.layers[slab].group.add(g);
       this.shellGroups.set(key, g);
@@ -745,7 +745,10 @@ export class WorldView {
 
   private setSprite(n: SpriteNode, spriteId: string): void {
     if (n.spriteId === spriteId) {
-      if (n.flipX && n.mesh.scale.x > 0) n.mesh.scale.x = -n.mesh.scale.x;
+      if (n.flipX && n.mesh.scale.x > 0) {
+        n.mesh.scale.x = -n.mesh.scale.x;
+        n.mesh.updateMatrix();
+      }
       return;
     }
     const ref = this.pack.sprites[spriteId];
@@ -756,7 +759,10 @@ export class WorldView {
     setUvRect(n.mat, img.width, img.height, ref.x, ref.y, ref.w, ref.h);
     n.mat.uniforms.uEmissive.value = ref.emissive ?? 0;
     placeRect(n.mesh, n.left - ref.anchorX, n.bottom - ref.anchorY, ref.w, ref.h);
-    if (n.flipX) n.mesh.scale.x = -n.mesh.scale.x;
+    if (n.flipX) {
+      n.mesh.scale.x = -n.mesh.scale.x;
+      n.mesh.updateMatrix();
+    }
     n.spriteId = spriteId;
     n.ref = ref;
   }
@@ -1609,7 +1615,10 @@ export class WorldView {
     placeRect(mesh, n.node.left - r.anchorX - OUTLINE_PAD, n.node.bottom - r.anchorY - OUTLINE_PAD, r.w + OUTLINE_PAD * 2, r.h + OUTLINE_PAD * 2);
     mesh.renderOrder = n.node.mesh.renderOrder + 0.5;
     // 좌우 반전한 물건은 외곽선도 반전
-    if (n.node.mesh.scale.x < 0) mesh.scale.x = -mesh.scale.x;
+    if (n.node.mesh.scale.x < 0) {
+      mesh.scale.x = -mesh.scale.x;
+      mesh.updateMatrix();
+    }
     (n.node.mesh.parent ?? this.layers[n.slab].group).add(mesh);
     this.hl = { uid: n.uid, spriteId: n.node.spriteId, mesh, mat };
   }
@@ -1634,7 +1643,10 @@ export class WorldView {
       const mesh = new THREE.Mesh(quad, mat);
       placeRect(mesh, n.node.left - r.anchorX - OUTLINE_PAD, n.node.bottom - r.anchorY - OUTLINE_PAD, r.w + OUTLINE_PAD * 2, r.h + OUTLINE_PAD * 2);
       mesh.renderOrder = n.node.mesh.renderOrder + 0.4;
-      if (n.node.mesh.scale.x < 0) mesh.scale.x = -mesh.scale.x;
+      if (n.node.mesh.scale.x < 0) {
+      mesh.scale.x = -mesh.scale.x;
+      mesh.updateMatrix();
+    }
       (n.node.mesh.parent ?? this.layers[n.slab].group).add(mesh);
       this.many.push({ mesh, mat });
     }

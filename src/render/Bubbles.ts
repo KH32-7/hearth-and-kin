@@ -16,7 +16,7 @@ import { emoteFrame } from '../ui/skin';
 import * as THREE from 'three';
 import type { PersonSnap } from '../sim/protocol';
 import type { Assets } from './Assets';
-import { placeRect } from './GameRenderer';
+import { placeRect, staticGroup } from './GameRenderer';
 import { makeSpriteMaterial, pixelTexture, setUvRect } from './SpriteMaterial';
 
 interface AtlasSprite {
@@ -91,7 +91,7 @@ const EMO_EMOTE: Record<string, string> = {
 };
 
 export class Bubbles {
-  readonly group = new THREE.Group();
+  readonly group = staticGroup();
   private tex: THREE.Texture | null = null;
   private bubbleTex: THREE.Texture | null = null;
   private bubbleW = 26;

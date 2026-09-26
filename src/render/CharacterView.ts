@@ -7,7 +7,7 @@
  */
 import * as THREE from 'three';
 import type { PersonSnap } from '../sim/protocol';
-import { placeRect } from './GameRenderer';
+import { placeRect, staticGroup } from './GameRenderer';
 import { makeSpriteMaterial, pixelTexture, setUvRect } from './SpriteMaterial';
 import { ORDER_SCALE, type WorldView } from './WorldView';
 import grading from '../data/grading.json';
@@ -17,6 +17,11 @@ import { bodyTypeFor, randomSpecWith } from './lpc/plan';
 import { infantFrameRect, infantLookFromSpec, planInfant, toddlerAnim, type InfantKind, type InfantLook, type InfantPlan } from './lpc/infant';
 import type { CharacterSpec, Stage } from './lpc/types';
 import { Rng } from '../sim/core/rng';
+import balance from '../data/balance.json';
+import story from '../data/story.json';
+
+const WALK_TILES_PER_MIN = (balance as { movement: { walkTilesPerMinute: number } }).movement.walkTilesPerMinute;
+const HORSE_MULT = (story as { travel?: { horseSpeedMult?: number } }).travel?.horseSpeedMult ?? 1;
 
 export type FacingName = 'up' | 'left' | 'down' | 'right';
 
@@ -74,6 +79,8 @@ class CharacterNode {
   pred: { x: number; y: number; at: number } | null = null;
   /** 예측 위치 열쇠 그림 (시각, 자리): 조금 늦춘 시각으로 두 열쇠 사이를 보간 → 고른 속도 */
   keys: { t: number; x: number; y: number }[] = [];
+  /** 최근 예측 걸음 속도 (px/ms, 0 = 모름) */
+  vk = 0;
   /** 현재 그려진 발 위치 (세계 px) */
   fx = 0;
   fy = 0;
@@ -109,7 +116,7 @@ class CharacterNode {
 const DIRECT_FOLLOW_MS = 40;
 
 export class CharacterView {
-  readonly group = new THREE.Group();
+  readonly group = staticGroup();
   private nodes = new Map<number, CharacterNode>();
   private shadowTex = makeShadowTexture();
   private lastTick = -1;
@@ -139,8 +146,12 @@ export class CharacterView {
   ) {}
 
   /** 새 스냅샷: 보간 경로를 새로 잡음 */
+  /** 틱 하나의 실제 ms (예측 걸음 속도 상한 계산용) */
+  private tickMs = 1000;
+
   sync(persons: PersonSnap[], tick: number, tickMs: number, nowMs: number): void {
     const T = this.world.tile;
+    if (tickMs > 0 && Number.isFinite(tickMs)) this.tickMs = tickMs;
     // 틱이 지나지 않은 스냅샷(대기열 변경 등으로 중간에 온 것)은 이동 보간을 새로 잡지 않음 → 걸음 속도가 들쭉날쭉하지 않게
     const advanced = this.lastTick < 0 || tick !== this.lastTick;
     const ticks = this.lastTick < 0 ? 1 : Math.max(1, tick - this.lastTick);
@@ -238,6 +249,15 @@ export class CharacterView {
         n.path = [];
         n.keys = [{ t: nowMs - 34, x: n.fx, y: n.fy }];
       }
+      // 최근 예측 걸음 속도 (px/ms): 따라잡기 속도 상한의 기준
+      const lk = n.keys[n.keys.length - 1];
+      if (lk && nowMs - lk.t > 5 && nowMs - lk.t <= 80) {
+        const dd = Math.hypot(pr.x - lk.x, pr.y - lk.y);
+        if (dd > 0.01 && dd < this.world.tile * 2) {
+          const v = dd / (nowMs - lk.t);
+          n.vk = n.vk > 0 ? n.vk * 0.7 + v * 0.3 : v;
+        }
+      }
       n.keys.push({ t: nowMs, x: pr.x, y: pr.y });
       if (n.keys.length > 8) n.keys.shift();
       n.pred = { x: pr.x, y: pr.y, at: performance.now() };
@@ -282,7 +302,17 @@ export class CharacterView {
           break;
         }
       }
-      const d = Math.hypot(x - n.fx, y - n.fy);
+      // 걸음 속도 상한: 틱 안에서 걷기 시작해 예측 없이 한 번에 몇 칸 옮겨진 경우(쉬다가 새 행동)에도 순간이동처럼 보이지 않게
+      // 최근 걸음 속도의 1.5배(모르면 보통 걸음의 1.3배)까지만 따라가고, 크게 벌어지면(문·계단 이동) 바로 옮김
+      let d = Math.hypot(x - n.fx, y - n.fy);
+      const T = this.world.tile;
+      const vmax = Math.max(((1.3 * WALK_TILES_PER_MIN * T) / this.tickMs) * (p.riding !== undefined ? HORSE_MULT : 1), n.vk * 1.5);
+      const lim = vmax * dt;
+      if (d > lim && d < T * 8) {
+        x = n.fx + ((x - n.fx) / d) * lim;
+        y = n.fy + ((y - n.fy) / d) * lim;
+        d = lim;
+      }
       n.fx = x;
       n.fy = y;
       if (Math.hypot(tx, ty) > 0.05) p.facing = Math.abs(tx) > Math.abs(ty) ? (tx > 0 ? 'right' : 'left') : ty > 0 ? 'down' : 'up';
@@ -354,6 +384,8 @@ export class CharacterView {
       return;
     }
     n.drawn = null;
+    // 위치 보간 (그림이 아직 없어도: 그림이 준비되는 순간 제자리에서 나타나게)
+    const moving = this.interpolate(n, p, nowMs);
     const sheet = this.sheets(p);
     if (!sheet) {
       n.mesh.visible = false;
@@ -365,8 +397,6 @@ export class CharacterView {
       n.tex = pixelTexture(sheet.image as HTMLCanvasElement);
       n.mat.uniforms.map.value = n.tex;
     }
-    // 위치 보간
-    const moving = this.interpolate(n, p, nowMs);
 
     // 보는 층 (23-2): 위층 사람은 숨김, 아래층 사람은 흐린 실루엣
     const vis = this.world.levelVisibility(this.world.levelOfRow(p.y));

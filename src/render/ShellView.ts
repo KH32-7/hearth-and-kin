@@ -6,7 +6,7 @@
  * 게임 로직은 칸만 앎. 그림 크기/위치는 shells.json 에만
  */
 import * as THREE from 'three';
-import { placeRect } from './GameRenderer';
+import { placeRect, staticGroup } from './GameRenderer';
 import { makeSpriteMaterial, pixelTexture, setUvRect } from './SpriteMaterial';
 import { makeAoMaterial, makeShadowMaterial, SHADOW_ORDER, shadowQuad } from './Shadows';
 
@@ -65,7 +65,7 @@ interface Node {
 const quad = new THREE.PlaneGeometry(1, 1);
 
 export class ShellView {
-  readonly group = new THREE.Group();
+  readonly group = staticGroup();
   private nodes: Node[] = [];
   private tex: THREE.Texture | null = null;
   private glassTex: THREE.Texture | null = null;
@@ -241,6 +241,7 @@ export class ShellView {
       // A 방식에서 넘어온 부품/높이 되돌림
       n.open = 0;
       n.mesh.position.y = n.top;
+      n.mesh.updateMatrix();
       if (n.baseMesh) n.baseMesh.visible = false;
       if (n.roofMesh) n.roofMesh.visible = false;
       if (n.shadowMat) n.shadowMat.uniforms.uFade.value = n.alpha;
@@ -295,6 +296,7 @@ export class ShellView {
         // 닫힘, 또는 부품 없음: 통째로 들리며 사라짐
         n.mat.uniforms.uOpacity.value = n.alpha * (1 - ease(o / 0.9));
         n.mesh.position.y = n.top + ease(o) * 40;
+        n.mesh.updateMatrix();
         n.mesh.visible = (n.mat.uniforms.uOpacity.value as number) > 0.01;
         if (n.baseMesh) n.baseMesh.visible = false;
         if (n.roofMesh) n.roofMesh.visible = false;
@@ -304,6 +306,7 @@ export class ShellView {
         const bm = n.baseMesh!.material as THREE.ShaderMaterial;
         rm.uniforms.uOpacity.value = 1 - ease(o / 0.6);
         n.roofMesh!.position.y = n.top + ease(o / 0.6) * 56;
+        n.roofMesh!.updateMatrix();
         n.roofMesh!.visible = (rm.uniforms.uOpacity.value as number) > 0.01;
         bm.uniforms.uOpacity.value = 1 - ease((o - 0.35) / 0.55);
         n.baseMesh!.visible = (bm.uniforms.uOpacity.value as number) > 0.01;

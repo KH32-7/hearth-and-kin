@@ -453,7 +453,7 @@ export class HearthGame {
       await this.composeSheet(job.id, job.outfit, job.expr);
       job.resolve();
       // 다음 합성은 몇 프레임 뒤에 (합성 하나가 수십 ms 라 연달아 하면 프레임이 끊김)
-      for (let f = 0; f < 3; f++) await new Promise((r) => requestAnimationFrame(() => r(null)));
+      for (let f = 0; f < (this.composeWorker ? 1 : 3); f++) await new Promise((r) => requestAnimationFrame(() => r(null)));
     }
     this.composing = false;
   }
@@ -464,6 +464,11 @@ export class HearthGame {
     if (!base) return;
     try {
       const spec: CharacterSpec = { ...base, outfit: OUTFIT_FALLBACK[outfit] ?? 'everyday', layers: { ...(base.layers ?? {}), ...(expr ? { $expr: expr } : {}) } };
+      const off = await this.composeOffThread(spec);
+      if (off) {
+        this.sheetCache.set(key, off as unknown as SheetLike);
+        return;
+      }
       const sheet = await composeCharacter(spec, (path) => this.assets.image(path));
       this.gradeSheet(sheet.image);
       this.sheetCache.set(key, sheet as unknown as SheetLike);
@@ -471,6 +476,51 @@ export class HearthGame {
       this.sheetCache.set(key, 'failed');
       this.errors.push(`compose ${key}: ${String(e)}`);
     }
+  }
+
+  /** 합성 워커 (없거나 죽으면 null → 메인에서 합성) */
+  private composeWorker: Worker | null | undefined;
+  private composeJobs = new Map<number, (r: { bmp?: ImageBitmap; meta?: Record<string, unknown>; error?: string }) => void>();
+  private composeSeq = 1;
+
+  /** 워커에서 합성 (메인 스레드를 막지 않음). 쓸 수 없으면 null */
+  private async composeOffThread(spec: CharacterSpec): Promise<(Record<string, unknown> & { image: HTMLCanvasElement }) | null> {
+    const g = (grading as unknown as { character: Grade }).character;
+    if (g.paletteSnap > 0) return null;
+    if (this.composeWorker === undefined) {
+      try {
+        if (typeof OffscreenCanvas === 'undefined' || typeof createImageBitmap === 'undefined') throw new Error('no offscreen');
+        const w = new Worker(new URL('../render/lpc/composeWorker.ts', import.meta.url), { type: 'module' });
+        w.onmessage = (ev) => {
+          const f = this.composeJobs.get(ev.data.id);
+          this.composeJobs.delete(ev.data.id);
+          f?.(ev.data);
+        };
+        w.onerror = () => {
+          this.composeWorker = null;
+          for (const f of this.composeJobs.values()) f({ error: 'worker' });
+          this.composeJobs.clear();
+        };
+        this.composeWorker = w;
+      } catch {
+        this.composeWorker = null;
+      }
+    }
+    const w = this.composeWorker;
+    if (!w) return null;
+    const id = this.composeSeq++;
+    const r = await new Promise<{ bmp?: ImageBitmap; meta?: Record<string, unknown>; error?: string }>((resolve) => {
+      this.composeJobs.set(id, resolve);
+      w.postMessage({ id, spec, base: import.meta.env.BASE_URL ?? '/' });
+    });
+    if (r.error === 'worker') return null;
+    if (!r.bmp || !r.meta) throw new Error(r.error ?? 'compose failed');
+    const c = document.createElement('canvas');
+    c.width = r.bmp.width;
+    c.height = r.bmp.height;
+    c.getContext('2d')!.drawImage(r.bmp, 0, 0);
+    r.bmp.close();
+    return { ...r.meta, image: c };
   }
 
   /** 화풍 맞춤 색 보정 (src/data/grading.json, tools/check-palette.ts 와 같은 함수) */
