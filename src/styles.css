@@ -127,7 +127,7 @@ button { font: inherit; color: inherit; cursor: pointer; background: none; borde
 .notice.danger { background: rgba(150,34,24,.55); animation: slideIn .22s steps(4), shake .5s steps(4) .22s infinite; }
 
 /* ---------------- 왼쪽 대기열 (아래가 지금) */
-.queue { position: absolute; left: 10px; bottom: 200px; width: 56px; padding: 8px 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.queue { position: absolute; left: 10px; bottom: 300px; width: 56px; padding: 8px 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .queue.empty { display: none; }
 .q-item { position: relative; width: 36px; height: 36px; border-radius: 8px; background: rgba(251,236,210,.16); display: flex; align-items: center; justify-content: center; transition: transform .08s steps(2); }
 .q-item:hover { background: rgba(255,154,138,.35); transform: translateY(-1px); }
@@ -142,23 +142,56 @@ button { font: inherit; color: inherit; cursor: pointer; background: none; borde
 .q-prog::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--k) * 100%); border-style: solid; border-width: 0; border-image: var(--skin-cbar-blue) var(--skin-cbar-blue-slice) fill / 2px stretch; }
 .q-item.current { margin-bottom: 8px; }
 .q-more { font-size: 13px; }
-.queue-label { position: absolute; left: 74px; bottom: 212px; font-size: 14px; pointer-events: none !important; }
+.queue-label { position: absolute; left: 74px; bottom: 312px; font-size: 14px; pointer-events: none !important; }
 .queue.empty ~ .queue-label { left: 18px; }
 
 /* ---------------- 좌하단: 나 */
-.me { position: absolute; left: 0; bottom: 0; width: 440px; height: 200px; pointer-events: none !important; }
+/* 좌하단 (목업 hud9 st=…): 세로 감정 글씨 + 세기 막대(빛 위), 상반신 + 감정색 빛 196×188, 소망 생각 풍선 3개, 가슴께 무드렛 칸 */
+.me { position: absolute; left: 0; bottom: 0; width: 300px; height: 290px; pointer-events: none !important; }
 .me > * { pointer-events: auto; }
-.me-emo { position: absolute; left: 14px; bottom: 44px; writing-mode: vertical-rl; font-size: 20px; font-weight: 700; letter-spacing: 4px; pointer-events: none !important; }
-.me-bust { position: absolute; left: 44px; bottom: 38px; width: 144px; height: 144px; cursor: pointer; }
-.me-glow { position: absolute; left: 50%; top: 55%; width: 170px; height: 160px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--glow, #9be08f) 85%, transparent), color-mix(in srgb, var(--glow, #9be08f) 30%, transparent) 55%, transparent 72%); filter: blur(6px); }
+.me-emo-col { position: absolute; z-index: 3; left: 6px; bottom: 92px; display: flex; gap: 5px; align-items: stretch; pointer-events: none !important; }
+.me-emo-bar { position: relative; align-self: flex-end; width: 6px; height: 60px; border-radius: 3px; background: rgba(0,0,0,.35); display: flex; align-items: flex-end; }
+.me-emo-bar i { display: block; width: 100%; border-radius: 3px; transition: height .3s steps(4); }
+.me-emo { writing-mode: vertical-rl; font-size: 20px; font-weight: 700; letter-spacing: 4px; }
+.me-bust { position: absolute; left: 44px; bottom: 66px; width: 144px; height: 144px; cursor: pointer; }
+.me-glow { position: absolute; left: 50%; top: 55%; width: 196px; height: 188px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--glow, #9be08f) 88%, transparent), color-mix(in srgb, var(--glow, #9be08f) 42%, transparent) 56%, transparent 74%); filter: blur(6px); }
+.me-glow.neutral { background: radial-gradient(circle, color-mix(in srgb, var(--glow, #d2c8b9) 62%, transparent), color-mix(in srgb, var(--glow, #d2c8b9) 28%, transparent) 56%, transparent 74%); }
 .me-glow.pulse { animation: glowPulse .4s steps(4); }
 .me-img { position: absolute; inset: 0; }
 .me-img canvas { width: 144px; height: 144px; filter: drop-shadow(2px 0 0 var(--outline)) drop-shadow(-2px 0 0 var(--outline)) drop-shadow(0 -2px 0 var(--outline)); }
 .me-img.swap { animation: pop .25s steps(4); }
-.me-wants { position: absolute; left: 172px; bottom: 150px; display: flex; gap: 6px; }
-.want { border-radius: 50%; padding: 2px; display: flex; cursor: pointer; }
+/* 소망: 머리 위 흰 생각 풍선 3개 (머리 가운데 x 116 에 맞춤) */
+.me-wants { position: absolute; inset: 0; pointer-events: none !important; }
+.want { position: absolute; width: 48px; height: 48px; cursor: pointer; pointer-events: auto; }
+.want.w0 { left: 40px; bottom: 212px; }
+.want.w1 { left: 92px; bottom: 234px; }
+.want.w2 { left: 144px; bottom: 212px; }
+.want .wb { position: relative; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,250,240,.78); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 0 rgba(0,0,0,.25); }
+.want .wb .icon { filter: drop-shadow(0 2px 0 rgba(43,26,16,.35)); }
+.want .wt { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: rgba(255,250,240,.78); bottom: -8px; }
+.want .wt.l { right: 0; }
+.want .wt.r { left: 0; }
+.want .wt.c { left: 19px; bottom: -10px; }
 .want:hover { transform: translateY(-2px); }
-.me-line { position: absolute; left: 44px; bottom: 10px; display: flex; align-items: center; gap: 12px; }
+/* 무드렛 칸: 배경 = 감정 색 반투명, 4개 + 펼침 탭, 마우스를 올리면 위로 설명 카드 */
+.mls { position: absolute; left: 44px; bottom: 46px; display: flex; gap: 4px; align-items: flex-end; }
+.ml { position: relative; }
+.ml.more { display: none; }
+.mls.open .ml.more { display: block; }
+.ml-t { width: 44px; height: 44px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--c, #9be08f) 50%, transparent); box-shadow: inset 0 0 0 2px rgba(255,246,230,.55), 0 2px 0 rgba(0,0,0,.35); }
+.ml-t .icon { filter: drop-shadow(0 2px 0 rgba(43,26,16,.8)); }
+.ml:hover .ml-t { box-shadow: inset 0 0 0 2px var(--gold), 0 2px 0 rgba(0,0,0,.35); }
+.ml-tip { display: none; position: absolute; left: 0; bottom: 54px; width: 280px; padding: 12px 14px; font-size: 15px; line-height: 1.45; word-break: keep-all; background: rgba(38,24,16,.88); z-index: 5; pointer-events: none; }
+.ml:hover .ml-tip { display: block; animation: rise .12s steps(2); }
+.ml-tip-h { display: block; font-size: 20px; }
+.ml-tip-n { display: block; margin-top: 2px; }
+.ml-tip-c { color: #8fd0ff; margin-top: 4px; }
+.ml-tip-d { margin-top: 6px; }
+.ml-tip-t { display: block; margin-top: 8px; }
+.ml-x { position: relative; width: 26px; height: 44px; border: 0; border-radius: 8px; background: rgba(251,236,210,.3); box-shadow: inset 0 0 0 2px rgba(255,246,230,.35); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font-size: 14px; }
+.ml-x .icon { filter: drop-shadow(0 1px 0 var(--outline)); }
+.ml-x:hover { background: rgba(255,211,106,.3); }
+.me-line { position: absolute; left: 44px; bottom: 12px; display: flex; align-items: center; gap: 12px; }
 .me-name { font-size: 18px; font-weight: 700; }
 .money { display: flex; align-items: center; gap: 4px; font-size: 15px; font-variant-numeric: tabular-nums; }
 .money .icon { width: 20px !important; height: 20px !important; background-size: auto !important; transform: scale(1.25); }
@@ -170,20 +203,20 @@ button { font: inherit; color: inherit; cursor: pointer; background: none; borde
 @keyframes moneyUp { 0% { color: var(--good); transform: translateY(-3px); } 100% { color: inherit; transform: none; } }
 @keyframes moneyDown { 0% { color: var(--bad); transform: translateY(3px); } 100% { color: inherit; transform: none; } }
 
-.family { position: absolute; left: 204px; bottom: 40px; display: flex; gap: 4px; align-items: flex-end; }
+.family { position: absolute; left: 300px; bottom: 0; padding-bottom: 6px; display: flex; gap: 2px; align-items: flex-end; }
 .fam-home { margin: 0 4px 8px 0; filter: drop-shadow(0 2px 0 var(--outline)); }
-.member { position: relative; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; transition: transform .08s steps(2); }
+.member { position: relative; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; transition: transform .08s steps(2); }
 .member:hover { transform: translateY(-3px); }
 .member:active, .member.press { animation: pressDown .15s steps(2); }
-.member-glow { position: absolute; left: 50%; top: 55%; width: 52px; height: 46px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, var(--emo, #888), transparent 70%); opacity: .85; }
-.member-img { position: relative; width: 56px; height: 56px; filter: drop-shadow(2px 0 0 var(--outline)) drop-shadow(-2px 0 0 var(--outline)) drop-shadow(0 -2px 0 var(--outline)); }
+.member-glow { position: absolute; left: 50%; top: 55%; width: 46px; height: 40px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, var(--emo, #888), transparent 70%); opacity: .85; }
+.member-img { position: relative; width: 48px; height: 48px; filter: drop-shadow(2px 0 0 var(--outline)) drop-shadow(-2px 0 0 var(--outline)) drop-shadow(0 -2px 0 var(--outline)); }
 .member-name { position: relative; font-size: 14px; }
 .member.on .member-glow { opacity: 1; }
-.member.on::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: -6px; height: 3px; background: var(--gold); border-radius: 2px; }
+.member.on::after { content: ''; position: absolute; left: 10px; right: 10px; bottom: -5px; height: 3px; background: var(--gold); border-radius: 2px; }
 .member.away { opacity: .5; }
 .member-warn { position: absolute; right: -4px; top: -4px; display: none; }
 .member.warn .member-warn { display: block; animation: shake .5s steps(4) infinite; }
-.fam-tip { position: absolute; transform: translate(-50%, -100%); padding: 8px 12px; font-size: 14px; line-height: 1.4; white-space: nowrap; display: none; pointer-events: none !important; }
+.fam-tip { position: absolute; transform: translate(0, -100%); padding: 8px 12px; font-size: 14px; line-height: 1.4; white-space: nowrap; display: none; pointer-events: none !important; }
 .fam-tip.show { display: block; animation: rise .12s steps(2); }
 .tip-need { display: flex; align-items: center; gap: 4px; }
 .tip-need.low { color: var(--bad); }

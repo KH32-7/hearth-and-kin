@@ -4,7 +4,8 @@
  * - 좌상단: 낮밤 시계 원판 + 시각 · 날짜 · 기온 · 기도 시각
  * - 우상단: 아이콘 띠 (생활/구매/건축 | 지도 · 연대기 · 가계부 · 편지 · 메뉴), 그 아래 알림
  * - 왼쪽 가장자리: 행동 대기열 (아래가 지금)
- * - 좌하단: 조작 인물 상반신 + 감정색 빛, 세로 감정 글씨, 생각 풍선, 이름 · 돈, 집 + 가족 머리
+ * - 좌하단 (심즈식): 세로 감정 글씨 + 세기 막대, 상반신 + 감정색 빛, 머리 위 소망 생각 풍선 3개,
+ *   가슴께 무드렛 칸 한 줄 (4개 + 펼침 탭, 마우스를 올리면 설명 카드), 맨 아랫줄 이름 · 돈 · 명성 · 집 + 가족 머리
  * - 하단 가운데: 속도
  * - 우하단: 자주 쓰는 창 (욕구 · 감정 · 관계 · 소원 · 수첩) → 반투명 팝업
  * 판은 둥근 반투명 하나(.g). 조작 안내 글은 두지 않음 (27-3). 반응은 게임필 원칙: 누르면 눌리고, 바뀌면 톡.
@@ -108,12 +109,17 @@ export class Hud {
   private queueEl: HTMLElement;
   private queueLabel: HTMLElement;
   private meEmo: HTMLElement;
+  private meEmoBar: HTMLElement;
+  private meMls: HTMLElement;
+  private mlsSig = '';
+  private mlsOpen = false;
   private meBust: HTMLElement;
   private meGlow: HTMLElement;
   private meWants: HTMLElement;
   private meName: HTMLElement;
   private moneyEl: HTMLElement;
   private moneyVal: HTMLElement;
+  private fameEl: HTMLElement;
   private familyEl: HTMLElement;
   private tip: HTMLElement;
   // 아래
@@ -209,12 +215,16 @@ export class Hud {
 
     // ---------------- 좌하단: 나
     const me = el('div', 'me', this.root);
-    this.meEmo = el('div', 'me-emo fl', me);
     const bustWrap = el('div', 'me-bust', me);
     this.meGlow = el('div', 'me-glow', bustWrap);
     this.meBust = el('div', 'me-img', bustWrap);
     bustWrap.addEventListener('dblclick', () => this.last && this.h.focusPerson(this.last.id));
+    // 세로 감정 글씨는 빛 위 (왼쪽 끝에 세기 막대: 기본 1/3 · 강함 2/3 · 극도 가득 · 무난 빔)
+    const emoCol = el('div', 'me-emo-col', me);
+    this.meEmoBar = el('i', '', el('div', 'me-emo-bar', emoCol));
+    this.meEmo = el('div', 'me-emo fl', emoCol);
     this.meWants = el('div', 'me-wants', me);
+    this.meMls = el('div', 'mls', me);
     const line = el('div', 'me-line', me);
     this.meName = el('span', 'me-name fl', line);
     this.moneyEl = el('button', 'money fl s', line);
@@ -224,6 +234,11 @@ export class Hud {
     this.moneyVal = el('span', 'money-n', this.moneyEl);
     this.moneyEl.style.display = 'none';
     this.moneyEl.addEventListener('click', () => this.onMoney?.());
+    // 가문 명성 (목업: 돈 옆 왕관 + 수)
+    this.fameEl = el('span', 'fame fl s', line);
+    this.fameEl.appendChild(iconEl('cute.crown', 1));
+    el('span', 'fame-n', this.fameEl);
+    this.fameEl.style.display = 'none';
 
     this.familyEl = el('div', 'family', this.root);
     this.tip = el('div', 'fam-tip g s', this.root);
@@ -321,6 +336,13 @@ export class Hud {
         this.moneyEl.title = t('hud.money.title', { debt: formatMoney(s.econ.debt) });
       }
     }
+    const fame = s.house?.clan ? String(Math.round(s.house.clan.fame)) : '';
+    const fn = this.fameEl.lastElementChild as HTMLElement;
+    if (fn.textContent !== fame) {
+      fn.textContent = fame;
+      this.fameEl.style.display = fame ? '' : 'none';
+      this.fameEl.title = s.house?.clan ? t(`fame.tier.${s.house.clan.tier}`) : '';
+    }
     this.updateNotices(s.notices, s.persons);
     if (this.popup && p) this.renderPopup(p, s);
   }
@@ -362,11 +384,16 @@ export class Hud {
     if (this.meEmo.dataset.key !== key) {
       this.meEmo.dataset.key = key;
       this.meEmo.textContent = t(key);
-      this.meEmo.style.color = mix(color, '#ffffff', 0.45);
+      const light = mix(color, '#ffffff', 0.45);
+      this.meEmo.style.color = light;
+      this.meEmoBar.style.background = light;
+      this.meEmoBar.style.height = `${[0, 34, 67, 100][emo === 'neutral' ? 0 : Math.max(0, Math.min(3, inner?.stage ?? 0))]}%`;
       this.meGlow.style.setProperty('--glow', color);
+      this.meGlow.classList.toggle('neutral', emo === 'neutral');
       pop(this.meEmo);
       pop(this.meGlow, 'pulse');
     }
+    this.updateMoodlets(p, emo);
     if (this.meName.textContent !== p.name) this.meName.textContent = p.name;
     if (this.bustFor !== p.id || !this.meBust.firstChild) {
       const cv = this.h.portrait?.(p.id, 'bust');
@@ -377,21 +404,68 @@ export class Hud {
         pop(this.meBust, 'swap');
       }
     }
-    // 생각 풍선: 지금 원하는 것 (소원 앞 둘)
-    const wants = (inner?.wishes ?? []).filter((w) => w.kind === 'wish').slice(0, 2);
+    // 머리 위 생각 풍선: 지금 원하는 것 (소원 앞 셋, 머리 가운데에 맞춤)
+    const wants = (inner?.wishes ?? []).filter((w) => w.kind === 'wish').slice(0, 3);
     const sig = wants.map((w) => w.id).join(',');
     if (sig !== this.wantsSig) {
       this.wantsSig = sig;
       this.meWants.textContent = '';
       const defs = this.innerDefs();
-      for (const w of wants) {
-        const b = el('div', 'want g', this.meWants);
+      wants.forEach((w, k) => {
+        const b = el('div', `want w${k}`, this.meWants);
         b.dataset.wish = w.id;
-        b.appendChild(iconEl(defs?.wishDef(w.id)?.icon ?? 'emo.excited', 2));
+        el('i', `wt ${['l', 'c', 'r'][k]}`, b);
+        el('div', 'wb', b).appendChild(iconEl(defs?.wishDef(w.id)?.icon ?? 'emo.excited', 2));
         b.title = defs?.wishDef(w.id) ? t(defs.wishDef(w.id)!.textKey) : '';
         b.addEventListener('click', () => this.setPopup('wish'));
         pop(b);
-      }
+      });
+    }
+  }
+
+  /**
+   * 무드렛 칸 (심즈식): 칸 배경 = 무드렛 감정 색, 주 감정 무드렛 먼저 · 그 안에서 센 순서. 4개까지, 넘치면 끝에 ▸ 남은 개수 탭 (◂ 로 접힘).
+   * 칸에 마우스를 올리면 위로 설명 카드: 감정 + 세기, 무드렛 이름, 원인(하늘색), 설명, 남은 시간
+   */
+  private updateMoodlets(p: PersonSnap, emo: string): void {
+    const list = [...(p.inner?.moodlets ?? [])].sort((a, b) => Number(b.emotion === emo) - Number(a.emotion === emo) || b.strength - a.strength);
+    const sig = `${p.id}|${emo}|${this.mlsOpen}|${list.map((m) => `${m.id}:${m.emotion}:${m.strength}:${Math.round(m.remainingMin / 10)}`).join(',')}`;
+    if (sig === this.mlsSig) return;
+    this.mlsSig = sig;
+    const box = this.meMls;
+    box.textContent = '';
+    box.classList.toggle('open', this.mlsOpen);
+    const defs = this.innerDefs();
+    const neg = (e: string) => ['sad', 'angry', 'tense', 'ashamed'].includes(e);
+    list.forEach((m, i) => {
+      const c = this.h.emotionColor?.(m.emotion) ?? '#9be08f';
+      const cell = el('div', `ml${i >= 4 ? ' more' : ''}`, box);
+      cell.dataset.moodlet = m.id;
+      const tile = el('div', 'ml-t', cell);
+      tile.style.setProperty('--c', c);
+      tile.appendChild(iconEl(defs?.moodletIcon(m.id) ?? `emo.${m.emotion}`, 2));
+      const tip = el('div', 'ml-tip g s', cell);
+      const hd = el('b', 'ml-tip-h', tip, `${t(m.emotion === 'neutral' ? 'emotion.neutral' : `emotion.${m.emotion}.basic`)} ${neg(m.emotion) ? '−' : '+'}${m.strength}`);
+      hd.style.color = mix(c, '#ffffff', 0.45);
+      const keys = defs?.moodletKeys(m.id);
+      const nameKey = keys?.name ?? `moodlet.${m.id}`;
+      if (has(nameKey)) el('b', 'ml-tip-n', tip, t(nameKey));
+      if (has(`moodlet.${m.id}.cause`)) el('div', 'ml-tip-c', tip, t(`moodlet.${m.id}.cause`, { name: p.name }));
+      const descKey = has(`moodlet.${m.id}.desc`) ? `moodlet.${m.id}.desc` : keys?.desc;
+      if (descKey && has(descKey)) el('div', 'ml-tip-d', tip, t(descKey, { name: p.name }));
+      if (m.remainingMin >= 0) el('b', 'ml-tip-t', tip, m.remainingMin >= 60 ? t('panel.remaining.h', { n: Math.round(m.remainingMin / 60) }) : t('panel.remaining.m', { n: Math.max(1, Math.round(m.remainingMin)) }));
+    });
+    const extra = list.length - 4;
+    if (extra > 0) {
+      const x = el('button', 'ml-x s', box);
+      x.type = 'button';
+      x.appendChild(iconEl(this.mlsOpen ? 'cute.left' : 'cute.right', 1));
+      if (!this.mlsOpen) el('b', '', x, String(extra));
+      x.addEventListener('click', () => {
+        this.mlsOpen = !this.mlsOpen;
+        this.mlsSig = '';
+        if (this.last) this.updateMoodlets(this.last, emo);
+      });
     }
   }
 
@@ -464,7 +538,7 @@ export class Hud {
     }
     const r = anchor.getBoundingClientRect();
     const pr = this.root.getBoundingClientRect();
-    this.tip.style.left = `${Math.round(r.left - pr.left + r.width / 2)}px`;
+    this.tip.style.left = `${Math.round(r.left - pr.left)}px`;
     this.tip.style.top = `${Math.round(r.top - pr.top - 8)}px`;
     this.tip.classList.add('show');
   }
@@ -765,6 +839,12 @@ export class Hud {
       row.dataset.wish = w.id;
       row.appendChild(iconEl(d?.icon ?? 'emo.excited', 2));
       el('b', 'wish-text', row, d ? t(d.textKey) : w.id);
+      // 이루면 받는 행복 점수 (목업: 별 + 수)
+      const pts = (d as { points?: number } | null)?.points;
+      if (pts) {
+        const ps = el('span', 'wish-pts', row);
+        ps.append(iconEl('cute.star', 1), document.createTextNode(String(pts)));
+      }
       const lock = el('button', `lock ${w.locked ? 'on' : ''}`, row);
       lock.type = 'button';
       lock.appendChild(pieceImg('book.mark0', 1));

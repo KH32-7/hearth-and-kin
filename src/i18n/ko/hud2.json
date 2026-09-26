@@ -131,5 +131,15 @@
   "nb.page.match": "혼처",
   "nb.btn.find_match": "혼처 찾기",
   "nb.btn.accept": "받기",
-  "nb.btn.refuse": "거절"
+  "nb.btn.refuse": "거절",
+  "nb.page.virtues": "덕과 죄",
+  "nb.page.wishnow": "지금 소원",
+  "nb.fame.ribbon": "명성 {n}",
+  "nb.work.today": "오늘 일",
+  "skill.bundle.household": "살림",
+  "skill.bundle.craft": "공예",
+  "skill.bundle.learning": "학식",
+  "skill.bundle.art": "예술",
+  "skill.bundle.body": "체력",
+  "skill.bundle.faith": "신앙"
 }

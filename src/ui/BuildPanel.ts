@@ -67,9 +67,37 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, parent?
   return e;
 }
 
+/** 썸네일의 투명한 가장자리를 잘라냄 (48px 판 가운데 작게 그려진 물건도 칸을 채우게, 목업 크기) */
+function trim(c: HTMLCanvasElement): HTMLCanvasElement {
+  const g = c.getContext('2d', { willReadFrequently: true });
+  if (!g) return c;
+  const d = g.getImageData(0, 0, c.width, c.height).data;
+  let x0 = c.width;
+  let y0 = c.height;
+  let x1 = -1;
+  let y1 = -1;
+  for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) {
+    if (!d[(y * c.width + x) * 4 + 3]) continue;
+    if (x < x0) x0 = x;
+    if (y < y0) y0 = y;
+    if (x > x1) x1 = x;
+    if (y > y1) y1 = y;
+  }
+  if (x1 < x0 || (x0 === 0 && y0 === 0 && x1 === c.width - 1 && y1 === c.height - 1)) return c;
+  const out = document.createElement('canvas');
+  out.width = x1 - x0 + 1;
+  out.height = y1 - y0 + 1;
+  out.className = c.className;
+  const og = out.getContext('2d')!;
+  og.imageSmoothingEnabled = false;
+  og.drawImage(c, x0, y0, out.width, out.height, 0, 0, out.width, out.height);
+  return out;
+}
+
 /** 썸네일을 칸에 들어가는 가장 큰 정수 배율로 (픽셀이 고르게, 27-3) */
-function fit<T extends HTMLElement | null>(c: T, maxW: number, maxH: number): T {
-  if (!(c instanceof HTMLCanvasElement) || !c.width || !c.height) return c;
+function fit<T extends HTMLElement | null>(c0: T, maxW: number, maxH: number): T {
+  if (!(c0 instanceof HTMLCanvasElement) || !c0.width || !c0.height) return c0;
+  const c = trim(c0) as unknown as T & HTMLCanvasElement;
   const k = Math.max(1, Math.min(Math.floor(maxW / c.width), Math.floor(maxH / c.height)));
   c.style.width = `${c.width * k}px`;
   c.style.height = `${c.height * k}px`;
@@ -165,13 +193,20 @@ export class BuildPanel {
       b.type = 'button';
       b.dataset.cut = c;
       b.title = t(`build.view.wall.${c}`);
-      b.innerHTML = `<i class="wall-glyph wall-${c}"></i>`;
+      // 목업: 벽 그림을 아래에서 잘라 높이 셋 (올림 · 잘라내기 · 내림). 그림이 없으면 예전 글리프
+      const wall = this.h.thumb('tool', 'wall');
+      if (wall) {
+        const pic = el('span', `cut-pic cut-${c}`, b);
+        pic.appendChild(wall);
+      } else b.innerHTML = `<i class="wall-glyph wall-${c}"></i>`;
       b.addEventListener('click', () => this.h.setCutaway(c));
       this.cutBtns.set(c, b);
     }
     this.roofBtn = el('button', 'view-btn roof-btn', view);
     this.roofBtn.type = 'button';
-    this.roofBtn.innerHTML = '<i class="roof-glyph"></i>';
+    const roof = this.h.thumb('tool', 'roof');
+    if (roof) el('span', 'roof-pic', this.roofBtn).appendChild(roof);
+    else this.roofBtn.innerHTML = '<i class="roof-glyph"></i>';
     this.roofBtn.addEventListener('click', () => this.h.setRoofMode(this.roofMode === 'auto' ? 'on' : this.roofMode === 'on' ? 'off' : 'auto'));
 
     // 아래 판: 왼쪽 분류/도구 | 가운데 칸 | 오른쪽 설명

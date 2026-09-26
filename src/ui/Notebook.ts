@@ -6,14 +6,16 @@
  * 표지·탭 색은 가정 대표 신분 (27-11). 쪽 내용은 기존 패널(내면·관계·일·가계부)을 책 모양으로 싣고,
  * 아직 시뮬레이션 자료가 없는 쪽은 아이콘 빈 상태로 둠 (자료가 들어오면 그대로 채워짐).
  */
-import type { PersonSnap, Snapshot } from '../sim/protocol';
+import type { PersonSnap, RelationSnap, Snapshot } from '../sim/protocol';
 import { t } from '../i18n';
-import { composeCoatOfArms } from '../render/heraldry';
+import { heraldryCanvas } from './HeraldryEditor';
 import { bookUrl, iconEl, pieceImg, pieceUrl, stitchCard, tabUrl } from './skin';
 import type { InnerPanel } from './InnerPanel';
 import type { RelationsPanel } from './RelationsPanel';
 import type { WorkPanel } from './WorkPanel';
 import type { LedgerPanel } from './LedgerPanel';
+import { RelationsPanel as RelationsPanelClass } from './RelationsPanel';
+import { formatMoney } from './Hud';
 
 type TabId = 'person' | 'house' | 'work' | 'record' | 'domain';
 interface PageDef {
@@ -277,6 +279,7 @@ export class Notebook {
         b.style.marginBottom = `${2 * S}px`;
         const ic = iconEl(pg.icon, 2, 'nb-mark-ic');
         ic.style.left = `${(on ? 9 : 6.5) * S}px`;
+        ic.style.top = `${4 * S}px`;
         b.appendChild(ic);
         const key = `${this.tab}.${pg.id}`;
         if (!this.seenPages.has(key)) b.classList.add('new');
@@ -299,6 +302,29 @@ export class Notebook {
     this.right.className = 'nb-page nb-right';
     this.book.dataset.page = this.page[this.tab];
     this.renderPage(this.page[this.tab], p, s);
+    this.stitchRows();
+  }
+
+  /**
+   * 줄 카드(.nb-row)의 바느질 테두리: 목업 .st 처럼 카드 크기 그대로 원본 해상도에서 찍어 S배로 (늘려서 무늬가 깨지지 않게).
+   * 크기는 배치가 끝난 뒤에야 알 수 있어 다음 프레임에 붙임
+   */
+  private stitchRows(): void {
+    requestAnimationFrame(() => {
+      const S = this.S;
+      this.book.querySelectorAll<HTMLElement>('.nb-row').forEach((r) => {
+        const w = r.offsetWidth;
+        const h = r.offsetHeight;
+        if (!w || !h) return;
+        const uw = Math.max(8, Math.round(w / S));
+        const uh = Math.max(8, Math.ceil(h / S - 0.01));
+        if (uh * S !== h) r.style.minHeight = `${uh * S}px`;
+        const key = `${uw}x${uh}${r.classList.contains('on') ? '+' : ''}`;
+        if (r.dataset.st === key) return;
+        r.dataset.st = key;
+        r.style.backgroundImage = `url(${stitchCard(uw, uh, r.classList.contains('on'))})`;
+      });
+    });
   }
 
   /** 쪽 내용이 바뀌었는지 (시간 흐를 때 다시 그리는 빈도 줄이기) */
@@ -330,17 +356,16 @@ export class Notebook {
     return r;
   }
 
-  private cells(parent: HTMLElement, items: Array<{ icon?: string; canvas?: HTMLCanvasElement | null; label: string; on?: boolean; dim?: boolean; glow?: string; data?: Record<string, string>; onClick?: () => void; title?: string }>, cols = 4, total = 8): HTMLElement {
+  private cells(parent: HTMLElement, items: Array<{ icon?: string; canvas?: HTMLCanvasElement | null; label: string; on?: boolean; dim?: boolean; glow?: string; cls?: string; data?: Record<string, string>; onClick?: () => void; title?: string }>, cols = 4, total = 8, size = 20, gap = 1): HTMLElement {
     const S = this.S;
-    const size = 20; // 원본 20px 칸
-    const gap = 1;
+    // 목업 slots: 기본 20px 칸 · 1px 간격 (원본), 특성은 24px · 2px
     const grid = el('div', 'nb-cells', parent);
     grid.style.gridTemplateColumns = `repeat(${cols}, ${size * S}px)`;
     grid.style.gap = `${gap * S}px`;
     const n = Math.max(total, items.length);
     for (let i = 0; i < n; i++) {
       const it = items[i];
-      const c = el(it?.onClick ? 'button' : 'div', `nb-cell ${it?.on ? 'on' : ''} ${!it ? 'empty' : ''} ${it?.dim ? 'dim' : ''}`, grid) as HTMLElement;
+      const c = el(it?.onClick ? 'button' : 'div', `nb-cell ${it?.on ? 'on' : ''} ${!it ? 'empty' : ''} ${it?.dim ? 'dim' : ''} ${it?.cls ?? ''}`, grid) as HTMLElement;
       if (c instanceof HTMLButtonElement) c.type = 'button';
       c.style.width = `${size * S}px`;
       c.style.height = `${size * S}px`;
@@ -362,14 +387,14 @@ export class Notebook {
     return grid;
   }
 
-  private rows(parent: HTMLElement, items: Array<{ icon?: string; canvas?: HTMLCanvasElement | null; title: string; sub?: string; right?: string; dim?: boolean; cls?: string; data?: Record<string, string> }>): HTMLElement {
+  private rows(parent: HTMLElement, items: Array<{ icon?: string; canvas?: HTMLCanvasElement | null; title: string; sub?: string; right?: string; dim?: boolean; cls?: string; tip?: string; data?: Record<string, string> }>): HTMLElement {
     const S = this.S;
     const list = el('div', 'nb-rows', parent);
     for (const it of items) {
       const r = el('div', `nb-row ${it.dim ? 'dim' : ''} ${it.cls ?? ''}`, list);
       for (const [k, v] of Object.entries(it.data ?? {})) r.dataset[k] = v;
       r.style.minHeight = `${18 * S}px`;
-      r.style.borderImageWidth = `${6 * S * 0.75}px`;
+      if (it.tip) r.title = it.tip;
       if (it.canvas) {
         it.canvas.className = 'nb-row-img';
         r.appendChild(it.canvas);
@@ -477,31 +502,117 @@ export class Notebook {
           if (t(`${defs[sel].nameKey}.desc`) !== `${defs[sel].nameKey}.desc`) el('p', '', pp, t(`${defs[sel].nameKey}.desc`));
         } else this.empty(L, 'cute.star');
         this.ribbon(R, t('nb.page.skills'));
-        const cats = new Map<string, number[]>();
-        for (const k of ids) {
-          const c = defs[k].category;
-          cats.set(c, [...(cats.get(c) ?? []), sk[k][0]]);
-        }
-        this.rows(R, [...cats].map(([c, lv]) => ({ icon: c === 'labor' ? 'cute.wrench' : c === 'scholarly' ? 'cute.book_blue' : 'cute.star', title: t(`skill.bundle.${c}`), right: (lv.reduce((a, b) => a + b, 0) / lv.length).toFixed(1) })));
+        const BUNDLE_ICON: Record<string, string> = { household: 'cute.coins', craft: 'cute.wrench', learning: 'cute.book_blue', art: 'cute.star', body: 'cute.bolt', faith: 'rv.church' };
+        const cats = new Map<string, string[]>();
+        for (const k of ids) cats.set(defs[k].category, [...(cats.get(defs[k].category) ?? []), k]);
+        this.rows(R, [...cats].map(([c, ks]) => ({
+          icon: BUNDLE_ICON[c] ?? 'cute.star', title: t(`skill.bundle.${c}`),
+          sub: ks.slice(0, 4).map((k) => t(defs[k].nameKey)).join(' · ') + (ks.length > 4 ? ' …' : ''),
+          right: (ks.reduce((a, k) => a + sk[k][0], 0) / ks.length).toFixed(1),
+        })));
         break;
       }
       case 'persona': {
+        const traits = inner?.traits ?? [];
+        const selT = traits.includes(this.book.dataset.trait ?? '') ? this.book.dataset.trait! : traits[0];
         this.ribbon(L, t('nb.page.traits'));
-        this.cells(L, (inner?.traits ?? []).map((tr) => ({ icon: this.inner?.defs.traitIcon(tr) ?? 'emo.neutral', label: t(`trait.${tr}`), title: t(`trait.${tr}.desc`), data: { trait: tr } })), 3, 3);
-        const box = el('div', 'nb-scroll inner-view', R);
-        this.inner?.invalidate();
-        this.inner?.render(box, 'persona', p);
+        const tv = el('div', 'inner-view', L);
+        this.cells(tv, traits.map((tr) => ({
+          icon: this.inner?.defs.traitIcon(tr) ?? 'emo.neutral', label: t(`trait.${tr}`), title: t(`trait.${tr}.desc`), on: tr === selT, cls: 'chip', data: { trait: tr },
+          onClick: () => {
+            this.book.dataset.trait = tr;
+            this.sig = '';
+            this.render();
+          },
+        })), 3, 3, 24, 2);
+        const pp = this.paper(L);
+        if (selT) {
+          el('b', 'nb-title', pp, t(`trait.${selT}`));
+          el('p', '', pp, t(`trait.${selT}.desc`));
+        }
+        const stress = Math.round(inner?.stress ?? 0);
+        const sl = el('div', 'nb-line nb-push', pp);
+        sl.appendChild(iconEl('cute.bolt', 2));
+        el('b', 'nb-grow', sl, t('panel.stress'));
+        el('b', '', sl, String(stress));
+        this.bar(pp, stress, stress >= 70 ? 'red' : 'blue');
+        this.ribbon(R, t('nb.page.virtues'));
+        const rv = el('div', 'inner-view', R);
+        const none = t('panel.none');
+        const likes = (inner?.likes ?? []).map((k) => t(`like.${k}`)).join(' · ') || none;
+        const dislikes = (inner?.dislikes ?? []).map((k) => t(`like.${k}`)).join(' · ') || none;
+        this.rows(rv, [
+          { icon: 'cute.star_blue', title: `${t('panel.virtue')} · ${inner?.virtue ? t(`virtue.${inner.virtue}`) : none}`, sub: inner?.virtue ? t(`virtue.${inner.virtue}.desc`) : undefined, tip: inner?.virtue ? t(`virtue.${inner.virtue}.desc`) : undefined, dim: !inner?.virtue },
+          { icon: 'cute.bolt', title: `${t('panel.sin')} · ${inner?.sin ? t(`sin.${inner.sin}`) : none}`, sub: inner?.sin ? t(`sin.${inner.sin}.desc`) : undefined, tip: inner?.sin ? t(`sin.${inner.sin}.desc`) : undefined, dim: !inner?.sin },
+          { icon: 'cute.heart', title: t('panel.likes'), sub: likes, tip: likes },
+          { icon: 'cute.no', title: t('panel.dislikes'), sub: dislikes, tip: dislikes },
+        ]);
         break;
       }
       case 'wishes': {
-        const box = el('div', 'nb-scroll inner-view', L);
-        this.inner?.invalidate();
-        this.inner?.render(box, 'wishes', p);
-        this.ribbon(R, t('nb.page.aspiration'));
-        const a = inner?.aspiration ? this.inner?.defs.aspiration(inner.aspiration.id) : null;
-        if (inner?.aspiration && a) {
-          this.rows(R, a.stages.map((st, i) => ({ icon: i < inner.aspiration!.stage ? 'cute.up_green' : i === inner.aspiration!.stage ? 'cute.right' : 'cute.star', title: st.textKey ? t(st.textKey) : t('panel.stage', { n: i + 1 }), dim: i < inner.aspiration!.stage })));
-        } else this.empty(R, 'cute.trophy');
+        // 왼쪽: 생애 소원 종이 (단계 막대 + 단계 목록), 오른쪽: 지금 소원 줄 (고정 깃발) · 걱정 · 행복 점수, 보상 성격은 버튼으로 바꿔 보기
+        const asp = inner?.aspiration;
+        const a = asp ? this.inner?.defs.aspiration(asp.id) : null;
+        this.ribbon(L, t('nb.page.aspiration'));
+        const lv = el('div', 'inner-view nb-fill', L);
+        if (asp && a) {
+          const pp = this.paper(lv);
+          const n = a.stages.length;
+          const hd = el('div', 'nb-line', pp);
+          hd.appendChild(iconEl('cute.trophy', 2));
+          const nm = el('div', 'nb-grow', hd);
+          el('b', 'nb-title', nm, t(a.nameKey));
+          el('div', 'nb-sub', nm, `${t('panel.stage', { n: Math.min(n, asp.stage) })} / ${t('panel.stage', { n })}`);
+          this.bar(pp, (asp.stage / Math.max(1, n)) * 100, 'blue');
+          const steps = el('div', 'nb-steps', pp);
+          a.stages.forEach((st, i) => {
+            const d = el('div', `nb-step ${i < asp.stage ? 'done' : i === asp.stage ? 'now' : ''}`, steps);
+            el('span', 'nb-check', d, i < asp.stage ? '✓' : '□');
+            d.append(st.textKey ? t(st.textKey) : t('panel.stage', { n: i + 1 }));
+          });
+        } else this.empty(lv, 'cute.trophy');
+        const showRewards = this.book.dataset.rewards === '1';
+        this.ribbon(R, showRewards ? t('panel.rewards') : t('nb.page.wishnow'));
+        const rv = el('div', 'nb-scroll inner-view', R);
+        const hp = Math.round(inner?.happiness ?? 0);
+        if (!showRewards) {
+          const ws = inner?.wishes ?? [];
+          const wl = ws.filter((w) => w.kind === 'wish');
+          const fl = ws.filter((w) => w.kind === 'fear');
+          if (!ws.length) this.empty(rv, 'cute.trophy');
+          const list = this.rows(rv, [...wl, ...fl].map((w) => {
+            const d = this.inner?.defs.wishDef(w.id);
+            const pts = (d as { points?: number } | null)?.points;
+            return { icon: d?.icon ?? (w.kind === 'wish' ? 'emo.excited' : 'emo.tense'), title: d ? t(d.textKey) : w.id, sub: w.kind === 'fear' ? t('panel.fears.title') : pts ? t('panel.happiness', { n: pts }) : undefined, cls: w.kind === 'fear' ? 'fear' : 'wish', data: { wish: w.id } };
+          }));
+          list.querySelectorAll<HTMLElement>('.nb-row.wish').forEach((r) => {
+            const w = wl.find((x) => x.id === r.dataset.wish);
+            if (!w) return;
+            const lock = el('button', `lock ${w.locked ? 'on' : ''}`, r);
+            lock.type = 'button';
+            lock.appendChild(pieceImg('book.mark0', 1));
+            lock.title = w.locked ? t('panel.unlock') : t('panel.lock');
+            lock.addEventListener('click', () => this.inner?.lockWish(p.id, w.id, !w.locked));
+          });
+        } else {
+          const rw = (this.inner?.defs.rewards() ?? []).filter((x) => x.kind !== 'aspiration').slice(0, 20);
+          const list = this.rows(rv, rw.map((r) => ({ icon: r.icon, title: t(r.nameKey), sub: t(r.descKey), tip: t(r.descKey), right: String(r.cost), dim: hp < r.cost, data: { reward: r.id } })));
+          list.querySelectorAll<HTMLElement>('.nb-row').forEach((r) => {
+            const id = r.dataset.reward ?? '';
+            const cost = rw.find((x) => x.id === id)?.cost ?? 0;
+            const b = this.button(r, t('panel.buy'), () => this.inner?.buyReward(p.id, id), true);
+            b.disabled = hp < cost;
+          });
+        }
+        const ft = el('div', 'nb-foot', R);
+        const hpEl = el('span', 'nb-hp', ft);
+        hpEl.appendChild(iconEl('cute.star', 2));
+        el('b', '', hpEl, hp.toLocaleString('ko-KR'));
+        this.button(ft, showRewards ? t('nb.page.wishnow') : t('panel.rewards'), () => {
+          this.book.dataset.rewards = showRewards ? '' : '1';
+          this.sig = '';
+          this.render();
+        });
         break;
       }
       case 'memories': {
@@ -579,57 +690,121 @@ export class Notebook {
         break;
       }
       case 'relations': {
-        const box = el('div', 'nb-scroll', L);
+        // 왼쪽: 사람 칸 + 거르개, 오른쪽: 고른 사람 (머리 · 우정/로맨스 막대 · 존중) + 마을 이웃 초대
+        const here = new Map(s.persons.map((q) => [q.id, q]));
+        const away = new Map(s.away.map((a) => [a.id, a]));
+        const other = (r: RelationSnap) => (r.a === p.id ? r.b : r.a);
+        const isFam = (r: RelationSnap) => here.get(other(r))?.household === p.household;
+        const nameOf = (id: number) => here.get(id)?.name ?? away.get(id)?.name ?? s.town?.people.find((x) => x.id === id)?.name ?? '?';
+        const filter = this.book.dataset.relf || 'all';
+        let mine = s.relations.filter((r) => r.a === p.id || r.b === p.id);
+        if (filter === 'family') mine = mine.filter(isFam);
+        else if (filter === 'friend') mine = mine.filter((r) => !isFam(r) && r.friendship >= 30);
+        else if (filter === 'neighbor') mine = mine.filter((r) => !isFam(r) && r.friendship > -30 && r.friendship < 30);
+        else if (filter === 'enemy') mine = mine.filter((r) => r.friendship <= -30);
+        mine.sort((a, b) => Number(isFam(b)) - Number(isFam(a)) || b.friendship + b.romance - (a.friendship + a.romance));
+        const selId = mine.some((r) => String(other(r)) === this.book.dataset.rel) ? Number(this.book.dataset.rel) : mine[0] ? other(mine[0]) : -1;
+        const box = el('div', 'nb-scroll nb-cellbox', L);
+        box.style.maxHeight = `${41 * this.S}px`;
+        const glow = (r: RelationSnap) => (r.romance > 30 ? '#f080a8' : r.friendship < -30 ? '#f05a46' : RelationsPanelClass.color(r.name));
+        this.cells(box, mine.map((r) => {
+          const id = other(r);
+          return {
+            canvas: this.hooks.portrait(id, 'head'), label: nameOf(id), on: id === selId, cls: 'rel-row', glow: glow(r), data: { other: String(id) },
+            onClick: () => {
+              this.book.dataset.rel = String(id);
+              this.sig = '';
+              this.render();
+            },
+          };
+        }), 4, 8);
+        box.querySelectorAll<HTMLElement>('.rel-row').forEach((c) => c.addEventListener('dblclick', () => this.hooks.focusPerson(Number(c.dataset.other))));
+        const chips = el('div', 'nb-chips', L);
+        for (const k of ['all', 'family', 'friend', 'neighbor', 'enemy']) {
+          const c = el('button', `nb-chip ${k === filter ? 'on' : ''}`, chips, t(`hud2.rel.${k}`));
+          c.type = 'button';
+          c.addEventListener('click', () => {
+            this.book.dataset.relf = k;
+            this.sig = '';
+            this.render();
+          });
+        }
+        const r = mine.find((x) => other(x) === selId);
+        if (r) {
+          const q = here.get(selId);
+          const h = el('div', 'nb-head', R);
+          const pic = el('div', 'nb-head-pic', h);
+          pic.style.setProperty('--glow', glow(r));
+          const cv = this.hooks.portrait(selId, 'head');
+          if (cv) pic.appendChild(cv);
+          const hb = el('div', '', h);
+          el('b', 'nb-head-name', hb, nameOf(selId));
+          el('div', 'nb-sub', hb, [t(`rel.${r.name}`), q?.inner?.estate ? t(`estate.${q.inner.estate}`) : ''].filter(Boolean).join(' · '));
+          const kv = el('div', 'nb-kv', R);
+          const line = (icon: string, v: number, color: 'green' | 'blue' | 'red', tip: string) => {
+            const l = el('div', 'nb-line', kv);
+            l.title = tip;
+            l.appendChild(iconEl(icon, 2));
+            const bw = el('div', 'nb-grow', l);
+            this.bar(bw, Math.abs(v), color);
+            el('b', 'nb-num', l, fmtSigned(v));
+          };
+          line('cute.talk', r.friendship, r.friendship < 0 ? 'red' : 'green', t('rel.axis.friendship'));
+          if (r.romance > 0.5 || ['lover', 'engaged', 'spouse'].includes(r.name)) line('cute.heart', r.romance, 'blue', t('rel.axis.romance'));
+          const mineR = r.a === p.id ? r.respectAB : r.respectBA;
+          const theirs = r.a === p.id ? r.respectBA : r.respectAB;
+          this.rows(R, [{
+            icon: 'ui.crest', title: `${t('rel.axis.respect')} ${fmtSigned(mineR)}`,
+            sub: [`${t('rel.axis.respect_them')} ${fmtSigned(theirs)}`, r.memories > 0 ? t('ui.relations.memories', { n: r.memories }) : ''].filter(Boolean).join(' · '),
+            dim: theirs < 0,
+          }]);
+        } else this.empty(R, 'cute.talk');
+        // 마을 이웃 초대: 관계 패널의 이웃 목록을 그대로 옮겨 씀 (초대 · 돌려보내기 동작 유지)
         this.relations?.invalidate();
-        this.relations?.render(box, p, s);
-        // 오른쪽: 이웃 칸만 따로 보이게 옮김
-        const nb = box.querySelector('.rel-neighbors');
-        const head = nb?.previousElementSibling;
+        const tmp = document.createElement('div');
+        this.relations?.render(tmp, p, s);
+        const nb = tmp.querySelector('.rel-neighbors');
         if (nb) {
-          this.ribbon(R, t('ui.relations.neighbors'));
-          const rb = el('div', 'nb-scroll', R);
-          if (head) head.remove();
-          rb.appendChild(nb);
+          el('div', 'nb-subhead', R, t('ui.relations.neighbors'));
+          el('div', 'nb-scroll nb-neighbors', R).appendChild(nb);
         }
         break;
       }
       case 'fame': {
+        // 왼쪽: 문장 · 가문 이름 · 가훈 · 줄, 오른쪽: 명성 리본 + 막대 + 가보 줄 (목업)
         const H = s.house;
         const cl = H?.clan;
-        this.ribbon(L, cl?.name ? t(cl.name) : t('nb.page.fame'));
+        const top = el('div', 'nb-center', L);
+        let arms = false;
         if (cl?.heraldry) {
           try {
-            const cv = composeCoatOfArms(cl.heraldry as never, 3) as HTMLCanvasElement;
+            const cv = heraldryCanvas(cl.heraldry as never, 3);
             cv.className = 'nb-arms';
-            L.appendChild(cv);
+            top.appendChild(cv);
+            arms = true;
           } catch {
             /* 문장 사양이 옛 형식이면 건너뜀 */
           }
         }
-        const pp = this.paper(L);
-        const l1 = el('div', 'nb-line', pp);
-        l1.appendChild(iconEl('cute.star', 2));
-        el('b', 'nb-grow', l1, t(`fame.tier.${cl?.tier ?? 'ordinary'}`));
-        el('b', '', l1, String(Math.round(cl?.fame ?? 0)));
-        this.bar(pp, Math.min(1, (cl?.fame ?? 0) / 1000), 'blue');
-        if (cl?.motto) el('p', 'nb-motto', pp, cl.motto.startsWith('clan.motto.') ? t(cl.motto) : cl.motto);
-        const l2 = el('div', 'nb-line', pp);
-        l2.appendChild(iconEl('cute.crown', 2));
-        el('b', 'nb-grow', l2, t(`estate.${estate}`));
-        if (cl) el('small', '', l2, t(`inherit.${cl.law === 'will' ? 'designated' : cl.law}`));
-        this.ribbon(R, t('nb.page.heirlooms'));
+        if (!arms) top.appendChild(iconEl('cute.shield', 6));
+        el('b', 'nb-clan', top, cl?.name ? t(cl.name) : t('nb.page.fame'));
+        if (cl?.motto) el('div', 'nb-sub nb-motto', top, `"${cl.motto.startsWith('clan.motto.') ? t(cl.motto) : cl.motto}"`);
+        this.rows(L, [
+          { icon: 'cute.crown', title: t(`estate.${estate}`), sub: cl ? t(`inherit.${cl.law === 'will' ? 'designated' : cl.law}`) : undefined },
+          ...(s.econ?.shop ? [{ icon: 'cute.coins', title: t('nb.fame.shop'), right: String(Math.round(s.econ.shop.reputation)) }] : []),
+        ]);
+        this.ribbon(R, t('nb.fame.ribbon', { n: Math.round(cl?.fame ?? 0) }));
+        const fb = el('div', 'nb-kv', R);
+        this.bar(fb, Math.min(100, (cl?.fame ?? 0) / 10), 'blue');
+        const tl = el('div', 'nb-line', fb);
+        el('b', 'nb-grow', tl, t(`fame.tier.${cl?.tier ?? 'ordinary'}`));
+        el('div', 'nb-subhead', R, t('nb.page.heirlooms'));
         const hl = H?.heirlooms ?? [];
         if (!hl.length && !(H?.lostHeirlooms.length)) this.empty(R, 'cute.trophy');
-        else this.rows(R, [
+        else this.rows(el('div', 'nb-scroll', R), [
           ...hl.map((h) => ({ icon: 'cute.trophy', title: h.name ?? t(`object.${h.defId}`), sub: h.damaged ? t(`heirloom.state.${h.damaged}`) : undefined })),
           ...(H?.lostHeirlooms ?? []).map(() => ({ icon: 'cute.no', title: t('heirloom.lost.stolen'), dim: true })),
         ]);
-        if (s.econ?.shop) {
-          const l3 = el('div', 'nb-line', pp);
-          l3.appendChild(iconEl('cute.coins', 2));
-          el('b', 'nb-grow', l3, t('nb.fame.shop'));
-          el('b', '', l3, String(Math.round(s.econ.shop.reputation)));
-        }
         break;
       }
       case 'match': {
@@ -663,29 +838,55 @@ export class Notebook {
         R.querySelectorAll<HTMLElement>('.nb-row').forEach((r) => {
           const id = Number(r.dataset.match);
           const row = el('div', 'nb-row-act', r);
-          this.button(row, t('nb.btn.accept'), () => void this.hooks.intent?.({ kind: 'society', op: 'acceptProposal', args: { matchId: id } }));
-          this.button(row, t('nb.btn.refuse'), () => void this.hooks.intent?.({ kind: 'society', op: 'refuseMatch', args: { matchId: id } }));
+          this.button(row, t('nb.btn.accept'), () => void this.hooks.intent?.({ kind: 'society', op: 'acceptProposal', args: { matchId: id } }), true);
+          this.button(row, t('nb.btn.refuse'), () => void this.hooks.intent?.({ kind: 'society', op: 'refuseMatch', args: { matchId: id } }), true);
         });
         break;
       }
       case 'freedom': {
         const em = s.house?.emancipation;
-        this.ribbon(L, t('nb.page.freedom'));
-        const pp = this.paper(L);
-        const l = el('div', 'nb-line', pp);
-        l.appendChild(iconEl('cute.coins', 2));
-        el('b', 'nb-grow', l, em ? money(Math.max(0, em.money)) : '-');
-        el('b', '', l, em ? money(em.fee) : '-');
-        this.bar(pp, em ? Math.max(0, Math.min(1, em.money / Math.max(1, em.fee))) : 0, 'green');
-        // 신분 오르기 (16-3): 할 수 있는 길마다 버튼 (못 하면 흐리게, 이유는 툴팁)
-        this.ribbon(R, t('nb.page.rise'));
-        const rows = el('div', 'nb-btns nb-wrap', R);
-        for (const r of s.house?.rise ?? []) {
-          const b = this.button(rows, t(`nb.rise.${r.op}`), () => void this.hooks.intent?.({ kind: 'house', op: r.op, args: { personId: r.personId, craft: 'blacksmith', quality: 3 } }));
-          b.disabled = !r.ok;
-          b.title = `${t(`nb.rise.${r.op}`)}${r.cost ? ` · ${money(r.cost)}` : ''}${r.reason ? ` · ${t(r.reason)}` : ''}`;
+        const rise = s.house?.rise ?? [];
+        const riseRows = (parent: HTMLElement) => {
+          if (!rise.length) {
+            this.empty(parent, 'cute.star_blue');
+            return;
+          }
+          const list = this.rows(el('div', 'nb-scroll', parent), rise.map((r) => ({
+            icon: r.ok ? 'cute.star_blue' : 'cute.no', title: t(`nb.rise.${r.op}`),
+            sub: [r.cost ? money(r.cost) : '', r.reason ? t(r.reason) : ''].filter(Boolean).join(' · ') || undefined,
+            dim: !r.ok, cls: 'act', data: { op: r.op },
+          })));
+          list.querySelectorAll<HTMLElement>('.nb-row').forEach((row, i) => {
+            const r = rise[i];
+            row.title = `${t(`nb.rise.${r.op}`)}${r.cost ? ` · ${money(r.cost)}` : ''}${r.reason ? ` · ${t(r.reason)}` : ''}`;
+            const b = this.button(row, t(`nb.rise.${r.op}`), () => void this.hooks.intent?.({ kind: 'house', op: r.op, args: { personId: r.personId, craft: 'blacksmith', quality: 3 } }), true);
+            b.disabled = !r.ok;
+          });
+        };
+        if (em || estate === 'serf') {
+          // 농노: 왼쪽 해방금 종이, 오른쪽 신분 오르기 (해방금 내기 포함)
+          this.ribbon(L, t('nb.page.freedom'));
+          const pp = this.paper(L);
+          const l = el('div', 'nb-line', pp);
+          l.appendChild(iconEl('cute.coins', 2));
+          el('b', 'nb-grow', l, em ? money(Math.max(0, em.money)) : '-');
+          el('b', '', l, em ? money(em.fee) : '-');
+          this.bar(pp, em ? Math.max(0, Math.min(100, (em.money / Math.max(1, em.fee)) * 100)) : 0, 'green');
+          this.ribbon(R, t('nb.page.rise'));
+          riseRows(R);
+        } else {
+          // 농노가 아니면 해방금은 없음: 왼쪽 신분 오르기, 오른쪽 지금 신분 · 명성
+          this.ribbon(L, t('nb.page.rise'));
+          riseRows(L);
+          const cl = s.house?.clan;
+          this.ribbon(R, t(`estate.${estate}`));
+          const pp = this.paper(R);
+          const l = el('div', 'nb-line', pp);
+          l.appendChild(iconEl('cute.crown', 2));
+          el('b', 'nb-grow', l, t(`fame.tier.${cl?.tier ?? 'ordinary'}`));
+          el('b', '', l, String(Math.round(cl?.fame ?? 0)));
+          this.bar(pp, Math.min(100, (cl?.fame ?? 0) / 10), 'blue');
         }
-        if (!(s.house?.rise.length)) this.empty(R, 'cute.star_blue');
         break;
       }
       case 'servants': {
@@ -697,7 +898,7 @@ export class Notebook {
           return { canvas: this.hooks.portrait(x.id, 'head'), title: q?.name ?? '', sub: t(`servant.role.${x.role}`), right: String(Math.round(x.loyalty)) };
         }));
         this.ribbon(R, t('nb.page.hire'));
-        const cells = el('div', 'nb-btns nb-wrap', R);
+        const cells = el('div', 'nb-btns multi', R);
         for (const role of ['maid', 'cook', 'nurse', 'groom', 'steward', 'guard']) {
           const b = this.button(cells, t(`servant.role.${role}`), () => void this.hooks.intent?.({ kind: 'house', op: 'hireServant', args: { role } }));
           b.title = t(`servant.role.${role}`);
@@ -705,18 +906,76 @@ export class Notebook {
         break;
       }
       case 'career': {
-        const box = el('div', 'nb-scroll', L);
-        this.work?.invalidate();
-        this.work?.render(box, p, s);
-        // 솜씨 격자는 오른쪽 쪽으로
-        const skHead = [...box.querySelectorAll('.rel-head')].find((h) => h.textContent === t('ui.work.skills'));
-        const grid = box.querySelector('.skill-grid');
-        this.ribbon(R, t('ui.work.skills'));
-        const rb = el('div', 'nb-scroll', R);
-        if (grid) {
-          skHead?.remove();
-          box.querySelector('.rel-empty')?.remove();
-          rb.appendChild(grid);
+        // 일이 있으면: 머리 + 등급 줄 + 성과 막대 | 오늘 일 줄 + 가게 + 태도 버튼. 없으면: 구할 수 있는 일 줄 | 솜씨 칸 (목업)
+        const W = this.work;
+        const c = p.career;
+        const def = c ? W?.careerDef(c.id) : undefined;
+        if (W && c && def) {
+          const job = el('div', 'work-job nb-fill', L);
+          const hd = el('div', 'nb-head work-title', job);
+          el('div', 'nb-head-pic', hd).appendChild(iconEl(def.icon, 4));
+          const hb = el('div', '', hd);
+          el('b', 'nb-head-name', hb, t(def.nameKey));
+          el('div', 'nb-sub', hb, `${t(def.ranks[c.rank]?.nameKey ?? '')} · ${c.rank + 1} / ${def.ranks.length}`);
+          const wage = (rk: { wage?: number; share?: number }) => (rk.wage !== undefined ? t('ui.work.wage', { m: formatMoney(rk.wage) }) : t('ui.work.share', { n: Math.round((rk.share ?? 1) * 100) }));
+          this.rows(el('div', 'nb-scroll', job), def.ranks.map((rk, i) => ({
+            icon: i <= c.rank ? 'cute.star_blue' : 'cute.trophy', title: t(rk.nameKey), sub: i > c.rank ? wage(rk) : undefined,
+            right: i < c.rank ? '✓' : i === c.rank ? '●' : '', dim: i < c.rank,
+          })));
+          const frac = Math.max(-1, Math.min(1, c.perf / def.promoteAt));
+          const pl = el('div', 'nb-line nb-perf', job);
+          pl.title = t('ui.work.perf');
+          pl.appendChild(iconEl('cute.star', 2));
+          this.bar(el('div', 'nb-grow', pl), Math.abs(frac) * 100, frac < 0 ? 'red' : 'green');
+          el('b', 'nb-num', pl, `${Math.round(c.perf)}/${def.promoteAt}`);
+          const qb = el('div', 'nb-btns', job);
+          const quit = this.button(qb, t('ui.work.quit'), () => W.setCareer(p.id, null));
+          quit.classList.add('rel-btn', 'work-quit');
+          this.ribbon(R, t('nb.work.today'));
+          this.rows(el('div', 'nb-scroll', R), [
+            { icon: 'cute.moon', title: t('ui.work.hours', { a: def.hours[0], b: def.hours[1] }), sub: t(`ui.work.type.${def.type}`) },
+            ...c.orders.map((o) => ({ icon: W.icon(o.item), title: `${t(`item.${o.item}`)} ×${o.qty}`, sub: t('ui.work.orders'), right: o.done ? '✓' : formatMoney(o.pay), dim: o.done })),
+            { icon: 'cute.coins', title: wage(def.ranks[c.rank] ?? {}) },
+          ]);
+          const shop = s.econ?.shop;
+          if (shop && (def.type === 'onsite' || shop.open)) {
+            el('div', 'nb-subhead', R, `${t('ui.shop.title')} · ${t('ui.shop.stats', { rep: Math.round(shop.reputation), n: shop.sales })}`);
+            const sb = el('div', 'nb-btns multi', R);
+            const tog = this.button(sb, t(shop.open ? 'ui.shop.close' : 'ui.shop.open'), () => W.setShop(!shop.open, shop.priceMult), true);
+            tog.dataset.shop = shop.open ? 'close' : 'open';
+            for (const [k, v] of [['cheap', 0.85], ['fair', 1], ['dear', 1.15]] as const) {
+              const b = this.button(sb, t(`ui.shop.${k}`), () => W.setShop(shop.open, v), true);
+              b.classList.add('rel-btn');
+              b.classList.toggle('on', Math.abs(shop.priceMult - v) < 0.01);
+            }
+          }
+          const ab = el('div', 'nb-btns', R);
+          for (const a of ['hard', 'normal', 'slack']) {
+            const b = this.button(ab, t(`ui.work.att.${a}`), () => W.setAttitude(p.id, a));
+            b.classList.add('rel-btn');
+            b.dataset.attitude = a;
+            b.classList.toggle('on', c.attitude === a);
+          }
+        } else {
+          this.ribbon(L, t('ui.work.job'));
+          const box = el('div', 'nb-scroll work-list', L);
+          const open = W?.openCareers(estate) ?? [];
+          if (!W || p.inner?.stage_life === 'child' || p.inner?.stage_life === 'teen' || !open.length) this.empty(box, 'cute.wrench');
+          else {
+            this.rows(box, open.map(([id, d]) => ({ icon: d.icon, title: t(d.nameKey), sub: d.ranks[0]?.wage !== undefined ? formatMoney(d.ranks[0].wage) : t(`ui.work.type.${d.type}`), cls: 'work-row', data: { job: id } })));
+            box.querySelectorAll<HTMLElement>('.work-row').forEach((r) => {
+              const id = r.dataset.job ?? '';
+              const b = this.button(r, t('ui.work.join'), () => W.setCareer(p.id, id), true);
+              b.classList.add('rel-btn');
+              b.dataset.career = id;
+            });
+          }
+          const sk = p.skills ?? {};
+          const defs = W?.skills ?? {};
+          const ids = Object.keys(sk).filter((k) => defs[k]).sort((a, b) => sk[b][0] - sk[a][0] || sk[b][1] - sk[a][1]);
+          this.ribbon(R, t('ui.work.skills'));
+          if (!ids.length) this.empty(R, 'cute.star');
+          else this.cells(R, ids.slice(0, 8).map((k) => ({ icon: defs[k].icon, label: `${t(defs[k].nameKey)} ${sk[k][0]}`, data: { skill: k } })), 4, 8);
         }
         break;
       }
@@ -836,7 +1095,7 @@ export class Notebook {
           break;
         }
         line('cute.heart', t('policy.morale'), String(D.morale));
-        this.bar(pp, D.morale / 100, D.morale < 30 ? 'red' : 'green');
+        this.bar(pp, D.morale, D.morale < 30 ? 'red' : 'green');
         line('cute.crown', t('policy.treasury'), money(D.treasury));
         if (id === 'justice') line('cute.shield', t('nb.domain.crimes7'), String(D.crimes7));
         if (id === 'people') line('cute.exclaim', t('nb.domain.riots'), String(D.riots));
@@ -872,12 +1131,13 @@ export class Notebook {
     }
   }
 
-  private button(parent: HTMLElement, text: string, onClick: () => void): HTMLButtonElement {
+  private button(parent: HTMLElement, text: string, onClick: () => void, small = false): HTMLButtonElement {
     const S = this.S;
-    const b = el('button', 'nb-btn', parent);
+    const b = el('button', `nb-btn ${small ? 'sm' : ''}`, parent);
     b.type = 'button';
-    b.style.width = `${32 * S * 0.75}px`;
-    b.style.height = `${16 * S * 0.75}px`;
+    // 목업 btn: 96×48 (원본 24×12). 줄 안 버튼은 80×40
+    b.style.width = `${(small ? 20 : 24) * S}px`;
+    b.style.height = `${(small ? 10 : 12) * S}px`;
     el('span', '', b, text);
     b.addEventListener('click', () => {
       b.classList.remove('press');
@@ -887,4 +1147,9 @@ export class Notebook {
     });
     return b;
   }
+}
+
+function fmtSigned(v: number): string {
+  const n = Math.round(v);
+  return n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0';
 }

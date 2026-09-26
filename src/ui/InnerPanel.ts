@@ -61,6 +61,15 @@ export class InnerPanel {
     this.sig = '';
   }
 
+  /** 수첩 › 인물 › 소원 쪽 (책 부품으로 그림)에서 쓰는 동작 */
+  lockWish(personId: number, wish: string, locked: boolean): void {
+    this.h.lockWish(personId, wish, locked);
+  }
+
+  buyReward(personId: number, reward: string): void {
+    this.h.buyReward(personId, reward);
+  }
+
   private mood(root: HTMLElement, s: InnerSnap): void {
     const list = el('div', 'moodlets', root);
     const sorted = [...s.moodlets].sort((a, b) => b.strength - a.strength);

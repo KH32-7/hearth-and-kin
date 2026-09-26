@@ -46,6 +46,32 @@ export class WorkPanel {
     this.sig = '';
   }
 
+  // 수첩 › 생업 › 직업 쪽이 책 부품으로 다시 그릴 때 쓰는 자료 · 동작 (동작은 위 render 와 같음)
+  careerDef(id: string): CareerInfo | undefined {
+    return this.careers[id];
+  }
+
+  /** 이 신분이 구할 수 있는 일 */
+  openCareers(estate: string): Array<[string, CareerInfo]> {
+    return Object.entries(this.careers).filter(([, d]) => !d.npc_role && d.estates.includes(estate));
+  }
+
+  icon(item: string): string {
+    return this.itemIcon(item);
+  }
+
+  setCareer(personId: number, careerId: string | null): void {
+    this.h.setCareer(personId, careerId);
+  }
+
+  setAttitude(personId: number, attitude: string): void {
+    this.h.setAttitude(personId, attitude);
+  }
+
+  setShop(open: boolean, priceMult: number): void {
+    this.h.setShop(open, priceMult);
+  }
+
   render(root: HTMLElement, p: PersonSnap, _s: Snapshot): void {
     const sig = JSON.stringify([p.id, p.career, p.skills, p.inner?.estate, p.inner?.stage_life, _s.econ?.shop]);
     if (sig === this.sig) return;

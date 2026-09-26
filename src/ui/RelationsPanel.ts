@@ -43,6 +43,19 @@ export class RelationsPanel {
     this.sig = '';
   }
 
+  /** 관계 이름 색 (수첩 칸 빛) */
+  static color(name: string): string {
+    return REL_COLOR[name] ?? '#888';
+  }
+
+  portrait(id: number): HTMLCanvasElement | null {
+    return this.h.portrait(id);
+  }
+
+  focusPerson(id: number): void {
+    this.h.focusPerson(id);
+  }
+
   render(root: HTMLElement, p: PersonSnap, s: Snapshot): void {
     const mine = s.relations.filter((r) => r.a === p.id || r.b === p.id);
     const here = new Map(s.persons.map((q) => [q.id, q]));

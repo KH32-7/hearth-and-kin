@@ -109,7 +109,8 @@ export class DialogBox {
     face.style.setProperty('--glow', o.color);
     if (o.head) face.appendChild(o.head);
     el('div', 'dlg-body', this.box);
-    el('i', 'dlg-time', this.box);
+    // 남은 시간 막대: 바탕 줄은 그대로, 안쪽 금색만 줄어듦 (목업)
+    el('b', '', el('i', 'dlg-time', this.box));
     this.log.push({ minute: o.minute, who: o.name, text: o.text, act: o.act });
     this.show();
   }
@@ -147,7 +148,7 @@ export class DialogBox {
     this.box.classList.toggle('last', this.idx >= this.pages.length - 1);
     clearTimeout(this.timer);
     const ms = this.kind === 'one' ? 4000 : 6500;
-    const bar = this.box.querySelector<HTMLElement>('.dlg-time');
+    const bar = this.box.querySelector<HTMLElement>('.dlg-time b');
     if (bar) {
       bar.style.animation = 'none';
       void bar.offsetWidth;
