@@ -195,6 +195,11 @@ export class HearthGame {
       setSpeed: (s) => this.setSpeed(s),
       cancel: (pid, qid) => this.client.send({ type: 'cancel', personId: pid, queueItemId: qid }),
       focusPerson: (id) => this.focus(id),
+      followPerson: (id) => {
+        if (id !== this.selectedId) this.select(id, false);
+        this.followSelected = true;
+        this.focus(id);
+      },
       emotionColor: (e) => emotionColor(e),
       portrait: (id, kind) => (kind === 'bust' ? this.bust(id) : this.portrait(id)),
       openWindow: (w) => this.openWindow(w),
@@ -1182,7 +1187,7 @@ export class HearthGame {
         this.cycle(e.shiftKey ? -1 : 1);
       } else if (e.key === 'h' || e.key === 'H') this.setUiHidden(!this.uiHidden);
       else if (e.key === 'm' || e.key === 'M') this.openWindow('map');
-      else if (e.key === '0') this.setSpeed(0);
+      else if (e.key === '0' || e.code === 'Backquote') this.setSpeed(0);
       else if (e.key === 'p' || e.key === 'P') this.setSpeed(this.client.snap?.speed === 0 ? Math.max(1, this.pendingSpeedBeforePause) : 0);
       else if (e.key === '1' || e.key === '2' || e.key === '3') this.setSpeed(Number(e.key));
       else if (e.key === 'Escape') this.pie.close();

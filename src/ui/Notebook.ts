@@ -67,7 +67,7 @@ export class Notebook {
   private right: HTMLElement;
   private S = 4;
   private tab: TabId = 'person';
-  private page: Record<TabId, string> = { person: 'emo', house: 'family', work: 'career', record: 'chronicle', domain: 'people' };
+  private page: Record<TabId, string> = { person: 'emo', house: 'family', work: 'career', record: 'chronicle', domain: 'policy' };
   private sig = '';
   private p: PersonSnap | null = null;
   private s: Snapshot | null = null;
@@ -84,7 +84,7 @@ export class Notebook {
       icon: 'cute.heart',
       pages: [
         { id: 'emo', icon: 'cute.heart' }, { id: 'skills', icon: 'cute.star' }, { id: 'persona', icon: 'cute.talk' },
-        { id: 'wishes', icon: 'cute.trophy' }, { id: 'memories', icon: 'cute.letter_q' },
+        { id: 'wishes', icon: 'cute.trophy' },
       ],
     },
     house: {
@@ -93,7 +93,6 @@ export class Notebook {
         { id: 'family', icon: 'cute.crown' }, { id: 'tree', icon: 'cute.shield' }, { id: 'relations', icon: 'cute.heart_blue' },
         { id: 'fame', icon: 'cute.star_blue', when: (p, s) => estateOf(p, s) !== 'serf' },
         { id: 'freedom', icon: 'cute.star_blue', when: (p, s) => estateOf(p, s) === 'serf' || !!s.house?.rise.length },
-        { id: 'servants', icon: 'cute.bag', when: (p, s) => ['merchant', 'knight', 'noble'].includes(estateOf(p, s)) },
         { id: 'match', icon: 'cute.heart', when: (_p, s) => s.persons.some((q) => q.household === 1 && ['teen', 'young', 'adult'].includes(q.inner?.stage_life ?? '') && !s.relations.some((r) => (r.a === q.id || r.b === q.id) && (r.flags ?? []).includes('spouse'))) },
       ],
     },
@@ -105,6 +104,7 @@ export class Notebook {
         { id: 'guild', icon: 'cute.trophy', when: (p, s) => estateOf(p, s) === 'artisan' },
         { id: 'trade', icon: 'rv.cart', when: (p, s) => estateOf(p, s) === 'merchant' },
         { id: 'service', icon: 'rv.helm', when: (p, s) => estateOf(p, s) === 'knight' },
+        { id: 'servants', icon: 'cute.bag', when: (p, s) => ['merchant', 'knight', 'noble'].includes(estateOf(p, s)) },
         { id: 'farm', icon: 'item.flour' },
         { id: 'ledger', icon: 'cute.coins' },
       ],
@@ -119,7 +119,8 @@ export class Notebook {
     },
     domain: {
       icon: 'rv.castle',
-      pages: [{ id: 'people', icon: 'cute.heart' }, { id: 'justice', icon: 'cute.shield' }, { id: 'tax', icon: 'cute.coins' }, { id: 'policy', icon: 'cute.letter' }, { id: 'treasury', icon: 'cute.crown' }],
+      // 민심·금고·범죄·정책 6개를 한 쪽에 (예전 5쪽은 거의 같은 내용)
+      pages: [{ id: 'policy', icon: 'rv.castle' }],
     },
   };
 
@@ -252,7 +253,8 @@ export class Notebook {
         img.src = tabUrl(estate, on);
         img.width = 20 * S;
         img.height = (on ? 21 : 18) * S;
-        b.appendChild(iconEl(this.TABS[tb].icon, on ? 3 : 2, 'nb-tab-ic'));
+        b.appendChild(iconEl(this.TABS[tb].icon, 2, 'nb-tab-ic'));
+        el('span', 'nb-tab-lb', b, t(`nb.tab.${tb}`));
         b.setAttribute('aria-label', t(`nb.tab.${tb}`));
         b.title = t(`nb.tab.${tb}`);
         b.addEventListener('click', () => {
@@ -263,7 +265,7 @@ export class Notebook {
       }
       // 책갈피: 첫 칸 위 = 내용 위, 간격 2px
       this.marksEl.textContent = '';
-      this.marksEl.style.left = `${220 * S}px`;
+      this.marksEl.style.left = `${225 * S}px`;
       this.marksEl.style.top = `${TOP * S}px`;
       pages.forEach((pg, i) => {
         const on = pg.id === this.page[this.tab];
@@ -281,6 +283,9 @@ export class Notebook {
         ic.style.left = `${(on ? 9 : 6.5) * S}px`;
         ic.style.top = `${4 * S}px`;
         b.appendChild(ic);
+        const lb = el('span', 'nb-mark-lb', b, t(`nb.short.${pg.id}`));
+        lb.style.left = `${(on ? 9 : 6.5) * S + 24}px`;
+        lb.style.top = `${13 * S}px`;
         const key = `${this.tab}.${pg.id}`;
         if (!this.seenPages.has(key)) b.classList.add('new');
         b.title = t(`nb.page.${pg.id}`);

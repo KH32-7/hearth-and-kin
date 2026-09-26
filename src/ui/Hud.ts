@@ -29,6 +29,8 @@ export interface HudHandlers {
   setSpeed(speed: number): void;
   cancel(personId: number, queueItemId: number): void;
   focusPerson(id: number): void;
+  /** 초상 우클릭: 카메라가 그 사람을 따라감 (심즈) */
+  followPerson?(id: number): void;
   emotionColor?(emotion: string): string;
   /** 머리(가족 줄, 관계)·상반신(조작 인물) 초상 캔버스. 시트가 아직 없으면 null */
   portrait?(id: number, kind: 'head' | 'bust'): HTMLCanvasElement | null;
@@ -219,6 +221,10 @@ export class Hud {
     this.meGlow = el('div', 'me-glow', bustWrap);
     this.meBust = el('div', 'me-img', bustWrap);
     bustWrap.addEventListener('dblclick', () => this.last && this.h.focusPerson(this.last.id));
+    bustWrap.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      if (this.last) this.h.followPerson?.(this.last.id);
+    });
     // 세로 감정 글씨는 빛 위 (왼쪽 끝에 세기 막대: 기본 1/3 · 강함 2/3 · 극도 가득 · 무난 빔)
     const emoCol = el('div', 'me-emo-col', me);
     this.meEmoBar = el('i', '', el('div', 'me-emo-bar', emoCol));
@@ -496,6 +502,10 @@ export class Hud {
           this.h.selectPerson(p.id);
         });
         b.addEventListener('dblclick', () => this.h.focusPerson(p.id));
+        b.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          this.h.followPerson?.(p.id);
+        });
         b.addEventListener('pointerenter', () => this.showTip(p.id, b));
         b.addEventListener('pointerleave', () => this.hideTip());
       }

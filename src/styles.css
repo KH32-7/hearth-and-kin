@@ -442,6 +442,11 @@ button { font: inherit; color: inherit; cursor: pointer; background: none; borde
 .nb-tab img { display: block; }
 .nb-tab-ic { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); }
 .nb-tab:not(.on) .nb-tab-ic { opacity: .85; }
+/* 탭·책갈피 이름 한 단어 (사용자 요청 2026-09-27): 아이콘 밑 */
+.nb-tab .nb-tab-ic { top: 30%; }
+.nb-tab-lb { position: absolute; left: 50%; top: 58%; transform: translateX(-50%); font-size: 14px; line-height: 1; white-space: nowrap; color: #fff6e6; text-shadow: -1px 0 #2b1a10, 1px 0 #2b1a10, 0 -1px #2b1a10, 0 1px #2b1a10, 0 2px rgba(0,0,0,.4); pointer-events: none; }
+.nb-tab:not(.on) .nb-tab-lb { opacity: .85; }
+.nb-mark-lb { position: absolute; transform: translateX(-50%); font-size: 12px; line-height: 1; white-space: nowrap; color: #fff6e6; text-shadow: -1px 0 #2b1a10, 1px 0 #2b1a10, 0 -1px #2b1a10, 0 1px #2b1a10; pointer-events: none; }
 .nb-marks { position: absolute; display: flex; flex-direction: column; align-items: flex-start; z-index: -1; }
 .nb-marks { z-index: 0; }
 .nb-cover { z-index: 1; }

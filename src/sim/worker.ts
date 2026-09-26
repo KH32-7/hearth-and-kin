@@ -300,9 +300,10 @@ function relationsSnap(s: Simulation): RelationSnap[] {
 /** 직접 조작 인물들을 dt(ms) 만큼 움직임. 움직였으면 true */
 function moveDirect(dt: number): boolean {
   if (!sim || !data) return false;
-  // 게임 1분에 directTilesPerMinute 칸 → 배속(1·3·10분/초, 모두 잘 때 자동 가속)을 그대로 따름
-  const perMin = (data.balance.movement as { directTilesPerMinute?: number }).directTilesPerMinute ?? 4;
-  const dist = (perMin * minutesPerSecond() * dt) / 1000;
+  // 1배속에서 초당 directTilesPerSecond 칸, 배속이 오르면 배속의 제곱근만큼 (3배속 10분/초에서도 날아다니지 않게)
+  const perSec = (data.balance.movement as { directTilesPerSecond?: number }).directTilesPerSecond ?? 6;
+  const mps = minutesPerSecond();
+  const dist = mps > 0 ? (perSec * Math.sqrt(mps) * dt) / 1000 : 0;
   let moved = false;
   for (const p of sim.persons) if (p.direct && sim.directStep(p, dist)) moved = true;
   return moved;
