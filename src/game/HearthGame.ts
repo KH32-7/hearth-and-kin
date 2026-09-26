@@ -44,6 +44,7 @@ import { WorkPanel, type CareerInfo } from '../ui/WorkPanel';
 import { LedgerPanel } from '../ui/LedgerPanel';
 import { ThoughtBubbles } from '../ui/ThoughtBubbles';
 import { ChoiceCard } from '../ui/ChoiceCard';
+import { showScene } from '../ui/SceneCards';
 import { Bubbles, type BubbleRules } from '../render/Bubbles';
 import fx from '../data/fx.json';
 import uiAtlas from '../data/ui/atlas.json';
@@ -57,6 +58,7 @@ import { Notebook } from '../ui/Notebook';
 import { DialogBox } from '../ui/DialogBox';
 import dialogueData from '../data/dialogue.json';
 import { pickLine, pickOneliner, relationTier, type DialogueData } from '../ui/dialogue/pickLine';
+import { NEW_GAME_TOWN, wantsNewGame } from '../ui/newGameMode';
 
 type LightKey = { minute: number; rgb: number[]; darkness: number };
 
@@ -84,6 +86,9 @@ export class HearthGame {
   /** 건축/구매 모드 (M5). build.json 이 없으면 null */
   build: BuildController | null = null;
   private marker: HTMLElement;
+  private clickFx: HTMLElement;
+  /** 이동 클릭 표시의 세계 위치 (px), 없으면 null */
+  private clickAt: { x: number; y: number } | null = null;
   /** 부지: Tiled 지도(.tmj)에서 읽음 (BRIEF 1장 지도 형식). ?lot=empty 는 빈 부지 (M5 건축) */
   private lot: LotDef = normalizeLot(pickLot());
   /** 물건 정의: objects.json + build.json + catalog.json (sim 과 같은 합치기) */
@@ -121,6 +126,10 @@ export class HearthGame {
     this.marker.className = 'marker';
     this.marker.style.display = 'none';
     app.appendChild(this.marker);
+    // 이동 클릭 표시 (한 번에 하나): 누른 칸 바닥에 금빛 고리가 퍼졌다 사라짐
+    this.clickFx = document.createElement('div');
+    this.clickFx.className = 'click-fx';
+    app.appendChild(this.clickFx);
     window.addEventListener('error', (e) => this.errors.push(String(e.message)));
     window.addEventListener('unhandledrejection', (e) => this.errors.push(String(e.reason)));
   }
@@ -246,7 +255,7 @@ export class HearthGame {
     this.dialog = new DialogBox(this.app);
     this.dialog.onOpen = (ids) => this.frameDialog(ids);
     this.dialogLines = (a, b, ok, ia, s, seed) => {
-      const data = dialogueData as unknown as DialogueData;
+      const data = mergedDialogue();
       const rel = s.relations.find((r) => (r.a === a.id && r.b === b.id) || (r.a === b.id && r.b === a.id));
       const picked = pickLine(data, {
         ia, ok,
@@ -500,7 +509,8 @@ export class HearthGame {
     const busy = new Set<number>();
     for (const p of s.persons) if (p.action && p.action.phase === 'perform' && p.action.stepObj >= 0) busy.add(p.action.stepObj);
     this.world.syncObjects(s.objects, busy);
-    this.world.syncDoors(s.persons.filter((p) => !p.hidden));
+    // 남의 집 문을 두드리는 사람에게는 문이 열리지 않음 (18-1 출입)
+    this.world.syncDoors(s.persons.filter((p) => !p.hidden && p.knocking === undefined));
     this.chars.sync(s.persons, s.tick, s.tickMs, performance.now());
     if (!s.persons.some((p) => p.id === this.selectedId) && s.persons.length) this.selectedId = s.persons[0].id;
     this.chars.selectedId = this.selectedId;
@@ -560,6 +570,7 @@ export class HearthGame {
     }
     this.renderer.render();
     this.updateMarker();
+    this.updateClickFx();
     this.thoughts.update(
       now,
       (id) => {
@@ -686,8 +697,12 @@ export class HearthGame {
     this.notebook.toggle(w);
   }
 
+  /** 메뉴 중 새 게임 화면이 맡는 것 (설정 · 타이틀로, src/ui/NewGame.ts) */
+  onMenu: ((a: string) => void) | null = null;
+
   private menuAction(a: 'save' | 'load' | 'settings' | 'gallery' | 'help' | 'hideUi' | 'title'): void {
     if (a === 'hideUi') this.setUiHidden(true);
+    else this.onMenu?.(a);
   }
 
   setUiHidden(hide: boolean): void {
@@ -752,7 +767,7 @@ export class HearthGame {
   private updateOneliners(s: Snapshot): void {
     const me = s.persons.find((p) => p.id === this.selectedId);
     if (!me) return;
-    const data = dialogueData as unknown as DialogueData;
+    const data = mergedDialogue();
     for (const p of s.persons) {
       if (p.household !== me.household || p.visitor || p.hidden) continue;
       let situation: string | null = null;
@@ -834,7 +849,11 @@ export class HearthGame {
   /** V: 선택한 가족이 집 안/문 앞이면 그 집 실내로, 실내면 바깥으로 (검은 화면 전환) */
   toggleInterior(): void {
     const me = this.client.snap?.persons.find((p) => p.id === this.selectedId);
-    if (this.interior >= 0) return this.switchView(-1);
+    if (this.interior >= 0) {
+      // 직접 닫았으면 그 집을 나갈 때까지 자동으로 다시 열지 않음
+      this.autoSkip = this.interior;
+      return this.switchView(-1);
+    }
     if (!me) return;
     const k = this.world.shells.nearDoor(Math.floor(me.x), Math.floor(me.y) % this.lotRows());
     if (k >= 0) {
@@ -923,6 +942,8 @@ export class HearthGame {
     }
   }
   private camGlide: { x: number; y: number } | null = null;
+  /** 직접 닫은 집 (그 집을 나갈 때까지 자동 실내 보기 안 함) */
+  private autoSkip = -1;
   private roomPx: { k: number; lv: number; rect: [number, number, number, number] | null } | null = null;
 
   private updateInterior(dt: number, s: Snapshot | null | undefined): void {
@@ -962,7 +983,17 @@ export class HearthGame {
       else (u.uRoom.value as import('three').Vector4).set(r[0] * T - 2, r[1] * T - 88 - yo, (r[2] + 1) * T + 2, (r[3] + 1) * T - yo);
       // 가족이 집을 나가면 바깥 화면으로
       if (me && !me.hidden && this.world.shells.nearDoor(Math.floor(me.x), Math.floor(me.y) % this.lotRows()) !== this.interior) this.switchView(-1);
-    } else if (this.interiorK < 0.02) (u.uRoom.value as import('three').Vector4).set(0, 0, -1, -1);
+    } else {
+      if (this.interiorK < 0.02) (u.uRoom.value as import('three').Vector4).set(0, 0, -1, -1);
+      // 조작 인물이 집 안에 들어서면 지붕 없는 보기로 (나오면 위 조건이 바깥 화면으로 되돌림)
+      const me = s?.persons.find((p) => p.id === this.selectedId);
+      const k = me && !me.hidden && me.household === 1 ? this.world.shells.at(Math.floor(me.x), Math.floor(me.y) % this.lotRows()) : -1;
+      if (k < 0) this.autoSkip = -1;
+      else if (k !== this.autoSkip) {
+        this.interiorOwner = me!.id;
+        this.switchView(k);
+      }
+    }
     this.particles.points.visible = this.particles.glow.visible = this.interior < 0;
   }
 
@@ -1053,6 +1084,8 @@ export class HearthGame {
           (option) => void this.client.intent({ kind: 'careerChoice', personId: w.id, option }), { portrait: this.bust(w.id), speaker: w.name });
         return;
       }
+      // 사건 카드·재판 (24-1, 18-6)
+      if (showScene(s, this.choice, { intent: (i) => this.client.intent(i), bust: (id) => this.bust(id), select: (id) => this.select(id, true) })) return;
       if (this.choice.open) this.choice.hide();
       return;
     }
@@ -1291,6 +1324,26 @@ export class HearthGame {
       return;
     }
     void this.client.goto(this.selectedId, tx, ty);
+    this.showClickFx(w.x, w.y);
+  }
+
+  /** 이동 클릭 표시: 앞의 것을 지우고 누른 자리(세계 px)에 하나만 */
+  private showClickFx(wx: number, wy: number): void {
+    this.clickAt = { x: wx, y: wy };
+    const f = this.clickFx;
+    f.classList.remove('on');
+    void f.offsetWidth;
+    f.classList.add('on');
+    this.updateClickFx();
+  }
+
+  private updateClickFx(): void {
+    if (!this.clickAt || !this.clickFx.classList.contains('on')) return;
+    const sp = this.renderer.worldToScreen(this.clickAt.x, this.clickAt.y);
+    const z = Math.max(1, this.renderer.zoom);
+    this.clickFx.style.left = `${Math.round(sp.x)}px`;
+    this.clickFx.style.top = `${Math.round(sp.y)}px`;
+    this.clickFx.style.setProperty('--z', String(z));
   }
 
   /** 부지 출구 화면 위치 (테스트 훅) */
@@ -1553,6 +1606,17 @@ const interactions = {
 
 /** 생애와 가족 (M7~M9) 데이터: src/sim/data/familyFiles.ts 목록 (없는 파일은 빠짐) */
 const familyGlob = import.meta.glob<{ default: unknown }>(['../data/*.json', '../data/events/*.json'], { eager: true });
+/** 대사창 문장 풀 (dialogue.json + M9 구애 상호작용 대사 courtship.json dialogue) */
+let dialogueCache: DialogueData | null = null;
+function mergedDialogue(): DialogueData {
+  if (dialogueCache) return dialogueCache;
+  const base = dialogueData as unknown as DialogueData & { interactions: Record<string, unknown> };
+  const extra = ((familyRaw().courtship as { dialogue?: Record<string, unknown> } | undefined)?.dialogue) ?? {};
+  const add = Object.fromEntries(Object.entries(extra).filter(([k]) => !k.startsWith('$')));
+  dialogueCache = { ...base, interactions: { ...base.interactions, ...add } } as DialogueData;
+  return dialogueCache;
+}
+
 function familyRaw(): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const [k, f] of Object.entries(FAMILY_FILES)) {
@@ -1592,7 +1656,8 @@ export interface TownBundle {
 const townFiles = import.meta.glob<{ default: unknown }>(['../data/town/*.json', '../data/schedules.json']);
 async function loadTown(): Promise<TownBundle | null> {
   // 주소에 ?town= 이 없으면 빌드 기본값 (Pages 배포판은 VITE_DEFAULT_TOWN=ashford). ?town=none 이면 오두막
-  const q = (typeof location !== 'undefined' ? new URLSearchParams(location.search).get('town') : null) ?? import.meta.env.VITE_DEFAULT_TOWN ?? null;
+  // 새 게임 흐름(27-1)이면 마을은 애쉬포드 (src/ui/newGameMode.ts)
+  const q = (typeof location !== 'undefined' ? new URLSearchParams(location.search).get('town') : null) ?? import.meta.env.VITE_DEFAULT_TOWN ?? (wantsNewGame() ? NEW_GAME_TOWN : null);
   if (!q || q === 'none') return null;
   const get = async (p: string) => {
     const f = townFiles[p];

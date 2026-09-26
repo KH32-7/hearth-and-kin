@@ -1,7 +1,8 @@
 import { expect, type Page } from '@playwright/test';
 import { PNG } from 'pngjs';
 
-export async function openGame(page: Page, url = '/'): Promise<string[]> {
+/** 새 게임 흐름(27-1)은 인자 없는 주소에서 뜨므로 기존 스펙은 ?new=0 (바로 마을) */
+export async function openGame(page: Page, url = '/?new=0'): Promise<string[]> {
   const errors: string[] = [];
   page.on('console', (m) => {
     if (m.type() === 'error') errors.push(m.text());

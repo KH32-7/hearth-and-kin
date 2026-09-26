@@ -15,7 +15,7 @@ test('M6 마을: 미니맵 이동, 세밀도, 포고, 말', async ({ page }) => 
   await page.locator('.win-btn[data-win="map"]').click();
   await expect(page.getByTestId('town-map')).toBeVisible();
   const pop = await game<number>(page, 'return window.__hk.client.snap.town.population;');
-  expect(pop).toBeGreaterThan(100);
+  expect(pop).toBeGreaterThan(85); // 애쉬포드 94명 (2026-09-27 사용자 요청으로 줄임)
 
   // 미니맵 누르기 → 카메라가 그 칸으로 (장터 광장 쪽)
   const box = await page.locator('.town-map-over').boundingBox();

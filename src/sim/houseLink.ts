@@ -664,9 +664,12 @@ export class HouseLink {
     return this.presets ? presetIds(this.presets) : [];
   }
 
-  applyPreset(id: string): PresetResult | null {
+  /** 프리셋 적용. custom = 캐릭터 만들기 사양과 식구별 역할(head spouse child sibling sibling_spouse nephew …): 무작위 식구 대신 이 식구로 */
+  applyPreset(id: string, custom: { family: FamilySpec; roles: string[] } | null = null): PresetResult | null {
     if (!this.presets) return null;
+    this.custom = custom;
     const r = applyPreset(this.presetHost(), this.presets, id);
+    this.custom = null;
     this.lastPreset = r;
     return r;
   }
@@ -729,9 +732,50 @@ export class HouseLink {
     };
   }
 
+  private custom: { family: FamilySpec; roles: string[] } | null = null;
+
+  /** 캐릭터 만들기 사양으로 가족을 만들고, 프리셋 역할 순서에 맞춘 인물 id (직업·도제·말·하인을 그 식구에게) */
+  private createCustomFamily(estate: EstateId, specs: PresetPersonSpec[], c: { family: FamilySpec; roles: string[] }): { household: number; ids: number[] } {
+    const s = this.s;
+    const r = s.createFamily({ ...c.family, estate });
+    const made = r.ok ? r.ids ?? [] : [];
+    if (!made.length) {
+      // 사양이 검증에 걸리면 무작위 식구로 (시작이 막히지 않게)
+      this.custom = null;
+      return this.createPresetFamily(estate, specs);
+    }
+    const used = new Set<number>();
+    const norm = (role: string) => (role === 'nephew' ? 'child' : role);
+    const ids = specs.map((sp) => {
+      let i = c.roles.findIndex((role, k) => !used.has(k) && norm(role) === sp.role && made[k] !== undefined);
+      if (i < 0) i = c.roles.findIndex((role, k) => !used.has(k) && made[k] !== undefined && role !== 'servant');
+      if (i < 0) return made[0] ?? 0;
+      used.add(i);
+      return made[i];
+    });
+    this.resetAccount(estate);
+    const hi = specs.findIndex((x) => x.role === 'head');
+    const cl = this.house.clans.clanOfHousehold(1);
+    if (cl) this.house.clans.onHouseholdGone(1);
+    this.house.clans.register({ households: [1], name: null, estate, headId: ids[hi >= 0 ? hi : 0] });
+    return { household: 1, ids };
+  }
+
+  private resetAccount(estate: EstateId): void {
+    const a = this.s.econ?.account(1);
+    if (a) {
+      a.money = 0;
+      a.loans = [];
+      a.estate = estate;
+      a.reliefDays = 0;
+    }
+    this.hhEstate.set(1, estate);
+  }
+
   /** 프리셋 가족 → 캐릭터 만들기 사양 (무작위 외형) → Simulation.createFamily. 계정은 돈 0·빚 없이 */
   private createPresetFamily(estate: EstateId, specs: PresetPersonSpec[]): { household: number; ids: number[] } {
     const s = this.s;
+    if (this.custom) return this.createCustomFamily(estate, specs, this.custom);
     const g = s.genetics;
     if (!g) return { household: 1, ids: [] };
     const taken: string[] = [];
@@ -854,7 +898,8 @@ export class HouseLink {
     const clanId = H.clans.clanIdOfHousehold(hh);
     switch (op) {
       case 'applyPreset': {
-        const r = this.applyPreset(String(a.preset));
+        const fam = a.family as FamilySpec | undefined;
+        const r = this.applyPreset(String(a.preset), fam ? { family: fam, roles: (a.roles as string[]) ?? [] } : null);
         return r ? { ok: r.ok, reason: r.reason, result: r } : { ok: false, reason: 'no_presets' };
       }
       case 'payEmancipation':
@@ -936,6 +981,13 @@ export class HouseLink {
         return { ok: H.servants.dismiss(Number(a.personId)) };
       case 'grantFamilyName':
         return { ok: H.clans.grantFamilyName(clanId, String(a.name)) };
+      case 'setClanName': {
+        // 새 게임 가문명: 무드렛·소식·연대기 없이 조용히 (농노는 가문명 없음 16-1)
+        const cl = H.clans.clan(clanId);
+        if (!cl || this.householdEstate(hh) === 'serf') return { ok: false, reason: 'reason.estate.serf_no_name' };
+        cl.name = String(a.name).slice(0, 20);
+        return { ok: true };
+      }
       case 'holdFeast': {
         this.lastFeast.set(hh, this.day());
         return { ok: true };

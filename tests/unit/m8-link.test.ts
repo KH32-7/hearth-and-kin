@@ -4,6 +4,8 @@
 import { describe, expect, it } from 'vitest';
 import { loadSimData } from '../../tools/data-node';
 import { Simulation } from '../../src/sim/sim';
+import { randomMember, type FamilySpec } from '../../src/sim/family/creation';
+import { Rng } from '../../src/sim/core/rng';
 
 const data = loadSimData({ town: 'ashford' });
 const town = (seed = 1) => new Simulation(data, seed);
@@ -122,5 +124,27 @@ describe('M8 가문과 신분 연결', () => {
       expect(a.loans.includes(loan)).toBe(false);
       expect(bankrupt, `압류로 덮음=${covered}`).toBe(covered ? 0 : 1);
     }
+  });
+  it('꾸민 가족으로 프리셋: 그 식구에게 직업·종자·하인, 가문명은 조용히', () => {
+    const sim = town(12);
+    const g = sim.genetics!;
+    const rng = new Rng(5);
+    const a = randomMember(g, sim.names, rng, { key: 'a', estate: 'knight', sex: 'male', stage: 'young' });
+    a.name = '롤랑';
+    a.age = 24;
+    const b = randomMember(g, sim.names, rng, { key: 'b', estate: 'knight', sex: 'female', stage: 'young' });
+    b.age = 22;
+    const family: FamilySpec = { v: 1, clan: '몽포르', estate: 'knight', members: [a, b], relations: [{ a: 'a', b: 'b', kind: 'spouse' }] };
+    const r = sim.apply({ kind: 'house', op: 'applyPreset', args: { preset: 'knight_normal', family, roles: ['head', 'spouse'] } }) as { ok: boolean; result: { ids: number[]; careers: Record<number, string> } };
+    expect(r.ok).toBe(true);
+    const roland = sim.persons.find((p) => p.name === '롤랑' && p.household === 1)!;
+    expect(roland).toBeTruthy();
+    expect(roland.career?.id).toBe('knight');
+    expect(sim.persons.some((p) => p.household === 1 && p.role === 'squire')).toBe(true);
+    const notes0 = sim.notices.length;
+    const n = sim.apply({ kind: 'house', op: 'setClanName', args: { name: '몽포르' } }) as { ok: boolean };
+    expect(n.ok).toBe(true);
+    expect(sim.house!.house.clans.clanOfHousehold(1)!.name).toBe('몽포르');
+    expect(sim.notices.length).toBe(notes0);
   });
 });
