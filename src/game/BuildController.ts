@@ -132,7 +132,7 @@ export class BuildController {
       const id = this.panel.partOf('stairs');
       if (id) this.hold(id);
     }
-    this.panel.flash(t(`build.hint.${tool}`));
+    // 도구 설명 글은 화면에 띄우지 않음 (GDD 27-3). 설명은 도구 버튼 툴팁
   }
 
   private pickPart(tool: BuildTool, id: string): void {

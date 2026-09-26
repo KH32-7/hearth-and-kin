@@ -20,3 +20,9 @@ assets/generated/ui/
 docs/레퍼런스_이미지/**/*.jpg
 docs/레퍼런스_이미지/**/*.webp
 docs/레퍼런스_이미지/**/*.png
+
+# 배포용 에셋 암호 키 (GitHub Secret 과 같은 값)
+.deploy-key
+deploy/.list
+deploy/assets.tar.gz
+__pycache__/

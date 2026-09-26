@@ -96,6 +96,14 @@ export interface LotDef {
   roof?: { style: string };
   /** 방 이름 (방의 대표 칸 → 이름 키). 방 인식이 매번 번호를 다시 매기므로 칸으로 기억 */
   roomNames?: { x: number; y: number; name: string }[];
+  /** 지형 높이 (1층 판 w×h, 0~3). 높은 칸 남쪽 가장자리 아래 3칸은 절벽면 (docs/07) */
+  elev?: number[];
+  /** 비탈: 절벽면 3칸을 가로지르는 풀 비탈 (x, y = 절벽면 윗줄 왼쪽 칸, w 칸 폭) */
+  ramps?: { x: number; y: number; w: number }[];
+  /** 윗단 절벽 그림 (0 흙, 1 바위). 그림 전용 */
+  cliffStyle?: number[];
+  /** 건물 외관 (Village 팩 완성 외관). x, y = 발자국 왼쪽 위 칸 (docs/07) */
+  shells?: { id: string; x: number; y: number }[];
 }
 
 export type StateValue = number | boolean;

@@ -2,6 +2,7 @@
  * 부지 격자: 벽/문/바닥/물건 점유/방 인식 (GDD 13-5, 23-2 방 인식, 11-1 실내 기온).
  * 좌표는 칸 단위. index = y * w + x. 여러 층은 슬랩을 세로로 쌓은 한 장 (world/lot.ts)
  */
+import { cliffBlocked } from './elevation';
 import type { LotDef, ObjectDef, ObjectInstance } from '../core/types';
 import { LEVELS, SLABS, isGapRow, slabOfRow, totalRows } from './lot';
 
@@ -78,6 +79,11 @@ export class Grid {
       const slab = slabOfRow(y, this.slabH);
       // 1층 땅은 어디든 디딤 (물 같은 못 걷는 지형은 바닥을 깔거나 다리를 놓지 않으면 아님)
       this.solid[i] = gap ? 0 : slab === 0 ? (lot.floor[i] || !this.blockedTerrain.has(lot.ground[i] ?? '') ? 1 : 0) : lot.floor[i] || style ? 1 : 0;
+    }
+    // 지형 높이: 절벽면/옆면 칸은 못 걸음 (1층 판, 바닥을 깐 칸은 예외 없음)
+    if (lot.elev && lot.elev.length === lot.w * lot.h) {
+      const blocked = cliffBlocked(lot.w, lot.h, lot.elev, lot.ramps ?? []);
+      for (let i = 0; i < blocked.length; i++) if (blocked[i]) this.solid[i] = 0;
     }
     for (const o of lot.openings) {
       const i = this.idx(o.x, o.y);

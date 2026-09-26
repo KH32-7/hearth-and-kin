@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { PNG } from 'pngjs';
-import { expectNoGameErrors, game, openGame } from './helpers';
+import { expectNoGameErrors, game, openGame, openBookPage, closeBook } from './helpers';
 
 mkdirSync('artifacts/qa/m2', { recursive: true });
 
@@ -13,14 +13,14 @@ test('M2 내면: 말풍선 · 내면 패널 · 무너짐 카드 · 사회 메뉴
 
   // 1) 내면 패널 3탭이 채워짐
   for (const tab of ['mood', 'persona', 'wishes']) {
-    await page.locator(`.tab[data-tab="${tab}"]`).click();
+    await openBookPage(page, 'person', tab === 'mood' ? 'emo' : tab);
     await expect(page.locator('.inner-view')).toBeVisible();
     await page.waitForTimeout(250);
-    await page.locator('.hud-bl').screenshot({ path: `artifacts/qa/m2/panel-${tab}-${info.project.name}.png` });
+    await page.locator('.nb').screenshot({ path: `artifacts/qa/m2/panel-${tab}-${info.project.name}.png` });
     if (tab === 'persona') await expect(page.locator('.inner-view .chip[data-trait]')).toHaveCount(3);
     if (tab === 'mood') await expect(page.locator('.inner-view .moodlet').first()).toBeVisible();
   }
-  await page.locator('.tab[data-tab="needs"]').click();
+  await closeBook(page);
 
   // 2) 속마음 말풍선: 두 사람이 이야기하게 하고 풍선이 뜰 때까지
   await game(page, "await g.intent({kind:'queue', personId:1, interactionId:'social.deep_talk', targetUid:2}); g.setSpeed(3); return true;");

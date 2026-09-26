@@ -1,10 +1,10 @@
 /**
  * 건축/구매 모드 UI (GDD 23-2, 23-4). DOM 만 (캔버스에 한글을 그리지 않음).
- * - 위 가운데: 모드 (생활 / 구매 / 건축)
- * - 오른쪽 가운데: 보기 도구 (층 ▲▼, 벽 올림/잘라내기/내림, 지붕 자동/보기/숨김)
- * - 아래 가운데 (건축): 도구 줄 + 재질 고르기 (썸네일, 이름, 칸당 값)
- * - 아래 가운데 (구매): 분류 탭 + 물건 목록 (썸네일, 값, 신분 자물쇠, 색/재질 변형)
- * - 실행 취소/다시, 쓴 돈, 길 막힘 경고 개수, 짧은 안내 줄
+ * 배치 (GDD 27-10):
+ * - 모드 (생활 / 구매 / 건축): HUD 우상단 아이콘 띠에 붙음
+ * - 위 가운데 도구 띠: 되돌리기 · 다시 | 층 ▼▲ | 벽 올림/잘라내기/내림 | 지붕
+ * - 아래 반투명 판: 왼쪽 분류(구매) 또는 도구(건축) | 가운데 물건/재질 칸 + 가진 돈 · 이번 공사 | 오른쪽 고른 것 설명
+ * - 신분 제한은 흐리게 + 금지 아이콘. 조작 안내 글 없이 아이콘 (27-3)
  */
 import { t } from '../i18n';
 import { iconEl } from './skin';
@@ -67,6 +67,17 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, parent?
   return e;
 }
 
+/** 썸네일을 칸에 들어가는 가장 큰 정수 배율로 (픽셀이 고르게, 27-3) */
+function fit<T extends HTMLElement | null>(c: T, maxW: number, maxH: number): T {
+  if (!(c instanceof HTMLCanvasElement) || !c.width || !c.height) return c;
+  const k = Math.max(1, Math.min(Math.floor(maxW / c.width), Math.floor(maxH / c.height)));
+  c.style.width = `${c.width * k}px`;
+  c.style.height = `${c.height * k}px`;
+  c.style.maxWidth = 'none';
+  c.style.maxHeight = 'none';
+  return c;
+}
+
 export function formatPrice(f: number): string {
   return f ? formatMoney(f) : t('money.free');
 }
@@ -96,36 +107,55 @@ export class BuildPanel {
   private category: string = 'bedroom';
   private selectedObject: string | null = null;
   private infoTimer = 0;
+  /** 모드 버튼 줄 (HUD 로 옮겨 붙임) */
+  modeBar!: HTMLElement;
+  private detail!: HTMLElement;
+  private titleEl!: HTMLElement;
+  private moneyEl!: HTMLElement;
+  private consEl!: HTMLElement;
 
   constructor(parent: HTMLElement, private h: BuildPanelHandlers) {
     this.root = el('div', 'build-ui', parent);
     this.root.dataset.mode = 'live';
     // 모드
-    const modes = el('div', 'mode-bar panel-dark', this.root);
+    // 모드 버튼은 HUD 우상단 아이콘 띠로 옮겨 붙음 (HearthGame, GDD 27-2)
+    const modes = el('div', 'mode-bar', this.root);
     modes.dataset.testid = 'mode-bar';
     for (const m of ['live', 'buy', 'build'] as GameMode[]) {
       const b = el('button', 'mode-btn', modes);
       b.type = 'button';
       b.dataset.mode = m;
-      b.appendChild(iconEl(m === 'live' ? 'ui.crest' : m === 'buy' ? 'ui.coin' : 'raven:a4477', 2));
-      el('span', '', b).textContent = t(`build.mode.${m}`);
+      b.appendChild(iconEl(m === 'live' ? 'rv.house' : m === 'buy' ? 'rv.pouch' : 'cute.wrench', 2));
+      el('span', 'ib-label', b).textContent = t(`build.mode.${m}`);
       b.addEventListener('click', () => this.h.setMode(m));
       this.modeBtns.set(m, b);
+      this.modeBar = modes;
     }
-    // 보기 도구
-    const view = el('div', 'view-bar panel-dark', this.root);
+    // 위 가운데 도구 띠 (27-10): 되돌리기 · 다시 | 층 | 벽 3단 | 지붕. 글 없이 아이콘
+    const view = el('div', 'view-bar', this.root);
     view.dataset.testid = 'view-bar';
-    const up = el('button', 'view-btn', view);
-    up.type = 'button';
-    up.textContent = '▲';
-    up.title = t('build.view.levelUp');
-    up.addEventListener('click', () => this.h.stepLevel(1));
-    this.levelEl = el('div', 'level-label', view);
+    this.undoBtn = el('button', 'view-btn hist-btn', view);
+    this.undoBtn.type = 'button';
+    this.undoBtn.appendChild(iconEl('cute.left', 2));
+    this.undoBtn.title = t('build.undo');
+    this.undoBtn.addEventListener('click', () => this.h.undo());
+    this.redoBtn = el('button', 'view-btn hist-btn', view);
+    this.redoBtn.type = 'button';
+    this.redoBtn.appendChild(iconEl('cute.right', 2));
+    this.redoBtn.title = t('build.redo');
+    this.redoBtn.addEventListener('click', () => this.h.redo());
+    el('div', 'view-sep', view);
     const down = el('button', 'view-btn', view);
     down.type = 'button';
-    down.textContent = '▼';
+    down.appendChild(iconEl('cute.down', 2));
     down.title = t('build.view.levelDown');
     down.addEventListener('click', () => this.h.stepLevel(-1));
+    this.levelEl = el('div', 'level-label', view);
+    const up = el('button', 'view-btn', view);
+    up.type = 'button';
+    up.appendChild(iconEl('cute.up', 2));
+    up.title = t('build.view.levelUp');
+    up.addEventListener('click', () => this.h.stepLevel(1));
     el('div', 'view-sep', view);
     for (const c of ['up', 'cut', 'down'] as const) {
       const b = el('button', 'view-btn cut-btn', view);
@@ -136,29 +166,49 @@ export class BuildPanel {
       b.addEventListener('click', () => this.h.setCutaway(c));
       this.cutBtns.set(c, b);
     }
-    el('div', 'view-sep', view);
     this.roofBtn = el('button', 'view-btn roof-btn', view);
     this.roofBtn.type = 'button';
     this.roofBtn.innerHTML = '<i class="roof-glyph"></i>';
     this.roofBtn.addEventListener('click', () => this.h.setRoofMode(this.roofMode === 'auto' ? 'on' : this.roofMode === 'on' ? 'off' : 'auto'));
 
-    // 건축 도구
+    // 아래 판: 왼쪽 분류/도구 | 가운데 칸 | 오른쪽 설명
     const dock = el('div', 'build-dock', this.root);
-    this.picker = el('div', 'part-picker panel-brown', dock);
+    const left = el('div', 'dock-left', dock);
+    const mid = el('div', 'dock-mid', dock);
+    this.detail = el('div', 'dock-detail', dock);
+    const head = el('div', 'dock-head', mid);
+    this.titleEl = el('b', 'dock-title', head);
+    const money = el('div', 'dock-money', head);
+    this.moneyEl = el('span', 'dock-cash', money);
+    this.costEl = el('span', 'cost', money);
+    this.warnEl = el('span', 'warn', money);
+    this.warnEl.dataset.testid = 'build-warnings';
+    this.picker = el('div', 'part-picker', mid);
     this.picker.dataset.testid = 'part-picker';
-    this.buyPanel = el('div', 'buy-panel panel-brown', dock);
+    this.buyPanel = el('div', 'buy-panel', left);
     this.buyPanel.dataset.testid = 'buy-panel';
+    const filt = el('div', 'buy-filter', this.buyPanel);
+    const byRoom = el('span', 'chip on', filt);
+    byRoom.appendChild(iconEl('rv.home', 1));
+    const byUse = el('span', 'chip', filt);
+    byUse.appendChild(iconEl('cute.wrench', 1));
+    const search = el('span', 'chip search', filt);
+    search.appendChild(iconEl('ui.search', 2));
     const tabs = el('div', 'buy-tabs', this.buyPanel);
     for (const c of BUY_CATEGORIES) {
       const b = el('button', 'buy-tab', tabs);
       b.type = 'button';
       b.dataset.cat = c;
-      b.textContent = t(`catalog.cat.${c}`);
+      const first = this.h.catalog().find((i) => i.category === c);
+      const th = fit(first ? this.h.thumb('object', first.id) : null, 40, 36);
+      const pic = el('span', 'cat-pic', b);
+      if (th) pic.appendChild(th);
+      el('span', 'cat-name', b).textContent = t(`catalog.cat.${c}.short`);
       b.addEventListener('click', () => this.setCategory(c));
       this.catTabs.set(c, b);
     }
-    this.buyGrid = el('div', 'buy-grid', this.buyPanel);
-    this.toolBar = el('div', 'tool-bar panel-dark', dock);
+    this.buyGrid = el('div', 'buy-grid', mid);
+    this.toolBar = el('div', 'tool-bar', left);
     this.toolBar.dataset.testid = 'tool-bar';
     for (const tool of BUILD_TOOLS) {
       const b = el('button', 'tool-btn', this.toolBar);
@@ -167,29 +217,18 @@ export class BuildPanel {
       const th = this.h.thumb('tool', tool);
       if (th) b.appendChild(th);
       el('span', '', b).textContent = t(`build.tool.${tool}`);
+      b.title = t(`build.hint.${tool}`);
       b.addEventListener('click', () => this.h.setTool(tool));
       this.toolBtns.set(tool, b);
     }
-    const hist = el('div', 'hist', dock);
-    this.undoBtn = el('button', 'hist-btn', hist);
-    this.undoBtn.type = 'button';
-    this.undoBtn.textContent = '↶';
-    this.undoBtn.title = t('build.undo');
-    this.undoBtn.addEventListener('click', () => this.h.undo());
-    this.redoBtn = el('button', 'hist-btn', hist);
-    this.redoBtn.type = 'button';
-    this.redoBtn.textContent = '↷';
-    this.redoBtn.title = t('build.redo');
-    this.redoBtn.addEventListener('click', () => this.h.redo());
-    const cons = el('label', 'cons', hist);
+    const cons = el('label', 'cons', this.detail);
     cons.title = t('build.construction.title');
     this.consBox = el('input', '', cons);
     this.consBox.type = 'checkbox';
     this.consBox.addEventListener('change', () => this.h.setConstruction(this.consBox.checked));
-    el('span', '', cons).textContent = t('build.construction');
-    this.costEl = el('div', 'cost', hist);
-    this.warnEl = el('div', 'warn', hist);
-    this.warnEl.dataset.testid = 'build-warnings';
+    el('i', 'toggle', cons);
+    cons.append(iconEl('cute.wrench', 2), iconEl('cute.moon', 2));
+    this.consEl = cons;
     this.info = el('div', 'build-info', this.root);
     this.info.dataset.testid = 'build-info';
   }
@@ -200,6 +239,52 @@ export class BuildPanel {
     for (const [k, b] of this.modeBtns) b.classList.toggle('on', k === m);
     if (m === 'build') this.renderPicker();
     if (m === 'buy') this.renderBuy();
+    this.consEl.style.display = m === 'build' ? '' : 'none';
+  }
+
+  setMoney(text: string): void {
+    if (this.moneyEl.textContent === text) return;
+    this.moneyEl.textContent = '';
+    this.moneyEl.append(iconEl('cute.coin', 1), document.createTextNode(text));
+  }
+
+  /** 오른쪽 설명 (고른 물건/재질) */
+  private showDetail(o: { kind: string; id: string; nameKey: string; price: string; estate?: string | null; locked: boolean; roomScore?: number; variants?: string[]; size?: { w: number; h: number } }): void {
+    const d = this.detail;
+    for (const c of [...d.children]) if (c !== this.consEl) c.remove();
+    const top = el('div', 'det-top', d);
+    const pic = el('div', 'det-pic', top);
+    const th = fit(this.h.thumb(o.kind, o.id), 84, 100);
+    if (th) pic.appendChild(th);
+    const tx = el('div', 'det-tx', top);
+    el('b', 'det-name', tx).textContent = t(o.nameKey);
+    el('div', 'det-price', tx).textContent = o.price;
+    if (o.size) {
+      const sz = el('div', 'det-size', tx);
+      for (let i = 0; i < o.size.w * o.size.h && i < 6; i++) el('i', '', sz);
+      sz.style.gridTemplateColumns = `repeat(${o.size.w}, 12px)`;
+    }
+    const line = el('div', 'det-line', d);
+    if (o.estate) {
+      const e = el('span', `det-estate ${o.locked ? 'no' : ''}`, line);
+      e.append(iconEl(o.locked ? 'cute.no' : 'cute.crown', 1), document.createTextNode(t(`estate.${o.estate}`)));
+    }
+    if (o.roomScore) {
+      const r = el('span', 'det-score', line);
+      r.append(iconEl('cute.star_blue', 1), document.createTextNode(`+${o.roomScore}`));
+    }
+    if (o.variants?.length) {
+      const vs = el('div', 'variants det-var', d);
+      for (const v of o.variants.slice(0, 8)) {
+        const b = el('button', 'variant', vs);
+        b.type = 'button';
+        b.dataset.variant = v;
+        b.title = t(`variant.${v}`);
+        b.style.setProperty('--v', VARIANT_COLORS[v] ?? '#888');
+        b.addEventListener('click', () => this.h.pickObject(o.id, v));
+      }
+    }
+    d.insertBefore(this.consEl, null);
   }
 
   setTool(tool: BuildTool): void {
@@ -227,19 +312,27 @@ export class BuildPanel {
     const tool = this.tool;
     this.picker.innerHTML = '';
     const kind = TOOL_PARTS[tool];
+    this.titleEl.textContent = t(`build.tool.${tool}`);
     this.picker.classList.toggle('empty', !kind);
     if (!kind) {
-      el('div', 'picker-hint', this.picker).textContent = t(`build.hint.${tool}`);
+      // 재질이 없는 도구: 글 대신 도구 그림만 (27-3)
+      const th = this.h.thumb('tool', tool);
+      if (th) el('div', 'picker-hint', this.picker).appendChild(fit(th, 64, 64));
       return;
     }
     const cur = this.partOf(tool);
-    for (const p of this.h.parts(tool)) {
+    const list = this.h.parts(tool);
+    const curP = list.find((p) => p.id === cur);
+    if (curP) this.showDetail({ kind, id: curP.id, nameKey: curP.nameKey, price: curP.price ? formatPrice(curP.price) : t('money.free'), estate: curP.estate, locked: curP.locked });
+    const cnt = el('span', 'dock-n', this.titleEl);
+    cnt.textContent = ` ${list.length}`;
+    for (const p of list) {
       const b = el('button', 'part', this.picker);
       b.type = 'button';
       b.dataset.part = p.id;
       b.classList.toggle('on', p.id === cur);
       b.classList.toggle('locked', p.locked);
-      const th = this.h.thumb(kind, p.id);
+      const th = fit(this.h.thumb(kind, p.id), 88, 64);
       if (th) b.appendChild(th);
       el('span', 'part-name', b).textContent = t(p.nameKey);
       el('span', 'part-price', b).textContent = p.price ? formatPrice(p.price) : t('money.free');
@@ -268,12 +361,16 @@ export class BuildPanel {
     for (const [k, b] of this.catTabs) b.classList.toggle('on', k === this.category);
     this.buyGrid.innerHTML = '';
     const items = this.h.catalog().filter((i) => i.category === this.category).sort((a, b) => a.price - b.price);
+    this.titleEl.textContent = t(`catalog.cat.${this.category}`);
+    el('span', 'dock-n', this.titleEl).textContent = ` ${items.length}`;
+    const sel = items.find((i) => i.id === this.selectedObject) ?? items.find((i) => !i.locked);
+    if (sel) this.showDetail({ kind: 'object', id: sel.id, nameKey: sel.nameKey, price: sel.crafted ? t('build.crafted.count', { n: sel.crafted.n }) : formatPrice(sel.price), estate: sel.estate, locked: sel.locked, roomScore: sel.roomScore, variants: sel.variants });
     for (const it of items) {
       const card = el('div', 'buy-item', this.buyGrid);
       card.dataset.object = it.id;
       card.classList.toggle('locked', it.locked);
       card.classList.toggle('on', it.id === this.selectedObject);
-      const th = this.h.thumb('object', it.id);
+      const th = fit(this.h.thumb('object', it.id), 88, 64);
       if (th) card.appendChild(th);
       el('span', 'part-name', card).textContent = t(it.nameKey);
       el('span', 'part-price', card).textContent = it.crafted ? t('build.crafted.count', { n: it.crafted.n }) : formatPrice(it.price);
@@ -288,7 +385,8 @@ export class BuildPanel {
         this.h.pickObject(it.id);
         this.renderBuy();
       });
-      if (it.variants.length) {
+      // 색 변형 견본은 오른쪽 설명 칸에서 고름 (27-10)
+      if (it.variants.length && this.mode !== 'buy') {
         const vs = el('div', 'variants', card);
         for (const v of it.variants.slice(0, 8)) {
           const d = el('button', 'variant', vs);
@@ -327,7 +425,12 @@ export class BuildPanel {
     this.redoBtn.disabled = !state.canRedo;
     this.warnEl.textContent = state.warnings ? t('build.warnings', { n: state.warnings }) : '';
     this.warnEl.classList.toggle('show', state.warnings > 0);
-    this.costEl.textContent = state.spent ? t('build.spent', { money: formatPrice(Math.abs(state.spent)) }) : '';
+    const cost = state.spent ? formatPrice(Math.abs(state.spent)) : '';
+    if (this.costEl.dataset.v !== cost) {
+      this.costEl.dataset.v = cost;
+      this.costEl.textContent = '';
+      if (cost) this.costEl.append(iconEl('cute.wrench', 1), document.createTextNode(`−${cost}`));
+    }
   }
 
   /** 짧은 안내 (오류는 붉게) */

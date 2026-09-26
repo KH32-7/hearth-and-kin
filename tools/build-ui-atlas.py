@@ -34,6 +34,15 @@ GUI = 'assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD a
 KENMI_SEL = 'assets/vendor/kenmi-cute-fantasy-ui/Cute_Fantasy_UI/UI/UI_Selectors.png'
 KENMI_POP = 'assets/vendor/kenmi-cute-fantasy-ui/Cute_Fantasy_UI/UI/UI_Pop_Up.png'
 KENMI_FRAMES = 'assets/vendor/kenmi-cute-fantasy-ui/Cute_Fantasy_UI/UI/UI_Frames.png'
+# UI 개편 (GDD 27장, 2026-09): Kenmi Cute Fantasy UI 가 메인
+KENMI_UI = 'assets/vendor/kenmi-cute-fantasy-ui/Cute_Fantasy_UI/UI/'
+KENMI_BOOK = KENMI_UI + 'Book_UI.png'
+KENMI_BTN = KENMI_UI + 'UI_Buttons.png'
+KENMI_ICONS = KENMI_UI + 'UI_Icons.png'
+KENMI_BARS = KENMI_UI + 'UI_Bars.png'
+KENMI_RIB = KENMI_UI + 'UI_Ribbons.png'
+KENMI_CLICK = KENMI_UI + 'Pointer_Click_Anim.png'
+ELTHEN = 'assets/vendor/elthen-status-effects/Status Effects Sprite Sheet.png'
 
 
 def raven(n: int):
@@ -49,6 +58,11 @@ def trees(name: str):
 def orig(name: str):
     """직접 그린 아이콘 (tools/icons/draw-originals.py → assets/original/ui/)"""
     return (f'assets/original/ui/{name}.png', (0, 0, 16, 16))
+
+
+def cute(row: int, col: int):
+    """Kenmi UI_Icons 16px 격자 (줄, 칸)"""
+    return (KENMI_ICONS, (col * 16, row * 16, 16, 16))
 
 
 def sym(n: int):
@@ -129,6 +143,55 @@ ICONS: dict[str, tuple[tuple[str, tuple[int, int, int, int]], str, str]] = {
     'topic.plague': (raven(3184), '역병 (초록 기운 해골)', 'a3184'),
     # 사회 결과 연출
     'fx.social_ok': (raven(3120), '대화 성공 (금 하트)', 'a3120'),
+    # ---- UI 개편 (Kenmi Cute Fantasy UI 아이콘, GDD 27-3)
+    'cute.heart': (cute(0, 0), '하트', 'r0c0'),
+    'cute.heart_blue': (cute(0, 2), '파란 하트', 'r0c2'),
+    'cute.star': (cute(0, 3), '별', 'r0c3'),
+    'cute.coin': (cute(0, 6), '동전', 'r0c6'),
+    'cute.moon': (cute(0, 7), '달 (반쪽)', 'r0c7'),
+    'cute.bolt': (cute(0, 9), '번개', 'r0c9'),
+    'cute.shield': (cute(0, 12), '방패', 'r0c12'),
+    'cute.talk': (cute(1, 0), '말풍선', 'r1c0'),
+    'cute.sword': (cute(1, 1), '검', 'r1c1'),
+    'cute.gear': (cute(1, 2), '톱니', 'r1c2'),
+    'cute.wrench': (cute(1, 3), '망치', 'r1c3'),
+    'cute.crown': (cute(1, 4), '왕관', 'r1c4'),
+    'cute.trophy': (cute(1, 5), '트로피', 'r1c5'),
+    'cute.swords': (cute(1, 7), '쌍검', 'r1c7'),
+    'cute.gift': (cute(1, 8), '선물', 'r1c8'),
+    'cute.save': (cute(1, 9), '저장', 'r1c9'),
+    'cute.book_blue': (cute(1, 10), '파란 책', 'r1c10'),
+    'cute.book_green': (cute(1, 11), '초록 책', 'r1c11'),
+    'cute.book_red': (cute(1, 12), '빨간 책', 'r1c12'),
+    'cute.letter': (cute(1, 14), '편지', 'r1c14'),
+    'cute.bag': (cute(2, 9), '가방', 'r2c9'),
+    'cute.exclaim': (cute(2, 12), '느낌표', 'r2c12'),
+    'cute.letter_new': (cute(2, 13), '새 편지', 'r2c13'),
+    'cute.letter_q': (cute(2, 14), '물음 편지', 'r2c14'),
+    'cute.question': (cute(3, 12), '물음표', 'r3c12'),
+    'cute.coins': (cute(3, 13), '동전 더미', 'r3c13'),
+    'cute.star_blue': (cute(3, 9), '파란 별', 'r3c9'),
+    'cute.no': (cute(5, 13), '금지', 'r5c13'),
+    'cute.x': (cute(6, 9), '닫기 X', 'r6c9'),
+    'cute.up': (cute(8, 0), '위 화살표', 'r8c0'),
+    'cute.down': (cute(8, 3), '아래 화살표', 'r8c3'),
+    'cute.left': (cute(8, 6), '왼쪽 화살표', 'r8c6'),
+    'cute.right': (cute(8, 9), '오른쪽 화살표', 'r8c9'),
+    'cute.up_green': (cute(9, 0), '초록 위 화살표', 'r9c0'),
+    'cute.down_green': (cute(9, 3), '초록 아래 화살표', 'r9c3'),
+    'cute.next': (cute(11, 3), '넘김 (흰 삼각형, 칠해서 씀)', 'r11c3'),
+    'cute.cursor': (cute(14, 0), '커서', 'r14c0'),
+    'cute.cursor_down': (cute(15, 0), '커서 눌림', 'r15c0'),
+    # Raven 16px (Cute 에 없는 것)
+    'rv.map': (raven(24), '양피지 지도', 'a24'),
+    'rv.house': (raven(65), '집', 'a65'),
+    'rv.pouch': (raven(17), '돈주머니', 'a17'),
+    'rv.home': (raven(16), '오두막', 'a16'),
+    'rv.castle': (raven(69), '성', 'a69'),
+    'rv.cart': (raven(89), '수레', 'a89'),
+    'rv.church': (raven(102), '교회', 'a102'),
+    'rv.helm': (raven(21), '투구', 'a21'),
+    'rv.shop': (raven(99), '가게', 'a99'),
 }
 
 # ---------------------------------------------------------------- UI 조각 (좌표만, 픽셀 그대로 복사)
@@ -166,6 +229,49 @@ PIECES: dict[str, tuple[str, tuple[int, int, int, int], list[int] | None, str]] 
     'bubble.thought': (KENMI_POP, (61, 13, 22, 26), [5, 5, 9, 13], '생각 풍선 대용 (둥근 말풍선, 꼬리 포함)'),
     # 초상화 판 (Kenmi UI_Frames 양피지 카드, 모서리 장식). 9-slice 아님, 속이 채워진 판이라 초상화를 위에 얹어 그림
     'portrait.frame': (KENMI_FRAMES, (1064, 104, 32, 32), None, '초상화 판 (양피지, 모서리 장식)'),
+    # ---- UI 개편 (GDD 27장): Cute Fantasy 책/버튼/막대/리본, Raven 키캡, Elthen 감정 효과, 직접 찍은 판
+    'book.base': (KENMI_BOOK, (8, 6, 224, 133), None, '인물 수첩 책 (펼침면)'),
+    'book.tab': (KENMI_BOOK, (590, 30, 20, 18), None, '위쪽 탭'),
+    'book.tab_on': (KENMI_BOOK, (623, 28, 20, 21), None, '위쪽 탭 (켜짐)'),
+    **{f'book.mark{i}': (KENMI_BOOK, (752 + 48 * i, 31, 22, 18), None, f'책갈피 {i}') for i in range(7)},
+    **{f'book.mark{i}_on': (KENMI_BOOK, (750 + 48 * i, 79, 28, 18), None, f'책갈피 {i} (켜짐)') for i in range(7)},
+    'book.stitch': (KENMI_FRAMES, (1116, 107, 24, 26), [6, 6, 6, 6], '바느질 칸 (수첩 칸)'),
+    'book.paper': (KENMI_FRAMES, (1065, 57, 30, 30), [8, 8, 8, 8], '징 박힌 양피지 판 (수첩 설명 판)'),
+    'cbtn.round': (KENMI_BTN, (96, 0, 16, 16), None, '동그란 버튼'),
+    'cbtn.round_hover': (KENMI_BTN, (112, 0, 16, 16), None, '동그란 버튼 (올림)'),
+    'cbtn.round_press': (KENMI_BTN, (128, 0, 16, 16), None, '동그란 버튼 (눌림)'),
+    'cbtn.round_on': (KENMI_BTN, (96, 144, 16, 16), None, '동그란 버튼 (켜짐, 파랑)'),
+    'cbtn.pause': (KENMI_BTN, (144, 0, 16, 16), None, '일시정지 버튼'),
+    'cbtn.pause_on': (KENMI_BTN, (144, 144, 16, 16), None, '일시정지 버튼 (켜짐)'),
+    'cbtn.play': (KENMI_BTN, (192, 0, 16, 16), None, '재생 버튼'),
+    'cbtn.play_on': (KENMI_BTN, (192, 144, 16, 16), None, '재생 버튼 (켜짐)'),
+    'cbtn.wide': (KENMI_BTN, (0, 16, 32, 16), None, '넓은 버튼'),
+    'cbtn.wide_on': (KENMI_BTN, (0, 160, 32, 16), None, '넓은 버튼 (켜짐)'),
+    'cbar.empty': (KENMI_BARS, (1, 21, 30, 5), [2, 2, 2, 2], '막대 틀 (빈)'),
+    'cbar.green': (KENMI_BARS, (65, 1, 30, 5), [2, 2, 2, 2], '막대 (초록)'),
+    'cbar.blue': (KENMI_BARS, (33, 1, 30, 5), [2, 2, 2, 2], '막대 (파랑)'),
+    'cbar.red': (KENMI_BARS, (1, 1, 30, 5), [2, 2, 2, 2], '막대 (빨강)'),
+    'ribbon.flat': (KENMI_RIB, (8, 1, 64, 20), None, '리본 (쪽 제목)'),
+    'ribbon.curve': (KENMI_RIB, (97, 0, 78, 21), None, '휘어진 리본 (장면 제목)'),
+    'ui.click': (KENMI_CLICK, (0, 0, 64, 16), None, '클릭 반짝임 4프레임'),
+    'clock.hand': (GUI, (115, 110, 15, 5), None, '시계 바늘'),
+    'key.q': (GUI, (208, 208, 16, 14), None, '키캡 Q'),
+    'key.e': (GUI, (240, 208, 16, 14), None, '키캡 E'),
+    'key.s': (GUI, (256, 224, 16, 14), None, '키캡 S'),
+    'key.h': (GUI, (304, 224, 16, 14), None, '키캡 H'),
+    'key.f1': (GUI, (16, 208, 16, 14), None, '키캡 F1'),
+    'key.tab': (GUI, (32, 240, 32, 14), None, '키캡 TAB'),
+    'key.esc': (GUI, (192, 256, 16, 14), None, '키캡 ESC'),
+    'key.shift': (GUI, (0, 256, 32, 14), None, '키캡 SHIFT'),
+    'key.ctrl': (GUI, (160, 240, 32, 14), None, '키캡 CTRL'),
+    'ui.search': (GUI, (275, 67, 10, 10), None, '돋보기'),
+    'emote.sheet': (ELTHEN, (0, 0, 256, 672), None, '감정 효과 21줄 x 8프레임 (32px)'),
+    # 머리 위 아이콘 말풍선 (색 = 종류, GDD 27-12). Kenmi UI_Frames 색 표지 24x31 (몸통 24 + 꼬리)
+    **{f'bubble.{c}': (KENMI_FRAMES, (780, 12 + 48 * i, 24, 31), None, f'아이콘 말풍선 ({c})')
+       for i, c in enumerate(['beige', 'grey', 'green', 'blue', 'yellow', 'red', 'pink'])},
+    'panel.scene': ('assets/original/ui/panel_scene.png', (0, 0, 32, 32), [9, 9, 9, 9], '장면 대사창 판 (직접 그림)'),
+    'card.choice': ('assets/original/ui/card_choice.png', (0, 0, 24, 24), [4, 4, 4, 4], '선택지 카드 (직접 그림)'),
+    'card.choice_on': ('assets/original/ui/card_choice_on.png', (0, 0, 24, 24), [4, 4, 4, 4], '선택지 카드 켜짐 (직접 그림)'),
 }
 
 # ---------------------------------------------------------------- 유틸

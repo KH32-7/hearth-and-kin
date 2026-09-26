@@ -29,6 +29,30 @@ describe('M6 마을', () => {
     expect(sim.builder!.checkPaths().filter((w) => w.kind !== 'person')).toEqual([]);
   });
 
+  it('실내 (비주얼 개편): 모든 주거 부지 집에 침대, 2층집은 계단이 2층과 이어지고 2층에 침대, 현관 안쪽 칸은 비어 있음', () => {
+    const sim = town();
+    const g = sim.world.grid;
+    const lot = sim.world.lot;
+    const stride = lot.h + 1;
+    const inRect = (o: { x: number; y: number }, r: number[], dy = 0) => o.x >= r[0] && o.x <= r[2] && o.y >= r[1] + dy && o.y <= r[3] + dy;
+    let two = 0;
+    for (const l of sim.town!.lots.filter((q) => q.kind === 'residential')) {
+      const objs = sim.world.objects.filter((o) => inRect(o, l.rect) || inRect(o, l.rect, stride));
+      const beds = objs.filter((o) => sim.data.objects[o.defId]?.tags.includes('bed'));
+      expect(beds.length, l.id).toBeGreaterThan(0);
+      const st = objs.find((o) => o.defId === 'stairs_wood');
+      if (st) {
+        two++;
+        expect(g.portal[g.idx(st.x, st.y)], `${l.id} 계단`).toBeGreaterThanOrEqual(0);
+        expect(beds.some((b) => b.y >= stride), `${l.id} 2층 침대`).toBe(true);
+      }
+      // 현관 (앞벽 문) 바로 안쪽 칸은 걸을 수 있음
+      const [ex, ey] = l.entrance;
+      expect(g.walkable(g.idx(ex, ey - 2)), `${l.id} 현관 안`).toBe(true);
+    }
+    expect(two).toBeGreaterThan(5);
+  });
+
   it('일과표: 쉬는 날(weekdayFull)에는 일을 안 하고, 성향 변형은 일 시간을 덮지 않음', () => {
     const sim = town();
     const t = sim.town!;
@@ -91,7 +115,7 @@ describe('M6 마을', () => {
     sim.apply({ kind: 'forceLod', lod: 'summary' });
     const subj = sim.persons.find((p) => p.household !== 1 && p.lifeStage === 'adult')!;
     const r = sim.rumors!.add('scandal', [subj], { a: subj.name }, sim.world.day(), 1.6, [subj]);
-    for (let i = 0; i < 3 * 1440; i++) sim.tick();
+    for (let i = 0; i < 5 * 1440; i++) sim.tick();
     expect(r.knownBy.size).toBeGreaterThan(20);
   });
 

@@ -5,6 +5,7 @@
  * - 부지: 모든 물건의 상호작용 슬롯에 스폰 지점에서 걸어서 닿음 (도달 가능성)
  * - i18n: 데이터가 쓰는 모든 키가 ko 에 있음 (영어/키 문자열 노출 0)
  * - UI 아이콘: 상호작용/욕구/살림 아이콘이 아틀라스에 있음
+ * - 대사창 규칙 문장(dialogue.json): 키, 상호작용 전부 ok/fail 풀림, 조건 값, 사극체·번역투·숫자·이모지 검사
  * 사용: npx tsx tools/check-data.ts
  */
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
@@ -14,6 +15,7 @@ import { Simulation } from '../src/sim/sim';
 import { PathFinder } from '../src/sim/action/path';
 import { lotFromTiled, type TiledMap } from '../src/sim/world/tiled';
 import type { LotDef } from '../src/sim/core/types';
+import { TIERS, REGISTERS, TOPICS, STAGES, dialogueTextProblems, type DialogueData, type DialogueEntry } from '../src/ui/dialogue/pickLine';
 
 const errors: string[] = [];
 const warn: string[] = [];
@@ -144,6 +146,70 @@ if (existsSync('src/data/ui/atlas.json')) {
   for (const it of Object.values(itemsDef)) icons.add(it.icon);
   for (const k of icons) if (!atlas.sprites[k]) errors.push(`UI 아이콘 없음: ${k}`);
 } else warn.push('src/data/ui/atlas.json 없음 (아이콘 미표시)');
+
+// 6) 대사창 규칙 문장 (GDD 27-13): 키가 ko 에 있음, 모든 사회 상호작용이 ok/fail 문장으로 풀림, 조건 값이 유효, 문장 검사
+if (existsSync('src/data/dialogue.json')) {
+  const dlg = json<DialogueData>('src/data/dialogue.json');
+  const socialIas = json<{ interactions: Record<string, { category: string }> }>('src/data/social.json').interactions;
+  const traitIds = new Set(Object.keys(json<{ traits: Record<string, unknown> }>('src/data/traits.json').traits));
+  const emotionIds = new Set(Object.keys(json<{ emotions: Record<string, unknown> }>('src/data/emotions.json').emotions));
+  const allowed: Record<string, Set<string>> = {
+    speakerTraits: traitIds,
+    listenerTraits: traitIds,
+    tier: new Set<string>(TIERS),
+    register: new Set<string>(REGISTERS),
+    listenerRegister: new Set<string>(REGISTERS),
+    emotion: emotionIds,
+    topic: new Set<string>(TOPICS),
+    stage: new Set<string>(STAGES),
+  };
+  let lines = 0;
+  const textCheck = (key: string, kind: 'act' | 'say', where: string, allowB: boolean) => {
+    const s = ko[key];
+    if (s === undefined) return errors.push(`대사 i18n 누락: ${key} (${where})`);
+    lines++;
+    for (const pr of dialogueTextProblems(s, kind, allowB)) errors.push(`대사 문장 ${key}: ${pr} — "${s}"`);
+  };
+  const checkEntry = (e: DialogueEntry, where: string, allowB = true) => {
+    textCheck(e.act, 'act', where, allowB);
+    textCheck(e.say, 'say', where, allowB);
+    if (e.reply) textCheck(e.reply, 'say', where, allowB);
+    for (const [k, vals] of Object.entries(e.when ?? {})) {
+      const ok = allowed[k];
+      if (!ok) errors.push(`대사 조건 ${where}: 모르는 조건 ${k}`);
+      else for (const v of vals as string[]) if (!ok.has(v)) errors.push(`대사 조건 ${where}: ${k}=${v} 없음`);
+    }
+  };
+  const generic = (arr: DialogueEntry[] | undefined) => (arr ?? []).some((e) => !e.when || !Object.keys(e.when).length);
+  for (const [id, ia] of Object.entries(socialIas)) {
+    const d = dlg.interactions[id];
+    if (!d) {
+      errors.push(`대사 없음: ${id} (dialogue.json interactions)`);
+      continue;
+    }
+    if (d.category !== ia.category) errors.push(`대사 ${id}: category ${d.category} ≠ social.json ${ia.category}`);
+    for (const o of ['ok', 'fail'] as const) {
+      // 어떤 조건이든 한 줄은 나와야 함: 자기 풀이나 분류 공용 풀에 조건 없는 문장
+      if (!generic(d[o]) && !generic(dlg.categories[d.category]?.[o])) errors.push(`대사 ${id}.${o}: 조건 없는 문장이 자기 풀에도 분류 풀에도 없음`);
+      // 로맨스·짓궂음·특수는 자기 문장 3개 이상 (사용자 요구)
+      if (['romance', 'mean', 'special'].includes(ia.category) && (d[o]?.length ?? 0) < 3) errors.push(`대사 ${id}.${o}: 자기 문장 ${d[o]?.length ?? 0}개 (3개 이상 필요)`);
+      for (const [i, e] of (d[o] ?? []).entries()) checkEntry(e, `${id}.${o}[${i}]`);
+    }
+  }
+  for (const id of Object.keys(dlg.interactions)) if (!socialIas[id]) errors.push(`대사 ${id}: social.json 에 없는 상호작용`);
+  for (const [cat, pools] of Object.entries(dlg.categories)) for (const o of ['ok', 'fail'] as const) for (const [i, e] of (pools[o] ?? []).entries()) checkEntry(e, `category.${cat}.${o}[${i}]`);
+  for (const [sit, arr] of Object.entries(dlg.oneliners)) {
+    if (!generic(arr)) errors.push(`한마디 ${sit}: 조건 없는 문장이 없음`);
+    for (const [i, e] of arr.entries()) checkEntry(e, `oneliner.${sit}[${i}]`, false);
+  }
+  for (const [sid, sc] of Object.entries(dlg.scenes)) {
+    need(sc.titleKey, `scene.${sid}`);
+    if (!generic(sc.lines)) errors.push(`장면 ${sid}: 조건 없는 문장이 없음`);
+    for (const [i, e] of sc.lines.entries()) checkEntry(e, `scene.${sid}[${i}]`);
+    for (const c of sc.choices) textCheck(c.textKey, 'say', `scene.${sid}.choice`, false);
+  }
+  if (lines < 600) errors.push(`대사 문장 ${lines}줄 (600줄 이상 필요)`);
+} else errors.push('src/data/dialogue.json 없음 (대사창 규칙 문장)');
 
 for (const w of warn) console.warn(`경고: ${w}`);
 if (errors.length) {

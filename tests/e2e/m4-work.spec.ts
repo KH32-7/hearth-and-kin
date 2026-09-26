@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
-import { expectNoGameErrors, game, openGame } from './helpers';
+import { expectNoGameErrors, game, openGame, openBookPage } from './helpers';
 
 mkdirSync('artifacts/qa/m4', { recursive: true });
 
@@ -119,14 +119,14 @@ test('M4 대장장이: 일 구하기 → 주문 → 대장간에서 만들어 �
   test.setTimeout(240_000);
   const errors = await openGame(page);
   await game(page, 'g.setZoom(3); g.select(1); return true;');
-  await page.locator('.tab[data-tab="work"]').click();
+  await openBookPage(page, 'work', 'career');
   await page.locator('.rel-btn[data-career="blacksmith"]').click();
   await expect(page.locator('.work-job .work-title')).toBeVisible();
   // 다음 날 아침 6시 (출근일) 로
   await game(page, 'await g.fastForward(1440 - g.getState().minuteOfDay + 6 * 60); g.setSpeed(2); return true;');
   await expect.poll(() => game<number>(page, 'return g.getState().persons[0].career.orders.length;'), { timeout: 60_000 }).toBeGreaterThan(2);
   await page.waitForTimeout(300);
-  await page.locator('.hud-bl').screenshot({ path: 'artifacts/qa/m4/smith-orders.png' });
+  await page.locator('.nb').screenshot({ path: 'artifacts/qa/m4/smith-orders.png' });
   // 대장간에서 일하는 모습 (불 애니메이션)
   await expect.poll(() => game<boolean>(page, "const a = g.getState().persons[0].action; return !!a && a.interactionId.startsWith('recipe.forge_') && a.phase === 'perform';"), { timeout: 90_000 }).toBe(true);
   await game(page, 'g.setSpeed(0); return true;');
@@ -139,6 +139,6 @@ test('M4 대장장이: 일 구하기 → 주문 → 대장간에서 만들어 �
   await expect.poll(() => game<number>(page, 'return g.getState().persons[0].career.orders.filter((o) => o.done).length;'), { timeout: 120_000 }).toBeGreaterThan(0);
   await game(page, 'g.setSpeed(0); return true;');
   await page.waitForTimeout(300);
-  await page.locator('.hud-bl').screenshot({ path: 'artifacts/qa/m4/smith-orders-done.png' });
+  await page.locator('.nb').screenshot({ path: 'artifacts/qa/m4/smith-orders-done.png' });
   await expectNoGameErrors(page, errors);
 });

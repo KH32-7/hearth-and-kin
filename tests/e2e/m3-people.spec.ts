@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
-import { expectNoGameErrors, game, openGame } from './helpers';
+import { expectNoGameErrors, game, openGame, openBookPage } from './helpers';
 
 mkdirSync('artifacts/qa/m3', { recursive: true });
 
@@ -15,17 +15,18 @@ test('M3 사람들: 초대 → 대화 → 관계 상승', async ({ page }, info)
   await game(page, 'g.setZoom(3); return true;');
 
   // 1) 관계 탭: 식구(배우자) + 마을 이웃 목록
-  await page.locator('.tab[data-tab="relations"]').click();
+  await openBookPage(page, 'house', 'relations');
   await expect(page.locator('.rel-row').first()).toBeVisible();
   await expect(page.locator('.rel-nb')).toHaveCount(12);
   await page.waitForTimeout(300);
-  await page.locator('.hud-bl').screenshot({ path: `artifacts/qa/m3/relations-${info.project.name}.png` });
+  await page.locator('.nb').screenshot({ path: `artifacts/qa/m3/relations-${info.project.name}.png` });
 
   // 2) 초대 (실제 클릭)
   const first = page.locator('.rel-btn[data-action="invite"]').first();
   const nbId = await first.getAttribute('data-neighbor');
   await first.click();
   await expect.poll(() => game<string[]>(page, 'return g.getState().pendingVisits;')).toContain(nbId);
+  await page.keyboard.press('Tab'); // 수첩을 닫고 세계를 누름
 
   // 3) 이웃이 부지 출구에서 걸어 들어옴
   // 도착을 놓치지 않게 중간 속도 + 짧은 간격으로 지켜보다가 나타나면 멈춤
@@ -103,7 +104,8 @@ test('M3 사람들: 초대 → 대화 → 관계 상승', async ({ page }, info)
 
   // 6) 관계 탭에 손님이 "아는 사람" 으로 보임
   await game(page, 'g.setSpeed(0); return true;');
+  await openBookPage(page, 'house', 'relations');
   await expect(page.locator(`.rel-row[data-other="${visitor.id}"]`)).toBeVisible();
-  await page.locator('.hud-bl').screenshot({ path: `artifacts/qa/m3/relations-after-${info.project.name}.png` });
+  await page.locator('.nb').screenshot({ path: `artifacts/qa/m3/relations-after-${info.project.name}.png` });
   await expectNoGameErrors(page, errors);
 });

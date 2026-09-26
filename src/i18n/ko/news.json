@@ -111,5 +111,6 @@
  "rumor.stranger": "여관에 묵는 그 사내, 밤마다 누굴 기다린다더라. 이름도 가짜 같대.",
  "rumor.good_deed": "{a}이(가) 굶는 집에 빵을 몰래 두고 갔대. 보기보다 괜찮은 사람이야.",
  "rumor.miracle": "{place}에서 기도하던 {a}의 병이 씻은 듯 나았대.",
- "rumor.masterpiece": "{a}이(가) 만든 물건이 성까지 소문이 났대."
+ "rumor.masterpiece": "{a}이(가) 만든 물건이 성까지 소문이 났대.",
+ "notice.town_news": "마을 소식: {kind}"
 }

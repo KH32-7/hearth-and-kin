@@ -14,7 +14,9 @@
       "autumn",
       "winter"
     ],
-    "startSeason": "spring"
+    "startSeason": "spring",
+    "startYear": 1287,
+    "$startYear": "에르덴력 시작 해 (HUD 날짜 표시 전용, GDD 27-2)"
   },
   "household": {
     "$comment": "기준 가정: 성인 2 + 아동 2 (17-4)",

@@ -13,6 +13,12 @@ import { LEVELS, SLABS, isGapRow, slabOfRow, slabStride } from '../sim/world/lot
 import type { Assets } from './Assets';
 import type { SpriteRef, TileRef, WorldPack } from './artpack';
 import { placeRect } from './GameRenderer';
+import terrainJson from '../data/artpacks/terrain.json';
+import { TerrainTiler, type TerrainData } from './terrainTiles';
+import { WaterView } from './WaterView';
+import shellsJson from '../data/artpacks/shells.json';
+import { ShellView, type ShellsData } from './ShellView';
+import { makeAoMaterial, makeShadowMaterial, SHADOW_ORDER, shadowQuad } from './Shadows';
 import { makeSpriteMaterial, pixelTexture, setUvRect } from './SpriteMaterial';
 
 export type CutawayMode = 'up' | 'cut' | 'down';
@@ -63,6 +69,13 @@ interface ObjNode {
   /** 밭 작물 덧그림 (칸마다 하나), 잡초 */
   crops?: SpriteNode[];
   cropKey?: string;
+  /** 땅 그림자 (나무/큰 물건, docs/07) */
+  shadow?: THREE.Mesh;
+  /** 밤에 켜질 때 쓰는 불 붙은 그림 */
+  litSprite?: string;
+  /** 밤에 스스로 켜지는 등 (가로등, 벽등) */
+  lamp?: boolean;
+  ao?: THREE.Mesh;
 }
 
 interface Layer {
@@ -135,6 +148,10 @@ export class WorldView {
     this.group.add(this.roofGroup);
   }
 
+  /** 지형 자동 타일 (Tiled wangset, docs/07). 아틀라스가 없으면(원본 에셋 없는 환경) 예전 방식 */
+  private tiler: TerrainTiler | null = null;
+  private terrainImg: HTMLImageElement | null = null;
+
   async load(): Promise<void> {
     await Promise.all(
       Object.entries(this.pack.images).map(async ([id, path]) => {
@@ -143,12 +160,56 @@ export class WorldView {
         this.textures.set(id, pixelTexture(img));
       }),
     );
+    // 건물 외관 (docs/07)
+    try {
+      const sd = shellsJson as unknown as ShellsData;
+      const [img, glass, glow] = await Promise.all([this.assets.image(sd.image), this.assets.image(sd.glass).catch(() => null), sd.glow ? this.assets.image(sd.glow).catch(() => null) : Promise.resolve(null)]);
+      this.shells.setImages(img, glass, glow);
+    } catch {
+      /* 외관 그림 없음 */
+    }
+    const td = terrainJson as unknown as TerrainData;
+    try {
+      this.terrainImg = await this.assets.image(td.image);
+      this.tiler = new TerrainTiler(td);
+    } catch {
+      this.tiler = null;
+    }
     this.rebuildLot();
+  }
+
+  /** 새 지형 타일러로 1층 판 청크 (재질 레이어 + 물가 도려내기 + 절벽) */
+  private drawTerrain(g: CanvasRenderingContext2D, tx0: number, ty0: number, C: number): void {
+    const T = this.tile;
+    const td = this.tiler!.d;
+    const img = this.terrainImg!;
+    const ops = this.tiler!.ops({ w: this.lot.w, h: this.H, ground: this.lot.ground, elev: this.lot.elev, ramps: this.lot.ramps, cliffStyle: this.lot.cliffStyle }, tx0, ty0, tx0 + C, ty0 + C);
+    for (const o of ops) {
+      const dx = (o.x - tx0) * T;
+      const dy = (o.y - ty0) * T;
+      if (o.clear) {
+        g.clearRect(dx, dy, T, T);
+        continue;
+      }
+      const sx = (o.atlas % td.cols) * T;
+      const sy = Math.floor(o.atlas / td.cols) * T;
+      if (o.cut) {
+        g.globalCompositeOperation = 'destination-out';
+        g.drawImage(img, sx, sy, T, T, dx, dy, T, T);
+        g.globalCompositeOperation = 'source-over';
+        continue;
+      }
+      g.drawImage(img, sx, sy, T, T, dx, dy, T, T);
+    }
   }
 
   // ------------------------------------------------------------------ 좌표
 
   private get H(): number {
+    return this.lot.h;
+  }
+
+  get lotH(): number {
     return this.lot.h;
   }
 
@@ -199,6 +260,8 @@ export class WorldView {
   levelVisibility(level: number): { visible: boolean; tint: number } {
     if (this.exterior) return { visible: level >= 0, tint: 1 };
     const v = this.viewLevel;
+    // 실내 화면: 보는 층만 (아래층이 비쳐 겹쳐 보이지 않게)
+    if (this.soloLevel) return { visible: level === v, tint: 1 };
     if (v < 0) return { visible: level === v, tint: 1 };
     if (level < 0) return { visible: false, tint: 1 };
     if (level > v) return { visible: false, tint: 1 };
@@ -236,11 +299,31 @@ export class WorldView {
     this.grid.detectRooms();
     for (const w of this.walls) for (const n of [w.main, w.cap, w.over]) if (n) this.disposeNode(n);
     this.walls = [];
+    for (const b of this.beams) { b.parent?.remove(b); (b.material as THREE.Material).dispose(); }
+    this.beams = [];
     this.buildGround();
+    this.buildWater();
+    this.buildShells();
     this.buildUpper();
     this.buildWalls();
     this.buildRoof();
     this.applyVisibility();
+  }
+
+  /** 건물 외관 (docs/07) */
+  readonly shells = new ShellView(shellsJson as unknown as ShellsData, 32, ORDER_SCALE);
+  private buildShells(): void {
+    if (!this.shells.group.parent) this.layers[0].group.add(this.shells.group);
+    this.shells.build(this.lot.shells ?? []);
+  }
+
+  /** 흐르는 물 (docs/07): 바닥 청크 아래에 셰이더 판 하나 */
+  readonly water = new WaterView();
+  private buildWater(): void {
+    if (!this.water.mesh.parent) this.layers[0].group.add(this.water.mesh);
+    const W = this.lot.w;
+    const tl = this.tiler;
+    this.water.rebuild(W, this.H, (x, y) => !!tl && tl.material(this.lot.ground[y * W + x]) === 'water', this.tile, this.bounds);
   }
 
   private computeStairs(): void {
@@ -277,10 +360,11 @@ export class WorldView {
 
   /** 바닥 값 → 타일 (재질 id 는 칸 해시로 변형 고름, 옛 타일 id 는 그대로) */
   private floorTile(id: string, x: number, y: number): TileRef | undefined {
-    const t = this.pack.tiles[id];
-    if (t) return t;
+    // 재질 목록이 먼저 (같은 이름의 옛 타일 별칭이 남아 있어도 새 변형을 씀)
     const list = this.floors()[id];
     if (list?.length) return this.pack.tiles[list[hash2(x, y) % list.length]];
+    const t = this.pack.tiles[id];
+    if (t) return t;
     // 아트가 아직 없는 재질: 비슷한 기존 타일
     const fb = id.includes('stone') || id.includes('flag') || id.includes('tile') ? 'floor_stone' : 'floor_wood';
     return this.pack.tiles[`${fb}_${(hash2(x, y) % 4) + 1}`] ?? this.pack.tiles[fb];
@@ -362,7 +446,110 @@ export class WorldView {
   }
 
   private buildUpper(): void {
-    // 위층/지하 바닥도 청크 (updateChunks 가 만듦)
+    // 위층/지하 바닥도 청크 (updateChunks 가 만듦). 단, 외관 발자국 안(집 실내)은 집마다 따로 (닫힌 집은 숨김)
+    this.buildShellIndex();
+    this.buildShellFloors();
+  }
+
+  // ------------------------------------------------------------------ 집 실내 묶음 (사용자: 닫힌 집의 실내 벽/2층이 외관 밖으로 보임)
+  /** 판 안 칸 → 외관 번호 (-1 = 바깥) */
+  private shellAt = new Int32Array(0);
+  /** `${판}:${외관}` → 그 집 실내 (벽, 물건, 2층 바닥, 등불). 열린 집만 보임 */
+  private shellGroups = new Map<string, THREE.Group>();
+  private revealed = new Set<number>();
+  private buildShellIndex(): void {
+    const W = this.lot.w, H = this.H;
+    this.shellAt = new Int32Array(W * H).fill(-1);
+    for (const g of this.shellGroups.values()) g.parent?.remove(g);
+    this.shellGroups.clear();
+    for (let i = 0; i < this.shells.count; i++) {
+      const r = this.shells.footRect(i)!;
+      for (let y = Math.max(0, r[1]); y <= Math.min(H - 1, r[3]); y++) for (let x = Math.max(0, r[0]); x <= Math.min(W - 1, r[2]); x++) this.shellAt[y * W + x] = i;
+    }
+  }
+  /** 칸 (x, 판 안 y) 의 외관 번호 */
+  shellOfCell(x: number, ly: number): number {
+    const W = this.lot.w;
+    if (x < 0 || ly < 0 || x >= W || ly >= this.H || !this.shellAt.length) return -1;
+    return this.shellAt[ly * W + x];
+  }
+  /** 그 칸의 메시를 붙일 곳: 집 안이면 그 집 묶음, 아니면 판 */
+  private groupFor(x: number, ly: number, slab: number): THREE.Group {
+    const i = this.shellOfCell(x, ly);
+    if (i < 0) return this.layers[slab].group;
+    const key = `${slab}:${i}`;
+    let g = this.shellGroups.get(key);
+    if (!g) {
+      g = new THREE.Group();
+      g.visible = this.revealed.has(i);
+      this.layers[slab].group.add(g);
+      this.shellGroups.set(key, g);
+    }
+    return g;
+  }
+  /** 열린(걷히는 중 포함) 집: 그 집 실내만 보임 */
+  setRevealed(open: Set<number>): void {
+    if (open.size === this.revealed.size && [...open].every((i) => this.revealed.has(i))) return;
+    this.revealed = new Set(open);
+    for (const [k, g] of this.shellGroups) g.visible = this.revealed.has(Number(k.split(':')[1]));
+    this.refreshWalls();
+  }
+  /** 방 사각형(칸)의 실제 벽 그림 테두리 (세계 px): 실내 어둠 가리개를 벽에 딱 맞춤 */
+  roomPixelRect(r: [number, number, number, number], level: number): [number, number, number, number] | null {
+    const slab = LEVELS.indexOf(level);
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const w of this.walls) {
+      if (w.slab !== slab || w.x < r[0] || w.x > r[2]) continue;
+      const ly = this.localRow(w.y);
+      if (ly < r[1] || ly > r[3]) continue;
+      for (const nd of [w.main, w.cap]) {
+        if (!nd || !nd.mesh.visible) continue;
+        const l = nd.left - nd.ref.anchorX, t = nd.bottom - nd.ref.anchorY;
+        x0 = Math.min(x0, l); y0 = Math.min(y0, t); x1 = Math.max(x1, l + nd.ref.w); y1 = Math.max(y1, t + nd.ref.h);
+      }
+    }
+    return x0 < x1 ? [x0, y0, x1, y1] : null;
+  }
+
+  /** 사람: 닫힌 집의 위층에 있으면 숨김 (1층은 외관이 가림) */
+  hiddenInShell(x: number, y: number): boolean {
+    const slab = this.slabOfRow(y);
+    if (slab === 0 || LEVELS[slab] < 0) return false;
+    const i = this.shellOfCell(Math.floor(x), Math.floor(this.localRow(y)));
+    return i >= 0 && !this.revealed.has(i);
+  }
+  /** 위층 바닥: 집마다 한 장 (청크에서는 뺌) */
+  private shellFloors: THREE.Mesh[] = [];
+  private buildShellFloors(): void {
+    for (const m of this.shellFloors) this.disposeChunk(m);
+    this.shellFloors = [];
+    if (!this.imageEls.size) return;
+    const T = this.tile, W = this.lot.w, H = this.H;
+    for (let i = 0; i < this.shells.count; i++) {
+      const r = this.shells.footRect(i)!;
+      for (let slab = 1; slab < SLABS; slab++) {
+        if (LEVELS[slab] <= 0) continue;
+        const base = slab * slabStride(H);
+        const c = document.createElement('canvas');
+        c.width = (r[2] - r[0] + 1) * T;
+        c.height = (r[3] - r[1] + 1) * T;
+        const g = c.getContext('2d')!;
+        g.imageSmoothingEnabled = false;
+        let any = false;
+        for (let y = r[1]; y <= r[3]; y++) for (let x = r[0]; x <= r[2]; x++) {
+          if (x < 0 || y < 0 || x >= W || y >= H) continue;
+          const f = this.lot.floor[(base + y) * W + x];
+          if (!f) continue;
+          any = true;
+          this.drawTile(g, this.floorTile(f, x, y), (x - r[0]) * T, (y - r[1]) * T);
+        }
+        if (!any) continue;
+        const mesh = this.canvasMesh(c, r[0] * T, r[1] * T - this.yOff(slab));
+        mesh.renderOrder = this.orderBase(slab) - 10;
+        this.groupFor(r[0], r[1], slab).add(mesh);
+        this.shellFloors.push(mesh);
+      }
+    }
   }
 
   private disposeChunk(m: THREE.Mesh): void {
@@ -440,7 +627,16 @@ export class WorldView {
     const level = LEVELS[slab];
     const base = slab * slabStride(H);
     let any = false;
-    if (level === 0) {
+    if (level === 0 && this.tiler && this.terrainImg) {
+      any = true;
+      this.drawTerrain(g, tx0, ty0, C);
+      for (let y = Math.max(0, ty0); y < Math.min(H, ty0 + C); y++) {
+        for (let x = Math.max(0, tx0); x < Math.min(W, tx0 + C); x++) {
+          const f = this.lot.floor[y * W + x];
+          if (f) this.drawTile(g, this.floorTile(f, x, y), (x - tx0) * T, (y - ty0) * T);
+        }
+      }
+    } else if (level === 0) {
       any = true;
       for (let y = ty0; y < ty0 + C; y++) {
         for (let x = tx0; x < tx0 + C; x++) {
@@ -492,7 +688,7 @@ export class WorldView {
         for (let x = tx0; x < tx0 + C; x++) {
           if (x < 0 || y < 0 || x >= W || y >= H) continue;
           const f = this.lot.floor[(base + y) * W + x];
-          if (!f) continue;
+          if (!f || this.shellOfCell(x, y) >= 0) continue;
           any = true;
           this.drawTile(g, this.floorTile(f, x, y), (x - tx0) * T, (y - ty0) * T);
           const below = y + 1 < H ? this.lot.floor[(base + y + 1) * W + x] : null;
@@ -565,6 +761,30 @@ export class WorldView {
     n.ref = ref;
   }
 
+  /** 스프라이트 아래쪽 투명 줄 수 (그림자 발 줄) */
+  private emptyRows = new Map<string, number>();
+  private emptyBottom(ref: { image: string; x: number; y: number; w: number; h: number }): number {
+    const key = `${ref.image}:${ref.x}:${ref.y}:${ref.w}:${ref.h}`;
+    const hit = this.emptyRows.get(key);
+    if (hit !== undefined) return hit;
+    let n = 0;
+    const img = this.imageEls.get(ref.image);
+    if (img) {
+      const c = document.createElement('canvas');
+      c.width = ref.w;
+      c.height = ref.h;
+      const g = c.getContext('2d', { willReadFrequently: true })!;
+      g.drawImage(img, ref.x, ref.y, ref.w, ref.h, 0, 0, ref.w, ref.h);
+      const d = g.getImageData(0, 0, ref.w, ref.h).data;
+      outer: for (let y = ref.h - 1; y >= 0; y--) {
+        for (let x = 0; x < ref.w; x++) if (d[(y * ref.w + x) * 4 + 3] > 127) break outer;
+        n++;
+      }
+    }
+    this.emptyRows.set(key, n);
+    return n;
+  }
+
   // ------------------------------------------------------------------ 벽
 
   /** 같은 판 안의 벽 (판 밖/틈 줄은 없음) */
@@ -602,6 +822,41 @@ export class WorldView {
     }
     this.computeFull();
     this.refreshWalls();
+    this.buildBeams();
+  }
+
+  // ------------------------------------------------------------------ 창 빛줄기 (실내, 낮)
+  private beams: THREE.Mesh[] = [];
+  private beamTex: THREE.Texture | null = null;
+  /** 뒷벽(남쪽이 방 바닥) 창마다: 창에서 바닥으로 비스듬히 떨어지는 빛 (더하기, 낮에만, 잘라 보기에서만) */
+  private buildBeams(): void {
+    const T = this.tile;
+    this.beamTex ??= makeBeamTexture();
+    for (const w of this.walls) {
+      if (w.opening !== 'window' || !this.hasFloor(w.x, w.y + 1, w.slab) || this.wallAt(w.x, w.y + 1, w.slab)) continue;
+      const mat = new THREE.MeshBasicMaterial({ map: this.beamTex, transparent: true, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, color: 0xfff0c0, opacity: 0 });
+      const m = new THREE.Mesh(quad, mat);
+      const ly = this.localRow(w.y);
+      // 창 아래 끝(벽 얼굴 중간쯤)부터 바닥 세 칸
+      const top = (ly + 1) * T - this.yOff(w.slab) - 40;
+      placeRect(m, w.x * T - 6, top, T + 28, 40 + 3 * T);
+      m.renderOrder = this.orderBase(w.slab) - 1e5 + (ly + 4) * T;
+      m.visible = false;
+      this.groupFor(w.x, ly, w.slab).add(m);
+      this.beams.push(m);
+    }
+  }
+  private updateBeams(timeMs: number, darkness: number): void {
+    const on = this.effectiveCutaway() === 'cut';
+    const k = Math.max(0, 1 - darkness * 1.6);
+    for (let i = 0; i < this.beams.length; i++) {
+      const b = this.beams[i];
+      // 구름 지나가듯 천천히 숨 쉼
+      const breathe = 0.85 + 0.15 * Math.sin(timeMs / 2300 + i * 1.3);
+      const op = on ? 0.2 * k * breathe : 0;
+      (b.material as THREE.MeshBasicMaterial).opacity = op;
+      b.visible = op > 0.01 && !!b.parent?.visible;
+    }
   }
 
   /**
@@ -612,7 +867,7 @@ export class WorldView {
   private computeFull(): void {
     this.fullWalls.clear();
     const W = this.lot.w;
-    if (this.effectiveCutaway() !== 'cut') return;
+    // 열린 집은 늘 잘라 보기라 뒷벽 목록은 늘 셈
     const queue: number[] = [];
     for (const w of this.walls) {
       if (this.hasFloor(w.x, w.y + 1, w.slab) && !this.wallAt(w.x, w.y + 1, w.slab)) {
@@ -647,7 +902,9 @@ export class WorldView {
   private isCut(x: number, y: number): boolean {
     const style = this.lot.walls[y * this.lot.w + x];
     if (style && this.isFenceStyle(style)) return false;
-    const mode = this.effectiveCutaway();
+    // 열린 집 벽은 바깥 보기(지붕 켬)여도 잘라 보기 (앞벽이 실내를 가리지 않게)
+    const si = this.shellOfCell(x, Math.floor(this.localRow(y)));
+    const mode = si >= 0 && this.revealed.has(si) ? 'cut' : this.effectiveCutaway();
     if (mode === 'up') return false;
     if (mode === 'down') return true;
     return !this.fullWalls.has(y * this.lot.w + x);
@@ -684,6 +941,11 @@ export class WorldView {
           over = winArt.side;
         }
         sid ??= cut ? wd.topCut ?? wd.top : wd.top;
+        // 잘라 보기의 세로벽 문 = 뚫린 문간 (바닥이 보임, 문짝 옆모습은 가는 막대라 문인지 모름)
+        if (cut && op === 'door') {
+          sid = undefined;
+          over = null;
+        }
       } else if (op === 'door') {
         if (doorArt && wd.doorFrame) {
           sid = cut ? wd.doorFrameCut ?? wd.doorCut : wd.doorFrame;
@@ -704,8 +966,15 @@ export class WorldView {
       const bottom = (ly + 1) * T - this.yOff(w.slab);
       // 같은 아랫변이면 벽이 물건보다 먼저 (render-lot 규칙)
       const order = this.orderBase(w.slab) + (ly + 1) * T * ORDER_SCALE - 3;
-      const parent = this.layers[w.slab].group;
+      const parent = this.groupFor(w.x, ly, w.slab);
+      // 뒷벽 모서리 (위는 뒷벽 높이, 아래는 낮춘 옆벽): 옆벽 윗면이 뒷벽 윗선까지 이어지게 (사용자: 옆벽이 한 칸 빠져 보임)
+      const corner = my === 1 && south === 0 && !op;
+      if (corner) sid = cut ? wd.topCut ?? wd.top : wd.top;
       w.main = this.placeWallSprite(w.main, sid ?? null, w.x * T, bottom, order, parent);
+      if (corner && w.main) {
+        const faceH = (this.pack.sprites[wd.face as string]?.h ?? this.story + T);
+        placeRect(w.main.mesh, w.x * T, bottom - faceH, T, faceH);
+      }
       w.cap = this.placeWallSprite(w.cap, capId, w.x * T, bottom, order + 1, parent);
       w.over = this.placeWallSprite(w.over, over, w.x * T, bottom, order + 2, parent);
     }
@@ -801,6 +1070,8 @@ export class WorldView {
     const W = this.lot.w;
     const H = this.H;
     const top = this.grid.roofMap();
+    // 외관이 있는 건물은 외관 그림이 지붕 (자동 지붕 안 그림)
+    for (const i of this.shells.footCells(W)) if (i < top.length) top[i] = -1;
     const set = (this.pack.roofs as Record<string, RoofSet> | undefined)?.[this.roofStyle()];
     const seen = new Uint8Array(W * H);
     for (let start = 0; start < W * H; start++) {
@@ -1006,6 +1277,11 @@ export class WorldView {
       n.light.parent?.remove(n.light);
       (n.light.material as THREE.Material).dispose();
     }
+    for (const m of [n.shadow, n.ao]) {
+      if (!m) continue;
+      m.parent?.remove(m);
+      (m.material as THREE.Material).dispose();
+    }
   }
 
   /** 물건 스냅샷 반영: 새 물건 생성, 옮김/팔림 반영, 상태별 스프라이트, 광원. busy = 지금 누가 일하고 있는 물건 */
@@ -1038,7 +1314,7 @@ export class WorldView {
         const localBottom = (ly + fp.h) * T;
         const bottom = localBottom - this.yOff(slab);
         const base = entry.rot?.[String(rot)] ?? entry.default;
-        const node = this.spriteNode(base, o.x * T, bottom, this.layers[slab].group);
+        const node = this.spriteNode(base, o.x * T, bottom, this.groupFor(o.x, Math.floor(this.localRow(o.y)), slab));
         if (!node) continue;
         // 방향 없는 물건의 좌우 반전 (rot 2, 방향 그림이 없을 때)
         if (rot === 2 && def.flip && !entry.rot?.['2']) node.flipX = true;
@@ -1053,6 +1329,40 @@ export class WorldView {
         const l = this.layers[slab];
         if (l.tint !== 1) node.mat.uniforms.uTint.value.setRGB(l.tint, l.tint, l.tint * 1.05);
         n = { uid: o.uid, defId: o.defId, node, light: null, lit: false, bottom, localBottom, footprint: fp, x: o.x, y: o.y, rot, variant: o.variant ?? '', slab, base };
+        // 그림자: 1층 판 바깥 물건 중 키가 큰 것 (나무, 노점, 수레 …)
+        // 바깥(바닥 없는 칸)에 놓인 막는 물건은 모두 해 그림자 (건물과 같은 방식). 실내 물건은 없음
+        const outside = !this.lot.floor[o.y * this.lot.w + o.x];
+        const tall = (def.blocks && !def.wallMounted && slab === 0 && outside) || /^(tree_|market_stall|well|fountain|lamp_post|wagon|hay_cart|tourney|statue|monument|signpost|notice_board)/.test(o.defId);
+        if (tall && slab === 0) {
+          const smat = makeShadowMaterial(node.mat.uniforms.map.value);
+          // 발 줄 = 그림의 맨 아래 불투명 줄 (기준점 아래 투명 여백이 있으면 그림자가 떨어져 보임)
+          smat.uniforms.uBase.value = Math.max(0, this.emptyBottom(node.ref) / node.ref.h);
+          // 천막/노점/수레는 짧게 (넓은 차양 그림자가 몸체에서 떨어져 보이지 않게)
+          // 나무만 길게, 나머지(노점·수레·통·상자 …)는 건물과 같은 길이로 눕힌 그림자
+          // 모든 그림자 같은 해 투영 (길이 배수 1): 건물·나무·물건 방향과 길이 비율이 같음
+          (smat.uniforms.uvRect.value as THREE.Vector4).copy(node.mat.uniforms.uvRect.value as THREE.Vector4);
+          const sm = new THREE.Mesh(shadowQuad, smat);
+          sm.position.copy(node.mesh.position);
+          sm.scale.copy(node.mesh.scale);
+          sm.renderOrder = SHADOW_ORDER;
+          this.layers[0].group.add(sm);
+          n.shadow = sm;
+        }
+        // 접지 그림자: 땅에 놓인 막는 물건 밑 (1층 판)
+        if (slab === 0 && def.blocks && !def.wallMounted) {
+          // 나무는 잎 폭만큼 둥근 접지 그늘 (그림자가 밑동에서 떨어져 보이지 않게)
+          const tree = /^tree_/.test(o.defId);
+          const ao = new THREE.Mesh(quad, makeAoMaterial(tree ? 0.7 : 0.55));
+          if (tree) placeRect(ao, node.left - node.ref.anchorX + node.ref.w * 0.18, bottom - 14, node.ref.w * 0.64, 20);
+          else placeRect(ao, o.x * T - 2, bottom - 6, fp.w * T + 4, 14);
+          ao.renderOrder = SHADOW_ORDER + 1;
+          this.groupFor(o.x, o.y, 0).add(ao);
+          n.ao = ao;
+        }
+        // 밤에 저절로 켜지는 불빛: 'light' 붙은 등불·초·화로·모닥불 (불 붙은 그림으로 바뀜).
+        // 화덕/가마/대장간 화로는 sim 에서 실제로 불을 피웠을 때만 빛남 (사용자: 불이 켜져 있을 때만)
+        n.lamp = (def.tags ?? []).includes('light' as never) && !/^(hearth|oven|forge)/.test(o.defId);
+        n.litSprite = entry.states?.lit;
         this.objs.set(o.uid, n);
       }
       let want = n.base;
@@ -1063,6 +1373,8 @@ export class WorldView {
         }
       }
       if (busy?.has(o.uid) && entry.states?.active) want = entry.states.active;
+      // 밤에 켜진 등불/화로: 불 붙은 그림
+      if (n.lamp && n.lit && entry.states?.lit) want = entry.states.lit;
       const tags = def.tags ?? [];
       if (tags.includes('field') || tags.includes('orchard')) want = this.syncField(n, o, tags) ?? want;
       // 불은 붙었는데 냄비가 없으면 냄비 없는 불 (epic.json hearth.extra)
@@ -1073,17 +1385,19 @@ export class WorldView {
       const radius = n.node.ref.light ?? (lit ? this.glowRadius(o.defId) : 0);
       if (lit && radius > 0) {
         if (!n.light) {
-          const mat = new THREE.MeshBasicMaterial({ map: this.glowTex, transparent: true, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, color: 0xffb060 });
+          const mat = new THREE.MeshBasicMaterial({ map: this.glowTex, transparent: true, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, color: fireColor(o.defId) });
           n.light = new THREE.Mesh(quad, mat);
           n.light.renderOrder = 1e7;
-          this.layers[n.slab].group.add(n.light);
+          // 광원 레이어 (후처리 광원 맵). 후처리를 끄면 예전처럼 더하기 번짐
+          n.light.layers.set(1);
+          (n.node.mesh.parent ?? this.layers[n.slab].group).add(n.light);
         }
         const cx = (o.x + n.footprint.w / 2) * T;
         const cy = n.bottom - (n.footprint.h / 2) * T - T / 2;
         const size = radius * 2 * T;
         placeRect(n.light, cx - size / 2, cy - size / 2, size, size);
         n.lit = true;
-      } else {
+      } else if (!n.lamp) {
         n.lit = false;
         if (n.light) n.light.visible = false;
       }
@@ -1123,6 +1437,7 @@ export class WorldView {
     }
     this.chimneys = [];
     const top = g.roofMap();
+    for (const i of this.shells.footCells(this.lot.w)) if (i < top.length) top[i] = -1;
     const style = this.lot.roof?.style ?? 'roof_thatch';
     const sid = this.pack.sprites[style === 'roof_slate' || style === 'roof_tile' ? 'chimney_brick' : 'chimney_stone'] ? (style === 'roof_slate' || style === 'roof_tile' ? 'chimney_brick' : 'chimney_stone') : this.pack.sprites.chimney_stone ? 'chimney_stone' : null;
     for (const c of list) {
@@ -1187,8 +1502,31 @@ export class WorldView {
     return best;
   }
 
+  /** 실내 화면 (스타듀식): 방 사각형(칸) 앞에 서서 방을 가리는 물건은 숨김. null = 바깥 */
+  /** 실내 화면이면 보는 층만 그림 */
+  soloLevel = false;
+  setInteriorRect(r: [number, number, number, number] | null, solo = true): void {
+    const T = this.tile;
+    if (this.soloLevel !== (!!r && solo)) {
+      this.soloLevel = !!r && solo;
+      this.applyVisibility();
+    }
+    for (const n of this.objs.values()) {
+      let hide = false;
+      if (r && n.slab === 0 && n.y > r[3]) {
+        const ref = n.node.ref;
+        const left = n.node.left - ref.anchorX, top = n.node.bottom - ref.anchorY;
+        hide = left < (r[2] + 1) * T && left + ref.w > r[0] * T && top < (r[3] + 1) * T && top + ref.h > r[1] * T - 88;
+      }
+      n.node.mesh.visible = !hide;
+      if (n.shadow) n.shadow.visible = !hide;
+    }
+  }
+
   /** 애니메이션 프레임과 광원 세기 (어두울수록 강함) */
   animate(timeMs: number, darkness: number): void {
+    this.updateBeams(timeMs, darkness);
+    this.water.update(timeMs, darkness);
     for (const c of this.chimneys) {
       const r = c.smoke?.ref;
       if (c.smoke && r?.frames && r.frames > 1) {
@@ -1204,10 +1542,35 @@ export class WorldView {
         const img = this.imageEls.get(r.image)!;
         setUvRect(n.node.mat, img.width, img.height, r.x + f * (r.frameDx ?? r.w), r.y, r.w, r.h);
       }
+      if (n.lamp) {
+        const on = darkness > 0.3;
+        if (on && !n.light) {
+          // 불 색: 화덕·화로·모닥불·횃불은 붉은 주황, 등불·초는 노란빛 (사용자)
+          const mat = new THREE.MeshBasicMaterial({ map: this.glowTex, transparent: true, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, color: fireColor(n.defId) });
+          n.light = new THREE.Mesh(quad, mat);
+          n.light.renderOrder = 1e7;
+          n.light.layers.set(1);
+          (n.node.mesh.parent ?? this.layers[n.slab].group).add(n.light);
+          const T = this.tile;
+          // 실내 등불/촛대는 방 하나를 데우는 정도, 화덕은 불씨 (아래쪽에서 크게), 가로등은 크게
+          const fire = /^(hearth|oven|forge|brazier|campfire)/.test(n.defId);
+          const small = /^(candle|candelabra_iron|candelabra_brass|altar_candles|lantern_standing)/.test(n.defId);
+          const size = (fire ? 9 : small ? 4.5 : /^(lantern_|wall_lamp|hanging_lamp|torch_wall|chandelier)/.test(n.defId) ? 7 : 9) * T;
+          // 등불은 기둥 꼭대기 (그림 위쪽 1/4), 화덕은 아궁이 (아래 1/3)
+          const cx = fire ? n.node.left + (n.footprint.w * T) / 2 : n.node.left + T / 2;
+          const cy = fire ? n.node.bottom - T * 0.9 : n.node.bottom - n.node.ref.anchorY + n.node.ref.h * 0.2;
+          placeRect(n.light, cx - size / 2, cy - size / 2, size, size);
+        }
+        if (n.lit !== on && n.litSprite) this.setSprite(n.node, on ? n.litSprite : n.base);
+        n.lit = on;
+        if (n.light) n.light.visible = on;
+        // 그림 전체가 빛나 보이지 않게 약하게 (빛은 번짐이 담당)
+        n.node.mat.uniforms.uEmissive.value = on ? 0.15 : 0;
+      }
       if (n.light && n.lit) {
         const flicker = 0.85 + 0.15 * Math.sin(timeMs / 90 + n.uid) * Math.sin(timeMs / 230 + n.uid * 3);
         // 낮에는 빛 번짐 없음 (픽셀 흐림 검사 대상 화면을 깨끗하게), 어두울수록 강해짐
-        const op = 0.6 * darkness * flicker;
+        const op = Math.min(1, darkness * flicker);
         (n.light.material as THREE.MeshBasicMaterial).opacity = op;
         n.light.visible = op > 0.01 && this.layers[n.slab].group.visible;
       }
@@ -1385,14 +1748,45 @@ export class WorldView {
   }
 }
 
+/** 창 빛줄기: 위(창)는 좁고 밝게, 아래(바닥)로 넓어지며 옅어지는 비스듬한 띠, 가장자리 부드럽게 */
+function makeBeamTexture(): THREE.Texture {
+  const c = document.createElement('canvas');
+  c.width = 32;
+  c.height = 64;
+  const g = c.getContext('2d')!;
+  const img = g.createImageData(32, 64);
+  for (let y = 0; y < 64; y++) {
+    const t = y / 63;
+    // 오른쪽 아래로 기움 (해가 왼쪽 위)
+    const x0 = 4 + t * 6, x1 = 20 + t * 11;
+    for (let x = 0; x < 32; x++) {
+      const edge = Math.min(x - x0, x1 - x) / 3;
+      const a = Math.max(0, Math.min(1, edge)) * (t < 0.12 ? t / 0.12 : 1) * (1 - t * 0.55) * (t > 0.85 ? (1 - t) / 0.15 : 1);
+      const i = (y * 32 + x) * 4;
+      img.data[i] = 255; img.data[i + 1] = 236; img.data[i + 2] = 190;
+      img.data[i + 3] = Math.round(a * 255);
+    }
+  }
+  g.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.NoColorSpace;
+  return t;
+}
+
+/** 불빛 색: 장작불(화덕·화로·모닥불·횃불)은 붉은 주황, 등불·초는 노란빛 */
+function fireColor(defId: string): number {
+  return /^(hearth|oven|forge|brazier|campfire|torch)/.test(defId) ? 0xff7a38 : 0xffd66a;
+}
+
 function makeGlowTexture(): THREE.Texture {
   const c = document.createElement('canvas');
   c.width = c.height = 64;
   const g = c.getContext('2d')!;
   const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-  grad.addColorStop(0, 'rgba(255,220,160,1)');
-  grad.addColorStop(0.4, 'rgba(255,170,90,0.45)');
-  grad.addColorStop(1, 'rgba(255,140,60,0)');
+  // 무채색 가까운 밝은 빛 (색은 재질 색으로): 가운데 진하고 부드럽게 퍼짐
+  grad.addColorStop(0, 'rgba(255,250,235,1)');
+  grad.addColorStop(0.35, 'rgba(255,240,215,0.55)');
+  grad.addColorStop(1, 'rgba(255,230,200,0)');
   g.fillStyle = grad;
   g.fillRect(0, 0, 64, 64);
   const t = new THREE.CanvasTexture(c);

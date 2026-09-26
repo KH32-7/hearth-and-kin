@@ -37,7 +37,7 @@ export class WorkPanel {
 
   constructor(
     private careers: Record<string, CareerInfo>,
-    private skills: Record<string, { nameKey: string; icon: string; category: string }>,
+    readonly skills: Record<string, { nameKey: string; icon: string; category: string }>,
     private itemIcon: (id: string) => string,
     private h: WorkHandlers,
   ) {}

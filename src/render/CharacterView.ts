@@ -76,7 +76,7 @@ class CharacterNode {
     this.mesh = new THREE.Mesh(quad, this.mat);
     this.mesh.visible = false;
     group.add(this.mesh);
-    const sm = new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthTest: false, depthWrite: false, opacity: 0.35 });
+    const sm = new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthTest: false, depthWrite: false, opacity: 0.4, color: 0x50280e });
     this.shadow = new THREE.Mesh(quad, sm);
     this.shadow.visible = false;
     group.add(this.shadow);
@@ -199,7 +199,7 @@ export class CharacterView {
 
     // 보는 층 (23-2): 위층 사람은 숨김, 아래층 사람은 흐린 실루엣
     const vis = this.world.levelVisibility(this.world.levelOfRow(p.y));
-    if (p.hidden || !vis.visible) {
+    if (p.hidden || !vis.visible || this.world.hiddenInShell(p.x, p.y)) {
       n.mesh.visible = false;
       n.shadow.visible = false;
       if (n.horse) n.horse.visible = false;

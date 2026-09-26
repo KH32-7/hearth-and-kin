@@ -666,10 +666,9 @@ function buildFloors() {
     return o;
   };
   reg('floor_straw', [0, 1, 2, 3].map((i) => strawOn(mirrors(earth)[i], 300 + i)));
-  // wood: existing interiors planks
-  floors.floor_wood = [1, 2, 3, 4, 5, 6].map((i) => `floor_wood_${i}`);
-  // dark wood: same planks in dark oak
+  // wood: interiors planks, 붉은 마루(벽돌처럼 보임) → 따뜻한 꿀색 나무 (스타듀 마루 톤)
   const planks = [1, 2, 3, 4, 5, 6].map((i) => tileImg(`floor_wood_${i}`));
+  reg('floor_wood', planks.map((p) => tint(p, () => true, (h, sat, v) => [h + 16, sat * 0.7, Math.min(1, v * 1.18)])));
   reg('floor_wood_dark', planks.map((p) => tint(p, () => true, (h, sat, v) => [h - 6, sat * 0.75, v * 0.62])));
   // rough planks: the planks turned crosswise, weathered grey-brown with knots and gaps
   const ROUGH = ramp('#3e3334', '#56463f', '#6b5949', '#7e6a55', '#917b62', '#a18b6f');

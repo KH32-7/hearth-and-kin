@@ -38,7 +38,7 @@ function remaining(min: number): string {
 export class InnerPanel {
   private sig = '';
 
-  constructor(private defs: InnerDefs, private h: InnerHandlers) {}
+  constructor(readonly defs: InnerDefs, private h: InnerHandlers) {}
 
   /** tab: mood | persona | wishes */
   render(root: HTMLElement, tab: string, p: PersonSnap): void {

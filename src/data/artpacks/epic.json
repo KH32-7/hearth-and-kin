@@ -123,34 +123,34 @@
    "y": 128
   },
   "floor_wood_1": {
-   "image": "interiors_tilesets",
-   "x": 1152,
-   "y": 32
+   "image": "gen_atlas_0",
+   "x": 1214,
+   "y": 699
   },
   "floor_wood_2": {
-   "image": "interiors_tilesets",
-   "x": 1184,
-   "y": 64
+   "image": "gen_atlas_0",
+   "x": 1246,
+   "y": 699
   },
   "floor_wood_3": {
-   "image": "interiors_tilesets",
-   "x": 1216,
-   "y": 96
+   "image": "gen_atlas_0",
+   "x": 1278,
+   "y": 699
   },
   "floor_wood_4": {
-   "image": "interiors_tilesets",
-   "x": 1248,
-   "y": 32
+   "image": "gen_atlas_0",
+   "x": 1310,
+   "y": 699
   },
   "floor_wood_5": {
-   "image": "interiors_tilesets",
-   "x": 1280,
-   "y": 64
+   "image": "gen_atlas_0",
+   "x": 1342,
+   "y": 699
   },
   "floor_wood_6": {
-   "image": "interiors_tilesets",
-   "x": 1312,
-   "y": 96
+   "image": "gen_atlas_0",
+   "x": 1374,
+   "y": 699
   },
   "floor_wood": {
    "image": "interiors_tilesets",
@@ -224,142 +224,142 @@
   },
   "floor_wood_dark_1": {
    "image": "gen_atlas_0",
-   "x": 1214,
+   "x": 1406,
    "y": 699
   },
   "floor_wood_dark_2": {
    "image": "gen_atlas_0",
-   "x": 1246,
+   "x": 1438,
    "y": 699
   },
   "floor_wood_dark_3": {
    "image": "gen_atlas_0",
-   "x": 1278,
-   "y": 699
-  },
-  "floor_wood_dark_4": {
-   "image": "gen_atlas_0",
-   "x": 1310,
-   "y": 699
-  },
-  "floor_wood_dark_5": {
-   "image": "gen_atlas_0",
-   "x": 1342,
-   "y": 699
-  },
-  "floor_wood_dark_6": {
-   "image": "gen_atlas_0",
-   "x": 1374,
-   "y": 699
-  },
-  "floor_plank_rough_1": {
-   "image": "gen_atlas_0",
-   "x": 1406,
-   "y": 699
-  },
-  "floor_plank_rough_2": {
-   "image": "gen_atlas_0",
-   "x": 1438,
-   "y": 699
-  },
-  "floor_plank_rough_3": {
-   "image": "gen_atlas_0",
    "x": 958,
    "y": 731
   },
-  "floor_plank_rough_4": {
+  "floor_wood_dark_4": {
    "image": "gen_atlas_0",
    "x": 990,
    "y": 731
   },
-  "floor_flagstone_1": {
+  "floor_wood_dark_5": {
    "image": "gen_atlas_0",
    "x": 1022,
    "y": 731
   },
-  "floor_flagstone_2": {
+  "floor_wood_dark_6": {
    "image": "gen_atlas_0",
    "x": 1054,
    "y": 731
   },
-  "floor_flagstone_3": {
+  "floor_plank_rough_1": {
    "image": "gen_atlas_0",
    "x": 1086,
    "y": 731
   },
-  "floor_flagstone_4": {
+  "floor_plank_rough_2": {
    "image": "gen_atlas_0",
    "x": 1118,
    "y": 731
   },
-  "floor_flagstone_5": {
+  "floor_plank_rough_3": {
    "image": "gen_atlas_0",
    "x": 1150,
    "y": 731
   },
-  "floor_flagstone_6": {
+  "floor_plank_rough_4": {
    "image": "gen_atlas_0",
    "x": 1182,
    "y": 731
   },
-  "floor_tile_red_1": {
+  "floor_flagstone_1": {
    "image": "gen_atlas_0",
    "x": 1214,
    "y": 731
   },
-  "floor_tile_red_2": {
+  "floor_flagstone_2": {
    "image": "gen_atlas_0",
    "x": 1246,
    "y": 731
   },
-  "floor_tile_red_3": {
+  "floor_flagstone_3": {
    "image": "gen_atlas_0",
    "x": 1278,
    "y": 731
   },
-  "floor_tile_red_4": {
+  "floor_flagstone_4": {
    "image": "gen_atlas_0",
    "x": 1310,
    "y": 731
   },
-  "floor_tile_red_5": {
+  "floor_flagstone_5": {
    "image": "gen_atlas_0",
    "x": 1342,
    "y": 731
   },
-  "floor_tile_check_1": {
+  "floor_flagstone_6": {
    "image": "gen_atlas_0",
    "x": 1374,
    "y": 731
   },
-  "floor_tile_check_2": {
+  "floor_tile_red_1": {
    "image": "gen_atlas_0",
    "x": 1406,
    "y": 731
   },
-  "floor_tile_check_3": {
+  "floor_tile_red_2": {
    "image": "gen_atlas_0",
    "x": 1438,
    "y": 731
   },
-  "floor_cellar_1": {
+  "floor_tile_red_3": {
    "image": "gen_atlas_0",
    "x": 958,
    "y": 763
   },
-  "floor_cellar_2": {
+  "floor_tile_red_4": {
    "image": "gen_atlas_0",
    "x": 990,
    "y": 763
   },
-  "floor_cellar_3": {
+  "floor_tile_red_5": {
    "image": "gen_atlas_0",
    "x": 1022,
    "y": 763
   },
-  "floor_cellar_4": {
+  "floor_tile_check_1": {
    "image": "gen_atlas_0",
    "x": 1054,
+   "y": 763
+  },
+  "floor_tile_check_2": {
+   "image": "gen_atlas_0",
+   "x": 1086,
+   "y": 763
+  },
+  "floor_tile_check_3": {
+   "image": "gen_atlas_0",
+   "x": 1118,
+   "y": 763
+  },
+  "floor_cellar_1": {
+   "image": "gen_atlas_0",
+   "x": 1150,
+   "y": 763
+  },
+  "floor_cellar_2": {
+   "image": "gen_atlas_0",
+   "x": 1182,
+   "y": 763
+  },
+  "floor_cellar_3": {
+   "image": "gen_atlas_0",
+   "x": 1214,
+   "y": 763
+  },
+  "floor_cellar_4": {
+   "image": "gen_atlas_0",
+   "x": 1246,
    "y": 763
   },
   "terrain_dirt_c1": {

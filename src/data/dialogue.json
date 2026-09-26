@@ -1,0 +1,6257 @@
+{
+  "$comment": "대사창 규칙 문장 (GDD 27-13, 14-3, 11-5 말투). AI 가 꺼져 있을 때 지문(act) + 대사(say) + 대답(reply) 키를 고름. 표시 전용이라 게임 판정에 쓰지 않음. when 조건: speakerTraits/listenerTraits(특성 중 하나), tier(stranger|acquaintance|friend|bestFriend|lover|spouse|family|rival|enemy), register/listenerRegister(low=농노·자유민, mid=장인·상인, high=기사·귀족·성직자, clergy=성직자), emotion, topic, stage(한마디). 맞은 조건 수가 많은 항목을 먼저 고르고, 없으면 조건 없는 항목, 그다음 categories 공용 풀. 문장은 src/i18n/ko/dialogue.json ({a}=말하는 사람, {b}=듣는 사람). 고르는 코드 src/ui/dialogue/pickLine.ts, 검사 tools/check-data.ts",
+  "interactions": {
+    "social.greet": {
+      "category": "basic",
+      "ok": [
+        {
+          "act": "dlg.greet.ok.1.act",
+          "say": "dlg.greet.ok.1.say",
+          "reply": "dlg.greet.ok.1.reply"
+        },
+        {
+          "act": "dlg.greet.ok.2.act",
+          "say": "dlg.greet.ok.2.say",
+          "reply": "dlg.greet.ok.2.reply"
+        },
+        {
+          "act": "dlg.greet.ok.3.act",
+          "say": "dlg.greet.ok.3.say",
+          "reply": "dlg.greet.ok.3.reply"
+        },
+        {
+          "act": "dlg.greet.ok.4.act",
+          "say": "dlg.greet.ok.4.say",
+          "reply": "dlg.greet.ok.4.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.greet.ok.5.act",
+          "say": "dlg.greet.ok.5.say",
+          "reply": "dlg.greet.ok.5.reply",
+          "when": {
+            "register": [
+              "mid"
+            ]
+          }
+        },
+        {
+          "act": "dlg.greet.ok.6.act",
+          "say": "dlg.greet.ok.6.say",
+          "reply": "dlg.greet.ok.6.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.greet.ok.7.act",
+          "say": "dlg.greet.ok.7.say",
+          "reply": "dlg.greet.ok.7.reply",
+          "when": {
+            "register": [
+              "clergy"
+            ]
+          }
+        },
+        {
+          "act": "dlg.greet.ok.8.act",
+          "say": "dlg.greet.ok.8.say",
+          "reply": "dlg.greet.ok.8.reply",
+          "when": {
+            "speakerTraits": [
+              "sociable"
+            ]
+          }
+        },
+        {
+          "act": "dlg.greet.ok.9.act",
+          "say": "dlg.greet.ok.9.say",
+          "reply": "dlg.greet.ok.9.reply",
+          "when": {
+            "speakerTraits": [
+              "introvert"
+            ]
+          }
+        },
+        {
+          "act": "dlg.greet.ok.10.act",
+          "say": "dlg.greet.ok.10.say",
+          "reply": "dlg.greet.ok.10.reply",
+          "when": {
+            "speakerTraits": [
+              "suspicious"
+            ]
+          }
+        },
+        {
+          "act": "dlg.greet.ok.11.act",
+          "say": "dlg.greet.ok.11.say",
+          "reply": "dlg.greet.ok.11.reply",
+          "when": {
+            "speakerTraits": [
+              "cheerful"
+            ]
+          }
+        },
+        {
+          "act": "dlg.greet.ok.12.act",
+          "say": "dlg.greet.ok.12.say",
+          "reply": "dlg.greet.ok.12.reply",
+          "when": {
+            "register": [
+              "low",
+              "mid"
+            ],
+            "listenerRegister": [
+              "high"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.greet.fail.1.act",
+          "say": "dlg.greet.fail.1.say",
+          "reply": "dlg.greet.fail.1.reply"
+        },
+        {
+          "act": "dlg.greet.fail.2.act",
+          "say": "dlg.greet.fail.2.say",
+          "reply": "dlg.greet.fail.2.reply"
+        },
+        {
+          "act": "dlg.greet.fail.3.act",
+          "say": "dlg.greet.fail.3.say",
+          "reply": "dlg.greet.fail.3.reply"
+        },
+        {
+          "act": "dlg.greet.fail.4.act",
+          "say": "dlg.greet.fail.4.say",
+          "reply": "dlg.greet.fail.4.reply",
+          "when": {
+            "listenerTraits": [
+              "suspicious"
+            ]
+          }
+        },
+        {
+          "act": "dlg.greet.fail.5.act",
+          "say": "dlg.greet.fail.5.say",
+          "reply": "dlg.greet.fail.5.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        }
+      ]
+    },
+    "social.introduce": {
+      "category": "basic",
+      "ok": [
+        {
+          "act": "dlg.introduce.ok.1.act",
+          "say": "dlg.introduce.ok.1.say",
+          "reply": "dlg.introduce.ok.1.reply"
+        },
+        {
+          "act": "dlg.introduce.ok.2.act",
+          "say": "dlg.introduce.ok.2.say",
+          "reply": "dlg.introduce.ok.2.reply"
+        },
+        {
+          "act": "dlg.introduce.ok.3.act",
+          "say": "dlg.introduce.ok.3.say",
+          "reply": "dlg.introduce.ok.3.reply",
+          "when": {
+            "topic": [
+              "work"
+            ]
+          }
+        },
+        {
+          "act": "dlg.introduce.ok.4.act",
+          "say": "dlg.introduce.ok.4.say",
+          "reply": "dlg.introduce.ok.4.reply",
+          "when": {
+            "register": [
+              "mid"
+            ]
+          }
+        },
+        {
+          "act": "dlg.introduce.ok.5.act",
+          "say": "dlg.introduce.ok.5.say",
+          "reply": "dlg.introduce.ok.5.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.introduce.ok.6.act",
+          "say": "dlg.introduce.ok.6.say",
+          "reply": "dlg.introduce.ok.6.reply",
+          "when": {
+            "register": [
+              "clergy"
+            ]
+          }
+        },
+        {
+          "act": "dlg.introduce.ok.7.act",
+          "say": "dlg.introduce.ok.7.say",
+          "reply": "dlg.introduce.ok.7.reply",
+          "when": {
+            "speakerTraits": [
+              "gossip"
+            ]
+          }
+        },
+        {
+          "act": "dlg.introduce.ok.8.act",
+          "say": "dlg.introduce.ok.8.say",
+          "reply": "dlg.introduce.ok.8.reply",
+          "when": {
+            "speakerTraits": [
+              "ambitious"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.introduce.fail.1.act",
+          "say": "dlg.introduce.fail.1.say",
+          "reply": "dlg.introduce.fail.1.reply"
+        },
+        {
+          "act": "dlg.introduce.fail.2.act",
+          "say": "dlg.introduce.fail.2.say",
+          "reply": "dlg.introduce.fail.2.reply"
+        },
+        {
+          "act": "dlg.introduce.fail.3.act",
+          "say": "dlg.introduce.fail.3.say",
+          "reply": "dlg.introduce.fail.3.reply",
+          "when": {
+            "register": [
+              "low",
+              "mid"
+            ],
+            "listenerRegister": [
+              "high"
+            ]
+          }
+        }
+      ]
+    },
+    "social.nod": {
+      "category": "basic",
+      "ok": [
+        {
+          "act": "dlg.nod.ok.1.act",
+          "say": "dlg.nod.ok.1.say",
+          "reply": "dlg.nod.ok.1.reply"
+        },
+        {
+          "act": "dlg.nod.ok.2.act",
+          "say": "dlg.nod.ok.2.say",
+          "reply": "dlg.nod.ok.2.reply"
+        },
+        {
+          "act": "dlg.nod.ok.3.act",
+          "say": "dlg.nod.ok.3.say",
+          "reply": "dlg.nod.ok.3.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.nod.ok.4.act",
+          "say": "dlg.nod.ok.4.say",
+          "reply": "dlg.nod.ok.4.reply",
+          "when": {
+            "register": [
+              "low"
+            ],
+            "listenerRegister": [
+              "high"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.nod.fail.1.act",
+          "say": "dlg.nod.fail.1.say"
+        },
+        {
+          "act": "dlg.nod.fail.2.act",
+          "say": "dlg.nod.fail.2.say",
+          "reply": "dlg.nod.fail.2.reply",
+          "when": {
+            "tier": [
+              "rival",
+              "enemy"
+            ]
+          }
+        }
+      ]
+    },
+    "social.ask_after": {
+      "category": "basic",
+      "ok": [
+        {
+          "act": "dlg.ask_after.ok.1.act",
+          "say": "dlg.ask_after.ok.1.say",
+          "reply": "dlg.ask_after.ok.1.reply"
+        },
+        {
+          "act": "dlg.ask_after.ok.2.act",
+          "say": "dlg.ask_after.ok.2.say",
+          "reply": "dlg.ask_after.ok.2.reply"
+        },
+        {
+          "act": "dlg.ask_after.ok.3.act",
+          "say": "dlg.ask_after.ok.3.say",
+          "reply": "dlg.ask_after.ok.3.reply",
+          "when": {
+            "tier": [
+              "friend",
+              "bestFriend"
+            ]
+          }
+        },
+        {
+          "act": "dlg.ask_after.ok.4.act",
+          "say": "dlg.ask_after.ok.4.say",
+          "reply": "dlg.ask_after.ok.4.reply",
+          "when": {
+            "tier": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.ask_after.ok.5.act",
+          "say": "dlg.ask_after.ok.5.say",
+          "reply": "dlg.ask_after.ok.5.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.ask_after.ok.6.act",
+          "say": "dlg.ask_after.ok.6.say",
+          "reply": "dlg.ask_after.ok.6.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.ask_after.ok.7.act",
+          "say": "dlg.ask_after.ok.7.say",
+          "reply": "dlg.ask_after.ok.7.reply",
+          "when": {
+            "speakerTraits": [
+              "kind"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.ask_after.fail.1.act",
+          "say": "dlg.ask_after.fail.1.say",
+          "reply": "dlg.ask_after.fail.1.reply"
+        },
+        {
+          "act": "dlg.ask_after.fail.2.act",
+          "say": "dlg.ask_after.fail.2.say",
+          "reply": "dlg.ask_after.fail.2.reply"
+        },
+        {
+          "act": "dlg.ask_after.fail.3.act",
+          "say": "dlg.ask_after.fail.3.say",
+          "reply": "dlg.ask_after.fail.3.reply",
+          "when": {
+            "listenerTraits": [
+              "suspicious"
+            ]
+          }
+        }
+      ]
+    },
+    "social.talk_weather": {
+      "category": "basic",
+      "ok": [
+        {
+          "act": "dlg.talk_weather.ok.1.act",
+          "say": "dlg.talk_weather.ok.1.say",
+          "reply": "dlg.talk_weather.ok.1.reply"
+        },
+        {
+          "act": "dlg.talk_weather.ok.2.act",
+          "say": "dlg.talk_weather.ok.2.say",
+          "reply": "dlg.talk_weather.ok.2.reply"
+        },
+        {
+          "act": "dlg.talk_weather.ok.3.act",
+          "say": "dlg.talk_weather.ok.3.say",
+          "reply": "dlg.talk_weather.ok.3.reply"
+        },
+        {
+          "act": "dlg.talk_weather.ok.4.act",
+          "say": "dlg.talk_weather.ok.4.say",
+          "reply": "dlg.talk_weather.ok.4.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_weather.ok.5.act",
+          "say": "dlg.talk_weather.ok.5.say",
+          "reply": "dlg.talk_weather.ok.5.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_weather.ok.6.act",
+          "say": "dlg.talk_weather.ok.6.say",
+          "reply": "dlg.talk_weather.ok.6.reply",
+          "when": {
+            "speakerTraits": [
+              "melancholic"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_weather.ok.7.act",
+          "say": "dlg.talk_weather.ok.7.say",
+          "reply": "dlg.talk_weather.ok.7.reply",
+          "when": {
+            "speakerTraits": [
+              "nature_lover"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.talk_weather.fail.1.act",
+          "say": "dlg.talk_weather.fail.1.say",
+          "reply": "dlg.talk_weather.fail.1.reply"
+        },
+        {
+          "act": "dlg.talk_weather.fail.2.act",
+          "say": "dlg.talk_weather.fail.2.say",
+          "reply": "dlg.talk_weather.fail.2.reply"
+        }
+      ]
+    },
+    "social.talk_work": {
+      "category": "basic",
+      "ok": [
+        {
+          "act": "dlg.talk_work.ok.1.act",
+          "say": "dlg.talk_work.ok.1.say",
+          "reply": "dlg.talk_work.ok.1.reply"
+        },
+        {
+          "act": "dlg.talk_work.ok.2.act",
+          "say": "dlg.talk_work.ok.2.say",
+          "reply": "dlg.talk_work.ok.2.reply"
+        },
+        {
+          "act": "dlg.talk_work.ok.3.act",
+          "say": "dlg.talk_work.ok.3.say",
+          "reply": "dlg.talk_work.ok.3.reply",
+          "when": {
+            "register": [
+              "mid"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_work.ok.4.act",
+          "say": "dlg.talk_work.ok.4.say",
+          "reply": "dlg.talk_work.ok.4.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_work.ok.5.act",
+          "say": "dlg.talk_work.ok.5.say",
+          "reply": "dlg.talk_work.ok.5.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_work.ok.6.act",
+          "say": "dlg.talk_work.ok.6.say",
+          "reply": "dlg.talk_work.ok.6.reply",
+          "when": {
+            "speakerTraits": [
+              "diligent"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_work.ok.7.act",
+          "say": "dlg.talk_work.ok.7.say",
+          "reply": "dlg.talk_work.ok.7.reply",
+          "when": {
+            "speakerTraits": [
+              "lazy"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_work.ok.8.act",
+          "say": "dlg.talk_work.ok.8.say",
+          "reply": "dlg.talk_work.ok.8.reply",
+          "when": {
+            "speakerTraits": [
+              "ambitious"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.talk_work.fail.1.act",
+          "say": "dlg.talk_work.fail.1.say",
+          "reply": "dlg.talk_work.fail.1.reply"
+        },
+        {
+          "act": "dlg.talk_work.fail.2.act",
+          "say": "dlg.talk_work.fail.2.say",
+          "reply": "dlg.talk_work.fail.2.reply"
+        }
+      ]
+    },
+    "social.talk_news": {
+      "category": "basic",
+      "ok": [
+        {
+          "act": "dlg.talk_news.ok.1.act",
+          "say": "dlg.talk_news.ok.1.say",
+          "reply": "dlg.talk_news.ok.1.reply",
+          "when": {
+            "topic": [
+              "gossip"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_news.ok.2.act",
+          "say": "dlg.talk_news.ok.2.say",
+          "reply": "dlg.talk_news.ok.2.reply",
+          "when": {
+            "topic": [
+              "war"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_news.ok.3.act",
+          "say": "dlg.talk_news.ok.3.say",
+          "reply": "dlg.talk_news.ok.3.reply",
+          "when": {
+            "topic": [
+              "plague"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_news.ok.4.act",
+          "say": "dlg.talk_news.ok.4.say",
+          "reply": "dlg.talk_news.ok.4.reply"
+        },
+        {
+          "act": "dlg.talk_news.ok.5.act",
+          "say": "dlg.talk_news.ok.5.say",
+          "reply": "dlg.talk_news.ok.5.reply"
+        },
+        {
+          "act": "dlg.talk_news.ok.6.act",
+          "say": "dlg.talk_news.ok.6.say",
+          "reply": "dlg.talk_news.ok.6.reply",
+          "when": {
+            "register": [
+              "high"
+            ],
+            "topic": [
+              "war"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.talk_news.fail.1.act",
+          "say": "dlg.talk_news.fail.1.say",
+          "reply": "dlg.talk_news.fail.1.reply"
+        },
+        {
+          "act": "dlg.talk_news.fail.2.act",
+          "say": "dlg.talk_news.fail.2.say",
+          "reply": "dlg.talk_news.fail.2.reply"
+        }
+      ]
+    },
+    "social.talk_faith": {
+      "category": "basic",
+      "ok": [
+        {
+          "act": "dlg.talk_faith.ok.1.act",
+          "say": "dlg.talk_faith.ok.1.say",
+          "reply": "dlg.talk_faith.ok.1.reply"
+        },
+        {
+          "act": "dlg.talk_faith.ok.2.act",
+          "say": "dlg.talk_faith.ok.2.say",
+          "reply": "dlg.talk_faith.ok.2.reply"
+        },
+        {
+          "act": "dlg.talk_faith.ok.3.act",
+          "say": "dlg.talk_faith.ok.3.say",
+          "reply": "dlg.talk_faith.ok.3.reply",
+          "when": {
+            "register": [
+              "clergy"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_faith.ok.4.act",
+          "say": "dlg.talk_faith.ok.4.say",
+          "reply": "dlg.talk_faith.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "cynical"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_faith.ok.5.act",
+          "say": "dlg.talk_faith.ok.5.say",
+          "reply": "dlg.talk_faith.ok.5.reply",
+          "when": {
+            "emotion": [
+              "pious"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.talk_faith.fail.1.act",
+          "say": "dlg.talk_faith.fail.1.say",
+          "reply": "dlg.talk_faith.fail.1.reply"
+        },
+        {
+          "act": "dlg.talk_faith.fail.2.act",
+          "say": "dlg.talk_faith.fail.2.say",
+          "reply": "dlg.talk_faith.fail.2.reply",
+          "when": {
+            "listenerTraits": [
+              "cynical"
+            ]
+          }
+        }
+      ]
+    },
+    "social.talk_harvest": {
+      "category": "basic",
+      "ok": [
+        {
+          "act": "dlg.talk_harvest.ok.1.act",
+          "say": "dlg.talk_harvest.ok.1.say",
+          "reply": "dlg.talk_harvest.ok.1.reply"
+        },
+        {
+          "act": "dlg.talk_harvest.ok.2.act",
+          "say": "dlg.talk_harvest.ok.2.say",
+          "reply": "dlg.talk_harvest.ok.2.reply"
+        },
+        {
+          "act": "dlg.talk_harvest.ok.3.act",
+          "say": "dlg.talk_harvest.ok.3.say",
+          "reply": "dlg.talk_harvest.ok.3.reply",
+          "when": {
+            "topic": [
+              "weather"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_harvest.ok.4.act",
+          "say": "dlg.talk_harvest.ok.4.say",
+          "reply": "dlg.talk_harvest.ok.4.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.talk_harvest.ok.5.act",
+          "say": "dlg.talk_harvest.ok.5.say",
+          "reply": "dlg.talk_harvest.ok.5.reply",
+          "when": {
+            "speakerTraits": [
+              "gourmet"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.talk_harvest.fail.1.act",
+          "say": "dlg.talk_harvest.fail.1.say",
+          "reply": "dlg.talk_harvest.fail.1.reply"
+        },
+        {
+          "act": "dlg.talk_harvest.fail.2.act",
+          "say": "dlg.talk_harvest.fail.2.say",
+          "reply": "dlg.talk_harvest.fail.2.reply"
+        }
+      ]
+    },
+    "social.farewell": {
+      "category": "basic",
+      "ok": [
+        {
+          "act": "dlg.farewell.ok.1.act",
+          "say": "dlg.farewell.ok.1.say",
+          "reply": "dlg.farewell.ok.1.reply"
+        },
+        {
+          "act": "dlg.farewell.ok.2.act",
+          "say": "dlg.farewell.ok.2.say",
+          "reply": "dlg.farewell.ok.2.reply"
+        },
+        {
+          "act": "dlg.farewell.ok.3.act",
+          "say": "dlg.farewell.ok.3.say",
+          "reply": "dlg.farewell.ok.3.reply",
+          "when": {
+            "tier": [
+              "friend",
+              "bestFriend",
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.farewell.ok.4.act",
+          "say": "dlg.farewell.ok.4.say",
+          "reply": "dlg.farewell.ok.4.reply",
+          "when": {
+            "tier": [
+              "lover",
+              "spouse"
+            ]
+          }
+        },
+        {
+          "act": "dlg.farewell.ok.5.act",
+          "say": "dlg.farewell.ok.5.say",
+          "reply": "dlg.farewell.ok.5.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.farewell.ok.6.act",
+          "say": "dlg.farewell.ok.6.say",
+          "reply": "dlg.farewell.ok.6.reply",
+          "when": {
+            "register": [
+              "clergy"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.farewell.fail.1.act",
+          "say": "dlg.farewell.fail.1.say"
+        },
+        {
+          "act": "dlg.farewell.fail.2.act",
+          "say": "dlg.farewell.fail.2.say",
+          "reply": "dlg.farewell.fail.2.reply"
+        }
+      ]
+    },
+    "social.chat": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.chat.ok.1.act",
+          "say": "dlg.chat.ok.1.say",
+          "reply": "dlg.chat.ok.1.reply"
+        },
+        {
+          "act": "dlg.chat.ok.2.act",
+          "say": "dlg.chat.ok.2.say",
+          "reply": "dlg.chat.ok.2.reply"
+        },
+        {
+          "act": "dlg.chat.ok.3.act",
+          "say": "dlg.chat.ok.3.say",
+          "reply": "dlg.chat.ok.3.reply"
+        },
+        {
+          "act": "dlg.chat.ok.4.act",
+          "say": "dlg.chat.ok.4.say",
+          "reply": "dlg.chat.ok.4.reply",
+          "when": {
+            "topic": [
+              "food"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.5.act",
+          "say": "dlg.chat.ok.5.say",
+          "reply": "dlg.chat.ok.5.reply",
+          "when": {
+            "register": [
+              "low"
+            ],
+            "topic": [
+              "food"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.6.act",
+          "say": "dlg.chat.ok.6.say",
+          "reply": "dlg.chat.ok.6.reply",
+          "when": {
+            "register": [
+              "high"
+            ],
+            "topic": [
+              "food"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.7.act",
+          "say": "dlg.chat.ok.7.say",
+          "reply": "dlg.chat.ok.7.reply",
+          "when": {
+            "topic": [
+              "weather"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.8.act",
+          "say": "dlg.chat.ok.8.say",
+          "reply": "dlg.chat.ok.8.reply",
+          "when": {
+            "topic": [
+              "gossip"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.9.act",
+          "say": "dlg.chat.ok.9.say",
+          "reply": "dlg.chat.ok.9.reply",
+          "when": {
+            "topic": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.10.act",
+          "say": "dlg.chat.ok.10.say",
+          "reply": "dlg.chat.ok.10.reply",
+          "when": {
+            "tier": [
+              "friend",
+              "bestFriend"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.11.act",
+          "say": "dlg.chat.ok.11.say",
+          "reply": "dlg.chat.ok.11.reply",
+          "when": {
+            "tier": [
+              "spouse"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.12.act",
+          "say": "dlg.chat.ok.12.say",
+          "reply": "dlg.chat.ok.12.reply",
+          "when": {
+            "speakerTraits": [
+              "gossip"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.13.act",
+          "say": "dlg.chat.ok.13.say",
+          "reply": "dlg.chat.ok.13.reply",
+          "when": {
+            "speakerTraits": [
+              "introvert"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.14.act",
+          "say": "dlg.chat.ok.14.say",
+          "reply": "dlg.chat.ok.14.reply",
+          "when": {
+            "speakerTraits": [
+              "cynical"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.15.act",
+          "say": "dlg.chat.ok.15.say",
+          "reply": "dlg.chat.ok.15.reply",
+          "when": {
+            "speakerTraits": [
+              "bookworm"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.16.act",
+          "say": "dlg.chat.ok.16.say",
+          "reply": "dlg.chat.ok.16.reply",
+          "when": {
+            "emotion": [
+              "sad"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.ok.17.act",
+          "say": "dlg.chat.ok.17.say",
+          "reply": "dlg.chat.ok.17.reply",
+          "when": {
+            "emotion": [
+              "happy",
+              "excited"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.chat.fail.1.act",
+          "say": "dlg.chat.fail.1.say",
+          "reply": "dlg.chat.fail.1.reply"
+        },
+        {
+          "act": "dlg.chat.fail.2.act",
+          "say": "dlg.chat.fail.2.say",
+          "reply": "dlg.chat.fail.2.reply"
+        },
+        {
+          "act": "dlg.chat.fail.3.act",
+          "say": "dlg.chat.fail.3.say",
+          "reply": "dlg.chat.fail.3.reply"
+        },
+        {
+          "act": "dlg.chat.fail.4.act",
+          "say": "dlg.chat.fail.4.say",
+          "reply": "dlg.chat.fail.4.reply",
+          "when": {
+            "listenerTraits": [
+              "introvert"
+            ]
+          }
+        },
+        {
+          "act": "dlg.chat.fail.5.act",
+          "say": "dlg.chat.fail.5.say",
+          "reply": "dlg.chat.fail.5.reply",
+          "when": {
+            "speakerTraits": [
+              "gossip"
+            ]
+          }
+        }
+      ]
+    },
+    "social.deep_talk": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.deep_talk.ok.1.act",
+          "say": "dlg.deep_talk.ok.1.say",
+          "reply": "dlg.deep_talk.ok.1.reply"
+        },
+        {
+          "act": "dlg.deep_talk.ok.2.act",
+          "say": "dlg.deep_talk.ok.2.say",
+          "reply": "dlg.deep_talk.ok.2.reply"
+        },
+        {
+          "act": "dlg.deep_talk.ok.3.act",
+          "say": "dlg.deep_talk.ok.3.say",
+          "reply": "dlg.deep_talk.ok.3.reply"
+        },
+        {
+          "act": "dlg.deep_talk.ok.4.act",
+          "say": "dlg.deep_talk.ok.4.say",
+          "reply": "dlg.deep_talk.ok.4.reply",
+          "when": {
+            "topic": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.deep_talk.ok.5.act",
+          "say": "dlg.deep_talk.ok.5.say",
+          "reply": "dlg.deep_talk.ok.5.reply",
+          "when": {
+            "topic": [
+              "love"
+            ]
+          }
+        },
+        {
+          "act": "dlg.deep_talk.ok.6.act",
+          "say": "dlg.deep_talk.ok.6.say",
+          "reply": "dlg.deep_talk.ok.6.reply",
+          "when": {
+            "topic": [
+              "faith"
+            ]
+          }
+        },
+        {
+          "act": "dlg.deep_talk.ok.7.act",
+          "say": "dlg.deep_talk.ok.7.say",
+          "reply": "dlg.deep_talk.ok.7.reply",
+          "when": {
+            "tier": [
+              "bestFriend"
+            ]
+          }
+        },
+        {
+          "act": "dlg.deep_talk.ok.8.act",
+          "say": "dlg.deep_talk.ok.8.say",
+          "reply": "dlg.deep_talk.ok.8.reply",
+          "when": {
+            "tier": [
+              "spouse",
+              "lover"
+            ]
+          }
+        },
+        {
+          "act": "dlg.deep_talk.ok.9.act",
+          "say": "dlg.deep_talk.ok.9.say",
+          "reply": "dlg.deep_talk.ok.9.reply",
+          "when": {
+            "speakerTraits": [
+              "melancholic"
+            ]
+          }
+        },
+        {
+          "act": "dlg.deep_talk.ok.10.act",
+          "say": "dlg.deep_talk.ok.10.say",
+          "reply": "dlg.deep_talk.ok.10.reply",
+          "when": {
+            "speakerTraits": [
+              "cynical"
+            ]
+          }
+        },
+        {
+          "act": "dlg.deep_talk.ok.11.act",
+          "say": "dlg.deep_talk.ok.11.say",
+          "reply": "dlg.deep_talk.ok.11.reply",
+          "when": {
+            "speakerTraits": [
+              "family_oriented"
+            ]
+          }
+        },
+        {
+          "act": "dlg.deep_talk.ok.12.act",
+          "say": "dlg.deep_talk.ok.12.say",
+          "reply": "dlg.deep_talk.ok.12.reply",
+          "when": {
+            "register": [
+              "clergy"
+            ]
+          }
+        },
+        {
+          "act": "dlg.deep_talk.ok.13.act",
+          "say": "dlg.deep_talk.ok.13.say",
+          "reply": "dlg.deep_talk.ok.13.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.deep_talk.fail.1.act",
+          "say": "dlg.deep_talk.fail.1.say",
+          "reply": "dlg.deep_talk.fail.1.reply"
+        },
+        {
+          "act": "dlg.deep_talk.fail.2.act",
+          "say": "dlg.deep_talk.fail.2.say",
+          "reply": "dlg.deep_talk.fail.2.reply"
+        },
+        {
+          "act": "dlg.deep_talk.fail.3.act",
+          "say": "dlg.deep_talk.fail.3.say",
+          "reply": "dlg.deep_talk.fail.3.reply"
+        },
+        {
+          "act": "dlg.deep_talk.fail.4.act",
+          "say": "dlg.deep_talk.fail.4.say",
+          "reply": "dlg.deep_talk.fail.4.reply",
+          "when": {
+            "listenerTraits": [
+              "cynical"
+            ]
+          }
+        }
+      ]
+    },
+    "social.joke": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.joke.ok.1.act",
+          "say": "dlg.joke.ok.1.say",
+          "reply": "dlg.joke.ok.1.reply"
+        },
+        {
+          "act": "dlg.joke.ok.2.act",
+          "say": "dlg.joke.ok.2.say",
+          "reply": "dlg.joke.ok.2.reply"
+        },
+        {
+          "act": "dlg.joke.ok.3.act",
+          "say": "dlg.joke.ok.3.say",
+          "reply": "dlg.joke.ok.3.reply"
+        },
+        {
+          "act": "dlg.joke.ok.4.act",
+          "say": "dlg.joke.ok.4.say",
+          "reply": "dlg.joke.ok.4.reply"
+        },
+        {
+          "act": "dlg.joke.ok.5.act",
+          "say": "dlg.joke.ok.5.say",
+          "reply": "dlg.joke.ok.5.reply",
+          "when": {
+            "topic": [
+              "food"
+            ]
+          }
+        },
+        {
+          "act": "dlg.joke.ok.6.act",
+          "say": "dlg.joke.ok.6.say",
+          "reply": "dlg.joke.ok.6.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.joke.ok.7.act",
+          "say": "dlg.joke.ok.7.say",
+          "reply": "dlg.joke.ok.7.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.joke.ok.8.act",
+          "say": "dlg.joke.ok.8.say",
+          "reply": "dlg.joke.ok.8.reply",
+          "when": {
+            "register": [
+              "clergy"
+            ]
+          }
+        },
+        {
+          "act": "dlg.joke.ok.9.act",
+          "say": "dlg.joke.ok.9.say",
+          "reply": "dlg.joke.ok.9.reply",
+          "when": {
+            "speakerTraits": [
+              "cheerful"
+            ]
+          }
+        },
+        {
+          "act": "dlg.joke.ok.10.act",
+          "say": "dlg.joke.ok.10.say",
+          "reply": "dlg.joke.ok.10.reply",
+          "when": {
+            "speakerTraits": [
+              "drinker"
+            ]
+          }
+        },
+        {
+          "act": "dlg.joke.ok.11.act",
+          "say": "dlg.joke.ok.11.say",
+          "reply": "dlg.joke.ok.11.reply",
+          "when": {
+            "speakerTraits": [
+              "cynical"
+            ]
+          }
+        },
+        {
+          "act": "dlg.joke.ok.12.act",
+          "say": "dlg.joke.ok.12.say",
+          "reply": "dlg.joke.ok.12.reply",
+          "when": {
+            "tier": [
+              "friend",
+              "bestFriend"
+            ]
+          }
+        },
+        {
+          "act": "dlg.joke.ok.13.act",
+          "say": "dlg.joke.ok.13.say",
+          "reply": "dlg.joke.ok.13.reply",
+          "when": {
+            "tier": [
+              "spouse",
+              "lover"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.joke.fail.1.act",
+          "say": "dlg.joke.fail.1.say",
+          "reply": "dlg.joke.fail.1.reply"
+        },
+        {
+          "act": "dlg.joke.fail.2.act",
+          "say": "dlg.joke.fail.2.say",
+          "reply": "dlg.joke.fail.2.reply"
+        },
+        {
+          "act": "dlg.joke.fail.3.act",
+          "say": "dlg.joke.fail.3.say",
+          "reply": "dlg.joke.fail.3.reply"
+        },
+        {
+          "act": "dlg.joke.fail.4.act",
+          "say": "dlg.joke.fail.4.say",
+          "reply": "dlg.joke.fail.4.reply",
+          "when": {
+            "listenerTraits": [
+              "just"
+            ]
+          }
+        },
+        {
+          "act": "dlg.joke.fail.5.act",
+          "say": "dlg.joke.fail.5.say",
+          "reply": "dlg.joke.fail.5.reply",
+          "when": {
+            "listenerTraits": [
+              "melancholic"
+            ]
+          }
+        }
+      ]
+    },
+    "social.compliment": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.compliment.ok.1.act",
+          "say": "dlg.compliment.ok.1.say",
+          "reply": "dlg.compliment.ok.1.reply"
+        },
+        {
+          "act": "dlg.compliment.ok.2.act",
+          "say": "dlg.compliment.ok.2.say",
+          "reply": "dlg.compliment.ok.2.reply"
+        },
+        {
+          "act": "dlg.compliment.ok.3.act",
+          "say": "dlg.compliment.ok.3.say",
+          "reply": "dlg.compliment.ok.3.reply"
+        },
+        {
+          "act": "dlg.compliment.ok.4.act",
+          "say": "dlg.compliment.ok.4.say",
+          "reply": "dlg.compliment.ok.4.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.compliment.ok.5.act",
+          "say": "dlg.compliment.ok.5.say",
+          "reply": "dlg.compliment.ok.5.reply",
+          "when": {
+            "register": [
+              "mid"
+            ]
+          }
+        },
+        {
+          "act": "dlg.compliment.ok.6.act",
+          "say": "dlg.compliment.ok.6.say",
+          "reply": "dlg.compliment.ok.6.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.compliment.ok.7.act",
+          "say": "dlg.compliment.ok.7.say",
+          "reply": "dlg.compliment.ok.7.reply",
+          "when": {
+            "tier": [
+              "lover",
+              "spouse"
+            ]
+          }
+        },
+        {
+          "act": "dlg.compliment.ok.8.act",
+          "say": "dlg.compliment.ok.8.say",
+          "reply": "dlg.compliment.ok.8.reply",
+          "when": {
+            "speakerTraits": [
+              "romantic"
+            ]
+          }
+        },
+        {
+          "act": "dlg.compliment.ok.9.act",
+          "say": "dlg.compliment.ok.9.say",
+          "reply": "dlg.compliment.ok.9.reply",
+          "when": {
+            "speakerTraits": [
+              "humble"
+            ]
+          }
+        },
+        {
+          "act": "dlg.compliment.ok.10.act",
+          "say": "dlg.compliment.ok.10.say",
+          "reply": "dlg.compliment.ok.10.reply",
+          "when": {
+            "speakerTraits": [
+              "ambitious"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.compliment.fail.1.act",
+          "say": "dlg.compliment.fail.1.say",
+          "reply": "dlg.compliment.fail.1.reply"
+        },
+        {
+          "act": "dlg.compliment.fail.2.act",
+          "say": "dlg.compliment.fail.2.say",
+          "reply": "dlg.compliment.fail.2.reply"
+        },
+        {
+          "act": "dlg.compliment.fail.3.act",
+          "say": "dlg.compliment.fail.3.say",
+          "reply": "dlg.compliment.fail.3.reply"
+        },
+        {
+          "act": "dlg.compliment.fail.4.act",
+          "say": "dlg.compliment.fail.4.say",
+          "reply": "dlg.compliment.fail.4.reply",
+          "when": {
+            "listenerTraits": [
+              "suspicious"
+            ]
+          }
+        }
+      ]
+    },
+    "social.hug": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.hug.ok.1.act",
+          "say": "dlg.hug.ok.1.say",
+          "reply": "dlg.hug.ok.1.reply"
+        },
+        {
+          "act": "dlg.hug.ok.2.act",
+          "say": "dlg.hug.ok.2.say",
+          "reply": "dlg.hug.ok.2.reply"
+        },
+        {
+          "act": "dlg.hug.ok.3.act",
+          "say": "dlg.hug.ok.3.say",
+          "reply": "dlg.hug.ok.3.reply"
+        },
+        {
+          "act": "dlg.hug.ok.4.act",
+          "say": "dlg.hug.ok.4.say",
+          "reply": "dlg.hug.ok.4.reply",
+          "when": {
+            "tier": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.hug.ok.5.act",
+          "say": "dlg.hug.ok.5.say",
+          "reply": "dlg.hug.ok.5.reply",
+          "when": {
+            "tier": [
+              "bestFriend",
+              "friend"
+            ]
+          }
+        },
+        {
+          "act": "dlg.hug.ok.6.act",
+          "say": "dlg.hug.ok.6.say",
+          "reply": "dlg.hug.ok.6.reply",
+          "when": {
+            "tier": [
+              "lover",
+              "spouse"
+            ]
+          }
+        },
+        {
+          "act": "dlg.hug.ok.7.act",
+          "say": "dlg.hug.ok.7.say",
+          "reply": "dlg.hug.ok.7.reply",
+          "when": {
+            "speakerTraits": [
+              "kind"
+            ]
+          }
+        },
+        {
+          "act": "dlg.hug.ok.8.act",
+          "say": "dlg.hug.ok.8.say",
+          "reply": "dlg.hug.ok.8.reply",
+          "when": {
+            "speakerTraits": [
+              "cheerful"
+            ]
+          }
+        },
+        {
+          "act": "dlg.hug.ok.9.act",
+          "say": "dlg.hug.ok.9.say",
+          "reply": "dlg.hug.ok.9.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.hug.fail.1.act",
+          "say": "dlg.hug.fail.1.say",
+          "reply": "dlg.hug.fail.1.reply"
+        },
+        {
+          "act": "dlg.hug.fail.2.act",
+          "say": "dlg.hug.fail.2.say",
+          "reply": "dlg.hug.fail.2.reply"
+        },
+        {
+          "act": "dlg.hug.fail.3.act",
+          "say": "dlg.hug.fail.3.say",
+          "reply": "dlg.hug.fail.3.reply"
+        },
+        {
+          "act": "dlg.hug.fail.4.act",
+          "say": "dlg.hug.fail.4.say",
+          "reply": "dlg.hug.fail.4.reply",
+          "when": {
+            "listenerTraits": [
+              "introvert"
+            ]
+          }
+        }
+      ]
+    },
+    "social.listen_troubles": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.listen_troubles.ok.1.act",
+          "say": "dlg.listen_troubles.ok.1.say",
+          "reply": "dlg.listen_troubles.ok.1.reply"
+        },
+        {
+          "act": "dlg.listen_troubles.ok.2.act",
+          "say": "dlg.listen_troubles.ok.2.say",
+          "reply": "dlg.listen_troubles.ok.2.reply"
+        },
+        {
+          "act": "dlg.listen_troubles.ok.3.act",
+          "say": "dlg.listen_troubles.ok.3.say",
+          "reply": "dlg.listen_troubles.ok.3.reply"
+        },
+        {
+          "act": "dlg.listen_troubles.ok.4.act",
+          "say": "dlg.listen_troubles.ok.4.say",
+          "reply": "dlg.listen_troubles.ok.4.reply",
+          "when": {
+            "topic": [
+              "work"
+            ]
+          }
+        },
+        {
+          "act": "dlg.listen_troubles.ok.5.act",
+          "say": "dlg.listen_troubles.ok.5.say",
+          "reply": "dlg.listen_troubles.ok.5.reply",
+          "when": {
+            "topic": [
+              "love"
+            ]
+          }
+        },
+        {
+          "act": "dlg.listen_troubles.ok.6.act",
+          "say": "dlg.listen_troubles.ok.6.say",
+          "reply": "dlg.listen_troubles.ok.6.reply",
+          "when": {
+            "topic": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.listen_troubles.ok.7.act",
+          "say": "dlg.listen_troubles.ok.7.say",
+          "reply": "dlg.listen_troubles.ok.7.reply",
+          "when": {
+            "tier": [
+              "bestFriend"
+            ]
+          }
+        },
+        {
+          "act": "dlg.listen_troubles.ok.8.act",
+          "say": "dlg.listen_troubles.ok.8.say",
+          "reply": "dlg.listen_troubles.ok.8.reply",
+          "when": {
+            "speakerTraits": [
+              "kind"
+            ]
+          }
+        },
+        {
+          "act": "dlg.listen_troubles.ok.9.act",
+          "say": "dlg.listen_troubles.ok.9.say",
+          "reply": "dlg.listen_troubles.ok.9.reply",
+          "when": {
+            "register": [
+              "clergy"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.listen_troubles.fail.1.act",
+          "say": "dlg.listen_troubles.fail.1.say",
+          "reply": "dlg.listen_troubles.fail.1.reply"
+        },
+        {
+          "act": "dlg.listen_troubles.fail.2.act",
+          "say": "dlg.listen_troubles.fail.2.say",
+          "reply": "dlg.listen_troubles.fail.2.reply"
+        },
+        {
+          "act": "dlg.listen_troubles.fail.3.act",
+          "say": "dlg.listen_troubles.fail.3.say",
+          "reply": "dlg.listen_troubles.fail.3.reply"
+        },
+        {
+          "act": "dlg.listen_troubles.fail.4.act",
+          "say": "dlg.listen_troubles.fail.4.say",
+          "reply": "dlg.listen_troubles.fail.4.reply",
+          "when": {
+            "speakerTraits": [
+              "cynical"
+            ]
+          }
+        }
+      ]
+    },
+    "social.give_advice": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.give_advice.ok.1.act",
+          "say": "dlg.give_advice.ok.1.say",
+          "reply": "dlg.give_advice.ok.1.reply"
+        },
+        {
+          "act": "dlg.give_advice.ok.2.act",
+          "say": "dlg.give_advice.ok.2.say",
+          "reply": "dlg.give_advice.ok.2.reply",
+          "when": {
+            "topic": [
+              "work"
+            ]
+          }
+        },
+        {
+          "act": "dlg.give_advice.ok.3.act",
+          "say": "dlg.give_advice.ok.3.say",
+          "reply": "dlg.give_advice.ok.3.reply",
+          "when": {
+            "topic": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.give_advice.ok.4.act",
+          "say": "dlg.give_advice.ok.4.say",
+          "reply": "dlg.give_advice.ok.4.reply",
+          "when": {
+            "register": [
+              "mid"
+            ]
+          }
+        },
+        {
+          "act": "dlg.give_advice.ok.5.act",
+          "say": "dlg.give_advice.ok.5.say",
+          "reply": "dlg.give_advice.ok.5.reply",
+          "when": {
+            "speakerTraits": [
+              "bookworm"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.give_advice.fail.1.act",
+          "say": "dlg.give_advice.fail.1.say",
+          "reply": "dlg.give_advice.fail.1.reply"
+        },
+        {
+          "act": "dlg.give_advice.fail.2.act",
+          "say": "dlg.give_advice.fail.2.say",
+          "reply": "dlg.give_advice.fail.2.reply"
+        }
+      ]
+    },
+    "social.reminisce": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.reminisce.ok.1.act",
+          "say": "dlg.reminisce.ok.1.say",
+          "reply": "dlg.reminisce.ok.1.reply"
+        },
+        {
+          "act": "dlg.reminisce.ok.2.act",
+          "say": "dlg.reminisce.ok.2.say",
+          "reply": "dlg.reminisce.ok.2.reply"
+        },
+        {
+          "act": "dlg.reminisce.ok.3.act",
+          "say": "dlg.reminisce.ok.3.say",
+          "reply": "dlg.reminisce.ok.3.reply",
+          "when": {
+            "tier": [
+              "spouse",
+              "lover"
+            ]
+          }
+        },
+        {
+          "act": "dlg.reminisce.ok.4.act",
+          "say": "dlg.reminisce.ok.4.say",
+          "reply": "dlg.reminisce.ok.4.reply",
+          "when": {
+            "tier": [
+              "family"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.reminisce.fail.1.act",
+          "say": "dlg.reminisce.fail.1.say",
+          "reply": "dlg.reminisce.fail.1.reply"
+        },
+        {
+          "act": "dlg.reminisce.fail.2.act",
+          "say": "dlg.reminisce.fail.2.say",
+          "reply": "dlg.reminisce.fail.2.reply"
+        }
+      ]
+    },
+    "social.talk_tastes": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.talk_tastes.ok.1.act",
+          "say": "dlg.talk_tastes.ok.1.say",
+          "reply": "dlg.talk_tastes.ok.1.reply"
+        },
+        {
+          "act": "dlg.talk_tastes.ok.2.act",
+          "say": "dlg.talk_tastes.ok.2.say",
+          "reply": "dlg.talk_tastes.ok.2.reply"
+        },
+        {
+          "act": "dlg.talk_tastes.ok.3.act",
+          "say": "dlg.talk_tastes.ok.3.say",
+          "reply": "dlg.talk_tastes.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "gourmet"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.talk_tastes.fail.1.act",
+          "say": "dlg.talk_tastes.fail.1.say",
+          "reply": "dlg.talk_tastes.fail.1.reply"
+        },
+        {
+          "act": "dlg.talk_tastes.fail.2.act",
+          "say": "dlg.talk_tastes.fail.2.say",
+          "reply": "dlg.talk_tastes.fail.2.reply"
+        }
+      ]
+    },
+    "social.give_gift": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.give_gift.ok.1.act",
+          "say": "dlg.give_gift.ok.1.say",
+          "reply": "dlg.give_gift.ok.1.reply"
+        },
+        {
+          "act": "dlg.give_gift.ok.2.act",
+          "say": "dlg.give_gift.ok.2.say",
+          "reply": "dlg.give_gift.ok.2.reply"
+        },
+        {
+          "act": "dlg.give_gift.ok.3.act",
+          "say": "dlg.give_gift.ok.3.say",
+          "reply": "dlg.give_gift.ok.3.reply"
+        },
+        {
+          "act": "dlg.give_gift.ok.4.act",
+          "say": "dlg.give_gift.ok.4.say",
+          "reply": "dlg.give_gift.ok.4.reply",
+          "when": {
+            "tier": [
+              "lover",
+              "spouse"
+            ]
+          }
+        },
+        {
+          "act": "dlg.give_gift.ok.5.act",
+          "say": "dlg.give_gift.ok.5.say",
+          "reply": "dlg.give_gift.ok.5.reply",
+          "when": {
+            "tier": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.give_gift.ok.6.act",
+          "say": "dlg.give_gift.ok.6.say",
+          "reply": "dlg.give_gift.ok.6.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.give_gift.ok.7.act",
+          "say": "dlg.give_gift.ok.7.say",
+          "reply": "dlg.give_gift.ok.7.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.give_gift.ok.8.act",
+          "say": "dlg.give_gift.ok.8.say",
+          "reply": "dlg.give_gift.ok.8.reply",
+          "when": {
+            "register": [
+              "mid"
+            ]
+          }
+        },
+        {
+          "act": "dlg.give_gift.ok.9.act",
+          "say": "dlg.give_gift.ok.9.say",
+          "reply": "dlg.give_gift.ok.9.reply",
+          "when": {
+            "speakerTraits": [
+              "romantic"
+            ]
+          }
+        },
+        {
+          "act": "dlg.give_gift.ok.10.act",
+          "say": "dlg.give_gift.ok.10.say",
+          "reply": "dlg.give_gift.ok.10.reply",
+          "when": {
+            "speakerTraits": [
+              "mean"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.give_gift.fail.1.act",
+          "say": "dlg.give_gift.fail.1.say",
+          "reply": "dlg.give_gift.fail.1.reply"
+        },
+        {
+          "act": "dlg.give_gift.fail.2.act",
+          "say": "dlg.give_gift.fail.2.say",
+          "reply": "dlg.give_gift.fail.2.reply"
+        },
+        {
+          "act": "dlg.give_gift.fail.3.act",
+          "say": "dlg.give_gift.fail.3.say",
+          "reply": "dlg.give_gift.fail.3.reply"
+        },
+        {
+          "act": "dlg.give_gift.fail.4.act",
+          "say": "dlg.give_gift.fail.4.say",
+          "reply": "dlg.give_gift.fail.4.reply",
+          "when": {
+            "listenerTraits": [
+              "suspicious"
+            ]
+          }
+        }
+      ]
+    },
+    "social.share_bread": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.share_bread.ok.1.act",
+          "say": "dlg.share_bread.ok.1.say",
+          "reply": "dlg.share_bread.ok.1.reply"
+        },
+        {
+          "act": "dlg.share_bread.ok.2.act",
+          "say": "dlg.share_bread.ok.2.say",
+          "reply": "dlg.share_bread.ok.2.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.share_bread.ok.3.act",
+          "say": "dlg.share_bread.ok.3.say",
+          "reply": "dlg.share_bread.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "kind"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.share_bread.fail.1.act",
+          "say": "dlg.share_bread.fail.1.say",
+          "reply": "dlg.share_bread.fail.1.reply"
+        },
+        {
+          "act": "dlg.share_bread.fail.2.act",
+          "say": "dlg.share_bread.fail.2.say",
+          "reply": "dlg.share_bread.fail.2.reply"
+        }
+      ]
+    },
+    "social.sing_for": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.sing_for.ok.1.act",
+          "say": "dlg.sing_for.ok.1.say",
+          "reply": "dlg.sing_for.ok.1.reply"
+        },
+        {
+          "act": "dlg.sing_for.ok.2.act",
+          "say": "dlg.sing_for.ok.2.say",
+          "reply": "dlg.sing_for.ok.2.reply",
+          "when": {
+            "topic": [
+              "war"
+            ]
+          }
+        },
+        {
+          "act": "dlg.sing_for.ok.3.act",
+          "say": "dlg.sing_for.ok.3.say",
+          "reply": "dlg.sing_for.ok.3.reply",
+          "when": {
+            "topic": [
+              "love"
+            ]
+          }
+        },
+        {
+          "act": "dlg.sing_for.ok.4.act",
+          "say": "dlg.sing_for.ok.4.say",
+          "reply": "dlg.sing_for.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "creative"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.sing_for.fail.1.act",
+          "say": "dlg.sing_for.fail.1.say",
+          "reply": "dlg.sing_for.fail.1.reply"
+        },
+        {
+          "act": "dlg.sing_for.fail.2.act",
+          "say": "dlg.sing_for.fail.2.say",
+          "reply": "dlg.sing_for.fail.2.reply"
+        }
+      ]
+    },
+    "social.pray_together": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.pray_together.ok.1.act",
+          "say": "dlg.pray_together.ok.1.say",
+          "reply": "dlg.pray_together.ok.1.reply"
+        },
+        {
+          "act": "dlg.pray_together.ok.2.act",
+          "say": "dlg.pray_together.ok.2.say",
+          "reply": "dlg.pray_together.ok.2.reply"
+        },
+        {
+          "act": "dlg.pray_together.ok.3.act",
+          "say": "dlg.pray_together.ok.3.say",
+          "reply": "dlg.pray_together.ok.3.reply"
+        },
+        {
+          "act": "dlg.pray_together.ok.4.act",
+          "say": "dlg.pray_together.ok.4.say",
+          "reply": "dlg.pray_together.ok.4.reply",
+          "when": {
+            "register": [
+              "clergy"
+            ]
+          }
+        },
+        {
+          "act": "dlg.pray_together.ok.5.act",
+          "say": "dlg.pray_together.ok.5.say",
+          "reply": "dlg.pray_together.ok.5.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.pray_together.ok.6.act",
+          "say": "dlg.pray_together.ok.6.say",
+          "reply": "dlg.pray_together.ok.6.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.pray_together.ok.7.act",
+          "say": "dlg.pray_together.ok.7.say",
+          "reply": "dlg.pray_together.ok.7.reply",
+          "when": {
+            "emotion": [
+              "sad"
+            ]
+          }
+        },
+        {
+          "act": "dlg.pray_together.ok.8.act",
+          "say": "dlg.pray_together.ok.8.say",
+          "reply": "dlg.pray_together.ok.8.reply",
+          "when": {
+            "topic": [
+              "plague"
+            ]
+          }
+        },
+        {
+          "act": "dlg.pray_together.ok.9.act",
+          "say": "dlg.pray_together.ok.9.say",
+          "reply": "dlg.pray_together.ok.9.reply",
+          "when": {
+            "speakerTraits": [
+              "family_oriented"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.pray_together.fail.1.act",
+          "say": "dlg.pray_together.fail.1.say",
+          "reply": "dlg.pray_together.fail.1.reply"
+        },
+        {
+          "act": "dlg.pray_together.fail.2.act",
+          "say": "dlg.pray_together.fail.2.say",
+          "reply": "dlg.pray_together.fail.2.reply"
+        },
+        {
+          "act": "dlg.pray_together.fail.3.act",
+          "say": "dlg.pray_together.fail.3.say",
+          "reply": "dlg.pray_together.fail.3.reply",
+          "when": {
+            "listenerTraits": [
+              "cynical"
+            ]
+          }
+        }
+      ]
+    },
+    "social.encourage": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.encourage.ok.1.act",
+          "say": "dlg.encourage.ok.1.say",
+          "reply": "dlg.encourage.ok.1.reply"
+        },
+        {
+          "act": "dlg.encourage.ok.2.act",
+          "say": "dlg.encourage.ok.2.say",
+          "reply": "dlg.encourage.ok.2.reply"
+        },
+        {
+          "act": "dlg.encourage.ok.3.act",
+          "say": "dlg.encourage.ok.3.say",
+          "reply": "dlg.encourage.ok.3.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.encourage.fail.1.act",
+          "say": "dlg.encourage.fail.1.say",
+          "reply": "dlg.encourage.fail.1.reply"
+        },
+        {
+          "act": "dlg.encourage.fail.2.act",
+          "say": "dlg.encourage.fail.2.say",
+          "reply": "dlg.encourage.fail.2.reply"
+        }
+      ]
+    },
+    "social.share_ale": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.share_ale.ok.1.act",
+          "say": "dlg.share_ale.ok.1.say",
+          "reply": "dlg.share_ale.ok.1.reply"
+        },
+        {
+          "act": "dlg.share_ale.ok.2.act",
+          "say": "dlg.share_ale.ok.2.say",
+          "reply": "dlg.share_ale.ok.2.reply"
+        },
+        {
+          "act": "dlg.share_ale.ok.3.act",
+          "say": "dlg.share_ale.ok.3.say",
+          "reply": "dlg.share_ale.ok.3.reply"
+        },
+        {
+          "act": "dlg.share_ale.ok.4.act",
+          "say": "dlg.share_ale.ok.4.say",
+          "reply": "dlg.share_ale.ok.4.reply",
+          "when": {
+            "topic": [
+              "war"
+            ]
+          }
+        },
+        {
+          "act": "dlg.share_ale.ok.5.act",
+          "say": "dlg.share_ale.ok.5.say",
+          "reply": "dlg.share_ale.ok.5.reply",
+          "when": {
+            "topic": [
+              "gossip"
+            ]
+          }
+        },
+        {
+          "act": "dlg.share_ale.ok.6.act",
+          "say": "dlg.share_ale.ok.6.say",
+          "reply": "dlg.share_ale.ok.6.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.share_ale.ok.7.act",
+          "say": "dlg.share_ale.ok.7.say",
+          "reply": "dlg.share_ale.ok.7.reply",
+          "when": {
+            "register": [
+              "mid"
+            ]
+          }
+        },
+        {
+          "act": "dlg.share_ale.ok.8.act",
+          "say": "dlg.share_ale.ok.8.say",
+          "reply": "dlg.share_ale.ok.8.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.share_ale.ok.9.act",
+          "say": "dlg.share_ale.ok.9.say",
+          "reply": "dlg.share_ale.ok.9.reply",
+          "when": {
+            "speakerTraits": [
+              "drinker"
+            ]
+          }
+        },
+        {
+          "act": "dlg.share_ale.ok.10.act",
+          "say": "dlg.share_ale.ok.10.say",
+          "reply": "dlg.share_ale.ok.10.reply",
+          "when": {
+            "speakerTraits": [
+              "cheerful"
+            ]
+          }
+        },
+        {
+          "act": "dlg.share_ale.ok.11.act",
+          "say": "dlg.share_ale.ok.11.say",
+          "reply": "dlg.share_ale.ok.11.reply",
+          "when": {
+            "tier": [
+              "friend",
+              "bestFriend"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.share_ale.fail.1.act",
+          "say": "dlg.share_ale.fail.1.say",
+          "reply": "dlg.share_ale.fail.1.reply"
+        },
+        {
+          "act": "dlg.share_ale.fail.2.act",
+          "say": "dlg.share_ale.fail.2.say",
+          "reply": "dlg.share_ale.fail.2.reply"
+        },
+        {
+          "act": "dlg.share_ale.fail.3.act",
+          "say": "dlg.share_ale.fail.3.say",
+          "reply": "dlg.share_ale.fail.3.reply"
+        },
+        {
+          "act": "dlg.share_ale.fail.4.act",
+          "say": "dlg.share_ale.fail.4.say",
+          "reply": "dlg.share_ale.fail.4.reply",
+          "when": {
+            "listenerTraits": [
+              "just"
+            ]
+          }
+        }
+      ]
+    },
+    "social.tell_story": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.tell_story.ok.1.act",
+          "say": "dlg.tell_story.ok.1.say",
+          "reply": "dlg.tell_story.ok.1.reply"
+        },
+        {
+          "act": "dlg.tell_story.ok.2.act",
+          "say": "dlg.tell_story.ok.2.say",
+          "reply": "dlg.tell_story.ok.2.reply",
+          "when": {
+            "topic": [
+              "war"
+            ]
+          }
+        },
+        {
+          "act": "dlg.tell_story.ok.3.act",
+          "say": "dlg.tell_story.ok.3.say",
+          "reply": "dlg.tell_story.ok.3.reply",
+          "when": {
+            "topic": [
+              "faith"
+            ]
+          }
+        },
+        {
+          "act": "dlg.tell_story.ok.4.act",
+          "say": "dlg.tell_story.ok.4.say",
+          "reply": "dlg.tell_story.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "creative"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.tell_story.fail.1.act",
+          "say": "dlg.tell_story.fail.1.say",
+          "reply": "dlg.tell_story.fail.1.reply"
+        },
+        {
+          "act": "dlg.tell_story.fail.2.act",
+          "say": "dlg.tell_story.fail.2.say",
+          "reply": "dlg.tell_story.fail.2.reply"
+        }
+      ]
+    },
+    "social.dance": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.dance.ok.1.act",
+          "say": "dlg.dance.ok.1.say",
+          "reply": "dlg.dance.ok.1.reply"
+        },
+        {
+          "act": "dlg.dance.ok.2.act",
+          "say": "dlg.dance.ok.2.say",
+          "reply": "dlg.dance.ok.2.reply"
+        },
+        {
+          "act": "dlg.dance.ok.3.act",
+          "say": "dlg.dance.ok.3.say",
+          "reply": "dlg.dance.ok.3.reply",
+          "when": {
+            "tier": [
+              "lover",
+              "spouse"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.dance.fail.1.act",
+          "say": "dlg.dance.fail.1.say",
+          "reply": "dlg.dance.fail.1.reply"
+        },
+        {
+          "act": "dlg.dance.fail.2.act",
+          "say": "dlg.dance.fail.2.say",
+          "reply": "dlg.dance.fail.2.reply"
+        }
+      ]
+    },
+    "social.teach": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.teach.ok.1.act",
+          "say": "dlg.teach.ok.1.say",
+          "reply": "dlg.teach.ok.1.reply"
+        },
+        {
+          "act": "dlg.teach.ok.2.act",
+          "say": "dlg.teach.ok.2.say",
+          "reply": "dlg.teach.ok.2.reply"
+        },
+        {
+          "act": "dlg.teach.ok.3.act",
+          "say": "dlg.teach.ok.3.say",
+          "reply": "dlg.teach.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "handy"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.teach.fail.1.act",
+          "say": "dlg.teach.fail.1.say",
+          "reply": "dlg.teach.fail.1.reply"
+        },
+        {
+          "act": "dlg.teach.fail.2.act",
+          "say": "dlg.teach.fail.2.say",
+          "reply": "dlg.teach.fail.2.reply"
+        }
+      ]
+    },
+    "social.thank": {
+      "category": "friendly",
+      "ok": [
+        {
+          "act": "dlg.thank.ok.1.act",
+          "say": "dlg.thank.ok.1.say",
+          "reply": "dlg.thank.ok.1.reply"
+        },
+        {
+          "act": "dlg.thank.ok.2.act",
+          "say": "dlg.thank.ok.2.say",
+          "reply": "dlg.thank.ok.2.reply"
+        },
+        {
+          "act": "dlg.thank.ok.3.act",
+          "say": "dlg.thank.ok.3.say",
+          "reply": "dlg.thank.ok.3.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.thank.fail.1.act",
+          "say": "dlg.thank.fail.1.say",
+          "reply": "dlg.thank.fail.1.reply"
+        },
+        {
+          "act": "dlg.thank.fail.2.act",
+          "say": "dlg.thank.fail.2.say",
+          "reply": "dlg.thank.fail.2.reply"
+        }
+      ]
+    },
+    "social.glance": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.glance.ok.1.act",
+          "say": "dlg.glance.ok.1.say",
+          "reply": "dlg.glance.ok.1.reply"
+        },
+        {
+          "act": "dlg.glance.ok.2.act",
+          "say": "dlg.glance.ok.2.say",
+          "reply": "dlg.glance.ok.2.reply"
+        },
+        {
+          "act": "dlg.glance.ok.3.act",
+          "say": "dlg.glance.ok.3.say",
+          "reply": "dlg.glance.ok.3.reply"
+        },
+        {
+          "act": "dlg.glance.ok.4.act",
+          "say": "dlg.glance.ok.4.say",
+          "reply": "dlg.glance.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "flirt"
+            ]
+          }
+        },
+        {
+          "act": "dlg.glance.ok.5.act",
+          "say": "dlg.glance.ok.5.say",
+          "reply": "dlg.glance.ok.5.reply",
+          "when": {
+            "speakerTraits": [
+              "introvert"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.glance.fail.1.act",
+          "say": "dlg.glance.fail.1.say"
+        },
+        {
+          "act": "dlg.glance.fail.2.act",
+          "say": "dlg.glance.fail.2.say",
+          "reply": "dlg.glance.fail.2.reply"
+        },
+        {
+          "act": "dlg.glance.fail.3.act",
+          "say": "dlg.glance.fail.3.say",
+          "reply": "dlg.glance.fail.3.reply"
+        }
+      ]
+    },
+    "social.flirt": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.flirt.ok.1.act",
+          "say": "dlg.flirt.ok.1.say",
+          "reply": "dlg.flirt.ok.1.reply"
+        },
+        {
+          "act": "dlg.flirt.ok.2.act",
+          "say": "dlg.flirt.ok.2.say",
+          "reply": "dlg.flirt.ok.2.reply"
+        },
+        {
+          "act": "dlg.flirt.ok.3.act",
+          "say": "dlg.flirt.ok.3.say",
+          "reply": "dlg.flirt.ok.3.reply"
+        },
+        {
+          "act": "dlg.flirt.ok.4.act",
+          "say": "dlg.flirt.ok.4.say",
+          "reply": "dlg.flirt.ok.4.reply"
+        },
+        {
+          "act": "dlg.flirt.ok.5.act",
+          "say": "dlg.flirt.ok.5.say",
+          "reply": "dlg.flirt.ok.5.reply",
+          "when": {
+            "speakerTraits": [
+              "flirt"
+            ]
+          }
+        },
+        {
+          "act": "dlg.flirt.ok.6.act",
+          "say": "dlg.flirt.ok.6.say",
+          "reply": "dlg.flirt.ok.6.reply",
+          "when": {
+            "speakerTraits": [
+              "romantic"
+            ]
+          }
+        },
+        {
+          "act": "dlg.flirt.ok.7.act",
+          "say": "dlg.flirt.ok.7.say",
+          "reply": "dlg.flirt.ok.7.reply",
+          "when": {
+            "speakerTraits": [
+              "introvert"
+            ]
+          }
+        },
+        {
+          "act": "dlg.flirt.ok.8.act",
+          "say": "dlg.flirt.ok.8.say",
+          "reply": "dlg.flirt.ok.8.reply",
+          "when": {
+            "speakerTraits": [
+              "cheerful"
+            ]
+          }
+        },
+        {
+          "act": "dlg.flirt.ok.9.act",
+          "say": "dlg.flirt.ok.9.say",
+          "reply": "dlg.flirt.ok.9.reply",
+          "when": {
+            "speakerTraits": [
+              "cynical"
+            ]
+          }
+        },
+        {
+          "act": "dlg.flirt.ok.10.act",
+          "say": "dlg.flirt.ok.10.say",
+          "reply": "dlg.flirt.ok.10.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.flirt.ok.11.act",
+          "say": "dlg.flirt.ok.11.say",
+          "reply": "dlg.flirt.ok.11.reply",
+          "when": {
+            "register": [
+              "mid"
+            ]
+          }
+        },
+        {
+          "act": "dlg.flirt.ok.12.act",
+          "say": "dlg.flirt.ok.12.say",
+          "reply": "dlg.flirt.ok.12.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.flirt.ok.13.act",
+          "say": "dlg.flirt.ok.13.say",
+          "reply": "dlg.flirt.ok.13.reply",
+          "when": {
+            "tier": [
+              "spouse"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.flirt.fail.1.act",
+          "say": "dlg.flirt.fail.1.say",
+          "reply": "dlg.flirt.fail.1.reply"
+        },
+        {
+          "act": "dlg.flirt.fail.2.act",
+          "say": "dlg.flirt.fail.2.say",
+          "reply": "dlg.flirt.fail.2.reply"
+        },
+        {
+          "act": "dlg.flirt.fail.3.act",
+          "say": "dlg.flirt.fail.3.say",
+          "reply": "dlg.flirt.fail.3.reply"
+        },
+        {
+          "act": "dlg.flirt.fail.4.act",
+          "say": "dlg.flirt.fail.4.say",
+          "reply": "dlg.flirt.fail.4.reply"
+        },
+        {
+          "act": "dlg.flirt.fail.5.act",
+          "say": "dlg.flirt.fail.5.say",
+          "reply": "dlg.flirt.fail.5.reply",
+          "when": {
+            "listenerTraits": [
+              "just"
+            ]
+          }
+        },
+        {
+          "act": "dlg.flirt.fail.6.act",
+          "say": "dlg.flirt.fail.6.say",
+          "reply": "dlg.flirt.fail.6.reply",
+          "when": {
+            "listenerTraits": [
+              "suspicious"
+            ]
+          }
+        }
+      ]
+    },
+    "social.give_flowers": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.give_flowers.ok.1.act",
+          "say": "dlg.give_flowers.ok.1.say",
+          "reply": "dlg.give_flowers.ok.1.reply"
+        },
+        {
+          "act": "dlg.give_flowers.ok.2.act",
+          "say": "dlg.give_flowers.ok.2.say",
+          "reply": "dlg.give_flowers.ok.2.reply"
+        },
+        {
+          "act": "dlg.give_flowers.ok.3.act",
+          "say": "dlg.give_flowers.ok.3.say",
+          "reply": "dlg.give_flowers.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "nature_lover"
+            ]
+          }
+        },
+        {
+          "act": "dlg.give_flowers.ok.4.act",
+          "say": "dlg.give_flowers.ok.4.say",
+          "reply": "dlg.give_flowers.ok.4.reply",
+          "when": {
+            "tier": [
+              "spouse"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.give_flowers.fail.1.act",
+          "say": "dlg.give_flowers.fail.1.say",
+          "reply": "dlg.give_flowers.fail.1.reply"
+        },
+        {
+          "act": "dlg.give_flowers.fail.2.act",
+          "say": "dlg.give_flowers.fail.2.say",
+          "reply": "dlg.give_flowers.fail.2.reply"
+        },
+        {
+          "act": "dlg.give_flowers.fail.3.act",
+          "say": "dlg.give_flowers.fail.3.say",
+          "reply": "dlg.give_flowers.fail.3.reply"
+        }
+      ]
+    },
+    "social.hold_hands": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.hold_hands.ok.1.act",
+          "say": "dlg.hold_hands.ok.1.say",
+          "reply": "dlg.hold_hands.ok.1.reply"
+        },
+        {
+          "act": "dlg.hold_hands.ok.2.act",
+          "say": "dlg.hold_hands.ok.2.say",
+          "reply": "dlg.hold_hands.ok.2.reply"
+        },
+        {
+          "act": "dlg.hold_hands.ok.3.act",
+          "say": "dlg.hold_hands.ok.3.say",
+          "reply": "dlg.hold_hands.ok.3.reply"
+        },
+        {
+          "act": "dlg.hold_hands.ok.4.act",
+          "say": "dlg.hold_hands.ok.4.say",
+          "reply": "dlg.hold_hands.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "introvert"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.hold_hands.fail.1.act",
+          "say": "dlg.hold_hands.fail.1.say",
+          "reply": "dlg.hold_hands.fail.1.reply"
+        },
+        {
+          "act": "dlg.hold_hands.fail.2.act",
+          "say": "dlg.hold_hands.fail.2.say",
+          "reply": "dlg.hold_hands.fail.2.reply"
+        },
+        {
+          "act": "dlg.hold_hands.fail.3.act",
+          "say": "dlg.hold_hands.fail.3.say",
+          "reply": "dlg.hold_hands.fail.3.reply"
+        }
+      ]
+    },
+    "social.confess": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.confess.ok.1.act",
+          "say": "dlg.confess.ok.1.say",
+          "reply": "dlg.confess.ok.1.reply"
+        },
+        {
+          "act": "dlg.confess.ok.2.act",
+          "say": "dlg.confess.ok.2.say",
+          "reply": "dlg.confess.ok.2.reply"
+        },
+        {
+          "act": "dlg.confess.ok.3.act",
+          "say": "dlg.confess.ok.3.say",
+          "reply": "dlg.confess.ok.3.reply"
+        },
+        {
+          "act": "dlg.confess.ok.4.act",
+          "say": "dlg.confess.ok.4.say",
+          "reply": "dlg.confess.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "romantic"
+            ]
+          }
+        },
+        {
+          "act": "dlg.confess.ok.5.act",
+          "say": "dlg.confess.ok.5.say",
+          "reply": "dlg.confess.ok.5.reply",
+          "when": {
+            "speakerTraits": [
+              "introvert"
+            ]
+          }
+        },
+        {
+          "act": "dlg.confess.ok.6.act",
+          "say": "dlg.confess.ok.6.say",
+          "reply": "dlg.confess.ok.6.reply",
+          "when": {
+            "speakerTraits": [
+              "cynical"
+            ]
+          }
+        },
+        {
+          "act": "dlg.confess.ok.7.act",
+          "say": "dlg.confess.ok.7.say",
+          "reply": "dlg.confess.ok.7.reply",
+          "when": {
+            "speakerTraits": [
+              "hot_tempered"
+            ]
+          }
+        },
+        {
+          "act": "dlg.confess.ok.8.act",
+          "say": "dlg.confess.ok.8.say",
+          "reply": "dlg.confess.ok.8.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.confess.ok.9.act",
+          "say": "dlg.confess.ok.9.say",
+          "reply": "dlg.confess.ok.9.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.confess.ok.10.act",
+          "say": "dlg.confess.ok.10.say",
+          "reply": "dlg.confess.ok.10.reply",
+          "when": {
+            "tier": [
+              "bestFriend"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.confess.fail.1.act",
+          "say": "dlg.confess.fail.1.say",
+          "reply": "dlg.confess.fail.1.reply"
+        },
+        {
+          "act": "dlg.confess.fail.2.act",
+          "say": "dlg.confess.fail.2.say",
+          "reply": "dlg.confess.fail.2.reply"
+        },
+        {
+          "act": "dlg.confess.fail.3.act",
+          "say": "dlg.confess.fail.3.say",
+          "reply": "dlg.confess.fail.3.reply"
+        },
+        {
+          "act": "dlg.confess.fail.4.act",
+          "say": "dlg.confess.fail.4.say",
+          "reply": "dlg.confess.fail.4.reply",
+          "when": {
+            "tier": [
+              "bestFriend",
+              "friend"
+            ]
+          }
+        },
+        {
+          "act": "dlg.confess.fail.5.act",
+          "say": "dlg.confess.fail.5.say",
+          "reply": "dlg.confess.fail.5.reply",
+          "when": {
+            "listenerTraits": [
+              "ambitious"
+            ]
+          }
+        }
+      ]
+    },
+    "social.kiss": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.kiss.ok.1.act",
+          "say": "dlg.kiss.ok.1.say",
+          "reply": "dlg.kiss.ok.1.reply"
+        },
+        {
+          "act": "dlg.kiss.ok.2.act",
+          "say": "dlg.kiss.ok.2.say",
+          "reply": "dlg.kiss.ok.2.reply"
+        },
+        {
+          "act": "dlg.kiss.ok.3.act",
+          "say": "dlg.kiss.ok.3.say",
+          "reply": "dlg.kiss.ok.3.reply"
+        },
+        {
+          "act": "dlg.kiss.ok.4.act",
+          "say": "dlg.kiss.ok.4.say",
+          "reply": "dlg.kiss.ok.4.reply"
+        },
+        {
+          "act": "dlg.kiss.ok.5.act",
+          "say": "dlg.kiss.ok.5.say",
+          "reply": "dlg.kiss.ok.5.reply",
+          "when": {
+            "speakerTraits": [
+              "romantic"
+            ]
+          }
+        },
+        {
+          "act": "dlg.kiss.ok.6.act",
+          "say": "dlg.kiss.ok.6.say",
+          "reply": "dlg.kiss.ok.6.reply",
+          "when": {
+            "speakerTraits": [
+              "flirt"
+            ]
+          }
+        },
+        {
+          "act": "dlg.kiss.ok.7.act",
+          "say": "dlg.kiss.ok.7.say",
+          "reply": "dlg.kiss.ok.7.reply",
+          "when": {
+            "speakerTraits": [
+              "introvert"
+            ]
+          }
+        },
+        {
+          "act": "dlg.kiss.ok.8.act",
+          "say": "dlg.kiss.ok.8.say",
+          "reply": "dlg.kiss.ok.8.reply",
+          "when": {
+            "tier": [
+              "spouse"
+            ]
+          }
+        },
+        {
+          "act": "dlg.kiss.ok.9.act",
+          "say": "dlg.kiss.ok.9.say",
+          "reply": "dlg.kiss.ok.9.reply",
+          "when": {
+            "tier": [
+              "lover"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.kiss.fail.1.act",
+          "say": "dlg.kiss.fail.1.say",
+          "reply": "dlg.kiss.fail.1.reply"
+        },
+        {
+          "act": "dlg.kiss.fail.2.act",
+          "say": "dlg.kiss.fail.2.say",
+          "reply": "dlg.kiss.fail.2.reply"
+        },
+        {
+          "act": "dlg.kiss.fail.3.act",
+          "say": "dlg.kiss.fail.3.say",
+          "reply": "dlg.kiss.fail.3.reply"
+        },
+        {
+          "act": "dlg.kiss.fail.4.act",
+          "say": "dlg.kiss.fail.4.say",
+          "reply": "dlg.kiss.fail.4.reply",
+          "when": {
+            "tier": [
+              "spouse"
+            ]
+          }
+        }
+      ]
+    },
+    "social.serenade": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.serenade.ok.1.act",
+          "say": "dlg.serenade.ok.1.say",
+          "reply": "dlg.serenade.ok.1.reply"
+        },
+        {
+          "act": "dlg.serenade.ok.2.act",
+          "say": "dlg.serenade.ok.2.say",
+          "reply": "dlg.serenade.ok.2.reply"
+        },
+        {
+          "act": "dlg.serenade.ok.3.act",
+          "say": "dlg.serenade.ok.3.say",
+          "reply": "dlg.serenade.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "creative"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.serenade.fail.1.act",
+          "say": "dlg.serenade.fail.1.say",
+          "reply": "dlg.serenade.fail.1.reply"
+        },
+        {
+          "act": "dlg.serenade.fail.2.act",
+          "say": "dlg.serenade.fail.2.say",
+          "reply": "dlg.serenade.fail.2.reply"
+        },
+        {
+          "act": "dlg.serenade.fail.3.act",
+          "say": "dlg.serenade.fail.3.say",
+          "reply": "dlg.serenade.fail.3.reply"
+        }
+      ]
+    },
+    "social.love_letter": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.love_letter.ok.1.act",
+          "say": "dlg.love_letter.ok.1.say",
+          "reply": "dlg.love_letter.ok.1.reply"
+        },
+        {
+          "act": "dlg.love_letter.ok.2.act",
+          "say": "dlg.love_letter.ok.2.say",
+          "reply": "dlg.love_letter.ok.2.reply"
+        },
+        {
+          "act": "dlg.love_letter.ok.3.act",
+          "say": "dlg.love_letter.ok.3.say",
+          "reply": "dlg.love_letter.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "bookworm"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.love_letter.fail.1.act",
+          "say": "dlg.love_letter.fail.1.say",
+          "reply": "dlg.love_letter.fail.1.reply"
+        },
+        {
+          "act": "dlg.love_letter.fail.2.act",
+          "say": "dlg.love_letter.fail.2.say",
+          "reply": "dlg.love_letter.fail.2.reply"
+        },
+        {
+          "act": "dlg.love_letter.fail.3.act",
+          "say": "dlg.love_letter.fail.3.say",
+          "reply": "dlg.love_letter.fail.3.reply"
+        }
+      ]
+    },
+    "social.propose": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.propose.ok.1.act",
+          "say": "dlg.propose.ok.1.say",
+          "reply": "dlg.propose.ok.1.reply"
+        },
+        {
+          "act": "dlg.propose.ok.2.act",
+          "say": "dlg.propose.ok.2.say",
+          "reply": "dlg.propose.ok.2.reply"
+        },
+        {
+          "act": "dlg.propose.ok.3.act",
+          "say": "dlg.propose.ok.3.say",
+          "reply": "dlg.propose.ok.3.reply"
+        },
+        {
+          "act": "dlg.propose.ok.4.act",
+          "say": "dlg.propose.ok.4.say",
+          "reply": "dlg.propose.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "romantic"
+            ]
+          }
+        },
+        {
+          "act": "dlg.propose.ok.5.act",
+          "say": "dlg.propose.ok.5.say",
+          "reply": "dlg.propose.ok.5.reply",
+          "when": {
+            "speakerTraits": [
+              "introvert"
+            ]
+          }
+        },
+        {
+          "act": "dlg.propose.ok.6.act",
+          "say": "dlg.propose.ok.6.say",
+          "reply": "dlg.propose.ok.6.reply",
+          "when": {
+            "speakerTraits": [
+              "family_oriented"
+            ]
+          }
+        },
+        {
+          "act": "dlg.propose.ok.7.act",
+          "say": "dlg.propose.ok.7.say",
+          "reply": "dlg.propose.ok.7.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.propose.ok.8.act",
+          "say": "dlg.propose.ok.8.say",
+          "reply": "dlg.propose.ok.8.reply",
+          "when": {
+            "register": [
+              "mid"
+            ]
+          }
+        },
+        {
+          "act": "dlg.propose.ok.9.act",
+          "say": "dlg.propose.ok.9.say",
+          "reply": "dlg.propose.ok.9.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.propose.fail.1.act",
+          "say": "dlg.propose.fail.1.say",
+          "reply": "dlg.propose.fail.1.reply"
+        },
+        {
+          "act": "dlg.propose.fail.2.act",
+          "say": "dlg.propose.fail.2.say",
+          "reply": "dlg.propose.fail.2.reply"
+        },
+        {
+          "act": "dlg.propose.fail.3.act",
+          "say": "dlg.propose.fail.3.say",
+          "reply": "dlg.propose.fail.3.reply"
+        },
+        {
+          "act": "dlg.propose.fail.4.act",
+          "say": "dlg.propose.fail.4.say",
+          "reply": "dlg.propose.fail.4.reply",
+          "when": {
+            "listenerTraits": [
+              "ambitious"
+            ]
+          }
+        }
+      ]
+    },
+    "social.propose_bed": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.propose_bed.ok.1.act",
+          "say": "dlg.propose_bed.ok.1.say",
+          "reply": "dlg.propose_bed.ok.1.reply"
+        },
+        {
+          "act": "dlg.propose_bed.ok.2.act",
+          "say": "dlg.propose_bed.ok.2.say",
+          "reply": "dlg.propose_bed.ok.2.reply"
+        },
+        {
+          "act": "dlg.propose_bed.ok.3.act",
+          "say": "dlg.propose_bed.ok.3.say",
+          "reply": "dlg.propose_bed.ok.3.reply",
+          "when": {
+            "tier": [
+              "spouse"
+            ]
+          }
+        },
+        {
+          "act": "dlg.propose_bed.ok.4.act",
+          "say": "dlg.propose_bed.ok.4.say",
+          "reply": "dlg.propose_bed.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "romantic"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.propose_bed.fail.1.act",
+          "say": "dlg.propose_bed.fail.1.say",
+          "reply": "dlg.propose_bed.fail.1.reply"
+        },
+        {
+          "act": "dlg.propose_bed.fail.2.act",
+          "say": "dlg.propose_bed.fail.2.say",
+          "reply": "dlg.propose_bed.fail.2.reply"
+        },
+        {
+          "act": "dlg.propose_bed.fail.3.act",
+          "say": "dlg.propose_bed.fail.3.say",
+          "reply": "dlg.propose_bed.fail.3.reply"
+        }
+      ]
+    },
+    "social.whisper_sweet": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.whisper_sweet.ok.1.act",
+          "say": "dlg.whisper_sweet.ok.1.say",
+          "reply": "dlg.whisper_sweet.ok.1.reply"
+        },
+        {
+          "act": "dlg.whisper_sweet.ok.2.act",
+          "say": "dlg.whisper_sweet.ok.2.say",
+          "reply": "dlg.whisper_sweet.ok.2.reply"
+        },
+        {
+          "act": "dlg.whisper_sweet.ok.3.act",
+          "say": "dlg.whisper_sweet.ok.3.say",
+          "reply": "dlg.whisper_sweet.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "romantic"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.whisper_sweet.fail.1.act",
+          "say": "dlg.whisper_sweet.fail.1.say",
+          "reply": "dlg.whisper_sweet.fail.1.reply"
+        },
+        {
+          "act": "dlg.whisper_sweet.fail.2.act",
+          "say": "dlg.whisper_sweet.fail.2.say",
+          "reply": "dlg.whisper_sweet.fail.2.reply"
+        },
+        {
+          "act": "dlg.whisper_sweet.fail.3.act",
+          "say": "dlg.whisper_sweet.fail.3.say",
+          "reply": "dlg.whisper_sweet.fail.3.reply"
+        }
+      ]
+    },
+    "social.cuddle": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.cuddle.ok.1.act",
+          "say": "dlg.cuddle.ok.1.say",
+          "reply": "dlg.cuddle.ok.1.reply"
+        },
+        {
+          "act": "dlg.cuddle.ok.2.act",
+          "say": "dlg.cuddle.ok.2.say",
+          "reply": "dlg.cuddle.ok.2.reply"
+        },
+        {
+          "act": "dlg.cuddle.ok.3.act",
+          "say": "dlg.cuddle.ok.3.say",
+          "reply": "dlg.cuddle.ok.3.reply"
+        },
+        {
+          "act": "dlg.cuddle.ok.4.act",
+          "say": "dlg.cuddle.ok.4.say",
+          "reply": "dlg.cuddle.ok.4.reply",
+          "when": {
+            "tier": [
+              "spouse"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.cuddle.fail.1.act",
+          "say": "dlg.cuddle.fail.1.say",
+          "reply": "dlg.cuddle.fail.1.reply"
+        },
+        {
+          "act": "dlg.cuddle.fail.2.act",
+          "say": "dlg.cuddle.fail.2.say",
+          "reply": "dlg.cuddle.fail.2.reply"
+        },
+        {
+          "act": "dlg.cuddle.fail.3.act",
+          "say": "dlg.cuddle.fail.3.say",
+          "reply": "dlg.cuddle.fail.3.reply"
+        }
+      ]
+    },
+    "social.ask_walk": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.ask_walk.ok.1.act",
+          "say": "dlg.ask_walk.ok.1.say",
+          "reply": "dlg.ask_walk.ok.1.reply"
+        },
+        {
+          "act": "dlg.ask_walk.ok.2.act",
+          "say": "dlg.ask_walk.ok.2.say",
+          "reply": "dlg.ask_walk.ok.2.reply"
+        },
+        {
+          "act": "dlg.ask_walk.ok.3.act",
+          "say": "dlg.ask_walk.ok.3.say",
+          "reply": "dlg.ask_walk.ok.3.reply",
+          "when": {
+            "topic": [
+              "weather"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.ask_walk.fail.1.act",
+          "say": "dlg.ask_walk.fail.1.say",
+          "reply": "dlg.ask_walk.fail.1.reply"
+        },
+        {
+          "act": "dlg.ask_walk.fail.2.act",
+          "say": "dlg.ask_walk.fail.2.say",
+          "reply": "dlg.ask_walk.fail.2.reply"
+        },
+        {
+          "act": "dlg.ask_walk.fail.3.act",
+          "say": "dlg.ask_walk.fail.3.say",
+          "reply": "dlg.ask_walk.fail.3.reply"
+        }
+      ]
+    },
+    "social.break_up": {
+      "category": "romance",
+      "ok": [
+        {
+          "act": "dlg.break_up.ok.1.act",
+          "say": "dlg.break_up.ok.1.say",
+          "reply": "dlg.break_up.ok.1.reply"
+        },
+        {
+          "act": "dlg.break_up.ok.2.act",
+          "say": "dlg.break_up.ok.2.say",
+          "reply": "dlg.break_up.ok.2.reply"
+        },
+        {
+          "act": "dlg.break_up.ok.3.act",
+          "say": "dlg.break_up.ok.3.say",
+          "reply": "dlg.break_up.ok.3.reply"
+        },
+        {
+          "act": "dlg.break_up.ok.4.act",
+          "say": "dlg.break_up.ok.4.say",
+          "reply": "dlg.break_up.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "cynical"
+            ]
+          }
+        },
+        {
+          "act": "dlg.break_up.ok.5.act",
+          "say": "dlg.break_up.ok.5.say",
+          "reply": "dlg.break_up.ok.5.reply",
+          "when": {
+            "speakerTraits": [
+              "hot_tempered"
+            ]
+          }
+        },
+        {
+          "act": "dlg.break_up.ok.6.act",
+          "say": "dlg.break_up.ok.6.say",
+          "reply": "dlg.break_up.ok.6.reply",
+          "when": {
+            "speakerTraits": [
+              "kind"
+            ]
+          }
+        },
+        {
+          "act": "dlg.break_up.ok.7.act",
+          "say": "dlg.break_up.ok.7.say",
+          "reply": "dlg.break_up.ok.7.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.break_up.fail.1.act",
+          "say": "dlg.break_up.fail.1.say",
+          "reply": "dlg.break_up.fail.1.reply"
+        },
+        {
+          "act": "dlg.break_up.fail.2.act",
+          "say": "dlg.break_up.fail.2.say",
+          "reply": "dlg.break_up.fail.2.reply"
+        },
+        {
+          "act": "dlg.break_up.fail.3.act",
+          "say": "dlg.break_up.fail.3.say",
+          "reply": "dlg.break_up.fail.3.reply"
+        },
+        {
+          "act": "dlg.break_up.fail.4.act",
+          "say": "dlg.break_up.fail.4.say",
+          "reply": "dlg.break_up.fail.4.reply"
+        }
+      ]
+    },
+    "social.tease": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.tease.ok.1.act",
+          "say": "dlg.tease.ok.1.say",
+          "reply": "dlg.tease.ok.1.reply"
+        },
+        {
+          "act": "dlg.tease.ok.2.act",
+          "say": "dlg.tease.ok.2.say",
+          "reply": "dlg.tease.ok.2.reply"
+        },
+        {
+          "act": "dlg.tease.ok.3.act",
+          "say": "dlg.tease.ok.3.say",
+          "reply": "dlg.tease.ok.3.reply"
+        },
+        {
+          "act": "dlg.tease.ok.4.act",
+          "say": "dlg.tease.ok.4.say",
+          "reply": "dlg.tease.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "cheerful"
+            ]
+          }
+        },
+        {
+          "act": "dlg.tease.ok.5.act",
+          "say": "dlg.tease.ok.5.say",
+          "reply": "dlg.tease.ok.5.reply",
+          "when": {
+            "speakerTraits": [
+              "mean"
+            ]
+          }
+        },
+        {
+          "act": "dlg.tease.ok.6.act",
+          "say": "dlg.tease.ok.6.say",
+          "reply": "dlg.tease.ok.6.reply",
+          "when": {
+            "tier": [
+              "spouse",
+              "lover"
+            ]
+          }
+        },
+        {
+          "act": "dlg.tease.ok.7.act",
+          "say": "dlg.tease.ok.7.say",
+          "reply": "dlg.tease.ok.7.reply",
+          "when": {
+            "tier": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.tease.ok.8.act",
+          "say": "dlg.tease.ok.8.say",
+          "reply": "dlg.tease.ok.8.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.tease.fail.1.act",
+          "say": "dlg.tease.fail.1.say",
+          "reply": "dlg.tease.fail.1.reply"
+        },
+        {
+          "act": "dlg.tease.fail.2.act",
+          "say": "dlg.tease.fail.2.say",
+          "reply": "dlg.tease.fail.2.reply"
+        },
+        {
+          "act": "dlg.tease.fail.3.act",
+          "say": "dlg.tease.fail.3.say",
+          "reply": "dlg.tease.fail.3.reply"
+        },
+        {
+          "act": "dlg.tease.fail.4.act",
+          "say": "dlg.tease.fail.4.say",
+          "reply": "dlg.tease.fail.4.reply",
+          "when": {
+            "listenerTraits": [
+              "hot_tempered"
+            ]
+          }
+        }
+      ]
+    },
+    "social.insult": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.insult.ok.1.act",
+          "say": "dlg.insult.ok.1.say",
+          "reply": "dlg.insult.ok.1.reply"
+        },
+        {
+          "act": "dlg.insult.ok.2.act",
+          "say": "dlg.insult.ok.2.say",
+          "reply": "dlg.insult.ok.2.reply"
+        },
+        {
+          "act": "dlg.insult.ok.3.act",
+          "say": "dlg.insult.ok.3.say",
+          "reply": "dlg.insult.ok.3.reply"
+        },
+        {
+          "act": "dlg.insult.ok.4.act",
+          "say": "dlg.insult.ok.4.say",
+          "reply": "dlg.insult.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "mean"
+            ]
+          }
+        },
+        {
+          "act": "dlg.insult.ok.5.act",
+          "say": "dlg.insult.ok.5.say",
+          "reply": "dlg.insult.ok.5.reply",
+          "when": {
+            "speakerTraits": [
+              "hot_tempered"
+            ]
+          }
+        },
+        {
+          "act": "dlg.insult.ok.6.act",
+          "say": "dlg.insult.ok.6.say",
+          "reply": "dlg.insult.ok.6.reply",
+          "when": {
+            "speakerTraits": [
+              "cunning"
+            ]
+          }
+        },
+        {
+          "act": "dlg.insult.ok.7.act",
+          "say": "dlg.insult.ok.7.say",
+          "reply": "dlg.insult.ok.7.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.insult.ok.8.act",
+          "say": "dlg.insult.ok.8.say",
+          "reply": "dlg.insult.ok.8.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.insult.fail.1.act",
+          "say": "dlg.insult.fail.1.say",
+          "reply": "dlg.insult.fail.1.reply"
+        },
+        {
+          "act": "dlg.insult.fail.2.act",
+          "say": "dlg.insult.fail.2.say",
+          "reply": "dlg.insult.fail.2.reply"
+        },
+        {
+          "act": "dlg.insult.fail.3.act",
+          "say": "dlg.insult.fail.3.say",
+          "reply": "dlg.insult.fail.3.reply"
+        },
+        {
+          "act": "dlg.insult.fail.4.act",
+          "say": "dlg.insult.fail.4.say",
+          "reply": "dlg.insult.fail.4.reply",
+          "when": {
+            "register": [
+              "low",
+              "mid"
+            ],
+            "listenerRegister": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.insult.fail.5.act",
+          "say": "dlg.insult.fail.5.say",
+          "reply": "dlg.insult.fail.5.reply",
+          "when": {
+            "listenerTraits": [
+              "calm"
+            ]
+          }
+        }
+      ]
+    },
+    "social.argue": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.argue.ok.1.act",
+          "say": "dlg.argue.ok.1.say",
+          "reply": "dlg.argue.ok.1.reply"
+        },
+        {
+          "act": "dlg.argue.ok.2.act",
+          "say": "dlg.argue.ok.2.say",
+          "reply": "dlg.argue.ok.2.reply"
+        },
+        {
+          "act": "dlg.argue.ok.3.act",
+          "say": "dlg.argue.ok.3.say",
+          "reply": "dlg.argue.ok.3.reply"
+        },
+        {
+          "act": "dlg.argue.ok.4.act",
+          "say": "dlg.argue.ok.4.say",
+          "reply": "dlg.argue.ok.4.reply",
+          "when": {
+            "topic": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.argue.ok.5.act",
+          "say": "dlg.argue.ok.5.say",
+          "reply": "dlg.argue.ok.5.reply",
+          "when": {
+            "topic": [
+              "work"
+            ]
+          }
+        },
+        {
+          "act": "dlg.argue.ok.6.act",
+          "say": "dlg.argue.ok.6.say",
+          "reply": "dlg.argue.ok.6.reply",
+          "when": {
+            "topic": [
+              "gossip"
+            ]
+          }
+        },
+        {
+          "act": "dlg.argue.ok.7.act",
+          "say": "dlg.argue.ok.7.say",
+          "reply": "dlg.argue.ok.7.reply",
+          "when": {
+            "tier": [
+              "spouse"
+            ]
+          }
+        },
+        {
+          "act": "dlg.argue.ok.8.act",
+          "say": "dlg.argue.ok.8.say",
+          "reply": "dlg.argue.ok.8.reply",
+          "when": {
+            "tier": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.argue.ok.9.act",
+          "say": "dlg.argue.ok.9.say",
+          "reply": "dlg.argue.ok.9.reply",
+          "when": {
+            "speakerTraits": [
+              "hot_tempered"
+            ]
+          }
+        },
+        {
+          "act": "dlg.argue.ok.10.act",
+          "say": "dlg.argue.ok.10.say",
+          "reply": "dlg.argue.ok.10.reply",
+          "when": {
+            "speakerTraits": [
+              "just"
+            ]
+          }
+        },
+        {
+          "act": "dlg.argue.ok.11.act",
+          "say": "dlg.argue.ok.11.say",
+          "reply": "dlg.argue.ok.11.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.argue.fail.1.act",
+          "say": "dlg.argue.fail.1.say",
+          "reply": "dlg.argue.fail.1.reply"
+        },
+        {
+          "act": "dlg.argue.fail.2.act",
+          "say": "dlg.argue.fail.2.say",
+          "reply": "dlg.argue.fail.2.reply"
+        },
+        {
+          "act": "dlg.argue.fail.3.act",
+          "say": "dlg.argue.fail.3.say",
+          "reply": "dlg.argue.fail.3.reply"
+        },
+        {
+          "act": "dlg.argue.fail.4.act",
+          "say": "dlg.argue.fail.4.say",
+          "reply": "dlg.argue.fail.4.reply"
+        }
+      ]
+    },
+    "social.gossip": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.gossip.ok.1.act",
+          "say": "dlg.gossip.ok.1.say",
+          "reply": "dlg.gossip.ok.1.reply"
+        },
+        {
+          "act": "dlg.gossip.ok.2.act",
+          "say": "dlg.gossip.ok.2.say",
+          "reply": "dlg.gossip.ok.2.reply"
+        },
+        {
+          "act": "dlg.gossip.ok.3.act",
+          "say": "dlg.gossip.ok.3.say",
+          "reply": "dlg.gossip.ok.3.reply"
+        },
+        {
+          "act": "dlg.gossip.ok.4.act",
+          "say": "dlg.gossip.ok.4.say",
+          "reply": "dlg.gossip.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "gossip"
+            ]
+          }
+        },
+        {
+          "act": "dlg.gossip.ok.5.act",
+          "say": "dlg.gossip.ok.5.say",
+          "reply": "dlg.gossip.ok.5.reply",
+          "when": {
+            "speakerTraits": [
+              "cunning"
+            ]
+          }
+        },
+        {
+          "act": "dlg.gossip.ok.6.act",
+          "say": "dlg.gossip.ok.6.say",
+          "reply": "dlg.gossip.ok.6.reply",
+          "when": {
+            "register": [
+              "mid"
+            ]
+          }
+        },
+        {
+          "act": "dlg.gossip.ok.7.act",
+          "say": "dlg.gossip.ok.7.say",
+          "reply": "dlg.gossip.ok.7.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.gossip.ok.8.act",
+          "say": "dlg.gossip.ok.8.say",
+          "reply": "dlg.gossip.ok.8.reply",
+          "when": {
+            "tier": [
+              "bestFriend",
+              "friend"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.gossip.fail.1.act",
+          "say": "dlg.gossip.fail.1.say",
+          "reply": "dlg.gossip.fail.1.reply"
+        },
+        {
+          "act": "dlg.gossip.fail.2.act",
+          "say": "dlg.gossip.fail.2.say",
+          "reply": "dlg.gossip.fail.2.reply"
+        },
+        {
+          "act": "dlg.gossip.fail.3.act",
+          "say": "dlg.gossip.fail.3.say",
+          "reply": "dlg.gossip.fail.3.reply"
+        },
+        {
+          "act": "dlg.gossip.fail.4.act",
+          "say": "dlg.gossip.fail.4.say",
+          "reply": "dlg.gossip.fail.4.reply",
+          "when": {
+            "listenerTraits": [
+              "just"
+            ]
+          }
+        }
+      ]
+    },
+    "social.mock": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.mock.ok.1.act",
+          "say": "dlg.mock.ok.1.say",
+          "reply": "dlg.mock.ok.1.reply"
+        },
+        {
+          "act": "dlg.mock.ok.2.act",
+          "say": "dlg.mock.ok.2.say",
+          "reply": "dlg.mock.ok.2.reply"
+        },
+        {
+          "act": "dlg.mock.ok.3.act",
+          "say": "dlg.mock.ok.3.say",
+          "reply": "dlg.mock.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "mean"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.mock.fail.1.act",
+          "say": "dlg.mock.fail.1.say",
+          "reply": "dlg.mock.fail.1.reply"
+        },
+        {
+          "act": "dlg.mock.fail.2.act",
+          "say": "dlg.mock.fail.2.say",
+          "reply": "dlg.mock.fail.2.reply"
+        },
+        {
+          "act": "dlg.mock.fail.3.act",
+          "say": "dlg.mock.fail.3.say",
+          "reply": "dlg.mock.fail.3.reply"
+        }
+      ]
+    },
+    "social.slap": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.slap.ok.1.act",
+          "say": "dlg.slap.ok.1.say",
+          "reply": "dlg.slap.ok.1.reply"
+        },
+        {
+          "act": "dlg.slap.ok.2.act",
+          "say": "dlg.slap.ok.2.say",
+          "reply": "dlg.slap.ok.2.reply"
+        },
+        {
+          "act": "dlg.slap.ok.3.act",
+          "say": "dlg.slap.ok.3.say",
+          "reply": "dlg.slap.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "hot_tempered"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.slap.fail.1.act",
+          "say": "dlg.slap.fail.1.say",
+          "reply": "dlg.slap.fail.1.reply"
+        },
+        {
+          "act": "dlg.slap.fail.2.act",
+          "say": "dlg.slap.fail.2.say",
+          "reply": "dlg.slap.fail.2.reply"
+        },
+        {
+          "act": "dlg.slap.fail.3.act",
+          "say": "dlg.slap.fail.3.say",
+          "reply": "dlg.slap.fail.3.reply"
+        }
+      ]
+    },
+    "social.punch": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.punch.ok.1.act",
+          "say": "dlg.punch.ok.1.say",
+          "reply": "dlg.punch.ok.1.reply"
+        },
+        {
+          "act": "dlg.punch.ok.2.act",
+          "say": "dlg.punch.ok.2.say",
+          "reply": "dlg.punch.ok.2.reply"
+        },
+        {
+          "act": "dlg.punch.ok.3.act",
+          "say": "dlg.punch.ok.3.say",
+          "reply": "dlg.punch.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "brave"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.punch.fail.1.act",
+          "say": "dlg.punch.fail.1.say",
+          "reply": "dlg.punch.fail.1.reply"
+        },
+        {
+          "act": "dlg.punch.fail.2.act",
+          "say": "dlg.punch.fail.2.say",
+          "reply": "dlg.punch.fail.2.reply"
+        },
+        {
+          "act": "dlg.punch.fail.3.act",
+          "say": "dlg.punch.fail.3.say",
+          "reply": "dlg.punch.fail.3.reply"
+        }
+      ]
+    },
+    "social.challenge_duel": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.challenge_duel.ok.1.act",
+          "say": "dlg.challenge_duel.ok.1.say",
+          "reply": "dlg.challenge_duel.ok.1.reply"
+        },
+        {
+          "act": "dlg.challenge_duel.ok.2.act",
+          "say": "dlg.challenge_duel.ok.2.say",
+          "reply": "dlg.challenge_duel.ok.2.reply"
+        },
+        {
+          "act": "dlg.challenge_duel.ok.3.act",
+          "say": "dlg.challenge_duel.ok.3.say",
+          "reply": "dlg.challenge_duel.ok.3.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.challenge_duel.ok.4.act",
+          "say": "dlg.challenge_duel.ok.4.say",
+          "reply": "dlg.challenge_duel.ok.4.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.challenge_duel.fail.1.act",
+          "say": "dlg.challenge_duel.fail.1.say",
+          "reply": "dlg.challenge_duel.fail.1.reply"
+        },
+        {
+          "act": "dlg.challenge_duel.fail.2.act",
+          "say": "dlg.challenge_duel.fail.2.say",
+          "reply": "dlg.challenge_duel.fail.2.reply"
+        },
+        {
+          "act": "dlg.challenge_duel.fail.3.act",
+          "say": "dlg.challenge_duel.fail.3.say",
+          "reply": "dlg.challenge_duel.fail.3.reply"
+        }
+      ]
+    },
+    "social.curse": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.curse.ok.1.act",
+          "say": "dlg.curse.ok.1.say",
+          "reply": "dlg.curse.ok.1.reply"
+        },
+        {
+          "act": "dlg.curse.ok.2.act",
+          "say": "dlg.curse.ok.2.say",
+          "reply": "dlg.curse.ok.2.reply"
+        },
+        {
+          "act": "dlg.curse.ok.3.act",
+          "say": "dlg.curse.ok.3.say",
+          "reply": "dlg.curse.ok.3.reply",
+          "when": {
+            "topic": [
+              "plague"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.curse.fail.1.act",
+          "say": "dlg.curse.fail.1.say",
+          "reply": "dlg.curse.fail.1.reply"
+        },
+        {
+          "act": "dlg.curse.fail.2.act",
+          "say": "dlg.curse.fail.2.say",
+          "reply": "dlg.curse.fail.2.reply"
+        },
+        {
+          "act": "dlg.curse.fail.3.act",
+          "say": "dlg.curse.fail.3.say",
+          "reply": "dlg.curse.fail.3.reply"
+        }
+      ]
+    },
+    "social.threaten": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.threaten.ok.1.act",
+          "say": "dlg.threaten.ok.1.say",
+          "reply": "dlg.threaten.ok.1.reply"
+        },
+        {
+          "act": "dlg.threaten.ok.2.act",
+          "say": "dlg.threaten.ok.2.say",
+          "reply": "dlg.threaten.ok.2.reply"
+        },
+        {
+          "act": "dlg.threaten.ok.3.act",
+          "say": "dlg.threaten.ok.3.say",
+          "reply": "dlg.threaten.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "cunning"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.threaten.fail.1.act",
+          "say": "dlg.threaten.fail.1.say",
+          "reply": "dlg.threaten.fail.1.reply"
+        },
+        {
+          "act": "dlg.threaten.fail.2.act",
+          "say": "dlg.threaten.fail.2.say",
+          "reply": "dlg.threaten.fail.2.reply"
+        },
+        {
+          "act": "dlg.threaten.fail.3.act",
+          "say": "dlg.threaten.fail.3.say",
+          "reply": "dlg.threaten.fail.3.reply"
+        }
+      ]
+    },
+    "social.trick": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.trick.ok.1.act",
+          "say": "dlg.trick.ok.1.say",
+          "reply": "dlg.trick.ok.1.reply"
+        },
+        {
+          "act": "dlg.trick.ok.2.act",
+          "say": "dlg.trick.ok.2.say",
+          "reply": "dlg.trick.ok.2.reply"
+        },
+        {
+          "act": "dlg.trick.ok.3.act",
+          "say": "dlg.trick.ok.3.say",
+          "reply": "dlg.trick.ok.3.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.trick.fail.1.act",
+          "say": "dlg.trick.fail.1.say",
+          "reply": "dlg.trick.fail.1.reply"
+        },
+        {
+          "act": "dlg.trick.fail.2.act",
+          "say": "dlg.trick.fail.2.say",
+          "reply": "dlg.trick.fail.2.reply"
+        },
+        {
+          "act": "dlg.trick.fail.3.act",
+          "say": "dlg.trick.fail.3.say",
+          "reply": "dlg.trick.fail.3.reply"
+        }
+      ]
+    },
+    "social.shove": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.shove.ok.1.act",
+          "say": "dlg.shove.ok.1.say",
+          "reply": "dlg.shove.ok.1.reply"
+        },
+        {
+          "act": "dlg.shove.ok.2.act",
+          "say": "dlg.shove.ok.2.say",
+          "reply": "dlg.shove.ok.2.reply"
+        },
+        {
+          "act": "dlg.shove.ok.3.act",
+          "say": "dlg.shove.ok.3.say",
+          "reply": "dlg.shove.ok.3.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.shove.fail.1.act",
+          "say": "dlg.shove.fail.1.say",
+          "reply": "dlg.shove.fail.1.reply"
+        },
+        {
+          "act": "dlg.shove.fail.2.act",
+          "say": "dlg.shove.fail.2.say",
+          "reply": "dlg.shove.fail.2.reply"
+        },
+        {
+          "act": "dlg.shove.fail.3.act",
+          "say": "dlg.shove.fail.3.say",
+          "reply": "dlg.shove.fail.3.reply"
+        }
+      ]
+    },
+    "social.spread_rumor": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.spread_rumor.ok.1.act",
+          "say": "dlg.spread_rumor.ok.1.say",
+          "reply": "dlg.spread_rumor.ok.1.reply"
+        },
+        {
+          "act": "dlg.spread_rumor.ok.2.act",
+          "say": "dlg.spread_rumor.ok.2.say",
+          "reply": "dlg.spread_rumor.ok.2.reply"
+        },
+        {
+          "act": "dlg.spread_rumor.ok.3.act",
+          "say": "dlg.spread_rumor.ok.3.say",
+          "reply": "dlg.spread_rumor.ok.3.reply"
+        },
+        {
+          "act": "dlg.spread_rumor.ok.4.act",
+          "say": "dlg.spread_rumor.ok.4.say",
+          "reply": "dlg.spread_rumor.ok.4.reply",
+          "when": {
+            "speakerTraits": [
+              "cunning"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.spread_rumor.fail.1.act",
+          "say": "dlg.spread_rumor.fail.1.say",
+          "reply": "dlg.spread_rumor.fail.1.reply"
+        },
+        {
+          "act": "dlg.spread_rumor.fail.2.act",
+          "say": "dlg.spread_rumor.fail.2.say",
+          "reply": "dlg.spread_rumor.fail.2.reply"
+        },
+        {
+          "act": "dlg.spread_rumor.fail.3.act",
+          "say": "dlg.spread_rumor.fail.3.say",
+          "reply": "dlg.spread_rumor.fail.3.reply"
+        }
+      ]
+    },
+    "social.look_down": {
+      "category": "mean",
+      "ok": [
+        {
+          "act": "dlg.look_down.ok.1.act",
+          "say": "dlg.look_down.ok.1.say",
+          "reply": "dlg.look_down.ok.1.reply"
+        },
+        {
+          "act": "dlg.look_down.ok.2.act",
+          "say": "dlg.look_down.ok.2.say",
+          "reply": "dlg.look_down.ok.2.reply"
+        },
+        {
+          "act": "dlg.look_down.ok.3.act",
+          "say": "dlg.look_down.ok.3.say",
+          "reply": "dlg.look_down.ok.3.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.look_down.ok.4.act",
+          "say": "dlg.look_down.ok.4.say",
+          "reply": "dlg.look_down.ok.4.reply",
+          "when": {
+            "register": [
+              "mid"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.look_down.fail.1.act",
+          "say": "dlg.look_down.fail.1.say",
+          "reply": "dlg.look_down.fail.1.reply"
+        },
+        {
+          "act": "dlg.look_down.fail.2.act",
+          "say": "dlg.look_down.fail.2.say",
+          "reply": "dlg.look_down.fail.2.reply"
+        },
+        {
+          "act": "dlg.look_down.fail.3.act",
+          "say": "dlg.look_down.fail.3.say"
+        }
+      ]
+    },
+    "social.bow": {
+      "category": "status",
+      "ok": [
+        {
+          "act": "dlg.bow.ok.1.act",
+          "say": "dlg.bow.ok.1.say",
+          "reply": "dlg.bow.ok.1.reply"
+        },
+        {
+          "act": "dlg.bow.ok.2.act",
+          "say": "dlg.bow.ok.2.say",
+          "reply": "dlg.bow.ok.2.reply"
+        },
+        {
+          "act": "dlg.bow.ok.3.act",
+          "say": "dlg.bow.ok.3.say",
+          "reply": "dlg.bow.ok.3.reply",
+          "when": {
+            "listenerRegister": [
+              "clergy"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.bow.fail.1.act",
+          "say": "dlg.bow.fail.1.say"
+        },
+        {
+          "act": "dlg.bow.fail.2.act",
+          "say": "dlg.bow.fail.2.say",
+          "reply": "dlg.bow.fail.2.reply"
+        }
+      ]
+    },
+    "social.kneel": {
+      "category": "status",
+      "ok": [
+        {
+          "act": "dlg.kneel.ok.1.act",
+          "say": "dlg.kneel.ok.1.say",
+          "reply": "dlg.kneel.ok.1.reply"
+        },
+        {
+          "act": "dlg.kneel.ok.2.act",
+          "say": "dlg.kneel.ok.2.say",
+          "reply": "dlg.kneel.ok.2.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.kneel.fail.1.act",
+          "say": "dlg.kneel.fail.1.say",
+          "reply": "dlg.kneel.fail.1.reply"
+        },
+        {
+          "act": "dlg.kneel.fail.2.act",
+          "say": "dlg.kneel.fail.2.say",
+          "reply": "dlg.kneel.fail.2.reply"
+        }
+      ]
+    },
+    "social.petition": {
+      "category": "status",
+      "ok": [
+        {
+          "act": "dlg.petition.ok.1.act",
+          "say": "dlg.petition.ok.1.say",
+          "reply": "dlg.petition.ok.1.reply"
+        },
+        {
+          "act": "dlg.petition.ok.2.act",
+          "say": "dlg.petition.ok.2.say",
+          "reply": "dlg.petition.ok.2.reply",
+          "when": {
+            "topic": [
+              "plague"
+            ]
+          }
+        },
+        {
+          "act": "dlg.petition.ok.3.act",
+          "say": "dlg.petition.ok.3.say",
+          "reply": "dlg.petition.ok.3.reply",
+          "when": {
+            "topic": [
+              "family"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.petition.fail.1.act",
+          "say": "dlg.petition.fail.1.say",
+          "reply": "dlg.petition.fail.1.reply"
+        },
+        {
+          "act": "dlg.petition.fail.2.act",
+          "say": "dlg.petition.fail.2.say",
+          "reply": "dlg.petition.fail.2.reply"
+        },
+        {
+          "act": "dlg.petition.fail.3.act",
+          "say": "dlg.petition.fail.3.say",
+          "reply": "dlg.petition.fail.3.reply"
+        }
+      ]
+    },
+    "social.command": {
+      "category": "status",
+      "ok": [
+        {
+          "act": "dlg.command.ok.1.act",
+          "say": "dlg.command.ok.1.say",
+          "reply": "dlg.command.ok.1.reply"
+        },
+        {
+          "act": "dlg.command.ok.2.act",
+          "say": "dlg.command.ok.2.say",
+          "reply": "dlg.command.ok.2.reply"
+        },
+        {
+          "act": "dlg.command.ok.3.act",
+          "say": "dlg.command.ok.3.say",
+          "reply": "dlg.command.ok.3.reply",
+          "when": {
+            "register": [
+              "clergy"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.command.fail.1.act",
+          "say": "dlg.command.fail.1.say",
+          "reply": "dlg.command.fail.1.reply"
+        },
+        {
+          "act": "dlg.command.fail.2.act",
+          "say": "dlg.command.fail.2.say",
+          "reply": "dlg.command.fail.2.reply"
+        },
+        {
+          "act": "dlg.command.fail.3.act",
+          "say": "dlg.command.fail.3.say",
+          "reply": "dlg.command.fail.3.reply"
+        }
+      ]
+    },
+    "social.bestow": {
+      "category": "status",
+      "ok": [
+        {
+          "act": "dlg.bestow.ok.1.act",
+          "say": "dlg.bestow.ok.1.say",
+          "reply": "dlg.bestow.ok.1.reply"
+        },
+        {
+          "act": "dlg.bestow.ok.2.act",
+          "say": "dlg.bestow.ok.2.say",
+          "reply": "dlg.bestow.ok.2.reply"
+        },
+        {
+          "act": "dlg.bestow.ok.3.act",
+          "say": "dlg.bestow.ok.3.say",
+          "reply": "dlg.bestow.ok.3.reply",
+          "when": {
+            "register": [
+              "clergy"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.bestow.fail.1.act",
+          "say": "dlg.bestow.fail.1.say",
+          "reply": "dlg.bestow.fail.1.reply"
+        },
+        {
+          "act": "dlg.bestow.fail.2.act",
+          "say": "dlg.bestow.fail.2.say",
+          "reply": "dlg.bestow.fail.2.reply"
+        }
+      ]
+    },
+    "social.rebuke": {
+      "category": "status",
+      "ok": [
+        {
+          "act": "dlg.rebuke.ok.1.act",
+          "say": "dlg.rebuke.ok.1.say",
+          "reply": "dlg.rebuke.ok.1.reply"
+        },
+        {
+          "act": "dlg.rebuke.ok.2.act",
+          "say": "dlg.rebuke.ok.2.say",
+          "reply": "dlg.rebuke.ok.2.reply"
+        },
+        {
+          "act": "dlg.rebuke.ok.3.act",
+          "say": "dlg.rebuke.ok.3.say",
+          "reply": "dlg.rebuke.ok.3.reply",
+          "when": {
+            "register": [
+              "clergy"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.rebuke.fail.1.act",
+          "say": "dlg.rebuke.fail.1.say",
+          "reply": "dlg.rebuke.fail.1.reply"
+        },
+        {
+          "act": "dlg.rebuke.fail.2.act",
+          "say": "dlg.rebuke.fail.2.say",
+          "reply": "dlg.rebuke.fail.2.reply"
+        }
+      ]
+    },
+    "social.ask_blessing": {
+      "category": "status",
+      "ok": [
+        {
+          "act": "dlg.ask_blessing.ok.1.act",
+          "say": "dlg.ask_blessing.ok.1.say",
+          "reply": "dlg.ask_blessing.ok.1.reply"
+        },
+        {
+          "act": "dlg.ask_blessing.ok.2.act",
+          "say": "dlg.ask_blessing.ok.2.say",
+          "reply": "dlg.ask_blessing.ok.2.reply"
+        },
+        {
+          "act": "dlg.ask_blessing.ok.3.act",
+          "say": "dlg.ask_blessing.ok.3.say",
+          "reply": "dlg.ask_blessing.ok.3.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.ask_blessing.fail.1.act",
+          "say": "dlg.ask_blessing.fail.1.say",
+          "reply": "dlg.ask_blessing.fail.1.reply"
+        },
+        {
+          "act": "dlg.ask_blessing.fail.2.act",
+          "say": "dlg.ask_blessing.fail.2.say",
+          "reply": "dlg.ask_blessing.fail.2.reply"
+        }
+      ]
+    },
+    "social.ask_protection": {
+      "category": "status",
+      "ok": [
+        {
+          "act": "dlg.ask_protection.ok.1.act",
+          "say": "dlg.ask_protection.ok.1.say",
+          "reply": "dlg.ask_protection.ok.1.reply"
+        },
+        {
+          "act": "dlg.ask_protection.ok.2.act",
+          "say": "dlg.ask_protection.ok.2.say",
+          "reply": "dlg.ask_protection.ok.2.reply",
+          "when": {
+            "topic": [
+              "war"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.ask_protection.fail.1.act",
+          "say": "dlg.ask_protection.fail.1.say",
+          "reply": "dlg.ask_protection.fail.1.reply"
+        },
+        {
+          "act": "dlg.ask_protection.fail.2.act",
+          "say": "dlg.ask_protection.fail.2.say",
+          "reply": "dlg.ask_protection.fail.2.reply"
+        }
+      ]
+    },
+    "social.flatter": {
+      "category": "status",
+      "ok": [
+        {
+          "act": "dlg.flatter.ok.1.act",
+          "say": "dlg.flatter.ok.1.say",
+          "reply": "dlg.flatter.ok.1.reply"
+        },
+        {
+          "act": "dlg.flatter.ok.2.act",
+          "say": "dlg.flatter.ok.2.say",
+          "reply": "dlg.flatter.ok.2.reply"
+        },
+        {
+          "act": "dlg.flatter.ok.3.act",
+          "say": "dlg.flatter.ok.3.say",
+          "reply": "dlg.flatter.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "cunning"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.flatter.fail.1.act",
+          "say": "dlg.flatter.fail.1.say",
+          "reply": "dlg.flatter.fail.1.reply"
+        },
+        {
+          "act": "dlg.flatter.fail.2.act",
+          "say": "dlg.flatter.fail.2.say",
+          "reply": "dlg.flatter.fail.2.reply"
+        }
+      ]
+    },
+    "social.swear_fealty": {
+      "category": "status",
+      "ok": [
+        {
+          "act": "dlg.swear_fealty.ok.1.act",
+          "say": "dlg.swear_fealty.ok.1.say",
+          "reply": "dlg.swear_fealty.ok.1.reply"
+        },
+        {
+          "act": "dlg.swear_fealty.ok.2.act",
+          "say": "dlg.swear_fealty.ok.2.say",
+          "reply": "dlg.swear_fealty.ok.2.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.swear_fealty.fail.1.act",
+          "say": "dlg.swear_fealty.fail.1.say",
+          "reply": "dlg.swear_fealty.fail.1.reply"
+        },
+        {
+          "act": "dlg.swear_fealty.fail.2.act",
+          "say": "dlg.swear_fealty.fail.2.say",
+          "reply": "dlg.swear_fealty.fail.2.reply"
+        }
+      ]
+    },
+    "social.haggle": {
+      "category": "trade",
+      "ok": [
+        {
+          "act": "dlg.haggle.ok.1.act",
+          "say": "dlg.haggle.ok.1.say",
+          "reply": "dlg.haggle.ok.1.reply"
+        },
+        {
+          "act": "dlg.haggle.ok.2.act",
+          "say": "dlg.haggle.ok.2.say",
+          "reply": "dlg.haggle.ok.2.reply"
+        },
+        {
+          "act": "dlg.haggle.ok.3.act",
+          "say": "dlg.haggle.ok.3.say",
+          "reply": "dlg.haggle.ok.3.reply",
+          "when": {
+            "register": [
+              "mid"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.haggle.fail.1.act",
+          "say": "dlg.haggle.fail.1.say",
+          "reply": "dlg.haggle.fail.1.reply"
+        },
+        {
+          "act": "dlg.haggle.fail.2.act",
+          "say": "dlg.haggle.fail.2.say",
+          "reply": "dlg.haggle.fail.2.reply"
+        },
+        {
+          "act": "dlg.haggle.fail.3.act",
+          "say": "dlg.haggle.fail.3.say",
+          "reply": "dlg.haggle.fail.3.reply"
+        }
+      ]
+    },
+    "social.ask_loan": {
+      "category": "trade",
+      "ok": [
+        {
+          "act": "dlg.ask_loan.ok.1.act",
+          "say": "dlg.ask_loan.ok.1.say",
+          "reply": "dlg.ask_loan.ok.1.reply"
+        },
+        {
+          "act": "dlg.ask_loan.ok.2.act",
+          "say": "dlg.ask_loan.ok.2.say",
+          "reply": "dlg.ask_loan.ok.2.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.ask_loan.fail.1.act",
+          "say": "dlg.ask_loan.fail.1.say",
+          "reply": "dlg.ask_loan.fail.1.reply"
+        },
+        {
+          "act": "dlg.ask_loan.fail.2.act",
+          "say": "dlg.ask_loan.fail.2.say",
+          "reply": "dlg.ask_loan.fail.2.reply"
+        }
+      ]
+    },
+    "social.demand_debt": {
+      "category": "trade",
+      "ok": [
+        {
+          "act": "dlg.demand_debt.ok.1.act",
+          "say": "dlg.demand_debt.ok.1.say",
+          "reply": "dlg.demand_debt.ok.1.reply"
+        },
+        {
+          "act": "dlg.demand_debt.ok.2.act",
+          "say": "dlg.demand_debt.ok.2.say",
+          "reply": "dlg.demand_debt.ok.2.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.demand_debt.fail.1.act",
+          "say": "dlg.demand_debt.fail.1.say",
+          "reply": "dlg.demand_debt.fail.1.reply"
+        },
+        {
+          "act": "dlg.demand_debt.fail.2.act",
+          "say": "dlg.demand_debt.fail.2.say",
+          "reply": "dlg.demand_debt.fail.2.reply"
+        }
+      ]
+    },
+    "social.bribe": {
+      "category": "trade",
+      "ok": [
+        {
+          "act": "dlg.bribe.ok.1.act",
+          "say": "dlg.bribe.ok.1.say",
+          "reply": "dlg.bribe.ok.1.reply"
+        },
+        {
+          "act": "dlg.bribe.ok.2.act",
+          "say": "dlg.bribe.ok.2.say",
+          "reply": "dlg.bribe.ok.2.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.bribe.fail.1.act",
+          "say": "dlg.bribe.fail.1.say",
+          "reply": "dlg.bribe.fail.1.reply"
+        },
+        {
+          "act": "dlg.bribe.fail.2.act",
+          "say": "dlg.bribe.fail.2.say",
+          "reply": "dlg.bribe.fail.2.reply"
+        }
+      ]
+    },
+    "social.propose_partnership": {
+      "category": "trade",
+      "ok": [
+        {
+          "act": "dlg.propose_partnership.ok.1.act",
+          "say": "dlg.propose_partnership.ok.1.say",
+          "reply": "dlg.propose_partnership.ok.1.reply"
+        },
+        {
+          "act": "dlg.propose_partnership.ok.2.act",
+          "say": "dlg.propose_partnership.ok.2.say",
+          "reply": "dlg.propose_partnership.ok.2.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.propose_partnership.fail.1.act",
+          "say": "dlg.propose_partnership.fail.1.say",
+          "reply": "dlg.propose_partnership.fail.1.reply"
+        },
+        {
+          "act": "dlg.propose_partnership.fail.2.act",
+          "say": "dlg.propose_partnership.fail.2.say",
+          "reply": "dlg.propose_partnership.fail.2.reply"
+        }
+      ]
+    },
+    "social.take_apprentice": {
+      "category": "trade",
+      "ok": [
+        {
+          "act": "dlg.take_apprentice.ok.1.act",
+          "say": "dlg.take_apprentice.ok.1.say",
+          "reply": "dlg.take_apprentice.ok.1.reply"
+        },
+        {
+          "act": "dlg.take_apprentice.ok.2.act",
+          "say": "dlg.take_apprentice.ok.2.say",
+          "reply": "dlg.take_apprentice.ok.2.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.take_apprentice.fail.1.act",
+          "say": "dlg.take_apprentice.fail.1.say",
+          "reply": "dlg.take_apprentice.fail.1.reply"
+        },
+        {
+          "act": "dlg.take_apprentice.fail.2.act",
+          "say": "dlg.take_apprentice.fail.2.say",
+          "reply": "dlg.take_apprentice.fail.2.reply"
+        }
+      ]
+    },
+    "social.comfort": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.comfort.ok.1.act",
+          "say": "dlg.comfort.ok.1.say",
+          "reply": "dlg.comfort.ok.1.reply"
+        },
+        {
+          "act": "dlg.comfort.ok.2.act",
+          "say": "dlg.comfort.ok.2.say",
+          "reply": "dlg.comfort.ok.2.reply"
+        },
+        {
+          "act": "dlg.comfort.ok.3.act",
+          "say": "dlg.comfort.ok.3.say",
+          "reply": "dlg.comfort.ok.3.reply"
+        },
+        {
+          "act": "dlg.comfort.ok.4.act",
+          "say": "dlg.comfort.ok.4.say",
+          "reply": "dlg.comfort.ok.4.reply",
+          "when": {
+            "tier": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.comfort.ok.5.act",
+          "say": "dlg.comfort.ok.5.say",
+          "reply": "dlg.comfort.ok.5.reply",
+          "when": {
+            "tier": [
+              "lover",
+              "spouse"
+            ]
+          }
+        },
+        {
+          "act": "dlg.comfort.ok.6.act",
+          "say": "dlg.comfort.ok.6.say",
+          "reply": "dlg.comfort.ok.6.reply",
+          "when": {
+            "tier": [
+              "bestFriend",
+              "friend"
+            ]
+          }
+        },
+        {
+          "act": "dlg.comfort.ok.7.act",
+          "say": "dlg.comfort.ok.7.say",
+          "reply": "dlg.comfort.ok.7.reply",
+          "when": {
+            "speakerTraits": [
+              "kind"
+            ]
+          }
+        },
+        {
+          "act": "dlg.comfort.ok.8.act",
+          "say": "dlg.comfort.ok.8.say",
+          "reply": "dlg.comfort.ok.8.reply",
+          "when": {
+            "speakerTraits": [
+              "cheerful"
+            ]
+          }
+        },
+        {
+          "act": "dlg.comfort.ok.9.act",
+          "say": "dlg.comfort.ok.9.say",
+          "reply": "dlg.comfort.ok.9.reply",
+          "when": {
+            "speakerTraits": [
+              "cynical"
+            ]
+          }
+        },
+        {
+          "act": "dlg.comfort.ok.10.act",
+          "say": "dlg.comfort.ok.10.say",
+          "reply": "dlg.comfort.ok.10.reply",
+          "when": {
+            "register": [
+              "clergy"
+            ]
+          }
+        },
+        {
+          "act": "dlg.comfort.ok.11.act",
+          "say": "dlg.comfort.ok.11.say",
+          "reply": "dlg.comfort.ok.11.reply",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.comfort.ok.12.act",
+          "say": "dlg.comfort.ok.12.say",
+          "reply": "dlg.comfort.ok.12.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.comfort.fail.1.act",
+          "say": "dlg.comfort.fail.1.say",
+          "reply": "dlg.comfort.fail.1.reply"
+        },
+        {
+          "act": "dlg.comfort.fail.2.act",
+          "say": "dlg.comfort.fail.2.say",
+          "reply": "dlg.comfort.fail.2.reply"
+        },
+        {
+          "act": "dlg.comfort.fail.3.act",
+          "say": "dlg.comfort.fail.3.say",
+          "reply": "dlg.comfort.fail.3.reply"
+        },
+        {
+          "act": "dlg.comfort.fail.4.act",
+          "say": "dlg.comfort.fail.4.say",
+          "reply": "dlg.comfort.fail.4.reply",
+          "when": {
+            "speakerTraits": [
+              "cynical"
+            ]
+          }
+        }
+      ]
+    },
+    "social.apologize": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.apologize.ok.1.act",
+          "say": "dlg.apologize.ok.1.say",
+          "reply": "dlg.apologize.ok.1.reply"
+        },
+        {
+          "act": "dlg.apologize.ok.2.act",
+          "say": "dlg.apologize.ok.2.say",
+          "reply": "dlg.apologize.ok.2.reply"
+        },
+        {
+          "act": "dlg.apologize.ok.3.act",
+          "say": "dlg.apologize.ok.3.say",
+          "reply": "dlg.apologize.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "hot_tempered"
+            ]
+          }
+        },
+        {
+          "act": "dlg.apologize.ok.4.act",
+          "say": "dlg.apologize.ok.4.say",
+          "reply": "dlg.apologize.ok.4.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.apologize.fail.1.act",
+          "say": "dlg.apologize.fail.1.say",
+          "reply": "dlg.apologize.fail.1.reply"
+        },
+        {
+          "act": "dlg.apologize.fail.2.act",
+          "say": "dlg.apologize.fail.2.say",
+          "reply": "dlg.apologize.fail.2.reply"
+        },
+        {
+          "act": "dlg.apologize.fail.3.act",
+          "say": "dlg.apologize.fail.3.say"
+        }
+      ]
+    },
+    "social.brag": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.brag.ok.1.act",
+          "say": "dlg.brag.ok.1.say",
+          "reply": "dlg.brag.ok.1.reply"
+        },
+        {
+          "act": "dlg.brag.ok.2.act",
+          "say": "dlg.brag.ok.2.say",
+          "reply": "dlg.brag.ok.2.reply",
+          "when": {
+            "topic": [
+              "war"
+            ]
+          }
+        },
+        {
+          "act": "dlg.brag.ok.3.act",
+          "say": "dlg.brag.ok.3.say",
+          "reply": "dlg.brag.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "ambitious"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.brag.fail.1.act",
+          "say": "dlg.brag.fail.1.say",
+          "reply": "dlg.brag.fail.1.reply"
+        },
+        {
+          "act": "dlg.brag.fail.2.act",
+          "say": "dlg.brag.fail.2.say",
+          "reply": "dlg.brag.fail.2.reply"
+        },
+        {
+          "act": "dlg.brag.fail.3.act",
+          "say": "dlg.brag.fail.3.say",
+          "reply": "dlg.brag.fail.3.reply"
+        }
+      ]
+    },
+    "social.preach": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.preach.ok.1.act",
+          "say": "dlg.preach.ok.1.say",
+          "reply": "dlg.preach.ok.1.reply"
+        },
+        {
+          "act": "dlg.preach.ok.2.act",
+          "say": "dlg.preach.ok.2.say",
+          "reply": "dlg.preach.ok.2.reply"
+        },
+        {
+          "act": "dlg.preach.ok.3.act",
+          "say": "dlg.preach.ok.3.say",
+          "reply": "dlg.preach.ok.3.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.preach.fail.1.act",
+          "say": "dlg.preach.fail.1.say",
+          "reply": "dlg.preach.fail.1.reply"
+        },
+        {
+          "act": "dlg.preach.fail.2.act",
+          "say": "dlg.preach.fail.2.say",
+          "reply": "dlg.preach.fail.2.reply"
+        },
+        {
+          "act": "dlg.preach.fail.3.act",
+          "say": "dlg.preach.fail.3.say",
+          "reply": "dlg.preach.fail.3.reply"
+        }
+      ]
+    },
+    "social.prescribe": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.prescribe.ok.1.act",
+          "say": "dlg.prescribe.ok.1.say",
+          "reply": "dlg.prescribe.ok.1.reply"
+        },
+        {
+          "act": "dlg.prescribe.ok.2.act",
+          "say": "dlg.prescribe.ok.2.say",
+          "reply": "dlg.prescribe.ok.2.reply"
+        },
+        {
+          "act": "dlg.prescribe.ok.3.act",
+          "say": "dlg.prescribe.ok.3.say",
+          "reply": "dlg.prescribe.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "nature_lover"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.prescribe.fail.1.act",
+          "say": "dlg.prescribe.fail.1.say",
+          "reply": "dlg.prescribe.fail.1.reply"
+        },
+        {
+          "act": "dlg.prescribe.fail.2.act",
+          "say": "dlg.prescribe.fail.2.say",
+          "reply": "dlg.prescribe.fail.2.reply"
+        },
+        {
+          "act": "dlg.prescribe.fail.3.act",
+          "say": "dlg.prescribe.fail.3.say",
+          "reply": "dlg.prescribe.fail.3.reply"
+        }
+      ]
+    },
+    "social.tell_fortune": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.tell_fortune.ok.1.act",
+          "say": "dlg.tell_fortune.ok.1.say",
+          "reply": "dlg.tell_fortune.ok.1.reply"
+        },
+        {
+          "act": "dlg.tell_fortune.ok.2.act",
+          "say": "dlg.tell_fortune.ok.2.say",
+          "reply": "dlg.tell_fortune.ok.2.reply",
+          "when": {
+            "topic": [
+              "love"
+            ]
+          }
+        },
+        {
+          "act": "dlg.tell_fortune.ok.3.act",
+          "say": "dlg.tell_fortune.ok.3.say",
+          "reply": "dlg.tell_fortune.ok.3.reply",
+          "when": {
+            "topic": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.tell_fortune.ok.4.act",
+          "say": "dlg.tell_fortune.ok.4.say",
+          "reply": "dlg.tell_fortune.ok.4.reply",
+          "when": {
+            "topic": [
+              "plague"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.tell_fortune.fail.1.act",
+          "say": "dlg.tell_fortune.fail.1.say",
+          "reply": "dlg.tell_fortune.fail.1.reply"
+        },
+        {
+          "act": "dlg.tell_fortune.fail.2.act",
+          "say": "dlg.tell_fortune.fail.2.say",
+          "reply": "dlg.tell_fortune.fail.2.reply"
+        },
+        {
+          "act": "dlg.tell_fortune.fail.3.act",
+          "say": "dlg.tell_fortune.fail.3.say",
+          "reply": "dlg.tell_fortune.fail.3.reply"
+        }
+      ]
+    },
+    "social.scheme": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.scheme.ok.1.act",
+          "say": "dlg.scheme.ok.1.say",
+          "reply": "dlg.scheme.ok.1.reply"
+        },
+        {
+          "act": "dlg.scheme.ok.2.act",
+          "say": "dlg.scheme.ok.2.say",
+          "reply": "dlg.scheme.ok.2.reply"
+        },
+        {
+          "act": "dlg.scheme.ok.3.act",
+          "say": "dlg.scheme.ok.3.say",
+          "reply": "dlg.scheme.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "cunning"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.scheme.fail.1.act",
+          "say": "dlg.scheme.fail.1.say",
+          "reply": "dlg.scheme.fail.1.reply"
+        },
+        {
+          "act": "dlg.scheme.fail.2.act",
+          "say": "dlg.scheme.fail.2.say",
+          "reply": "dlg.scheme.fail.2.reply"
+        },
+        {
+          "act": "dlg.scheme.fail.3.act",
+          "say": "dlg.scheme.fail.3.say",
+          "reply": "dlg.scheme.fail.3.reply"
+        }
+      ]
+    },
+    "social.seduce": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.seduce.ok.1.act",
+          "say": "dlg.seduce.ok.1.say",
+          "reply": "dlg.seduce.ok.1.reply"
+        },
+        {
+          "act": "dlg.seduce.ok.2.act",
+          "say": "dlg.seduce.ok.2.say",
+          "reply": "dlg.seduce.ok.2.reply"
+        },
+        {
+          "act": "dlg.seduce.ok.3.act",
+          "say": "dlg.seduce.ok.3.say",
+          "reply": "dlg.seduce.ok.3.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.seduce.fail.1.act",
+          "say": "dlg.seduce.fail.1.say",
+          "reply": "dlg.seduce.fail.1.reply"
+        },
+        {
+          "act": "dlg.seduce.fail.2.act",
+          "say": "dlg.seduce.fail.2.say",
+          "reply": "dlg.seduce.fail.2.reply"
+        },
+        {
+          "act": "dlg.seduce.fail.3.act",
+          "say": "dlg.seduce.fail.3.say",
+          "reply": "dlg.seduce.fail.3.reply"
+        }
+      ]
+    },
+    "social.reconcile": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.reconcile.ok.1.act",
+          "say": "dlg.reconcile.ok.1.say",
+          "reply": "dlg.reconcile.ok.1.reply"
+        },
+        {
+          "act": "dlg.reconcile.ok.2.act",
+          "say": "dlg.reconcile.ok.2.say",
+          "reply": "dlg.reconcile.ok.2.reply"
+        },
+        {
+          "act": "dlg.reconcile.ok.3.act",
+          "say": "dlg.reconcile.ok.3.say",
+          "reply": "dlg.reconcile.ok.3.reply",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.reconcile.fail.1.act",
+          "say": "dlg.reconcile.fail.1.say",
+          "reply": "dlg.reconcile.fail.1.reply"
+        },
+        {
+          "act": "dlg.reconcile.fail.2.act",
+          "say": "dlg.reconcile.fail.2.say",
+          "reply": "dlg.reconcile.fail.2.reply"
+        },
+        {
+          "act": "dlg.reconcile.fail.3.act",
+          "say": "dlg.reconcile.fail.3.say",
+          "reply": "dlg.reconcile.fail.3.reply"
+        }
+      ]
+    },
+    "social.calm_down": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.calm_down.ok.1.act",
+          "say": "dlg.calm_down.ok.1.say",
+          "reply": "dlg.calm_down.ok.1.reply"
+        },
+        {
+          "act": "dlg.calm_down.ok.2.act",
+          "say": "dlg.calm_down.ok.2.say",
+          "reply": "dlg.calm_down.ok.2.reply"
+        },
+        {
+          "act": "dlg.calm_down.ok.3.act",
+          "say": "dlg.calm_down.ok.3.say",
+          "reply": "dlg.calm_down.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "calm"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.calm_down.fail.1.act",
+          "say": "dlg.calm_down.fail.1.say",
+          "reply": "dlg.calm_down.fail.1.reply"
+        },
+        {
+          "act": "dlg.calm_down.fail.2.act",
+          "say": "dlg.calm_down.fail.2.say",
+          "reply": "dlg.calm_down.fail.2.reply"
+        },
+        {
+          "act": "dlg.calm_down.fail.3.act",
+          "say": "dlg.calm_down.fail.3.say",
+          "reply": "dlg.calm_down.fail.3.reply"
+        }
+      ]
+    },
+    "social.cheer_up": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.cheer_up.ok.1.act",
+          "say": "dlg.cheer_up.ok.1.say",
+          "reply": "dlg.cheer_up.ok.1.reply"
+        },
+        {
+          "act": "dlg.cheer_up.ok.2.act",
+          "say": "dlg.cheer_up.ok.2.say",
+          "reply": "dlg.cheer_up.ok.2.reply"
+        },
+        {
+          "act": "dlg.cheer_up.ok.3.act",
+          "say": "dlg.cheer_up.ok.3.say",
+          "reply": "dlg.cheer_up.ok.3.reply",
+          "when": {
+            "speakerTraits": [
+              "cheerful"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.cheer_up.fail.1.act",
+          "say": "dlg.cheer_up.fail.1.say",
+          "reply": "dlg.cheer_up.fail.1.reply"
+        },
+        {
+          "act": "dlg.cheer_up.fail.2.act",
+          "say": "dlg.cheer_up.fail.2.say",
+          "reply": "dlg.cheer_up.fail.2.reply"
+        },
+        {
+          "act": "dlg.cheer_up.fail.3.act",
+          "say": "dlg.cheer_up.fail.3.say",
+          "reply": "dlg.cheer_up.fail.3.reply"
+        }
+      ]
+    },
+    "social.confide_sin": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.confide_sin.ok.1.act",
+          "say": "dlg.confide_sin.ok.1.say",
+          "reply": "dlg.confide_sin.ok.1.reply"
+        },
+        {
+          "act": "dlg.confide_sin.ok.2.act",
+          "say": "dlg.confide_sin.ok.2.say",
+          "reply": "dlg.confide_sin.ok.2.reply"
+        },
+        {
+          "act": "dlg.confide_sin.ok.3.act",
+          "say": "dlg.confide_sin.ok.3.say",
+          "reply": "dlg.confide_sin.ok.3.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.confide_sin.fail.1.act",
+          "say": "dlg.confide_sin.fail.1.say",
+          "reply": "dlg.confide_sin.fail.1.reply"
+        },
+        {
+          "act": "dlg.confide_sin.fail.2.act",
+          "say": "dlg.confide_sin.fail.2.say",
+          "reply": "dlg.confide_sin.fail.2.reply"
+        },
+        {
+          "act": "dlg.confide_sin.fail.3.act",
+          "say": "dlg.confide_sin.fail.3.say",
+          "reply": "dlg.confide_sin.fail.3.reply"
+        }
+      ]
+    },
+    "social.speak_truth": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.speak_truth.ok.1.act",
+          "say": "dlg.speak_truth.ok.1.say",
+          "reply": "dlg.speak_truth.ok.1.reply"
+        },
+        {
+          "act": "dlg.speak_truth.ok.2.act",
+          "say": "dlg.speak_truth.ok.2.say",
+          "reply": "dlg.speak_truth.ok.2.reply"
+        },
+        {
+          "act": "dlg.speak_truth.ok.3.act",
+          "say": "dlg.speak_truth.ok.3.say",
+          "reply": "dlg.speak_truth.ok.3.reply",
+          "when": {
+            "topic": [
+              "faith"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.speak_truth.fail.1.act",
+          "say": "dlg.speak_truth.fail.1.say",
+          "reply": "dlg.speak_truth.fail.1.reply"
+        },
+        {
+          "act": "dlg.speak_truth.fail.2.act",
+          "say": "dlg.speak_truth.fail.2.say",
+          "reply": "dlg.speak_truth.fail.2.reply"
+        },
+        {
+          "act": "dlg.speak_truth.fail.3.act",
+          "say": "dlg.speak_truth.fail.3.say",
+          "reply": "dlg.speak_truth.fail.3.reply"
+        }
+      ]
+    },
+    "social.share_worry": {
+      "category": "special",
+      "ok": [
+        {
+          "act": "dlg.share_worry.ok.1.act",
+          "say": "dlg.share_worry.ok.1.say",
+          "reply": "dlg.share_worry.ok.1.reply"
+        },
+        {
+          "act": "dlg.share_worry.ok.2.act",
+          "say": "dlg.share_worry.ok.2.say",
+          "reply": "dlg.share_worry.ok.2.reply",
+          "when": {
+            "topic": [
+              "family"
+            ]
+          }
+        },
+        {
+          "act": "dlg.share_worry.ok.3.act",
+          "say": "dlg.share_worry.ok.3.say",
+          "reply": "dlg.share_worry.ok.3.reply",
+          "when": {
+            "topic": [
+              "plague"
+            ]
+          }
+        },
+        {
+          "act": "dlg.share_worry.ok.4.act",
+          "say": "dlg.share_worry.ok.4.say",
+          "reply": "dlg.share_worry.ok.4.reply",
+          "when": {
+            "topic": [
+              "work"
+            ]
+          }
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.share_worry.fail.1.act",
+          "say": "dlg.share_worry.fail.1.say",
+          "reply": "dlg.share_worry.fail.1.reply"
+        },
+        {
+          "act": "dlg.share_worry.fail.2.act",
+          "say": "dlg.share_worry.fail.2.say",
+          "reply": "dlg.share_worry.fail.2.reply"
+        },
+        {
+          "act": "dlg.share_worry.fail.3.act",
+          "say": "dlg.share_worry.fail.3.say",
+          "reply": "dlg.share_worry.fail.3.reply"
+        }
+      ]
+    }
+  },
+  "categories": {
+    "basic": {
+      "ok": [
+        {
+          "act": "dlg.cat.basic.ok.1.act",
+          "say": "dlg.cat.basic.ok.1.say",
+          "reply": "dlg.cat.basic.ok.1.reply"
+        },
+        {
+          "act": "dlg.cat.basic.ok.2.act",
+          "say": "dlg.cat.basic.ok.2.say",
+          "reply": "dlg.cat.basic.ok.2.reply"
+        },
+        {
+          "act": "dlg.cat.basic.ok.3.act",
+          "say": "dlg.cat.basic.ok.3.say",
+          "reply": "dlg.cat.basic.ok.3.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.cat.basic.fail.1.act",
+          "say": "dlg.cat.basic.fail.1.say",
+          "reply": "dlg.cat.basic.fail.1.reply"
+        },
+        {
+          "act": "dlg.cat.basic.fail.2.act",
+          "say": "dlg.cat.basic.fail.2.say",
+          "reply": "dlg.cat.basic.fail.2.reply"
+        }
+      ]
+    },
+    "friendly": {
+      "ok": [
+        {
+          "act": "dlg.cat.friendly.ok.1.act",
+          "say": "dlg.cat.friendly.ok.1.say",
+          "reply": "dlg.cat.friendly.ok.1.reply"
+        },
+        {
+          "act": "dlg.cat.friendly.ok.2.act",
+          "say": "dlg.cat.friendly.ok.2.say",
+          "reply": "dlg.cat.friendly.ok.2.reply"
+        },
+        {
+          "act": "dlg.cat.friendly.ok.3.act",
+          "say": "dlg.cat.friendly.ok.3.say",
+          "reply": "dlg.cat.friendly.ok.3.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.cat.friendly.fail.1.act",
+          "say": "dlg.cat.friendly.fail.1.say",
+          "reply": "dlg.cat.friendly.fail.1.reply"
+        },
+        {
+          "act": "dlg.cat.friendly.fail.2.act",
+          "say": "dlg.cat.friendly.fail.2.say",
+          "reply": "dlg.cat.friendly.fail.2.reply"
+        }
+      ]
+    },
+    "romance": {
+      "ok": [
+        {
+          "act": "dlg.cat.romance.ok.1.act",
+          "say": "dlg.cat.romance.ok.1.say",
+          "reply": "dlg.cat.romance.ok.1.reply"
+        },
+        {
+          "act": "dlg.cat.romance.ok.2.act",
+          "say": "dlg.cat.romance.ok.2.say",
+          "reply": "dlg.cat.romance.ok.2.reply"
+        },
+        {
+          "act": "dlg.cat.romance.ok.3.act",
+          "say": "dlg.cat.romance.ok.3.say",
+          "reply": "dlg.cat.romance.ok.3.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.cat.romance.fail.1.act",
+          "say": "dlg.cat.romance.fail.1.say",
+          "reply": "dlg.cat.romance.fail.1.reply"
+        },
+        {
+          "act": "dlg.cat.romance.fail.2.act",
+          "say": "dlg.cat.romance.fail.2.say",
+          "reply": "dlg.cat.romance.fail.2.reply"
+        }
+      ]
+    },
+    "mean": {
+      "ok": [
+        {
+          "act": "dlg.cat.mean.ok.1.act",
+          "say": "dlg.cat.mean.ok.1.say",
+          "reply": "dlg.cat.mean.ok.1.reply"
+        },
+        {
+          "act": "dlg.cat.mean.ok.2.act",
+          "say": "dlg.cat.mean.ok.2.say",
+          "reply": "dlg.cat.mean.ok.2.reply"
+        },
+        {
+          "act": "dlg.cat.mean.ok.3.act",
+          "say": "dlg.cat.mean.ok.3.say",
+          "reply": "dlg.cat.mean.ok.3.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.cat.mean.fail.1.act",
+          "say": "dlg.cat.mean.fail.1.say"
+        },
+        {
+          "act": "dlg.cat.mean.fail.2.act",
+          "say": "dlg.cat.mean.fail.2.say",
+          "reply": "dlg.cat.mean.fail.2.reply"
+        }
+      ]
+    },
+    "status": {
+      "ok": [
+        {
+          "act": "dlg.cat.status.ok.1.act",
+          "say": "dlg.cat.status.ok.1.say",
+          "reply": "dlg.cat.status.ok.1.reply"
+        },
+        {
+          "act": "dlg.cat.status.ok.2.act",
+          "say": "dlg.cat.status.ok.2.say",
+          "reply": "dlg.cat.status.ok.2.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.cat.status.fail.1.act",
+          "say": "dlg.cat.status.fail.1.say",
+          "reply": "dlg.cat.status.fail.1.reply"
+        },
+        {
+          "act": "dlg.cat.status.fail.2.act",
+          "say": "dlg.cat.status.fail.2.say",
+          "reply": "dlg.cat.status.fail.2.reply"
+        }
+      ]
+    },
+    "trade": {
+      "ok": [
+        {
+          "act": "dlg.cat.trade.ok.1.act",
+          "say": "dlg.cat.trade.ok.1.say",
+          "reply": "dlg.cat.trade.ok.1.reply"
+        },
+        {
+          "act": "dlg.cat.trade.ok.2.act",
+          "say": "dlg.cat.trade.ok.2.say",
+          "reply": "dlg.cat.trade.ok.2.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.cat.trade.fail.1.act",
+          "say": "dlg.cat.trade.fail.1.say",
+          "reply": "dlg.cat.trade.fail.1.reply"
+        },
+        {
+          "act": "dlg.cat.trade.fail.2.act",
+          "say": "dlg.cat.trade.fail.2.say",
+          "reply": "dlg.cat.trade.fail.2.reply"
+        }
+      ]
+    },
+    "special": {
+      "ok": [
+        {
+          "act": "dlg.cat.special.ok.1.act",
+          "say": "dlg.cat.special.ok.1.say",
+          "reply": "dlg.cat.special.ok.1.reply"
+        },
+        {
+          "act": "dlg.cat.special.ok.2.act",
+          "say": "dlg.cat.special.ok.2.say",
+          "reply": "dlg.cat.special.ok.2.reply"
+        }
+      ],
+      "fail": [
+        {
+          "act": "dlg.cat.special.fail.1.act",
+          "say": "dlg.cat.special.fail.1.say",
+          "reply": "dlg.cat.special.fail.1.reply"
+        },
+        {
+          "act": "dlg.cat.special.fail.2.act",
+          "say": "dlg.cat.special.fail.2.say",
+          "reply": "dlg.cat.special.fail.2.reply"
+        }
+      ]
+    }
+  },
+  "oneliners": {
+    "need.hunger": [
+      {
+        "act": "dlg.one.need_hunger.1.act",
+        "say": "dlg.one.need_hunger.1.say"
+      },
+      {
+        "act": "dlg.one.need_hunger.2.act",
+        "say": "dlg.one.need_hunger.2.say",
+        "when": {
+          "register": [
+            "low"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.need_hunger.3.act",
+        "say": "dlg.one.need_hunger.3.say",
+        "when": {
+          "register": [
+            "mid"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.need_hunger.4.act",
+        "say": "dlg.one.need_hunger.4.say",
+        "when": {
+          "register": [
+            "high"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.need_hunger.5.act",
+        "say": "dlg.one.need_hunger.5.say",
+        "when": {
+          "register": [
+            "clergy"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.need_hunger.6.act",
+        "say": "dlg.one.need_hunger.6.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      }
+    ],
+    "need.energy": [
+      {
+        "act": "dlg.one.need_energy.1.act",
+        "say": "dlg.one.need_energy.1.say"
+      },
+      {
+        "act": "dlg.one.need_energy.2.act",
+        "say": "dlg.one.need_energy.2.say",
+        "when": {
+          "register": [
+            "high"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.need_energy.3.act",
+        "say": "dlg.one.need_energy.3.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.need_energy.4.act",
+        "say": "dlg.one.need_energy.4.say",
+        "when": {
+          "speakerTraits": [
+            "lazy"
+          ]
+        }
+      }
+    ],
+    "need.hygiene": [
+      {
+        "act": "dlg.one.need_hygiene.1.act",
+        "say": "dlg.one.need_hygiene.1.say"
+      },
+      {
+        "act": "dlg.one.need_hygiene.2.act",
+        "say": "dlg.one.need_hygiene.2.say",
+        "when": {
+          "speakerTraits": [
+            "neat"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.need_hygiene.3.act",
+        "say": "dlg.one.need_hygiene.3.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      }
+    ],
+    "need.bladder": [
+      {
+        "act": "dlg.one.need_bladder.1.act",
+        "say": "dlg.one.need_bladder.1.say"
+      },
+      {
+        "act": "dlg.one.need_bladder.2.act",
+        "say": "dlg.one.need_bladder.2.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      }
+    ],
+    "need.fun": [
+      {
+        "act": "dlg.one.need_fun.1.act",
+        "say": "dlg.one.need_fun.1.say"
+      },
+      {
+        "act": "dlg.one.need_fun.2.act",
+        "say": "dlg.one.need_fun.2.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.need_fun.3.act",
+        "say": "dlg.one.need_fun.3.say",
+        "when": {
+          "speakerTraits": [
+            "bookworm"
+          ]
+        }
+      }
+    ],
+    "need.social": [
+      {
+        "act": "dlg.one.need_social.1.act",
+        "say": "dlg.one.need_social.1.say"
+      },
+      {
+        "act": "dlg.one.need_social.2.act",
+        "say": "dlg.one.need_social.2.say",
+        "when": {
+          "speakerTraits": [
+            "sociable"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.need_social.3.act",
+        "say": "dlg.one.need_social.3.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      }
+    ],
+    "need.warmth": [
+      {
+        "act": "dlg.one.need_warmth.1.act",
+        "say": "dlg.one.need_warmth.1.say"
+      },
+      {
+        "act": "dlg.one.need_warmth.2.act",
+        "say": "dlg.one.need_warmth.2.say",
+        "when": {
+          "register": [
+            "high"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.need_warmth.3.act",
+        "say": "dlg.one.need_warmth.3.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      }
+    ],
+    "need.comfort": [
+      {
+        "act": "dlg.one.need_comfort.1.act",
+        "say": "dlg.one.need_comfort.1.say"
+      },
+      {
+        "act": "dlg.one.need_comfort.2.act",
+        "say": "dlg.one.need_comfort.2.say",
+        "when": {
+          "register": [
+            "high"
+          ]
+        }
+      }
+    ],
+    "wake": [
+      {
+        "act": "dlg.one.wake.1.act",
+        "say": "dlg.one.wake.1.say"
+      },
+      {
+        "act": "dlg.one.wake.2.act",
+        "say": "dlg.one.wake.2.say",
+        "when": {
+          "speakerTraits": [
+            "lazy"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.wake.3.act",
+        "say": "dlg.one.wake.3.say",
+        "when": {
+          "speakerTraits": [
+            "cheerful"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.wake.4.act",
+        "say": "dlg.one.wake.4.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.wake.5.act",
+        "say": "dlg.one.wake.5.say",
+        "when": {
+          "register": [
+            "clergy"
+          ]
+        }
+      }
+    ],
+    "goodnight": [
+      {
+        "act": "dlg.one.goodnight.1.act",
+        "say": "dlg.one.goodnight.1.say"
+      },
+      {
+        "act": "dlg.one.goodnight.2.act",
+        "say": "dlg.one.goodnight.2.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.goodnight.3.act",
+        "say": "dlg.one.goodnight.3.say",
+        "when": {
+          "speakerTraits": [
+            "family_oriented"
+          ]
+        }
+      }
+    ],
+    "come_home": [
+      {
+        "act": "dlg.one.come_home.1.act",
+        "say": "dlg.one.come_home.1.say"
+      },
+      {
+        "act": "dlg.one.come_home.2.act",
+        "say": "dlg.one.come_home.2.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.come_home.3.act",
+        "say": "dlg.one.come_home.3.say",
+        "when": {
+          "register": [
+            "mid"
+          ]
+        }
+      }
+    ],
+    "leave_work": [
+      {
+        "act": "dlg.one.leave_work.1.act",
+        "say": "dlg.one.leave_work.1.say"
+      },
+      {
+        "act": "dlg.one.leave_work.2.act",
+        "say": "dlg.one.leave_work.2.say",
+        "when": {
+          "register": [
+            "low"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.leave_work.3.act",
+        "say": "dlg.one.leave_work.3.say",
+        "when": {
+          "speakerTraits": [
+            "lazy"
+          ]
+        }
+      }
+    ],
+    "child_news": [
+      {
+        "act": "dlg.one.child_news.1.act",
+        "say": "dlg.one.child_news.1.say"
+      },
+      {
+        "act": "dlg.one.child_news.2.act",
+        "say": "dlg.one.child_news.2.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.child_news.3.act",
+        "say": "dlg.one.child_news.3.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.child_news.4.act",
+        "say": "dlg.one.child_news.4.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.child_news.5.act",
+        "say": "dlg.one.child_news.5.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      }
+    ],
+    "sick": [
+      {
+        "act": "dlg.one.sick.1.act",
+        "say": "dlg.one.sick.1.say"
+      },
+      {
+        "act": "dlg.one.sick.2.act",
+        "say": "dlg.one.sick.2.say",
+        "when": {
+          "stage": [
+            "child"
+          ]
+        }
+      },
+      {
+        "act": "dlg.one.sick.3.act",
+        "say": "dlg.one.sick.3.say",
+        "when": {
+          "speakerTraits": [
+            "cynical"
+          ]
+        }
+      }
+    ],
+    "got_paid": [
+      {
+        "act": "dlg.one.got_paid.1.act",
+        "say": "dlg.one.got_paid.1.say"
+      },
+      {
+        "act": "dlg.one.got_paid.2.act",
+        "say": "dlg.one.got_paid.2.say",
+        "when": {
+          "register": [
+            "mid"
+          ]
+        }
+      }
+    ],
+    "harvest": [
+      {
+        "act": "dlg.one.harvest.1.act",
+        "say": "dlg.one.harvest.1.say"
+      },
+      {
+        "act": "dlg.one.harvest.2.act",
+        "say": "dlg.one.harvest.2.say",
+        "when": {
+          "speakerTraits": [
+            "gourmet"
+          ]
+        }
+      }
+    ],
+    "mourning": [
+      {
+        "act": "dlg.one.mourning.1.act",
+        "say": "dlg.one.mourning.1.say"
+      },
+      {
+        "act": "dlg.one.mourning.2.act",
+        "say": "dlg.one.mourning.2.say"
+      }
+    ]
+  },
+  "scenes": {
+    "propose": {
+      "titleKey": "dlg.scene.propose.title",
+      "lines": [
+        {
+          "act": "dlg.scene.propose.1.act",
+          "say": "dlg.scene.propose.1.say"
+        },
+        {
+          "act": "dlg.scene.propose.2.act",
+          "say": "dlg.scene.propose.2.say"
+        },
+        {
+          "act": "dlg.scene.propose.3.act",
+          "say": "dlg.scene.propose.3.say",
+          "when": {
+            "register": [
+              "low"
+            ]
+          }
+        },
+        {
+          "act": "dlg.scene.propose.4.act",
+          "say": "dlg.scene.propose.4.say",
+          "when": {
+            "register": [
+              "high"
+            ]
+          }
+        },
+        {
+          "act": "dlg.scene.propose.5.act",
+          "say": "dlg.scene.propose.5.say",
+          "when": {
+            "speakerTraits": [
+              "romantic"
+            ]
+          }
+        },
+        {
+          "act": "dlg.scene.propose.6.act",
+          "say": "dlg.scene.propose.6.say",
+          "when": {
+            "speakerTraits": [
+              "introvert"
+            ]
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "accept",
+          "icon": "i_heart",
+          "textKey": "dlg.scene.propose.choice.accept"
+        },
+        {
+          "id": "family",
+          "icon": "i_talk",
+          "textKey": "dlg.scene.propose.choice.family"
+        },
+        {
+          "id": "time",
+          "icon": "i_moon",
+          "textKey": "dlg.scene.propose.choice.time"
+        }
+      ]
+    }
+  }
+}

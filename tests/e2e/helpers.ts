@@ -58,3 +58,16 @@ export async function expectNoGameErrors(page: Page, consoleErrors: string[]): P
   const i18n = await game<string[]>(page, 'return g.missingI18n();');
   expect({ console: consoleErrors, game: errs, failed, i18n }).toEqual({ console: [], game: [], failed: [], i18n: [] });
 }
+
+/** 인물 수첩 (Tab, GDD 27-8) 의 한 쪽을 실제 클릭으로 엶: 위쪽 탭 → 오른쪽 책갈피 */
+export async function openBookPage(page: Page, tab: 'person' | 'house' | 'work' | 'record', pageId: string): Promise<void> {
+  if (!(await page.locator('.nb-wrap.open').count())) await page.keyboard.press('Tab');
+  await expect(page.locator('.nb-wrap.open')).toBeVisible();
+  await page.locator(`.nb-tab[data-tab="${tab}"]`).click();
+  await page.locator(`.nb-mark[data-page="${pageId}"]`).click();
+  await expect(page.locator(`.nb[data-page="${pageId}"]`)).toBeVisible();
+}
+
+export async function closeBook(page: Page): Promise<void> {
+  if (await page.locator('.nb-wrap.open').count()) await page.keyboard.press('Tab');
+}

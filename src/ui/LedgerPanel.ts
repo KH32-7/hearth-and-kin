@@ -27,8 +27,8 @@ export class LedgerPanel {
   /** 저장고 예측: 먹을거리 끼니 수 (HearthGame 이 품목 정의로 채움) */
   meals: (stock: Record<string, number>) => number = () => 0;
 
-  constructor(parent: HTMLElement) {
-    this.root = el('div', 'ledger panel-cream', parent);
+  constructor(readonly home: HTMLElement) {
+    this.root = el('div', 'ledger panel-cream', home);
     this.root.dataset.testid = 'ledger';
     this.root.style.display = 'none';
     window.addEventListener('keydown', (e) => {
@@ -42,6 +42,7 @@ export class LedgerPanel {
   }
 
   show(s: Snapshot): void {
+    if (!this.root.isConnected) this.dock();
     this.open = true;
     this.root.style.display = '';
     this.sig = '';
@@ -51,6 +52,21 @@ export class LedgerPanel {
   hide(): void {
     this.open = false;
     this.root.style.display = 'none';
+    this.dock();
+  }
+
+  /** 수첩 › 생업 › 가계부 쪽에 실음 (27-8) */
+  dockInto(page: HTMLElement): void {
+    if (this.root.parentElement !== page) page.appendChild(this.root);
+    this.root.classList.add('in-book');
+    this.sig = '';
+  }
+
+  /** 제자리 (따로 뜨는 가계부) */
+  dock(): void {
+    if (this.root.parentElement !== this.home) this.home.appendChild(this.root);
+    this.root.classList.remove('in-book');
+    this.sig = '';
   }
 
   update(s: Snapshot): void {

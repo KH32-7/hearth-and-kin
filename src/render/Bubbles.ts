@@ -7,8 +7,12 @@
  * - 쓰러짐: 기력 아이콘이 머리 위에서 흔들림
  * - 대화 (M3): 말하는 사람과 듣는 사람이 번갈아 주제 아이콘 (14-3 주제 말풍선). 먹거나 쉬며 나누는 잡담은 작은 풍선
  * - 대화가 끝나면 결과가 떠오름: 성공은 금 하트(로맨스는 붉은 하트), 실패/짓궂음은 💢
- * 풍선 바탕은 Raven GUI 칸(slot.cream) + 같은 색으로 찍은 꼬리. 모두 정수 픽셀 위치.
+ * 풍선 바탕은 Cute Fantasy 색 말풍선 (색 = 종류, GDD 27-12): 베이지 새 행동, 파랑 대화 주제·맞장구, 분홍 로맨스,
+ * 빨강 위급 욕구, 초록 좋은 결과, 노랑 감정. 아틀라스에 없으면 예전처럼 slot.cream + 찍은 꼬리.
+ * 감정 효과 (Elthen 32px 8프레임): 말풍선 없이 머리 바로 위에서 움직임. 그림 영역 아랫변을 머리 꼭대기 2px 위에 맞춤.
+ * 모두 정수 픽셀 위치.
  */
+import { emoteFrame } from '../ui/skin';
 import * as THREE from 'three';
 import type { PersonSnap } from '../sim/protocol';
 import type { Assets } from './Assets';
@@ -41,7 +45,18 @@ interface Quad {
   mat: THREE.ShaderMaterial;
 }
 
+type BubbleColor = 'beige' | 'grey' | 'green' | 'blue' | 'yellow' | 'red' | 'pink';
+
+/** 감정 효과 (Elthen 줄 이름): 한 번 재생 또는 상태 동안 반복 */
+interface EmoteFx {
+  q: Quad;
+  name: string;
+  born: number;
+  loop: boolean;
+}
+
 interface PersonFx {
+  emote: EmoteFx | null;
   bubble: Quad;
   icon: Quad;
   lastAction: string;
@@ -67,6 +82,13 @@ const quad = new THREE.PlaneGeometry(1, 1);
 const ORDER = 2e7;
 const TAIL = 4;
 const PUFF_MS = 1500;
+/** 한 번짜리 감정 효과 길이 (8프레임 두 바퀴) */
+const EMOTE_MS = 2000;
+/** 감정이 바뀔 때 머리 위 효과 (GDD 27-12). 없으면 예전 감정 아이콘 풍선 */
+const EMO_EMOTE: Record<string, string> = {
+  happy: 'sparkle', energized: 'sparkle', inspired: 'sparkle', excited: 'hearts', pious: 'heal',
+  sad: 'sweat', angry: 'shock', tense: 'question', ashamed: 'sweat', focused: 'talk',
+};
 
 export class Bubbles {
   readonly group = new THREE.Group();
@@ -74,6 +96,9 @@ export class Bubbles {
   private bubbleTex: THREE.Texture | null = null;
   private bubbleW = 26;
   private bubbleH = 26 + TAIL;
+  /** Cute 색 말풍선을 아틀라스에서 씀 (몸통 24x26 + 꼬리 5) */
+  private cute = false;
+  private bodyH = 26;
   private texW = 1;
   private texH = 1;
   private fx = new Map<number, PersonFx>();
@@ -93,6 +118,14 @@ export class Bubbles {
     this.texW = img.width;
     this.texH = img.height;
     this.tex = pixelTexture(img);
+    if (this.atlas.sprites['bubble.beige']) {
+      this.cute = true;
+      this.bubbleTex = this.tex;
+      this.bubbleW = 24;
+      this.bubbleH = 31;
+      this.bodyH = 26;
+      return;
+    }
     // 풍선 바탕: 칸 그림 + 아래 가운데 꼬리 (칸 테두리/안쪽 색을 그대로 뽑아 씀)
     const s = this.atlas.sprites['slot.cream'];
     if (s) {
@@ -146,6 +179,7 @@ export class Bubbles {
     let f = this.fx.get(id);
     if (!f) {
       f = {
+        emote: null,
         bubble: this.makeQuad(this.bubbleTex),
         icon: this.makeQuad(this.tex),
         lastAction: '',
@@ -199,14 +233,19 @@ export class Bubbles {
       const emo = p.inner && p.inner.stage >= 1 ? p.inner.emotion : 'neutral';
       if (emo !== f.lastEmotion) {
         if (emo !== 'neutral' && !p.sleeping) {
-          f.popStart = now;
-          f.popIcon = `emo.${emo}`;
+          const em = EMO_EMOTE[emo];
+          if (em && this.hasEmotes()) this.emote(f, em, now, false);
+          else {
+            f.popStart = now;
+            f.popIcon = `emo.${emo}`;
+          }
         }
         f.lastEmotion = emo;
       }
 
       // 무엇을 띄울지 (우선순위: 쓰러짐 > 위급 욕구 > 대화 > 새 행동)
       let icon = '';
+      let color: BubbleColor = 'beige';
       let tint: [number, number, number] = [1, 1, 1];
       let scale = 1;
       let bob = 0;
@@ -214,24 +253,29 @@ export class Bubbles {
       if (h && !p.hidden && !p.sleeping) {
         const critNeed = Object.entries(p.needs).filter(([, v]) => v < r.critical).sort((a, b) => a[1] - b[1])[0];
         const conv = this.conversation(p, byId, t);
-        if (p.collapsed) {
+        if (p.collapsed && this.hasEmotes()) {
+          this.emote(f, 'stun', now, true);
+        } else if (p.collapsed) {
           icon = 'need.energy';
           bob = Math.round(Math.sin(t * 3) * 1.5);
         } else if (critNeed && !(p.action && this.iconOf(p.action.interactionId) && this.solves(p, critNeed[0]))) {
           icon = `need.${critNeed[0]}`;
-          // 붉게 깜박임 (0.5초 간격, 계단식)
+          color = 'red';
+          // 깜박임 (0.5초 간격, 계단식)
           const on = Math.floor(t * 2) % 2 === 0;
-          tint = on ? [1, 0.55, 0.5] : [1, 1, 1];
+          tint = this.cute ? [1, 1, 1] : on ? [1, 0.55, 0.5] : [1, 1, 1];
           bob = on ? -1 : 0;
         } else if (conv) {
           // 말 주고받기: 자기 차례에만 풍선이 뜨고, 뜰 때 한 번 톡 튀어 오름
           if (conv.icon) {
             icon = conv.icon;
+            color = icon === 'topic.love' ? 'pink' : 'blue';
             scale = conv.small ? 0.75 : conv.k < 0.1 ? 0.75 : 1;
             bob = conv.k < 0.1 ? 2 : Math.floor(t * 3) % 2 === 0 ? 0 : -1;
           }
         } else if (now - f.popStart < r.popMs) {
           icon = f.popIcon;
+          color = icon.startsWith('emo.') ? 'yellow' : 'beige';
           // 톡: 0→1.25→1 로 커졌다가 마지막 20% 동안 줄어듦 (정수 배율 대신 2단계 크기)
           const k = (now - f.popStart) / r.popMs;
           scale = k < 0.12 ? 0.75 : k > 0.85 ? 0.75 : 1;
@@ -241,11 +285,17 @@ export class Bubbles {
       if (icon && h && this.setIcon(f.icon, icon)) {
         const bw = Math.round(this.bubbleW * scale);
         const bh = Math.round(this.bubbleH * scale);
-        const left = Math.round(h.x - bw / 2);
-        const bottom = Math.round(h.y + bob);
+        // Cute 말풍선: 꼬리 끝(x=14.5)을 머리 가운데에, 꼬리 끝이 머리 꼭대기 4px 위
+        const left = this.cute ? Math.round(h.x - 14.5 * scale) : Math.round(h.x - bw / 2);
+        const bottom = Math.round(h.y + bob - (this.cute ? 4 : 0));
+        if (this.cute) {
+          const sp = this.atlas!.sprites[`bubble.${color}`] ?? this.atlas!.sprites['bubble.beige'];
+          setUvRect(f.bubble.mat, this.texW, this.texH, sp.x, sp.y, sp.w, sp.h);
+        }
         placeRect(f.bubble.mesh, left, bottom - bh, bw, bh);
         const iw = Math.round(16 * scale);
-        placeRect(f.icon.mesh, Math.round(h.x - iw / 2), Math.round(bottom - bh + (this.bubbleH - TAIL - 16) / 2 * scale), iw, iw);
+        const iconTop = this.cute ? bottom - bh + Math.round(((this.bodyH - 16) / 2 - 1) * scale) : Math.round(bottom - bh + (this.bubbleH - TAIL - 16) / 2 * scale);
+        placeRect(f.icon.mesh, this.cute ? left + Math.round(4 * scale) : Math.round(h.x - iw / 2), iconTop, iw, iw);
         f.icon.mat.uniforms.uTint.value.setRGB(...tint);
         f.bubble.mesh.visible = true;
         f.icon.mesh.visible = true;
@@ -254,8 +304,15 @@ export class Bubbles {
         f.icon.mesh.visible = false;
       }
 
+      // 상태 감정 효과: 잠(Z), 추움(입김). Elthen 이 없으면 예전 Zzz
+      if (h && !p.hidden && !p.collapsed && this.hasEmotes()) {
+        if (p.sleeping) this.emote(f, 'sleep', now, true);
+        else if ((p.needs.warmth ?? 100) < 20) this.emote(f, 'breath', now, true);
+        else if (f.emote?.loop) f.emote.loop = false;
+      }
+      this.updateEmote(f, h, now, f.bubble.mesh.visible ? f.bubble.mesh : null, p.hidden);
       // Zzz: 잘 때 일정 간격으로 하나씩 떠오름
-      if (p.sleeping && h && !p.hidden && now - f.lastZ > r.zzzEveryMs) {
+      if (!this.hasEmotes() && p.sleeping && h && !p.hidden && now - f.lastZ > r.zzzEveryMs) {
         f.lastZ = now;
         const q = f.zzz.find((z) => now - z.born > r.zzzLifeMs)?.q ?? this.makeQuad(this.tex!);
         f.zzz = f.zzz.filter((z) => z.q !== q);
@@ -355,6 +412,20 @@ export class Bubbles {
       if (!this.setIcon(q, icon)) return;
       f.puffs.push({ q, born: now });
     };
+    if (this.hasEmotes()) {
+      const fx = (who: PersonSnap | null, name: string) => {
+        const f = who && this.fxFor(who.id);
+        if (f) this.emote(f, name, now, false);
+      };
+      if (!ok) fx(p, 'shock');
+      else if (cat === 'mean') fx(target, 'shock');
+      else {
+        const h = cat === 'romance' ? 'hearts' : 'heart';
+        fx(p, h);
+        fx(target, h);
+      }
+      return;
+    }
     if (!ok) {
       add(p, 'emo.angry');
       return;
@@ -395,12 +466,53 @@ export class Bubbles {
   prune(): void {
     for (const [id, f] of this.fx) {
       if (f.seen === this.frame) continue;
-      for (const q of [f.bubble, f.icon, ...f.zzz.map((z) => z.q), ...f.puffs.map((z) => z.q)]) {
+      for (const q of [f.bubble, f.icon, ...f.zzz.map((z) => z.q), ...f.puffs.map((z) => z.q), ...(f.emote ? [f.emote.q] : [])]) {
         this.group.remove(q.mesh);
         q.mat.dispose();
       }
       this.fx.delete(id);
     }
+  }
+
+  private emotesOk: boolean | null = null;
+  private hasEmotes(): boolean {
+    if (this.emotesOk === null) this.emotesOk = !!this.atlas?.sprites['emote.sheet'] && !!emoteFrame('heart', 0);
+    return this.emotesOk;
+  }
+
+  /** 감정 효과 시작 (같은 효과가 돌고 있으면 그대로) */
+  private emote(f: PersonFx, name: string, now: number, loop: boolean): void {
+    if (!this.tex || !this.hasEmotes()) return;
+    if (f.emote && f.emote.name === name && (loop || now - f.emote.born < EMOTE_MS)) {
+      f.emote.loop = loop;
+      return;
+    }
+    const q = f.emote?.q ?? this.makeQuad(this.tex);
+    f.emote = { q, name, born: now, loop };
+  }
+
+  /** 8프레임 (8fps). 한 번짜리는 EMOTE_MS 뒤 사라짐. 말풍선이 떠 있으면 그 오른쪽 위 */
+  private updateEmote(f: PersonFx, h: { x: number; y: number } | null, now: number, bubble: THREE.Mesh | null, hidden: boolean): void {
+    const e = f.emote;
+    if (!e) return;
+    const age = now - e.born;
+    if (!h || hidden || (!e.loop && age > EMOTE_MS)) {
+      e.q.mesh.visible = false;
+      if (!e.loop && age > EMOTE_MS) f.emote = null;
+      return;
+    }
+    const fr = emoteFrame(e.name, Math.floor(age / 125));
+    if (!fr) return;
+    setUvRect(e.q.mat, this.texW, this.texH, fr.sx, fr.sy, 32, 32);
+    const [x0, , x1, y1] = fr.box;
+    let ax = h.x;
+    let ay = h.y - 2;
+    if (bubble) {
+      ax = Math.round(bubble.position.x + bubble.scale.x / 2 + 6);
+      ay = Math.round(-bubble.position.y - bubble.scale.y / 2 + 8);
+    }
+    placeRect(e.q.mesh, Math.round(ax - (x0 + x1) / 2), Math.round(ay - y1), 32, 32);
+    e.q.mesh.visible = true;
   }
 
   /** 지금 하는 행동이 그 욕구를 채우는지 (행동 아이콘 키로 판단, src/data/fx.json) */

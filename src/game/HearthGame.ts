@@ -9,7 +9,7 @@ import objectsBase from '../data/objects.json';
 import cottageTmj from '../data/lots/cottage.tmj?raw';
 import emptyLot from '../data/lots/empty.json';
 import { lotFromTiled, type TiledMap } from '../sim/world/tiled';
-import { normalizeLot } from '../sim/world/lot';
+import { LEVELS, normalizeLot } from '../sim/world/lot';
 import { mergeObjectDefs, type BuildData } from '../sim/data/simData';
 import epicPack from '../data/artpacks/epic.json';
 import lighting from '../data/lighting.json';
@@ -28,6 +28,8 @@ import { Rng } from '../sim/core/rng';
 import { Assets } from '../render/Assets';
 import { GameRenderer } from '../render/GameRenderer';
 import { globalLight } from '../render/SpriteMaterial';
+import { setSun } from '../render/Shadows';
+import { Particles } from '../render/Particles';
 import { WorldView, type CutawayMode } from '../render/WorldView';
 import { CharacterView, type SheetLike } from '../render/CharacterView';
 import type { WorldPack } from '../render/artpack';
@@ -49,6 +51,10 @@ import { missing as missingI18n, t } from '../i18n';
 import { SimClient } from './SimClient';
 import { BuildController } from './BuildController';
 import { TownPanel } from '../ui/TownPanel';
+import { Notebook } from '../ui/Notebook';
+import { DialogBox } from '../ui/DialogBox';
+import dialogueData from '../data/dialogue.json';
+import { pickLine, pickOneliner, relationTier, type DialogueData } from '../ui/dialogue/pickLine';
 
 type LightKey = { minute: number; rgb: number[]; darkness: number };
 
@@ -69,6 +75,10 @@ export class HearthGame {
   ledger!: LedgerPanel;
   private careerTexts: Record<string, { events?: Array<{ id: string; textKey: string; options: Array<{ id: string; textKey: string }> }>; nameKey: string }> = {};
   choice!: ChoiceCard;
+  /** 인물 수첩 (Tab, GDD 27-8) */
+  notebook!: Notebook;
+  /** 대사창 (27-13) */
+  dialog!: DialogBox;
   /** 건축/구매 모드 (M5). build.json 이 없으면 null */
   build: BuildController | null = null;
   private marker: HTMLElement;
@@ -95,6 +105,8 @@ export class HearthGame {
   private followSelected = false;
   /** 마을 모드 (M6, ?town=ashford): 지도 정의, 사람, 일과표 */
   town: TownBundle | null = null;
+  /** 낙엽/먼지/반딧불 (docs/07) */
+  private particles = new Particles();
   townUi: TownPanel | null = null;
   /** 마지막으로 보낸 화면 범위 (칸) — 세밀도 판정용, 4칸 이상 움직였을 때만 다시 보냄 */
   private sentView = { x0: -99, y0: -99, x1: -99, y1: -99, at: 0 };
@@ -138,6 +150,7 @@ export class HearthGame {
     this.world.cropIds = Object.keys(((opt('crops') as { crops?: Record<string, unknown> } | undefined)?.crops) ?? {}).filter((k) => !k.startsWith('$'));
     await this.world.load();
     this.renderer.scene.add(this.world.group);
+    this.renderer.scene.add(this.particles.points, this.particles.glow);
     this.chars = new CharacterView(this.world, (p) => this.sheetFor(p));
     Object.assign(this.chars, { seatInset: fx.character.seatInset, seatCarryDrop: fx.character.seatCarryDrop });
     this.renderer.scene.add(this.chars.group);
@@ -172,6 +185,11 @@ export class HearthGame {
       cancel: (pid, qid) => this.client.send({ type: 'cancel', personId: pid, queueItemId: qid }),
       focusPerson: (id) => this.focus(id),
       emotionColor: (e) => emotionColor(e),
+      portrait: (id, kind) => (kind === 'bust' ? this.bust(id) : this.portrait(id)),
+      openWindow: (w) => this.openWindow(w),
+      toggleBook: (page) => this.notebook.toggle(page),
+      lockWish: (personId, wish, locked) => void this.client.intent({ kind: 'lockWish', personId, wish, locked }),
+      menu: (a) => this.menuAction(a),
     });
     this.hud.inner = new InnerPanel(innerDefs(), {
       lockWish: (personId, wish, locked) => void this.client.intent({ kind: 'lockWish', personId, wish, locked }),
@@ -213,7 +231,33 @@ export class HearthGame {
         money: (n) => formatMoney(n),
       }, this.town.def.lots);
     }
-    this.hud.onMoney = () => this.ledger.toggle(this.client.snap);
+    this.hud.onMoney = () => this.openWindow('ledger');
+    this.notebook = new Notebook(this.app, {
+      portrait: (id, kind) => (kind === 'bust' ? this.bust(id) : this.portrait(id)),
+      selectPerson: (id) => this.select(id, true),
+      focusPerson: (id) => this.focus(id),
+      emotionColor: (e) => emotionColor(e),
+      dialogLog: () => this.dialog.log,
+    });
+    Object.assign(this.notebook, { inner: this.hud.inner, relations: this.hud.relations, work: this.hud.work, ledger: this.ledger });
+    this.dialog = new DialogBox(this.app);
+    this.dialog.onOpen = (ids) => this.frameDialog(ids);
+    this.dialogLines = (a, b, ok, ia, s, seed) => {
+      const data = dialogueData as unknown as DialogueData;
+      const rel = s.relations.find((r) => (r.a === a.id && r.b === b.id) || (r.a === b.id && r.b === a.id));
+      const picked = pickLine(data, {
+        ia, ok,
+        speaker: { traits: a.inner?.traits ?? [], estate: a.inner?.estate ?? 'freeman', emotion: a.inner?.emotion, stage: coarseStage(a.inner?.stage_life) },
+        listener: { traits: b.inner?.traits ?? [], estate: b.inner?.estate ?? 'freeman' },
+        tier: relationTier(rel, a.household === b.household, rel?.name === 'spouse'),
+        topic: a.topic,
+      }, seed);
+      if (!picked) return null;
+      const args = { a: a.name, b: b.name };
+      const fill = (k?: string) => (k ? t(k, args) : undefined);
+      return { act: fill(picked.act), say: fill(picked.say)!, reply: fill(picked.reply), category: data.interactions[ia]?.category ?? 'friendly' };
+    };
+    if (this.townUi) this.townUi.root.classList.add('closed');
     {
       const it = ((opt('items') as { items?: Record<string, { food?: { hunger: number } }> } | undefined)?.items) ?? {};
       // 한 끼 = 허기 70 (스튜 한 그릇). 스튜거리 1 = 두 끼(한 솥 넷이 둘에서 나옴)
@@ -231,6 +275,8 @@ export class HearthGame {
         setCutaway: (m) => this.setCutaway(m), setRoofMode: (m) => this.setRoofMode(m), setSpeed: (s) => this.setSpeed(s),
       });
       this.build.panel.setMode('live');
+      // 모드 버튼(생활/구매/건축)은 HUD 우상단 아이콘 띠에 (GDD 27-2)
+      this.hud.modeSlot.appendChild(this.build.panel.modeBar);
       this.build.panel.setViewState({ cutaway: this.world.cutaway, level: this.world.viewLevel, roof: this.roofMode });
     }
 
@@ -446,11 +492,17 @@ export class HearthGame {
     this.chars.sync(s.persons, s.tick, s.tickMs, performance.now());
     if (!s.persons.some((p) => p.id === this.selectedId) && s.persons.length) this.selectedId = s.persons[0].id;
     this.chars.selectedId = this.selectedId;
+    this.hud.setMode((this.build?.mode ?? 'live') as 'live' | 'buy' | 'build');
     this.hud.update(s, this.selectedId);
     this.ledger?.update(s);
+    this.notebook.update(me ?? null, s);
+    this.updateDialog(s);
+    this.updateOneliners(s);
+    document.documentElement.classList.toggle('night', this.darkness > 0.45);
     this.thoughts.ingest(s.notices, performance.now());
     this.updateChoice(s);
     this.build?.update(s);
+    if (s.econ) this.build?.panel.setMoney(formatMoney(s.econ.money));
     this.townUi?.update(s);
   }
 
@@ -470,11 +522,22 @@ export class HearthGame {
     if (s) this.bubbles.update(s.persons, (id) => this.chars.headAnchor(id), now);
     this.world.roofTarget = this.roofWanted();
     this.world.updateRoof(dt);
+    // 외관: 우리 가족(보이는 사람)이 든 건물은 걷힘, 지붕 끔/건축 모드면 모두 걷힘
+    if (this.world.shells.count) {
+      // 바깥 화면에서는 외관이 늘 닫혀 있음. 실내 화면(스타듀식)에서만 그 집 외관을 걷음
+      const open = new Set<number>();
+      if (this.interior >= 0) open.add(this.interior);
+      this.world.shells.update(dt, open, !!s?.build?.mode, this.darkness, now);
+      // 닫힌 집의 실내(벽·가구·2층)는 숨기고, 여는 집만 띄움
+      this.world.setRevealed(this.world.shells.revealedSet());
+      this.updateInterior(dt, s);
+    }
     // 바닥 청크 (M6): 화면 근처만 만들고 먼 것은 버림
     const vr = this.renderer.viewRect();
     this.world.updateChunks(vr.x0, vr.y0, vr.x1, vr.y1);
     if (this.town) this.sendView(vr, now);
     this.townUi?.frame(now);
+    this.particles.update(now, vr, this.renderer.deviceZoom, this.darkness);
     this.build?.frame(now);
     this.world.animate(now, this.darkness);
     if (this.followSelected) {
@@ -515,6 +578,8 @@ export class HearthGame {
       a.rgb[2] + (b.rgb[2] - a.rgb[2]) * f,
     );
     this.darkness = a.darkness + (b.darkness - a.darkness) * f;
+    this.renderer.fx.setTime(((minute % 1440) + 1440) % 1440, this.darkness);
+    setSun(((minute % 1440) + 1440) % 1440, this.darkness);
   }
 
   private updateMarker(): void {
@@ -569,6 +634,128 @@ export class HearthGame {
     return copyCanvas(c);
   }
 
+  /** 상반신 초상 (조작 인물 · 대사창): 정면 서기 첫 프레임 머리~가슴 36x36. 시트가 아직 없으면 null */
+  private busts = new Map<number, HTMLCanvasElement>();
+  bust(id: number): HTMLCanvasElement | null {
+    const hit = this.busts.get(id);
+    if (hit) return copyCanvas(hit);
+    const sheet = this.sheetCache.get(this.sheetKey(id, 'everyday'));
+    if (!sheet || typeof sheet === 'string') {
+      if (!sheet) void this.ensureSheet(id, 'everyday');
+      return null;
+    }
+    const idle = sheet.anims.idle ?? Object.values(sheet.anims)[0];
+    const row = idle.row + Math.max(0, idle.dirs.indexOf('down'));
+    const c = document.createElement('canvas');
+    c.width = 36;
+    c.height = 36;
+    const g = c.getContext('2d')!;
+    g.imageSmoothingEnabled = false;
+    g.drawImage(sheet.image as CanvasImageSource, (sheet.frameW - 36) / 2, row * sheet.frameH + 8, 36, 36, 0, 0, 36, 36);
+    this.busts.set(id, c);
+    return copyCanvas(c);
+  }
+
+  /** 우상단 창 버튼 (27-2): 지도는 따로 뜨고, 연대기 · 가계부 · 편지는 수첩의 그 쪽 */
+  openWindow(w: 'map' | 'chronicle' | 'ledger' | 'letters' | 'menu'): void {
+    if (w === 'map') {
+      if (!this.townUi) return;
+      const closed = this.townUi.root.classList.toggle('closed');
+      this.hud.topbar.querySelector('[data-win="map"]')?.classList.toggle('on', !closed);
+      return;
+    }
+    if (w === 'ledger' && !this.notebook.open) {
+      // 돈을 누르면 따로 뜨는 가계부 (빠른 확인), 수첩에서는 생업 › 가계부 쪽
+      this.ledger.toggle(this.client.snap);
+      return;
+    }
+    this.notebook.toggle(w);
+  }
+
+  private menuAction(a: 'save' | 'load' | 'settings' | 'gallery' | 'help' | 'hideUi' | 'title'): void {
+    if (a === 'hideUi') this.setUiHidden(true);
+  }
+
+  setUiHidden(hide: boolean): void {
+    this.uiHidden = hide;
+    this.app.classList.toggle('hide-ui', hide);
+  }
+
+  /** 대사창이 열리면 두 사람이 창 위쪽에 오게 카메라를 옮김 (27-13) */
+  private frameDialog(ids: number[]): void {
+    const pts = ids.map((id) => this.chars.drawnPosition(id)).filter((p): p is { x: number; y: number } => !!p);
+    if (!pts.length) return;
+    const mx = pts.reduce((a, p) => a + p.x, 0) / pts.length;
+    const my = pts.reduce((a, p) => a + p.y, 0) / pts.length;
+    this.followSelected = false;
+    this.renderer.centerOn(mx, my + 110 / Math.max(1, this.renderer.zoom));
+  }
+
+  private seenDialog = new Set<string>();
+  /** 조작 인물이 한 사회 상호작용이 끝나면 대사창 (27-13) */
+  private updateDialog(s: Snapshot): void {
+    if (!this.dialogLines) return;
+    for (const p of s.persons) {
+      const ls = p.lastSocial;
+      if (!ls) continue;
+      const key = `${ls.minute}:${p.id}:${ls.ia}:${ls.target}`;
+      if (this.seenDialog.has(key)) continue;
+      this.seenDialog.add(key);
+      if (this.seenDialog.size > 400) this.seenDialog = new Set([...this.seenDialog].slice(-200));
+      if (s.minute - ls.minute > 30) continue;
+      if (p.id !== this.selectedId && ls.target !== this.selectedId) continue;
+      const q = s.persons.find((x) => x.id === ls.target);
+      if (!q) continue;
+      const lines = this.dialogLines(p, q, ls.ok, ls.ia, s, ls.minute * 31 + p.id * 7 + q.id);
+      if (!lines) continue;
+      const colorOf = (x: PersonSnap) => emotionColor(x.inner && x.inner.stage >= 1 ? x.inner.emotion : 'neutral');
+      this.dialog.talk({
+        minute: ls.minute, ids: [p.id, q.id], ok: ls.ok, category: lines.category,
+        speaker: { name: p.name, color: colorOf(p), bust: this.bust(p.id) },
+        listener: { name: q.name, color: colorOf(q), bust: this.bust(q.id) },
+        act: lines.act, say: lines.say, reply: lines.reply,
+      });
+    }
+  }
+
+  /** 한마디 (27-13): 식구 욕구가 위급해질 때, 잠에서 깰 때 … 같은 사람은 게임 3시간에 한 번까지 */
+  private lastOneliner = new Map<number, number>();
+  private prevNeedLow = new Map<string, boolean>();
+  private prevSleeping = new Map<number, boolean>();
+  private updateOneliners(s: Snapshot): void {
+    const me = s.persons.find((p) => p.id === this.selectedId);
+    if (!me) return;
+    const data = dialogueData as unknown as DialogueData;
+    for (const p of s.persons) {
+      if (p.household !== me.household || p.visitor || p.hidden) continue;
+      let situation: string | null = null;
+      for (const n of ['hunger', 'energy', 'hygiene', 'bladder', 'fun', 'social', 'warmth', 'comfort']) {
+        const low = (p.needs[n] ?? 100) < 15;
+        const k = `${p.id}:${n}`;
+        if (low && this.prevNeedLow.get(k) === false) situation = `need.${n}`;
+        this.prevNeedLow.set(k, low);
+      }
+      const wasSleeping = this.prevSleeping.get(p.id);
+      if (wasSleeping && !p.sleeping) situation = 'wake';
+      this.prevSleeping.set(p.id, p.sleeping);
+      if (p.lastWork && s.minute - p.lastWork.minute < 2 && p.lastWork.wage > 0) situation = 'got_paid';
+      if (!situation) continue;
+      if (s.minute - (this.lastOneliner.get(p.id) ?? -1e9) < 180) continue;
+      const picked = pickOneliner(data, situation, { traits: p.inner?.traits ?? [], estate: p.inner?.estate ?? 'freeman', emotion: p.inner?.emotion, stage: coarseStage(p.inner?.stage_life) }, s.minute * 13 + p.id);
+      if (!picked) continue;
+      this.lastOneliner.set(p.id, s.minute);
+      const args = { a: p.name, b: me.name };
+      this.dialog.oneliner({
+        minute: s.minute, ids: [p.id], name: p.name, color: emotionColor(p.inner && p.inner.stage >= 1 ? p.inner.emotion : 'neutral'),
+        head: this.portrait(p.id), act: t(picked.act, args), text: t(picked.say, args),
+      });
+      break;
+    }
+  }
+
+  /** 대사 고르기 (규칙 기반 문장 풀, src/ui/dialogue). 아직 연결 전이면 null */
+  private dialogLines: ((a: PersonSnap, b: PersonSnap, ok: boolean, ia: string, s: Snapshot, seed: number) => { act?: string; say: string; reply?: string; category: string } | null) | null = null;
+
   cycle(dir: number): void {
     const me = this.client.snap?.persons.find((p) => p.id === this.selectedId);
     const persons = (this.client.snap?.persons ?? []).filter((p) => p.household === (me?.household ?? 1));
@@ -606,6 +793,157 @@ export class HearthGame {
   }
 
   /** 지붕 목표 (23-2 시점 처리): 멀리서 보고 조작 인물이 집 밖이면 보이고, 가까이 보거나 인물이 들어가면 투명 */
+  // ------------------------------------------------------------------ 실내 화면 (스타듀식, E)
+
+  /** 보고 있는 집 (외관 번호), -1 바깥 */
+  interior = -1;
+  /** 실내로 데려간 가족 (그 사람이 집을 나가면 바깥 화면으로). -1 = 직접 연 집 (검사/카메라) */
+  private interiorOwner = -1;
+  private interiorLevel = 0;
+  private interiorK = 0;
+  private fadeEl: HTMLDivElement | null = null;
+  private outsideCam: { x: number; y: number; zoom: number } | null = null;
+
+  /** E: 선택한 가족이 집 안/문 앞이면 그 집 실내로, 실내면 바깥으로 (검은 화면 전환) */
+  toggleInterior(): void {
+    const me = this.client.snap?.persons.find((p) => p.id === this.selectedId);
+    if (this.interior >= 0) return this.switchView(-1);
+    if (!me) return;
+    const k = this.world.shells.nearDoor(Math.floor(me.x), Math.floor(me.y) % this.lotRows());
+    if (k >= 0) {
+      this.interiorOwner = me.id;
+      this.switchView(k);
+    }
+  }
+
+  /**
+   * 실내 보기 방식 (사용자 비교용, ?inside=a|b, I 키로 바꿈)
+   *  a = 제자리 지붕 들어 올리기 (Grass Land 2.0 오두막): 화면 전환 없이 그 집 외관이 들리며 사라지고 발자국 크기 그대로의 실내가 드러남
+   *  b = 스타듀식 화면 전환 (검은 화면 → 그 집 실내만, 바깥은 어둠)
+   */
+  // 사용자 선택 (2026-09-26): A 가 기본, ?inside=b 로 B
+  insideMode: 'a' | 'b' = (typeof location !== 'undefined' && new URLSearchParams(location.search).get('inside') === 'b') ? 'b' : 'a';
+  toggleInsideMode(): void {
+    const k = this.interior;
+    if (k >= 0) this.switchView(-1);
+    this.insideMode = this.insideMode === 'a' ? 'b' : 'a';
+    console.info('실내 보기 방식', this.insideMode);
+  }
+
+  private switchView(k: number): void {
+    this.world.shells.mode = this.insideMode === 'a' ? 'lift' : 'fade';
+    if (this.insideMode === 'a') return this.liftView(k);
+    if (!this.fadeEl) {
+      this.fadeEl = document.createElement('div');
+      this.fadeEl.className = 'view-fade';
+      this.app.appendChild(this.fadeEl);
+    }
+    const f = this.fadeEl;
+    f.classList.add('on');
+    setTimeout(() => {
+      const T = this.pack.tilePx;
+      if (k >= 0) {
+        if (this.interior < 0) this.outsideCam = { x: this.renderer.camX, y: this.renderer.camY, zoom: this.renderer.zoom };
+        this.interior = k;
+        const r = this.world.shells.footRect(k)!;
+        this.followSelected = false;
+        this.renderer.setZoom(Math.max(3, this.renderer.zoom));
+        // 벽 윗면까지 보이게 사각형 가운데 조금 위
+        // 데려간 가족이 있는 층부터 (없으면 1층)
+        const owner = this.client.snap?.persons.find((p) => p.id === this.interiorOwner);
+        this.setViewLevel(owner ? Math.max(0, this.world.levelOfRow(owner.y)) : 0);
+        this.interiorLevel = this.world.viewLevel;
+        const yo = this.world.yOff(LEVELS.indexOf(this.world.viewLevel));
+        this.renderer.centerOn(((r[0] + r[2] + 1) / 2) * T, ((r[1] + r[3] + 1) / 2) * T - 24 - yo);
+        this.setCutaway('cut');
+        this.world.setInteriorRect(r);
+      } else {
+        this.interior = -1;
+        this.interiorOwner = -1;
+        this.world.setInteriorRect(null);
+        this.setViewLevel(0);
+        if (this.outsideCam) {
+          this.renderer.setZoom(this.outsideCam.zoom);
+          this.renderer.centerOn(this.outsideCam.x, this.outsideCam.y);
+        }
+      }
+      setTimeout(() => f.classList.remove('on'), 60);
+    }, 260);
+  }
+
+  /** A: 화면 전환 없이 제자리. 카메라만 그 집으로 부드럽게 (줌 2 이상), 바깥은 조금만 어둡게 */
+  private liftView(k: number): void {
+    const T = this.pack.tilePx;
+    if (k >= 0) {
+      if (this.interior < 0) this.outsideCam = { x: this.renderer.camX, y: this.renderer.camY, zoom: this.renderer.zoom };
+      this.interior = k;
+      const r = this.world.shells.footRect(k)!;
+      this.followSelected = false;
+      if (this.renderer.zoom < 2) this.renderer.setZoom(2);
+      const owner = this.client.snap?.persons.find((p) => p.id === this.interiorOwner);
+      this.setViewLevel(owner ? Math.max(0, this.world.levelOfRow(owner.y)) : 0);
+      this.interiorLevel = this.world.viewLevel;
+      const yo = this.world.yOff(LEVELS.indexOf(this.world.viewLevel));
+      this.camGlide = { x: ((r[0] + r[2] + 1) / 2) * T, y: ((r[1] + r[3] + 1) / 2) * T - 24 - yo };
+      this.setCutaway('cut');
+      // 마을은 그대로 보이게 (2층을 보면 아래층은 흐리게)
+      this.world.setInteriorRect(r, false);
+    } else {
+      this.interior = -1;
+      this.interiorOwner = -1;
+      this.world.setInteriorRect(null);
+      this.setViewLevel(0);
+    }
+  }
+  private camGlide: { x: number; y: number } | null = null;
+  private roomPx: { k: number; lv: number; rect: [number, number, number, number] | null } | null = null;
+
+  private updateInterior(dt: number, s: Snapshot | null | undefined): void {
+    if (this.camGlide) {
+      const g = this.camGlide, k = Math.min(1, dt / 180);
+      const x = this.renderer.camX + (g.x - this.renderer.camX) * k, y = this.renderer.camY + (g.y - this.renderer.camY) * k;
+      this.renderer.centerOn(x, y);
+      if (Math.abs(g.x - x) < 1 && Math.abs(g.y - y) < 1) this.camGlide = null;
+    }
+    // A 는 바깥을 조금만 어둡게 (마을이 그대로 보임), B 는 거의 검게
+    // A 에서 2층을 보면 아래 마을은 가림 (다른 집 2층이 지붕 위로 비치지 않게): 그 층만 + 바깥 어둠
+    const upA = this.insideMode === 'a' && this.interior >= 0 && this.world.viewLevel > 0;
+    if (this.insideMode === 'a' && this.interior >= 0 && this.world.soloLevel !== upA) this.world.setInteriorRect(this.world.shells.footRect(this.interior), upA);
+    const target = this.interior >= 0 ? (this.insideMode === 'a' && !upA ? 0.45 : 1) : 0;
+    this.interiorK += (target - this.interiorK) * Math.min(1, dt / 120);
+    const u = this.renderer.fx.mat.uniforms;
+    u.uRoomK.value = this.interiorK;
+    const T = this.pack.tilePx;
+    if (this.interior >= 0) {
+      const r = this.world.shells.footRect(this.interior)!;
+      const me = s?.persons.find((p) => p.id === this.interiorOwner);
+      // 가족이 계단을 오르내리면 그 층으로 (PageUp/PageDown 으로 직접 바꿔도 됨)
+      if (me && !me.hidden) {
+        const lv = Math.max(0, this.world.levelOfRow(me.y));
+        if (lv !== this.interiorLevel) this.setViewLevel(lv);
+      }
+      const yo = this.world.yOff(LEVELS.indexOf(this.world.viewLevel));
+      if (this.interiorLevel !== this.world.viewLevel) {
+        this.interiorLevel = this.world.viewLevel;
+        this.renderer.centerOn(((r[0] + r[2] + 1) / 2) * T, ((r[1] + r[3] + 1) / 2) * T - 24 - yo);
+      }
+      // 벽 높이(80px)만큼 위로, 옆벽 두께 포함, 층 높이만큼 올림
+      // 가리개 = 그 방 벽 그림의 실제 테두리 (없으면 칸 사각형 + 벽 높이)
+      if (!this.roomPx || this.roomPx.k !== this.interior || this.roomPx.lv !== this.world.viewLevel) this.roomPx = { k: this.interior, lv: this.world.viewLevel, rect: this.world.roomPixelRect(r, this.world.viewLevel) };
+      const px = this.roomPx.rect;
+      if (px) (u.uRoom.value as import('three').Vector4).set(px[0], px[1], px[2], px[3]);
+      else (u.uRoom.value as import('three').Vector4).set(r[0] * T - 2, r[1] * T - 88 - yo, (r[2] + 1) * T + 2, (r[3] + 1) * T - yo);
+      // 가족이 집을 나가면 바깥 화면으로
+      if (me && !me.hidden && this.world.shells.nearDoor(Math.floor(me.x), Math.floor(me.y) % this.lotRows()) !== this.interior) this.switchView(-1);
+    } else if (this.interiorK < 0.02) (u.uRoom.value as import('three').Vector4).set(0, 0, -1, -1);
+    this.particles.points.visible = this.particles.glow.visible = this.interior < 0;
+  }
+
+  /** 1층 판 한 장의 행 수 + 틈 줄 (여러 층 좌표를 1층 판 칸으로) */
+  private lotRows(): number {
+    return this.world.lotH + 1;
+  }
+
   private roofWanted(): number {
     if (this.roofMode === 'on') return 1;
     if (this.roofMode === 'off' || this.client.snap?.build?.mode) return 0;
@@ -685,7 +1023,7 @@ export class HearthGame {
         if (this.choice.open) return;
         this.choice.show(`career:${w.id}:${ev.id}`, `${w.name} · ${t(this.careerTexts[w.careerEvent!.careerId].nameKey)}`, t(ev.textKey),
           ev.options.map((o) => ({ id: o.id, nameKey: o.textKey, descKey: '', icon: 'ui.crest' })),
-          (option) => void this.client.intent({ kind: 'careerChoice', personId: w.id, option }));
+          (option) => void this.client.intent({ kind: 'careerChoice', personId: w.id, option }), { portrait: this.bust(w.id), speaker: w.name });
         return;
       }
       if (this.choice.open) this.choice.hide();
@@ -697,7 +1035,7 @@ export class HearthGame {
       .map(([id, o]) => ({ id, nameKey: o.nameKey, descKey: o.descKey, icon: o.icon }));
     this.choice.show(`breakdown:${p.id}`, t('breakdown.title', { name: p.name }), t('breakdown.body'), opts, (option) => {
       void this.client.intent({ kind: 'choose', personId: p.id, option });
-    });
+    }, { portrait: this.bust(p.id) });
   }
 
   private bindInput(): void {
@@ -763,13 +1101,27 @@ export class HearthGame {
         e.preventDefault();
         return;
       }
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        this.notebook.toggle();
+        return;
+      }
+      if (e.key === 'Escape' && (this.notebook.open || this.dialog.open || this.hud.currentPopup)) {
+        this.notebook.close();
+        this.hud.setPopup(null);
+        return;
+      }
       if (e.code === 'Space') {
         e.preventDefault();
         this.cycle(e.shiftKey ? -1 : 1);
-      } else if (e.key === '0') this.setSpeed(0);
+      } else if (e.key === 'h' || e.key === 'H') this.setUiHidden(!this.uiHidden);
+      else if (e.key === 'm' || e.key === 'M') this.openWindow('map');
+      else if (e.key === '0') this.setSpeed(0);
       else if (e.key === 'p' || e.key === 'P') this.setSpeed(this.client.snap?.speed === 0 ? Math.max(1, this.pendingSpeedBeforePause) : 0);
       else if (e.key === '1' || e.key === '2' || e.key === '3') this.setSpeed(Number(e.key));
       else if (e.key === 'Escape') this.pie.close();
+      else if (e.key === 'e' || e.key === 'E') this.toggleInterior();
+      else if (e.key === 'i' || e.key === 'I') this.toggleInsideMode();
       else if (e.key === 'f' || e.key === 'F') this.followSelected = !this.followSelected;
       else if (e.key === 'PageUp') this.stepViewLevel(1);
       else if (e.key === 'PageDown') this.stepViewLevel(-1);
@@ -882,10 +1234,10 @@ export class HearthGame {
       getStats: () => req((reqId) => ({ type: 'stats', reqId })),
       getWorldHash: async () => (await req<{ hash: string }>((reqId) => ({ type: 'stats', reqId }))).hash,
       captureState: (label: string) => ({ label, ...this.getState() }),
-      hideUI: (hide = true) => {
-        this.uiHidden = hide;
-        this.app.classList.toggle('hide-ui', hide);
-      },
+      hideUI: (hide = true) => this.setUiHidden(hide),
+      openBook: (page?: string) => this.notebook.show(page),
+      closeBook: () => this.notebook.close(),
+      setPopup: (k: string | null) => this.hud.setPopup(k as never),
       setZoom: (z: number) => this.renderer.setZoom(z),
       centerOn: (x: number, y: number) => this.renderer.centerOn(x, y),
       setCutaway: (m: CutawayMode) => this.setCutaway(m),
@@ -1159,6 +1511,15 @@ function innerRaw() {
 }
 
 // ---------------------------------------------------------------- 내면 표시용 정의 (데이터에서)
+
+/** 생애 단계 → 대사 조건 단계 (child/teen/adult/elder) */
+function coarseStage(st: string | undefined): string | undefined {
+  if (!st) return undefined;
+  if (st === 'baby' || st === 'toddler' || st === 'child') return 'child';
+  if (st === 'teen') return 'teen';
+  if (st === 'elder') return 'elder';
+  return 'adult';
+}
 
 function emotionColor(e: string): string {
   return (emotionsData.emotions as Record<string, { color: string }>)[e]?.color ?? '#888';

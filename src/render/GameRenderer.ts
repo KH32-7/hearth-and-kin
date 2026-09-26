@@ -3,6 +3,7 @@
  * 세계 좌표 = 세계 픽셀 (칸 × tilePx). three의 y는 위쪽이라 세계 y를 뒤집어 씀.
  */
 import * as THREE from 'three';
+import { PostFX } from './PostFX';
 
 export class GameRenderer {
   readonly renderer: THREE.WebGLRenderer;
@@ -27,6 +28,7 @@ export class GameRenderer {
     this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     this.renderer.setClearColor(0x1b1612, 1);
     this.camera = new THREE.OrthographicCamera(0, 1, 0, -1, -1000, 1000);
+    if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('fx') === '0') this.fx.enabled = false;
     this.resize();
   }
 
@@ -128,8 +130,16 @@ export class GameRenderer {
     return { x: rect.left + bx / dpr, y: rect.top + by / dpr };
   }
 
+  /** 후처리 (색 보정, 광원, 구름 그림자, 비네트). ?fx=0 이면 끔 */
+  readonly fx = new PostFX();
+
   render(): void {
-    this.renderer.render(this.scene, this.camera);
+    if (this.fx.enabled) this.fx.render(this.renderer, this.scene, this.camera);
+    else {
+      this.camera.layers.set(0);
+      this.camera.layers.enable(1);
+      this.renderer.render(this.scene, this.camera);
+    }
   }
 }
 
