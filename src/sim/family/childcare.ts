@@ -177,7 +177,7 @@ export class Childcare {
     if (p.childSkillXp[k] >= need) {
       p.childSkillXp[k] -= need;
       p.childSkills[skill] = lv + 1;
-      this.host.notice(p, 'child_skill_up', { name: p.name, skill: `cskill.${skill}`, level: lv + 1 });
+      this.host.notice(p, 'child_skill_up', { name: p.name, skill: `${toddler ? 'tskill' : 'cskill'}.${skill}`, level: lv + 1 });
       // 걸음마 (걷기 2 = 걷기 시작), 첫 말 (말하기 1): 부모 무드렛
       const parents = this.host.persons.filter((q) => q.id === p.mother || q.id === p.father);
       if (skill === 'walking' && lv + 1 === this.d.toddler.walkFromLevel) for (const q of parents) this.host.moodlet(q, 'first_steps_pride');

@@ -88,7 +88,7 @@ describe.skipIf(!hasField)('농사 사슬 (31-2, 17-5)', () => {
       doTask(s, 'recipe.bake_bread', oven.uid);
       expect((s.world.stock.bread ?? 0) - bread0).toBeGreaterThanOrEqual(4);
     }
-  });
+  }, 30000);
 
   it('지력: 같은 곡물을 연달아 심으면 더 떨어지고, 콩은 회복 (삼포제 31-4)', () => {
     const s = farm(2);

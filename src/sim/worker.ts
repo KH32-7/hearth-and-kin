@@ -87,6 +87,8 @@ function snapshot(): Snapshot {
       facing: p.facing, pose: p.pose, anim: p.anim, outfit: p.outfit, carry: p.carry,
       ...(p.direct ? { direct: true } : {}),
       lifeStage: p.lifeStage,
+      ...(p.pregnancy && s.pregnancy ? { bellyStage: s.pregnancy.bellyStage(p) } : {}),
+      ...(p.gait !== 'proud' && s.genetics ? { gaitAnim: s.genetics.gaits[p.gait]?.anim ?? 1 } : {}),
       ...(p.lifeStage === 'baby'
         ? { infant: { place: p.babyPlace?.kind ?? 'floor', heldBy: p.babyPlace?.kind === 'held' ? p.babyPlace.by : -1, crying: p.crying } }
         : {}),

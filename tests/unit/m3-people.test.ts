@@ -194,7 +194,7 @@ describe('M3 리뷰 회귀', () => {
     for (let seed = 1; seed <= 10; seed++) {
       const s = family(seed);
       s.apply({ kind: 'invite', personId: 1, neighborId: data.neighbors[2].id });
-      runMinutes(s, 200); // 걷기 2칸/분 (심즈 템포): 길 끝에서 걸어 들어와 인사까지
+      runMinutes(s, 300); // 걷기 2칸/분 (심즈 템포): 길 끝에서 걸어 들어와 인사까지 (식구가 하던 일을 마치고 맞음)
       const v = s.persons.find((p) => p.visitor) ?? [...s.away.values()][0];
       if (v && (s.rel.get(1, v.id)?.met || s.rel.get(2, v.id)?.met)) met++;
     }

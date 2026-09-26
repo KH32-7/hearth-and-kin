@@ -1854,6 +1854,43 @@
           "chance": 0.8
         }
       ]
+    },
+    "table.eat_cold": {
+      "nameKey": "ia.eat_cold",
+      "icon": "bread",
+      "objects": [
+        "dining_table"
+      ],
+      "requires": {
+        "stock": {
+          "ingredients": 1
+        }
+      },
+      "steps": [
+        {
+          "at": {
+            "seatAt": "target"
+          },
+          "anim": "eat",
+          "minutes": 15,
+          "needs": {
+            "hunger": 2.6
+          },
+          "carry": "bowl"
+        }
+      ],
+      "effects": {
+        "stock": {
+          "ingredients": -1
+        }
+      },
+      "ads": {
+        "hunger": 42
+      },
+      "tags": [
+        "eat_plain"
+      ],
+      "$comment": "불 없이 먹는 찬 음식 (빵 조각·치즈·날채소): 장작이 떨어져도 굶지 않게. 스튜(70)보다 광고 낮음"
     }
   }
 }

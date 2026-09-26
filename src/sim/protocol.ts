@@ -6,6 +6,10 @@ import type { MenuEntry, Notice } from './sim';
 export interface PersonSnap {
   id: number;
   name: string;
+  /** 임신 배 레이어 (15-1): 1 중기, 2 후기 */
+  bellyStage?: number;
+  /** 걸음걸이 걷기 애니 재생 배수 (10-1, 기본 1) */
+  gaitAnim?: number;
   /** 직접 조작(WASD) 중: 렌더러가 스냅샷 간격으로 바로 따라감 */
   direct?: boolean;
   /** 말을 타고 있으면 털색 (0~4), 아니면 없음 (18-5) */

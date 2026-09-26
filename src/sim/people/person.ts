@@ -257,6 +257,10 @@ export class Person {
   churchRep = 0;
   /** 유전자 (10-3, family/genetics.ts). 마을 시작 인물은 처음 자식을 낳을 때 무작위로 붙음 */
   genome: import('../family/genetics').Genome | null = null;
+  /** 세례 예약 (21장 M10): 태어나면 true, 세례 성사 뒤 false */
+  baptismDue = false;
+  /** 걸음걸이 (10-1: easy/proud/quick/sneak → 이동 속도·걷기 애니 배수, genetics.json gaits). 기본 당당 */
+  gait = 'proud';
   /** 입양아, 대부모 (15-7) */
   adopted = false;
   godparent = 0;
