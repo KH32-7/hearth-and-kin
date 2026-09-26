@@ -450,7 +450,9 @@ export class Simulation {
       }
       case 'adopt': {
         const par = this.persons.find((q) => q.id === intent.personId);
-        return par && this.childcare ? this.childcare.adopt(par, intent.stage) : { ok: false };
+        if (!par || !this.childcare) return { ok: false };
+        const r = this.childcare.adopt(par, intent.stage);
+        return { ok: r.ok, reason: r.reason, childId: r.child?.id };
       }
       case 'setGodparent': {
         const c = this.persons.find((q) => q.id === intent.childId);
@@ -4058,6 +4060,32 @@ export class Simulation {
     return true;
   }
 
+  /**
+   * 소원·카드 조건용 가족 상태 플래그 (wishes_m7/events family_society): 이 사람 기준. 아직 없는 체계(M8 가보·하인, M9 재판)는 들어가지 않음
+   */
+  familyFlags(p: Person): ReadonlySet<string> {
+    const f = new Set<string>();
+    const kids = this.persons.filter((q) => q.mother === p.id || q.father === p.id);
+    if (kids.some((k) => k.lifeStage === 'baby')) f.add('has_baby');
+    if (kids.some((k) => k.lifeStage === 'toddler')) f.add('has_toddler');
+    if (kids.length) f.add('has_child');
+    if (kids.some((k) => k.lifeStage === 'child')) f.add('has_school_child');
+    if (kids.some((k) => k.lifeStage === 'teen')) f.add('has_teen');
+    if (kids.some((k) => k.lifeStage === 'young' && !k.spouse)) f.add('child_of_age');
+    if (kids.some((k) => k.betrothed)) f.add('child_engaged');
+    const sp = p.spouse ? this.persons.find((q) => q.id === p.spouse) : undefined;
+    if (sp?.pregnancy) f.add('spouse_pregnant');
+    if (p.betrothed) f.add('engaged');
+    const day = this.world.day();
+    if (this.persons.some((q) => q.household === p.household && q.lastBirthdayDay === day)) f.add('family_birthday_today');
+    if (this.persons.some((q) => q.household === p.household && q.birthdayDay >= 0)) f.add('birthday_soon');
+    if ((this.skills?.level(p, 'reading') ?? 0) >= 1) f.add('can_read');
+    const head = this.persons.filter((q) => q.household === p.household && !q.infant).sort((a, b) => (b.lifeStage === 'elder' ? 0 : 1) - (a.lifeStage === 'elder' ? 0 : 1) || a.id - b.id)[0];
+    if (head === p) f.add('head_of_house');
+    if (p.estate === 'serf') f.add('no_family_name');
+    return f;
+  }
+
   private parentBond(p: Person): number {
     const ps = this.persons.filter((q) => q.id === p.mother || q.id === p.father);
     if (!ps.length) return 50;
@@ -4222,7 +4250,7 @@ export class Simulation {
 
   /** 새 아이 (입양·이주): 단계·신분·가구, 유전자 무작위 */
   private createChild(stage: LifeStage, estate: string, household: number): Person | null {
-    const rng = new Rng((this.seed * 104729 + this.world.minute * 31 + household) >>> 0);
+    const rng = new Rng((this.seed * 104729 + this.world.minute * 31 + household * 7 + this.persons.length * 131) >>> 0);
     const sex: 'male' | 'female' = rng.next() < 0.5 ? 'male' : 'female';
     const coarse: Person['stage'] = stage === 'teen' ? 'teen' : 'child';
     const host = this.persons.find((q) => q.household === household);
@@ -4233,7 +4261,13 @@ export class Simulation {
     p.homeLot = host?.homeLot ?? null;
     this.giveGenome(p, null, null, rng);
     this.coarseStage(p);
-    if (p.infant) this.showInfant(p);
+    // 아기·유아는 기질만 (12-1), 아동은 특성 1칸
+    if (p.infant) {
+      this.lifecycle?.newborn(p);
+      p.wishes = [];
+      p.aspiration = null;
+      this.showInfant(p);
+    }
     for (const q of this.persons) {
       if (q === p || q.household !== household) continue;
       const r = this.rel.ensure(p.id, q.id);

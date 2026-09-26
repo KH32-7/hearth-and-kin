@@ -174,9 +174,17 @@ describe('M7 아동·청소년·가정 (15-5 ~ 15-8)', () => {
 
   it('입양: 가정 상한(12)이면 불가, 아니면 새 아이 + 명성', () => {
     const { s, mom } = family(9);
-    const r = s.apply({ kind: 'adopt', personId: mom.id, stage: 'child' }) as { ok: boolean; child?: Person };
+    const r = s.apply({ kind: 'adopt', personId: mom.id, stage: 'child' }) as { ok: boolean; childId?: number };
     expect(r.ok).toBe(true);
-    expect(r.child?.household).toBe(mom.household);
+    expect(s.persons.find((q) => q.id === r.childId)?.household).toBe(mom.household);
+    // 같은 순간에 둘을 들여도 유전자가 다름, 아기는 기질만·소원 없음
+    const b1 = s.apply({ kind: 'adopt', personId: mom.id, stage: 'baby' }) as { childId: number };
+    const b2 = s.apply({ kind: 'adopt', personId: mom.id, stage: 'baby' }) as { childId: number };
+    const g1 = s.persons.find((q) => q.id === b1.childId)!;
+    const g2 = s.persons.find((q) => q.id === b2.childId)!;
+    expect(JSON.stringify(g1.genome)).not.toBe(JSON.stringify(g2.genome));
+    expect(g1.wishes.length).toBe(0);
+    expect(g1.traits.every((t) => s.data.inner!.traits.traits[t]?.category === 'temperament' || s.data.inner!.traits.traits[t]?.category === 'congenital')).toBe(true);
     expect(s.fame.get(mom.household) ?? 0).toBeGreaterThan(0);
     while (s.persons.filter((q) => q.household === mom.household).length < 12) s.addPerson('식구', undefined, undefined, { household: mom.household });
     expect((s.apply({ kind: 'adopt', personId: mom.id, stage: 'baby' }) as { ok: boolean; reason?: string }).reason).toBe('household_full');

@@ -774,7 +774,14 @@ export class Inner {
     if (c.estates && !c.estates.includes(p.estate)) return false;
     if (c.stages && !c.stages.includes(p.stage)) return false;
     if (c.emotionsAny && !c.emotionsAny.includes(EMOTION_IDS[p.emotion])) return false;
-    const cx = c as { virtuesAny?: string[]; likesAny?: string[]; seasons?: string[]; aspirationsAny?: string[] };
+    const cx = c as { virtuesAny?: string[]; likesAny?: string[]; seasons?: string[]; aspirationsAny?: string[]; pregnant?: boolean; married?: boolean; hasBaby?: boolean; hasChild?: boolean; flags?: string[] };
+    // M7 조건 (wishes_m7.json): 임신·기혼·아이·가문 상태 플래그 (아직 없는 체계의 플래그는 거짓 → 그 소원은 안 뜸)
+    if (cx.pregnant !== undefined && !!p.pregnancy !== cx.pregnant) return false;
+    if (cx.married !== undefined && !!p.spouse !== cx.married) return false;
+    const fam = (this.host as unknown as { familyFlags?(p: Person): ReadonlySet<string> }).familyFlags?.(p);
+    if (cx.hasBaby !== undefined && !!fam?.has('has_baby') !== cx.hasBaby) return false;
+    if (cx.hasChild !== undefined && !!fam?.has('has_child') !== cx.hasChild) return false;
+    if (cx.flags && !cx.flags.every((f) => fam?.has(f))) return false;
     if (cx.virtuesAny && !cx.virtuesAny.some((v) => v === p.virtue || v === p.sin)) return false;
     if (cx.likesAny && !cx.likesAny.some((l) => p.likes.includes(l) || p.likes.some((k) => k.endsWith(`.${l}`)))) return false;
     if (cx.seasons && !cx.seasons.includes(this.host.world.season)) return false;
@@ -787,6 +794,11 @@ export class Inner {
 
   refreshWishes(p: Person): void {
     const now = this.host.world.minute;
+    // 아기·유아는 소원/걱정이 없음 (말로 바라는 나이가 아님)
+    if (p.lifeStage === 'baby' || p.lifeStage === 'toddler') {
+      if (p.wishes.length) p.wishes = [];
+      return;
+    }
     p.wishes = p.wishes.filter((w) => w.locked || w.expiresAt > now);
     const have = new Set(p.wishes.map((w) => w.id));
     for (const kind of ['wish', 'fear'] as const) {

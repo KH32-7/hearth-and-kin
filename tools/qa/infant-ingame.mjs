@@ -1,0 +1,31 @@
+// 게임 안 아기·유아 확인: 조작 가문에 아기·유아 입양 → 지붕 걷고 확대 캡처. node tools/qa/infant-ingame.mjs
+import { chromium } from 'playwright';
+const browser = await chromium.launch({ channel: 'msedge' });
+const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
+const errs = [];
+page.on('pageerror', (e) => errs.push(e.message));
+page.on('console', (m) => m.type() === 'error' && errs.push(m.text()));
+await page.goto('http://127.0.0.1:5188/?town=ashford');
+await page.waitForFunction(() => window.__game?.ready?.(), null, { timeout: 120_000 });
+const info = await page.evaluate(async () => {
+  const g = window.__game; const hk = window.__hk;
+  await g.setTime(10 * 60);
+  await g.intent({ kind: 'adopt', personId: 2, stage: 'baby' });
+  await g.intent({ kind: 'adopt', personId: 2, stage: 'toddler' });
+  g.setSpeed(1);
+  await new Promise((r) => setTimeout(r, 4000));
+  g.setSpeed(0);
+  await new Promise((r) => setTimeout(r, 500));
+  return hk.client.snap.persons.filter((p) => p.household === 1).map((p) => ({ id: p.id, name: p.name, stage: p.lifeStage, infant: p.infant, anim: p.anim, drawn: hk.chars.drawnPosition(p.id), visible: hk.chars.nodes.get(p.id)?.mesh.visible }));
+});
+console.log(JSON.stringify(info));
+const baby = info.find((p) => p.stage === 'baby') ?? info[0];
+await page.evaluate(({ x, y }) => { const g = window.__game; g.select(1); g.hideUI(true); g.setZoom(4); g.centerOn(x, y); }, baby.drawn);
+await page.waitForTimeout(500);
+await page.keyboard.press('v');
+await page.waitForTimeout(2500);
+await page.evaluate(({ x, y }) => window.__game.centerOn(x, y), baby.drawn);
+await page.waitForTimeout(800);
+await page.screenshot({ path: 'artifacts/qa/m7/infant-ingame.png' });
+console.log('errors', errs.slice(0, 5));
+await browser.close();
