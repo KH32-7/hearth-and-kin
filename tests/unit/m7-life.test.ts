@@ -229,3 +229,31 @@ describe('M7 아기 → 노년 전 과정 (헤드리스, 짧은 수명)', () => 
     expect(result!.stuck).toBe(0);
   }, 120000);
 });
+
+describe('M7 캐릭터 만들기 → 조작 가문 (10-1 createFamily)', () => {
+  it('만들기 사양대로 조작 가문을 꾸리고 (유전자·걸음·관계), 사양이 틀리면 거부', async () => {
+    const { randomMember } = await import('../../src/sim/family/creation');
+    const { Rng } = await import('../../src/sim/core/rng');
+    const s = new Simulation(data, 12);
+    s.addPerson('옛 식구');
+    const g = s.genetics!;
+    const rng = new Rng(5);
+    const a = randomMember(g, s.names, rng, { key: 'a', estate: 'artisan', sex: 'male', stage: 'young' });
+    const b = randomMember(g, s.names, rng, { key: 'b', estate: 'artisan', sex: 'female', stage: 'young', takenNames: [a.name] });
+    const c = randomMember(g, s.names, rng, { key: 'c', estate: 'artisan', stage: 'child', takenNames: [a.name, b.name] });
+    const spec = { v: 1, clan: '스미스', estate: 'artisan', members: [a, b, c], relations: [{ a: 'a', b: 'b', kind: 'spouse' as const }, { a: 'a', b: 'c', kind: 'parent' as const }, { a: 'b', b: 'c', kind: 'parent' as const }] };
+    const r = s.apply({ kind: 'createFamily', spec }) as { ok: boolean; ids: number[] };
+    expect(r.ok).toBe(true);
+    const fam = s.persons.filter((q) => q.household === 1);
+    expect(fam.map((q) => q.name).sort()).toEqual([a.name, b.name, c.name].sort());
+    const kid = fam.find((q) => q.name === c.name)!;
+    const pa = fam.find((q) => q.name === a.name)!;
+    expect(kid.father).toBe(pa.id);
+    expect(pa.spouse).toBe(fam.find((q) => q.name === b.name)!.id);
+    expect(kid.genome).toEqual(c.genome);
+    expect(pa.gait).toBe(a.gait);
+    // 9명은 거부 (조작 가능 8명)
+    const many = Array.from({ length: 9 }, (_, i) => randomMember(g, s.names, rng, { key: `m${i}`, estate: 'freeman', stage: 'young' }));
+    expect((s.apply({ kind: 'createFamily', spec: { v: 1, clan: 'X', estate: 'freeman', members: many, relations: [] } }) as { ok: boolean }).ok).toBe(false);
+  });
+});

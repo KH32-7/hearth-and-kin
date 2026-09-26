@@ -30,6 +30,7 @@ import { PregnancySystem, parsePregnancy, type LaborOption } from './family/preg
 import { DeathRules, parseDeathRules, type SetDeathRulesIntent } from './health/deathRules';
 import { express, geneticsFrom, inherit, randomGenome, type GeneticsData } from './family/genetics';
 import { namesFrom, pickName, type NamesData } from './family/names';
+import { memberRuntime, validateFamily, type FamilySpec } from './family/creation';
 import { Rumors } from './town/rumors';
 import type { LifeStage } from './people/person';
 import { NEED_INDEX, Person } from './people/person';
@@ -114,6 +115,8 @@ export type SimIntent =
   | { kind: 'setAgingOff'; personId?: number; household?: number; off: boolean }
   | { kind: 'setLifespan'; preset: string }
   | { kind: 'putDownBaby'; babyId: number }
+  /** 캐릭터 만들기 (10-1): 만들기 사양으로 조작 가문을 새로 꾸림 (검증 실패면 거부). 기존 조작 가문 식구는 떠남 */
+  | { kind: 'createFamily'; spec: FamilySpec }
   /** 진통 선택 (15-2): 산파 부르기 / 가족이 받기 / 혼자 */
   | { kind: 'laborChoice'; personId: number; option: LaborOption }
   /** 사망 설정 행렬 (20-7): 프리셋 또는 칸 */
@@ -494,6 +497,8 @@ export class Simulation {
         this.deathRules.apply(rest as SetDeathRulesIntent);
         return { ok: true };
       }
+      case 'createFamily':
+        return this.createFamily(intent.spec);
       case 'putDownBaby': {
         const b = this.persons.find((q) => q.id === intent.babyId);
         if (b) this.childcare?.putDown(b);
@@ -4246,6 +4251,74 @@ export class Simulation {
     this.cardLog.push({ day: this.world.day(), personId: p.id, cardId, vars });
     if (this.cardLog.length > 200) this.cardLog.shift();
     if (p.household === 1) this.notice(p, 'card', { card: cardId, ...vars });
+  }
+
+  /**
+   * 캐릭터 만들기 결과를 조작 가문으로 (10-1): 사양 검증(8명, 관계, 4촌 혼인, 나이) → 기존 조작 가문 식구를 내보내고
+   * 사양대로 인물을 만듦 (유전자·외형·걸음·특성·생애 단계), 관계(부모·배우자·형제·조부모·사촌)는 관계와 가족 표시로.
+   * 결과 {ok, issues, ids}
+   */
+  private createFamily(spec: FamilySpec): { ok: boolean; issues?: string[]; ids?: number[] } {
+    const g = this.genetics;
+    if (!g) return { ok: false, issues: ['no_genetics'] };
+    const issues = validateFamily(g, spec).filter((i) => (i as { severity?: string }).severity !== 'warning');
+    if (issues.length) return { ok: false, issues: issues.map((i) => i.code) };
+    // 기존 조작 가문은 먼 곳으로 떠남 (마을에서 사라짐, 기록은 남음)
+    for (const q of this.persons.filter((x) => x.household === 1)) this.killPerson(q, 'moved_away');
+    const home = this.town?.playerLot();
+    const spawnX = this.data.lot.spawn.x + 0.5;
+    const spawnY = this.data.lot.spawn.y + 0.5;
+    const byKey = new Map<string, Person>();
+    const coarse = (st: LifeStage): Person['stage'] => (st === 'baby' || st === 'toddler' || st === 'child' ? 'child' : st === 'teen' ? 'teen' : st === 'elder' ? 'elder' : 'adult');
+    for (const m of spec.members) {
+      const cell = home ? this.town!.targetCell({ household: 1, homeLot: home.id } as Person, 'home') : -1;
+      const gw = this.world.grid.w;
+      const x = cell >= 0 ? (cell % gw) + 0.5 : spawnX;
+      const y = cell >= 0 ? Math.floor(cell / gw) + 0.5 : spawnY;
+      const rt = memberRuntime(g, m);
+      const p = this.addPerson(m.name, x, y, { estate: m.estate, sex: m.sex, stage: coarse(m.stage), household: 1, traits: m.traits.length ? m.traits : undefined });
+      p.lifeStage = m.stage;
+      p.ageDays = 0;
+      p.genome = m.genome;
+      p.gait = m.gait;
+      p.homeLot = home?.id ?? null;
+      p.appearance = { ...rt.appearance, genome: true };
+      const congenital = new Set(Object.entries(this.data.inner?.traits.traits ?? {}).filter(([, t]) => t.category === 'congenital').map(([id]) => id));
+      p.traits = [...p.traits.filter((t) => !congenital.has(t)), ...rt.congenital.filter((t) => congenital.has(t))];
+      this.coarseStage(p);
+      if (p.infant) {
+        this.lifecycle?.newborn(p);
+        p.wishes = [];
+        p.aspiration = null;
+      }
+      byKey.set(m.key, p);
+    }
+    for (const r of spec.relations) {
+      const a = byKey.get(r.a);
+      const b = byKey.get(r.b);
+      if (!a || !b) continue;
+      const rel = this.rel.ensure(a.id, b.id);
+      rel.met = true;
+      if (r.kind === 'spouse') {
+        a.spouse = b.id;
+        b.spouse = a.id;
+        a.marriedDay = b.marriedDay = this.world.day();
+        rel.flags.add('spouse');
+        rel.friendship = Math.max(rel.friendship, 50);
+        rel.romance = Math.max(rel.romance, 45);
+      } else {
+        rel.flags.add('family');
+        rel.friendship = Math.max(rel.friendship, 40);
+        if (r.kind === 'parent') {
+          if (a.sex === 'female') b.mother = a.id;
+          else b.father = a.id;
+        }
+      }
+    }
+    for (const a of byKey.values()) for (const b of byKey.values()) if (a.id < b.id) this.rel.ensure(a.id, b.id).met = true;
+    for (const p of byKey.values()) if (p.infant) this.showInfant(p);
+    this.econ?.account(1) ?? this.econ?.openAccount(1, spec.estate as never, this.wealth);
+    return { ok: true, ids: [...byKey.values()].map((p) => p.id) };
   }
 
   /** 새 아이 (입양·이주): 단계·신분·가구, 유전자 무작위 */
