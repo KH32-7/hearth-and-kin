@@ -1485,8 +1485,9 @@ export interface TownBundle {
 }
 const townFiles = import.meta.glob<{ default: unknown }>(['../data/town/*.json', '../data/schedules.json']);
 async function loadTown(): Promise<TownBundle | null> {
-  const q = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('town') : null;
-  if (!q) return null;
+  // 주소에 ?town= 이 없으면 빌드 기본값 (Pages 배포판은 VITE_DEFAULT_TOWN=ashford). ?town=none 이면 오두막
+  const q = (typeof location !== 'undefined' ? new URLSearchParams(location.search).get('town') : null) ?? import.meta.env.VITE_DEFAULT_TOWN ?? null;
+  if (!q || q === 'none') return null;
   const get = async (p: string) => {
     const f = townFiles[p];
     return f ? ((await f()) as { default: unknown }).default : undefined;

@@ -1,5 +1,10 @@
 /// <reference types="vite/client" />
 
+interface ImportMetaEnv {
+  /** 주소에 ?town= 이 없을 때 열 마을 (Pages 배포판: ashford) */
+  readonly VITE_DEFAULT_TOWN?: string;
+}
+
 interface ThreeGameDiagnostics {
   frame: number;
   elapsed: number;
