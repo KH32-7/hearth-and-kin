@@ -1,0 +1,51 @@
+{
+  "name": "hearth-and-kin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "vitest run",
+    "verify:visual": "playwright test tests/visual.spec.ts",
+    "inspect:canvas": "node scripts/inspect-threejs-canvas.mjs",
+    "test:e2e": "playwright test",
+    "test:bot": "tsx tools/sim-day.ts --days 7 --seeds 10 --persons 2 --check",
+    "sim:day": "tsx tools/sim-day.ts",
+    "typecheck": "tsc --noEmit",
+    "check:data": "tsx tools/check-data.ts",
+    "check:palette": "tsx tools/check-palette.ts",
+    "check:supplement": "tsx tools/check-supplement.ts",
+    "lot:tiled": "tsx tools/lot-to-tiled.ts",
+    "check:thoughts": "tsx tools/check-thoughts.ts",
+    "check:inner": "tsx tools/check-inner.ts",
+    "check:traits": "tsx tools/trait-metrics.ts --seeds 50 --days 5",
+    "check:social": "tsx tools/check-social.ts",
+    "check:work": "tsx tools/check-work-content.ts",
+    "check:econ": "tsx tools/check-econ-content.ts",
+    "econ:model": "tsx tools/econ-model.ts",
+    "check:credits": "tsx tools/check-credits.ts",
+    "check:features": "tsx tools/check-features.ts",
+    "check:catalog": "tsx tools/check-catalog.ts",
+    "make:houses": "tsx tools/world/make-houses.ts",
+    "build:art": "tsx tools/world/build-world.ts"
+  },
+  "dependencies": {
+    "lil-gui": "^0.21.0",
+    "three": "^0.184.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.9.0",
+    "@types/pngjs": "^6.0.5",
+    "@types/three": "^0.184.1",
+    "fast-glob": "^3.3.3",
+    "pngjs": "^7.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.13",
+    "vitest": "^5.0.2"
+  }
+}

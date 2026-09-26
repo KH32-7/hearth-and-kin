@@ -1,0 +1,163 @@
+{
+  "$comment": "M3 사람들 무드렛 (리드 작성). 형식은 moodlets.json 과 같음",
+  "moodlets": {
+    "family_meal": {
+      "nameKey": "moodlet.family_meal",
+      "descKey": "moodlet.family_meal.desc",
+      "icon": "stew",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 240,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "social",
+        "family"
+      ]
+    },
+    "table_talk": {
+      "nameKey": "moodlet.table_talk",
+      "descKey": "moodlet.table_talk.desc",
+      "icon": "social",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 90,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "social"
+      ]
+    },
+    "had_guests": {
+      "nameKey": "moodlet.had_guests",
+      "descKey": "moodlet.had_guests.desc",
+      "icon": "social",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 360,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "social"
+      ]
+    },
+    "embarrassed": {
+      "nameKey": "moodlet.embarrassed",
+      "descKey": "moodlet.embarrassed.desc",
+      "icon": "emo.ashamed",
+      "emotion": "ashamed",
+      "strength": 3,
+      "duration": {
+        "value": 240,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "shame"
+      ]
+    },
+    "guild_nod": {
+      "nameKey": "moodlet.guild_nod",
+      "descKey": "moodlet.guild_nod.desc",
+      "icon": "ui.crest",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "craft"
+      ]
+    },
+    "crowd_cheered": {
+      "nameKey": "moodlet.crowd_cheered",
+      "descKey": "moodlet.crowd_cheered.desc",
+      "icon": "lute",
+      "emotion": "excited",
+      "strength": 2,
+      "duration": {
+        "value": 360,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "music"
+      ]
+    },
+    "rough_shift": {
+      "nameKey": "moodlet.rough_shift",
+      "descKey": "moodlet.rough_shift.desc",
+      "icon": "need.energy",
+      "emotion": "tense",
+      "strength": 1,
+      "duration": {
+        "value": 360,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "labor"
+      ]
+    },
+    "crop_ruined": {
+      "nameKey": "moodlet.crop_ruined",
+      "descKey": "moodlet.crop_ruined.desc",
+      "icon": "plant",
+      "emotion": "sad",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "fired": {
+      "nameKey": "moodlet.fired",
+      "descKey": "moodlet.fired.desc",
+      "icon": "emo.sad",
+      "emotion": "sad",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "work"
+      ]
+    },
+    "masterwork": {
+      "nameKey": "moodlet.masterwork",
+      "descKey": "moodlet.masterwork.desc",
+      "icon": "emo.inspired",
+      "emotion": "inspired",
+      "strength": 2,
+      "duration": {
+        "value": 720,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "work"
+      ]
+    }
+  }
+}

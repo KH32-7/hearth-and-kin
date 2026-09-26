@@ -1,0 +1,29 @@
+{
+  "$comment": "M1 시작 가구. 이름은 콘텐츠 데이터. appearance는 LPC CharacterSpec 일부(나머지는 시드 RNG로 채움). relations: 시작 가족 관계 (인물 번호는 members 순서 1부터)",
+  "seed": 20260926,
+  "estate": "freeman",
+  "members": [
+    {
+      "name": "에드릭",
+      "sex": "male",
+      "stage": "adult"
+    },
+    {
+      "name": "마르타",
+      "sex": "female",
+      "stage": "adult"
+    }
+  ],
+  "relations": [
+    {
+      "a": 1,
+      "b": 2,
+      "flags": [
+        "spouse"
+      ],
+      "friendship": 55,
+      "romance": 48,
+      "respect": 20
+    }
+  ]
+}

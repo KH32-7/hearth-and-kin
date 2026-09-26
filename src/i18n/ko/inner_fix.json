@@ -1,0 +1,17 @@
+{
+  "aspiration.wealth.s1_early": "살림을 부지런히 꾸리거나 재산을 꽤 모으기",
+  "aspiration.master_craftsman.s1_early": "손일을 꾸준히 익히거나 도제 수료",
+  "aspiration.knight_path.s1_early": "몸을 꾸준히 단련하거나 종자가 되기",
+  "aspiration.clergy_path.s1_early": "기도를 거르지 않거나 수도원 입회",
+  "aspiration.family_prosperity.s1_early": "마음에 둔 사람과 가까워지거나 혼인하기",
+  "aspiration.rise_in_status.s1_early": "맡은 일을 다해 이름을 알리거나 신분 한 단계 오르기",
+  "aspiration.lifelong_love.s1_early": "누군가에게 마음이 설레거나 첫사랑",
+  "aspiration.legendary_rake.s1_early": "여기저기 추파를 던지거나 연인 셋",
+  "aspiration.village_sage.s1_early": "책을 꾸준히 읽거나 글 배우기",
+  "aspiration.bard.s1_early": "노래와 연주를 익히거나 첫 공연",
+  "aspiration.healer.s1_early": "들풀과 약초를 가까이하거나 약초 열 가지 캐기",
+  "aspiration.revenge.s1_early": "원한이 쌓이도록 다투거나 원수 정하기",
+  "aspiration.demesne_prosperity.s1_early": "영지의 일을 몸소 살피거나 민심을 안정시키기",
+  "aspiration.court_power.s1_early": "사람들과 두루 사귀거나 궁정에 나아가기",
+  "notice.extreme_risk": "{name}이(가) 너무 오래 {emotion} 상태로 지내 마음이 크게 상했다."
+}

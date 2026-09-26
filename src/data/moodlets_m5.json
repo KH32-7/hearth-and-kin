@@ -1,0 +1,21 @@
+{
+  "$comment": "M5 건축 (23-4 내구도, 23-5 화재) 무드렛",
+  "moodlets": {
+    "creaky_bed": {
+      "nameKey": "moodlet.creaky_bed", "descKey": "moodlet.creaky_bed.desc", "icon": "sleep", "emotion": "angry", "strength": 1,
+      "duration": { "value": 240, "scale": "absolute" }, "stack": "refresh", "source": "env"
+    },
+    "put_out_fire": {
+      "nameKey": "moodlet.put_out_fire", "descKey": "moodlet.put_out_fire.desc", "icon": "fire", "emotion": "energized", "strength": 2,
+      "duration": { "value": 360, "scale": "absolute" }, "stack": "refresh", "source": "event"
+    },
+    "burned": {
+      "nameKey": "moodlet.burned", "descKey": "moodlet.burned.desc", "icon": "fire", "emotion": "tense", "strength": 3,
+      "duration": { "value": 1440, "scale": "absolute" }, "stack": "refresh", "source": "event"
+    },
+    "fixed_it": {
+      "nameKey": "moodlet.fixed_it", "descKey": "moodlet.fixed_it.desc", "icon": "raven:a4477", "emotion": "happy", "strength": 1,
+      "duration": { "value": 180, "scale": "absolute" }, "stack": "refresh", "source": "event"
+    }
+  }
+}

@@ -1,0 +1,507 @@
+{
+ "hearth": {
+  "nameKey": "object.hearth",
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": 1,
+    "facing": "up",
+    "pose": "stand"
+   }
+  ],
+  "tags": [
+   "hearth"
+  ]
+ },
+ "prep_counter": {
+  "nameKey": "object.prep_counter",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": 1,
+    "facing": "up",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "cupboard": {
+  "nameKey": "object.cupboard",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": 1,
+    "facing": "up",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "barrel_water": {
+  "nameKey": "object.barrel_water",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": 1,
+    "facing": "up",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "bookshelf": {
+  "nameKey": "object.bookshelf",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": 1,
+    "facing": "up",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "wardrobe": {
+  "nameKey": "object.wardrobe",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": 1,
+    "facing": "up",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "chest_clothes": {
+  "nameKey": "object.chest_clothes",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": 1,
+    "facing": "up",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "dining_table": {
+  "nameKey": "object.dining_table",
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [],
+  "tags": []
+ },
+ "chair": {
+  "nameKey": "object.chair",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "sit",
+    "dx": 0,
+    "dy": 0,
+    "facing": "down",
+    "pose": "sit"
+   }
+  ],
+  "tags": []
+ },
+ "stool": {
+  "nameKey": "object.stool",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "sit",
+    "dx": 0,
+    "dy": 0,
+    "facing": "left",
+    "pose": "sit"
+   }
+  ],
+  "tags": []
+ },
+ "bench": {
+  "nameKey": "object.bench",
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "sit1",
+    "dx": 0,
+    "dy": 0,
+    "facing": "down",
+    "pose": "sit"
+   },
+   {
+    "id": "sit2",
+    "dx": 1,
+    "dy": 0,
+    "facing": "down",
+    "pose": "sit"
+   }
+  ],
+  "tags": []
+ },
+ "rug": {
+  "nameKey": "object.rug",
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "blocks": false,
+  "slots": [
+   {
+    "id": "center",
+    "dx": 0,
+    "dy": 0,
+    "facing": "down",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "bed_straw": {
+  "nameKey": "object.bed_straw",
+  "footprint": {
+   "w": 1,
+   "h": 2
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "lie",
+    "dx": 0,
+    "dy": 0,
+    "facing": "down",
+    "pose": "lie"
+   },
+   {
+    "id": "front",
+    "dx": -1,
+    "dy": 1,
+    "facing": "right",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "bed_double": {
+  "nameKey": "object.bed_double",
+  "footprint": {
+   "w": 2,
+   "h": 2
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "lie",
+    "dx": 0,
+    "dy": 0,
+    "facing": "down",
+    "pose": "lie"
+   },
+   {
+    "id": "lie2",
+    "dx": 1,
+    "dy": 0,
+    "facing": "down",
+    "pose": "lie"
+   },
+   {
+    "id": "front",
+    "dx": -1,
+    "dy": 1,
+    "facing": "right",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "washbasin": {
+  "nameKey": "object.washbasin",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 1,
+    "dy": 0,
+    "facing": "left",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "washtub": {
+  "nameKey": "object.washtub",
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "bath",
+    "dx": 0,
+    "dy": 0,
+    "facing": "right",
+    "pose": "sit"
+   },
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": -1,
+    "facing": "down",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "chamber_pot": {
+  "nameKey": "object.chamber_pot",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "seat",
+    "dx": 0,
+    "dy": 0,
+    "facing": "right",
+    "pose": "sit"
+   },
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": -1,
+    "facing": "down",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "lute": {
+  "nameKey": "object.lute",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": -1,
+    "facing": "down",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "spinning_wheel": {
+  "nameKey": "object.spinning_wheel",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "sit",
+    "dx": 0,
+    "dy": -1,
+    "facing": "down",
+    "pose": "sit"
+   }
+  ],
+  "tags": []
+ },
+ "candlestick": {
+  "nameKey": "object.candlestick",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": 1,
+    "facing": "up",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "tapestry": {
+  "nameKey": "object.tapestry",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 1,
+    "dy": 0,
+    "facing": "left",
+    "pose": "stand"
+   }
+  ],
+  "tags": [],
+  "wallMounted": true
+ },
+ "plant_pot": {
+  "nameKey": "object.plant_pot",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": -1,
+    "dy": 0,
+    "facing": "right",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "outhouse": {
+  "nameKey": "object.outhouse",
+  "footprint": {
+   "w": 1,
+   "h": 2
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": 2,
+    "facing": "up",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "woodpile": {
+  "nameKey": "object.woodpile",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": -1,
+    "dy": 0,
+    "facing": "right",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "chopping_block": {
+  "nameKey": "object.chopping_block",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": -1,
+    "dy": 0,
+    "facing": "right",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ },
+ "well": {
+  "nameKey": "object.well",
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "blocks": true,
+  "slots": [
+   {
+    "id": "front",
+    "dx": 0,
+    "dy": -1,
+    "facing": "down",
+    "pose": "stand"
+   }
+  ],
+  "tags": []
+ }
+}

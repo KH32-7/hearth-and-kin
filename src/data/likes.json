@@ -1,0 +1,332 @@
+{
+  "$comment": "GDD 12-3 좋아하는 것/싫어하는 것. 항목은 interactions(상호작용 id), tags(상호작용 태그), objects(물건 id), dyes(outfits.json 염료 이름), seasons, events(M3 이후 이벤트) 중 하나 이상으로 알아봄",
+  "perPerson": {
+    "likes": {
+      "min": 3,
+      "max": 5
+    },
+    "dislikes": {
+      "min": 2,
+      "max": 3
+    }
+  },
+  "effects": {
+    "likedMoodlet": "liked_activity",
+    "dislikedMoodlet": "disliked_activity",
+    "funRecoveryMult": 1.5,
+    "seasonLikedMoodlet": "liked_season",
+    "seasonDislikedMoodlet": "disliked_season"
+  },
+  "pickWeights": {
+    "$comment": "뽑기 가중치. active = 지금 걸리는 항목(상호작용/태그/계절/지금 생기는 사건), future = M3 이후 사건에서만 걸리는 항목. 염료(dyes)만 있는 항목은 옷 색 시스템(M8) 전까지 뽑지 않음",
+    "active": 1,
+    "future": 0.2
+  },
+  "categories": {
+    "food": {
+      "nameKey": "like.cat.food",
+      "items": {
+        "food_bread": {
+          "nameKey": "like.food_bread",
+          "interactions": [
+            "counter.bake_bread",
+            "cupboard.snack_bread"
+          ]
+        },
+        "food_stew": {
+          "nameKey": "like.food_stew",
+          "interactions": [
+            "hearth.cook_stew",
+            "table.eat_stew"
+          ]
+        },
+        "food_pie": {
+          "nameKey": "like.food_pie",
+          "events": [
+            "event:ate_pie"
+          ]
+        },
+        "food_fish": {
+          "nameKey": "like.food_fish",
+          "events": [
+            "event:ate_fish"
+          ]
+        },
+        "food_fruit": {
+          "nameKey": "like.food_fruit",
+          "events": [
+            "event:ate_fruit"
+          ]
+        },
+        "food_cheese": {
+          "nameKey": "like.food_cheese",
+          "events": [
+            "event:ate_cheese"
+          ]
+        },
+        "food_honey_cake": {
+          "nameKey": "like.food_honey_cake",
+          "events": [
+            "event:ate_honey_cake"
+          ]
+        },
+        "food_meat": {
+          "nameKey": "like.food_meat",
+          "events": [
+            "event:ate_meat"
+          ],
+          "tags": [
+            "feast"
+          ]
+        }
+      }
+    },
+    "music": {
+      "nameKey": "like.cat.music",
+      "items": {
+        "music_lute": {
+          "nameKey": "like.music_lute",
+          "interactions": [
+            "lute.play"
+          ],
+          "objects": [
+            "lute"
+          ]
+        },
+        "music_bagpipe": {
+          "nameKey": "like.music_bagpipe",
+          "events": [
+            "event:heard_bagpipe"
+          ]
+        },
+        "music_chant": {
+          "nameKey": "like.music_chant",
+          "events": [
+            "event:attended_mass",
+            "event:heard_chant"
+          ]
+        },
+        "music_folk_song": {
+          "nameKey": "like.music_folk_song",
+          "events": [
+            "event:sang_folk_song"
+          ],
+          "tags": [
+            "music"
+          ]
+        }
+      }
+    },
+    "activity": {
+      "nameKey": "like.cat.activity",
+      "items": {
+        "activity_hunting": {
+          "nameKey": "like.activity_hunting",
+          "events": [
+            "event:went_hunting"
+          ]
+        },
+        "activity_fishing": {
+          "nameKey": "like.activity_fishing",
+          "events": [
+            "event:went_fishing"
+          ]
+        },
+        "activity_dance": {
+          "nameKey": "like.activity_dance",
+          "interactions": [
+            "social.dance"
+          ],
+          "events": [
+            "event:danced_at_festival"
+          ]
+        },
+        "activity_chess": {
+          "nameKey": "like.activity_chess",
+          "events": [
+            "event:played_chess"
+          ]
+        },
+        "activity_storytelling": {
+          "nameKey": "like.activity_storytelling",
+          "interactions": [
+            "social.tell_story"
+          ],
+          "events": [
+            "event:heard_story",
+            "event:told_story"
+          ]
+        },
+        "activity_sewing": {
+          "nameKey": "like.activity_sewing",
+          "interactions": [
+            "wheel.spin"
+          ],
+          "events": [
+            "event:sewed_clothes"
+          ]
+        }
+      }
+    },
+    "color": {
+      "nameKey": "like.cat.color",
+      "items": {
+        "color_undyed": {
+          "nameKey": "like.color_undyed",
+          "dyes": [
+            "white",
+            "tan"
+          ]
+        },
+        "color_brown": {
+          "nameKey": "like.color_brown",
+          "dyes": [
+            "brown",
+            "walnut",
+            "leather"
+          ]
+        },
+        "color_gray": {
+          "nameKey": "like.color_gray",
+          "dyes": [
+            "gray",
+            "charcoal",
+            "slate"
+          ]
+        },
+        "color_blue": {
+          "nameKey": "like.color_blue",
+          "dyes": [
+            "blue",
+            "sky",
+            "bluegray"
+          ]
+        },
+        "color_green": {
+          "nameKey": "like.color_green",
+          "dyes": [
+            "green",
+            "forest"
+          ]
+        },
+        "color_red": {
+          "nameKey": "like.color_red",
+          "dyes": [
+            "red",
+            "rose",
+            "orange"
+          ]
+        },
+        "color_navy": {
+          "nameKey": "like.color_navy",
+          "dyes": [
+            "navy",
+            "teal"
+          ]
+        },
+        "color_black": {
+          "nameKey": "like.color_black",
+          "dyes": [
+            "black"
+          ]
+        },
+        "color_crimson": {
+          "nameKey": "like.color_crimson",
+          "dyes": [
+            "maroon"
+          ]
+        },
+        "color_purple": {
+          "nameKey": "like.color_purple",
+          "dyes": [
+            "purple",
+            "lavender"
+          ]
+        }
+      }
+    },
+    "season": {
+      "nameKey": "like.cat.season",
+      "items": {
+        "season_spring": {
+          "nameKey": "like.season_spring",
+          "seasons": [
+            "spring"
+          ]
+        },
+        "season_summer": {
+          "nameKey": "like.season_summer",
+          "seasons": [
+            "summer"
+          ]
+        },
+        "season_autumn": {
+          "nameKey": "like.season_autumn",
+          "seasons": [
+            "autumn"
+          ]
+        },
+        "season_winter": {
+          "nameKey": "like.season_winter",
+          "seasons": [
+            "winter"
+          ]
+        }
+      }
+    },
+    "animal": {
+      "nameKey": "like.cat.animal",
+      "items": {
+        "animal_dog": {
+          "nameKey": "like.animal_dog",
+          "events": [
+            "event:petted_dog"
+          ]
+        },
+        "animal_cat": {
+          "nameKey": "like.animal_cat",
+          "events": [
+            "event:petted_cat"
+          ]
+        },
+        "animal_horse": {
+          "nameKey": "like.animal_horse",
+          "events": [
+            "event:rode_horse",
+            "event:groomed_horse"
+          ]
+        },
+        "animal_chicken": {
+          "nameKey": "like.animal_chicken",
+          "events": [
+            "event:fed_chickens"
+          ]
+        },
+        "animal_goat": {
+          "nameKey": "like.animal_goat",
+          "events": [
+            "event:milked_goat"
+          ]
+        },
+        "animal_cow": {
+          "nameKey": "like.animal_cow",
+          "events": [
+            "event:milked_cow"
+          ]
+        },
+        "animal_pig": {
+          "nameKey": "like.animal_pig",
+          "events": [
+            "event:fed_pigs"
+          ]
+        },
+        "animal_sheep": {
+          "nameKey": "like.animal_sheep",
+          "events": [
+            "event:sheared_sheep"
+          ]
+        }
+      }
+    }
+  }
+}

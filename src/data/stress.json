@@ -1,0 +1,17 @@
+{
+  "$comment": "스트레스와 무너짐 (GDD 11-4). 0~39 평온, 40~69 스트레스(stress_heavy 영구), 70~99 한계(stress_limit, 무너짐 확률), 100 무너짐 선택. 선택하지 않으면 autoAfter 분 뒤 인물이 스스로 고름(특성 가중)",
+  "stages": { "heavy": 40, "limit": 70, "breakdown": 100 },
+  "limitBreakdownChancePerHour": 0.03,
+  "decayPerHour": 0.4,
+  "autoAfter": { "value": 60, "scale": "absolute" },
+  "afterStress": -50,
+  "options": {
+    "binge": { "nameKey": "breakdown.binge", "descKey": "breakdown.binge.desc", "icon": "water", "moodlet": "drunk_binge", "stressDelta": -50, "gainTrait": { "trait": "alcoholic", "chance": 0.25 }, "weightTraits": { "drinker": 4, "hot_tempered": 1.5 }, "virtueBreak": "temperance" },
+    "pray_cry": { "nameKey": "breakdown.pray_cry", "descKey": "breakdown.pray_cry.desc", "icon": "emo.pious", "moodlet": "cried_it_out", "stressDelta": -50, "gainTrait": { "trait": "melancholic", "chance": 0.1 }, "weightTraits": { "melancholic": 3, "humble": 2, "kind": 1.5 } },
+    "run_away": { "nameKey": "breakdown.run_away", "descKey": "breakdown.run_away.desc", "icon": "goto", "moodlet": "ran_off", "stressDelta": -50, "queue": "lot_exit.run_away", "weightTraits": { "coward": 3, "introvert": 2 } },
+    "smash": { "nameKey": "breakdown.smash", "descKey": "breakdown.smash.desc", "icon": "axe", "moodlet": "smashed_things", "stressDelta": -50, "roomDirt": 40, "gainTrait": { "trait": "hot_tempered", "chance": 0.1 }, "weightTraits": { "hot_tempered": 4, "mean": 2 } }
+  },
+  "acquiredTraits": {
+    "alcoholic": { "nameKey": "trait.alcoholic", "descKey": "trait.alcoholic.desc", "icon": "water", "effects": { "adTag": { "drink": 5 }, "dailyTagMoodlet": { "tag": "drink", "moodlet": "craving_ale" } } }
+  }
+}

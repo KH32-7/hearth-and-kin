@@ -1,0 +1,17 @@
+node_modules/
+dist/
+test-results/
+artifacts/
+*.log
+.DS_Store
+
+# 구매/보유 에셋 원본 (재배포 금지, assets/README.md 에 받는 방법)
+assets/vendor/
+# 원본 픽셀이 들어간 가공물: tools/world/build-world.ts 가 로컬 원본에서 다시 만듦 (Epic RPG World 재배포 금지 조항)
+assets/generated/world/
+# UI 아틀라스도 구매 에셋 픽셀 → tools/build-ui-atlas.py 로 재생성
+assets/generated/ui/
+
+# 로컬 도구 상태
+.claude/scheduled_tasks.lock
+.claude/settings.local.json

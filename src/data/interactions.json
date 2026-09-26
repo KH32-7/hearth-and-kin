@@ -1,0 +1,1761 @@
+{
+  "$comment": "GDD 13-1 상호작용 (M1 범위). needs = 분당 변화량(absolute). ads = 자율 광고값(기대 이득). supportAds = 직접 해결 수단이 없을 때만 쓰는 간접 광고. 단계 at: target | {object:id} | {seatAt:target}. 조건/효과 키는 src/sim/action/interactions.ts 참고. carry = 이 단계로 걸어가는 동안과 수행하는 동안 손에 든 물건",
+  "interactions": {
+    "hearth.light_fire": {
+      "nameKey": "ia.light_fire",
+      "icon": "fire",
+      "objects": [
+        "hearth"
+      ],
+      "requires": {
+        "targetState": {
+          "lit": false
+        },
+        "stock": {
+          "firewood": 1
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 10
+        }
+      ],
+      "effects": {
+        "targetState": {
+          "lit": true
+        },
+        "targetSet": {
+          "fuelMin": 360
+        },
+        "stock": {
+          "firewood": -1
+        }
+      },
+      "ads": {
+        "warmth": 20
+      },
+      "supportAds": {
+        "hunger": 45
+      },
+      "supportWhen": [
+        "noServings",
+        "stock:ingredients>=2"
+      ],
+      "tags": [
+        "labor"
+      ]
+    },
+    "hearth.cook_stew": {
+      "nameKey": "ia.cook_stew",
+      "icon": "stew",
+      "objects": [
+        "hearth"
+      ],
+      "requires": {
+        "targetState": {
+          "lit": true
+        },
+        "targetMax": {
+          "servings": 0
+        },
+        "stock": {
+          "ingredients": 2
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 40,
+          "needs": {
+            "warmth": 0.2
+          }
+        }
+      ],
+      "effects": {
+        "targetSet": {
+          "servings": 4
+        },
+        "stock": {
+          "ingredients": -2
+        }
+      },
+      "ads": {},
+      "supportAds": {
+        "hunger": 60
+      },
+      "supportWhen": [
+        "noServings"
+      ],
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "moodlets": [
+        {
+          "id": "burnt_fingers",
+          "chance": 0.12
+        }
+      ]
+    },
+    "hearth.warm_up": {
+      "nameKey": "ia.warm_up",
+      "icon": "warmth",
+      "objects": [
+        "hearth"
+      ],
+      "requires": {
+        "targetState": {
+          "lit": true
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "idle",
+          "minutes": 30,
+          "needs": {
+            "warmth": 0.5,
+            "comfort": -0.02
+          }
+        }
+      ],
+      "ads": {
+        "warmth": 45
+      },
+      "tags": [
+        "rest"
+      ]
+    },
+    "hearth.extinguish": {
+      "nameKey": "ia.extinguish",
+      "icon": "water",
+      "objects": [
+        "hearth"
+      ],
+      "autonomous": false,
+      "requires": {
+        "targetState": {
+          "lit": true
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 3
+        }
+      ],
+      "effects": {
+        "targetState": {
+          "lit": false
+        },
+        "targetSet": {
+          "fuelMin": 0
+        }
+      },
+      "tags": []
+    },
+    "table.eat_stew": {
+      "nameKey": "ia.eat_stew",
+      "icon": "stew",
+      "objects": [
+        "dining_table"
+      ],
+      "requires": {
+        "exists": {
+          "object": "hearth",
+          "min": {
+            "servings": 1
+          }
+        }
+      },
+      "steps": [
+        {
+          "at": {
+            "object": "hearth",
+            "min": {
+              "servings": 1
+            }
+          },
+          "slot": "front",
+          "anim": "work",
+          "minutes": 2,
+          "effects": {
+            "atAdd": {
+              "servings": -1
+            }
+          }
+        },
+        {
+          "at": {
+            "seatAt": "target"
+          },
+          "anim": "eat",
+          "minutes": 20,
+          "needs": {
+            "hunger": 3.5,
+            "comfort": 0.5
+          },
+          "carry": "bowl"
+        }
+      ],
+      "ads": {
+        "hunger": 70,
+        "comfort": 5
+      },
+      "tags": [
+        "eat_good",
+        "family"
+      ],
+      "moodlets": [
+        {
+          "id": "good_meal"
+        }
+      ]
+    },
+    "cupboard.snack_bread": {
+      "nameKey": "ia.snack_bread",
+      "icon": "bread",
+      "objects": [
+        "cupboard"
+      ],
+      "requires": {
+        "stock": {
+          "bread": 1
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "eat",
+          "minutes": 8,
+          "needs": {
+            "hunger": 2.5
+          }
+        }
+      ],
+      "effects": {
+        "stock": {
+          "bread": -1
+        }
+      },
+      "ads": {
+        "hunger": 20
+      },
+      "tags": [
+        "eat_plain"
+      ]
+    },
+    "counter.bake_bread": {
+      "nameKey": "ia.bake_bread",
+      "icon": "bread",
+      "objects": [
+        "prep_counter"
+      ],
+      "requires": {
+        "stock": {
+          "flour": 2
+        },
+        "exists": {
+          "object": "hearth",
+          "state": {
+            "lit": true
+          }
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 20
+        },
+        {
+          "at": {
+            "object": "hearth",
+            "state": {
+              "lit": true
+            }
+          },
+          "slot": "front",
+          "anim": "work",
+          "minutes": 10,
+          "needs": {
+            "warmth": 0.2
+          }
+        }
+      ],
+      "effects": {
+        "stock": {
+          "flour": -2,
+          "bread": 4
+        }
+      },
+      "ads": {},
+      "supportAds": {
+        "hunger": 15
+      },
+      "supportWhen": [
+        "stock:bread<=0"
+      ],
+      "tags": [
+        "cook",
+        "labor",
+        "bake"
+      ],
+      "moodlets": [
+        {
+          "id": "fresh_bread",
+          "chance": 0.6
+        },
+        {
+          "id": "burnt_fingers",
+          "chance": 0.1
+        }
+      ]
+    },
+    "barrel.wash_hands": {
+      "nameKey": "ia.wash_hands",
+      "icon": "water",
+      "objects": [
+        "barrel_water"
+      ],
+      "requires": {
+        "stock": {
+          "water": 1
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 3,
+          "needs": {
+            "hygiene": 2
+          }
+        }
+      ],
+      "ads": {
+        "hygiene": 6
+      },
+      "tags": [],
+      "moodlets": [
+        {
+          "id": "cold_water",
+          "chance": 0.35
+        }
+      ]
+    },
+    "washbasin.wash_face": {
+      "nameKey": "ia.wash_face",
+      "icon": "hygiene",
+      "objects": [
+        "washbasin"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 8,
+          "needs": {
+            "hygiene": 3
+          }
+        }
+      ],
+      "ads": {
+        "hygiene": 24
+      },
+      "tags": [],
+      "moodlets": [
+        {
+          "id": "cold_water",
+          "chance": 0.35
+        }
+      ]
+    },
+    "washtub.bathe": {
+      "nameKey": "ia.bathe",
+      "icon": "bath",
+      "objects": [
+        "washtub"
+      ],
+      "requires": {
+        "stock": {
+          "water": 2
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "bath",
+          "anim": "sit",
+          "minutes": 35,
+          "needs": {
+            "hygiene": 3,
+            "comfort": 0.5
+          },
+          "outfit": "bath"
+        }
+      ],
+      "effects": {
+        "stock": {
+          "water": -2
+        }
+      },
+      "ads": {
+        "hygiene": 80,
+        "comfort": 10
+      },
+      "tags": [
+        "rest"
+      ]
+    },
+    "chamber_pot.use": {
+      "nameKey": "ia.use_pot",
+      "icon": "bladder",
+      "objects": [
+        "chamber_pot"
+      ],
+      "requires": {
+        "targetMax": {
+          "dirty": 3
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "seat",
+          "anim": "sit",
+          "minutes": 4,
+          "needs": {
+            "bladder": 25
+          }
+        }
+      ],
+      "effects": {
+        "targetAdd": {
+          "dirty": 1
+        }
+      },
+      "ads": {
+        "bladder": 100
+      },
+      "adPenaltyWhen": {
+        "targetMin": {
+          "dirty": 2
+        },
+        "factor": 0.4
+      },
+      "tags": []
+    },
+    "chamber_pot.empty": {
+      "nameKey": "ia.empty_pot",
+      "icon": "outhouse",
+      "objects": [
+        "chamber_pot"
+      ],
+      "requires": {
+        "targetMin": {
+          "dirty": 1
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 2
+        },
+        {
+          "at": {
+            "object": "outhouse"
+          },
+          "slot": "front",
+          "anim": "work",
+          "minutes": 3,
+          "carry": "pot"
+        }
+      ],
+      "effects": {
+        "targetSet": {
+          "dirty": 0
+        }
+      },
+      "ads": {
+        "hygiene": 4
+      },
+      "adBonusWhen": {
+        "targetMin": {
+          "dirty": 3
+        },
+        "ads": {
+          "hygiene": 25
+        }
+      },
+      "tags": [
+        "duty",
+        "clean"
+      ],
+      "moodlets": [
+        {
+          "id": "unpleasant_chore",
+          "chance": 0.8
+        }
+      ]
+    },
+    "outhouse.use": {
+      "nameKey": "ia.use_outhouse",
+      "icon": "outhouse",
+      "objects": [
+        "outhouse"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "idle",
+          "minutes": 6,
+          "needs": {
+            "bladder": 17
+          },
+          "hidden": true
+        }
+      ],
+      "ads": {
+        "bladder": 100
+      },
+      "tags": [
+        "outdoor"
+      ]
+    },
+    "bed.sleep": {
+      "nameKey": "ia.sleep",
+      "icon": "sleep",
+      "objects": [
+        "bed_straw",
+        "bed_double"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "lie"
+          },
+          "anim": "sleep",
+          "minutes": 720,
+          "until": {
+            "need": "energy",
+            "gte": 99
+          },
+          "needs": {
+            "comfort": 0.5
+          },
+          "sleep": true,
+          "outfit": "sleep",
+          "blanket": true
+        }
+      ],
+      "ads": {
+        "energy": 100,
+        "comfort": 10
+      },
+      "hoursWeight": [
+        [
+          21,
+          24,
+          1.8
+        ],
+        [
+          0,
+          6,
+          1.8
+        ],
+        [
+          6,
+          21,
+          0.2
+        ]
+      ],
+      "tags": [],
+      "moodlets": [
+        {
+          "id": "slept_well"
+        }
+      ]
+    },
+    "bed.nap": {
+      "nameKey": "ia.nap",
+      "icon": "sleep",
+      "objects": [
+        "bed_straw",
+        "bed_double"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "lie"
+          },
+          "anim": "sleep",
+          "minutes": 90,
+          "needs": {
+            "comfort": 0.5
+          },
+          "sleep": true,
+          "blanket": true
+        }
+      ],
+      "ads": {
+        "energy": 35,
+        "comfort": 10
+      },
+      "hoursWeight": [
+        [
+          10,
+          18,
+          1.0
+        ],
+        [
+          18,
+          24,
+          0.3
+        ],
+        [
+          0,
+          10,
+          0.3
+        ]
+      ],
+      "tags": [
+        "rest"
+      ]
+    },
+    "seat.sit": {
+      "nameKey": "ia.sit",
+      "icon": "comfort",
+      "objects": [
+        "chair",
+        "bench",
+        "stool"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "sit"
+          },
+          "anim": "sit",
+          "minutes": 30,
+          "needs": {
+            "comfort": 2
+          }
+        }
+      ],
+      "ads": {
+        "comfort": 40
+      },
+      "tags": [
+        "rest"
+      ]
+    },
+    "clothes.change": {
+      "nameKey": "ia.change_clothes",
+      "icon": "clothes",
+      "objects": [
+        "chest_clothes",
+        "wardrobe"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 5,
+          "needs": {
+            "hygiene": 2
+          }
+        }
+      ],
+      "ads": {
+        "hygiene": 10
+      },
+      "tags": []
+    },
+    "bookshelf.read": {
+      "nameKey": "ia.read_book",
+      "icon": "book",
+      "objects": [
+        "bookshelf"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": {
+            "seatNear": "target"
+          },
+          "anim": "sit",
+          "minutes": 45,
+          "needs": {
+            "fun": 1.2,
+            "comfort": 1
+          },
+          "carry": "book"
+        }
+      ],
+      "ads": {
+        "fun": 38,
+        "comfort": 10
+      },
+      "tags": [
+        "read",
+        "solitary"
+      ]
+    },
+    "lute.play": {
+      "nameKey": "ia.play_lute",
+      "icon": "lute",
+      "objects": [
+        "lute"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 30,
+          "needs": {
+            "fun": 1.5
+          }
+        }
+      ],
+      "ads": {
+        "fun": 36
+      },
+      "tags": [
+        "music",
+        "creative"
+      ]
+    },
+    "tapestry.admire": {
+      "nameKey": "ia.admire",
+      "icon": "eye",
+      "objects": [
+        "tapestry"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "idle",
+          "minutes": 10,
+          "needs": {
+            "fun": 0.8
+          }
+        }
+      ],
+      "ads": {
+        "fun": 14
+      },
+      "tags": [
+        "rest"
+      ]
+    },
+    "plant.tend": {
+      "nameKey": "ia.tend_plant",
+      "icon": "plant",
+      "objects": [
+        "plant_pot"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 10,
+          "needs": {
+            "fun": 1
+          }
+        }
+      ],
+      "ads": {
+        "fun": 20
+      },
+      "tags": [
+        "nature",
+        "labor",
+        "farm"
+      ]
+    },
+    "wheel.spin": {
+      "nameKey": "ia.spin_yarn",
+      "icon": "yarn",
+      "objects": [
+        "spinning_wheel"
+      ],
+      "requires": {
+        "stock": {
+          "wool": 1
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "sit"
+          },
+          "anim": "work",
+          "minutes": 60,
+          "needs": {
+            "fun": 0.4,
+            "comfort": 0.8
+          }
+        }
+      ],
+      "effects": {
+        "stock": {
+          "wool": -1,
+          "yarn": 1
+        }
+      },
+      "ads": {
+        "fun": 20,
+        "comfort": 12
+      },
+      "tags": [
+        "craft",
+        "labor",
+        "sew"
+      ]
+    },
+    "block.chop_wood": {
+      "nameKey": "ia.chop_wood",
+      "icon": "axe",
+      "objects": [
+        "chopping_block"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 30,
+          "needs": {
+            "energy": -0.08,
+            "hygiene": -0.1
+          }
+        },
+        {
+          "at": {
+            "object": "woodpile"
+          },
+          "slot": "front",
+          "anim": "carry",
+          "minutes": 2,
+          "carry": "logs"
+        }
+      ],
+      "effects": {
+        "stock": {
+          "firewood": 3
+        }
+      },
+      "ads": {},
+      "supportAds": {
+        "warmth": 20,
+        "hunger": 10
+      },
+      "supportWhen": [
+        "stock:firewood<=1"
+      ],
+      "tags": [
+        "labor",
+        "exercise",
+        "outdoor"
+      ],
+      "moodlets": [
+        {
+          "id": "sore_back",
+          "chance": 0.4
+        }
+      ]
+    },
+    "well.draw_water": {
+      "nameKey": "ia.draw_water",
+      "icon": "water",
+      "objects": [
+        "well"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 10
+        },
+        {
+          "at": {
+            "object": "barrel_water"
+          },
+          "slot": "front",
+          "anim": "carry",
+          "minutes": 2,
+          "carry": "bucket"
+        }
+      ],
+      "effects": {
+        "stock": {
+          "water": 4
+        }
+      },
+      "ads": {},
+      "supportAds": {
+        "hygiene": 25
+      },
+      "supportWhen": [
+        "stock:water<=1"
+      ],
+      "tags": [
+        "labor",
+        "duty",
+        "outdoor"
+      ]
+    },
+    "candle.light": {
+      "nameKey": "ia.light_candle",
+      "icon": "candle",
+      "objects": [
+        "candlestick"
+      ],
+      "requires": {
+        "targetState": {
+          "lit": false
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 1
+        }
+      ],
+      "effects": {
+        "targetState": {
+          "lit": true
+        }
+      },
+      "ads": {
+        "fun": 3
+      },
+      "hours": [
+        18,
+        23
+      ],
+      "tags": []
+    },
+    "candle.snuff": {
+      "nameKey": "ia.snuff_candle",
+      "icon": "candle",
+      "objects": [
+        "candlestick"
+      ],
+      "autonomous": false,
+      "requires": {
+        "targetState": {
+          "lit": true
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 1
+        }
+      ],
+      "effects": {
+        "targetState": {
+          "lit": false
+        }
+      },
+      "tags": []
+    },
+    "window.chat": {
+      "nameKey": "ia.chat_window",
+      "icon": "social",
+      "objects": [
+        "window_opening"
+      ],
+      "requires": {},
+      "hours": [
+        7,
+        20
+      ],
+      "steps": [
+        {
+          "at": "target",
+          "slot": "inside",
+          "anim": "idle",
+          "minutes": 20,
+          "needs": {
+            "social": 3,
+            "fun": 0.5
+          }
+        }
+      ],
+      "ads": {
+        "social": 48,
+        "fun": 8
+      },
+      "tags": [
+        "social"
+      ],
+      "moodlets": [
+        {
+          "id": "pleasant_chat"
+        }
+      ]
+    },
+    "window.gaze": {
+      "nameKey": "ia.gaze_window",
+      "icon": "eye",
+      "objects": [
+        "window_opening"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": "inside",
+          "anim": "idle",
+          "minutes": 15,
+          "needs": {
+            "fun": 0.6
+          }
+        }
+      ],
+      "ads": {
+        "fun": 22
+      },
+      "tags": [
+        "rest",
+        "romance",
+        "solitary"
+      ]
+    },
+    "rug.stretch": {
+      "nameKey": "ia.stretch",
+      "icon": "comfort",
+      "objects": [
+        "rug"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": "center",
+          "anim": "idle",
+          "minutes": 10,
+          "needs": {
+            "comfort": 1,
+            "fun": 0.3
+          }
+        }
+      ],
+      "ads": {
+        "comfort": 8,
+        "fun": 3
+      },
+      "tags": [
+        "exercise"
+      ]
+    },
+    "woodpile.tidy": {
+      "nameKey": "ia.tidy_wood",
+      "icon": "logs",
+      "objects": [
+        "woodpile"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 10,
+          "needs": {
+            "fun": 0.2
+          }
+        }
+      ],
+      "ads": {
+        "fun": 2
+      },
+      "tags": [
+        "duty",
+        "labor",
+        "clean",
+        "outdoor"
+      ]
+    },
+    "lot_exit.market": {
+      "nameKey": "ia.go_market",
+      "icon": "item.ingredients",
+      "objects": [
+        "lot_exit"
+      ],
+      "requires": {
+        "money": 8
+      },
+      "hours": [
+        7,
+        18
+      ],
+      "$comment": "장보기 래빗홀 (M4): 장부 가격으로 모자라는 만큼만 삼 (effects.buy = 채울 목표 재고). 돈이 모자라면 살 수 있는 만큼만 (17-8)",
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "stand"
+          },
+          "anim": "idle",
+          "minutes": 90,
+          "hidden": true,
+          "needs": {
+            "social": 0.08,
+            "fun": 0.03
+          }
+        },
+        {
+          "at": {
+            "object": "cupboard"
+          },
+          "slot": "front",
+          "anim": "work",
+          "minutes": 3,
+          "carry": "basket"
+        }
+      ],
+      "effects": {
+        "buy": {
+          "ingredients": 8,
+          "flour": 4,
+          "bread": 4,
+          "ale": 2,
+          "firewood": 8
+        }
+      },
+      "ads": {
+        "social": 8,
+        "fun": 4
+      },
+      "supportAds": {
+        "hunger": 90
+      },
+      "supportWhen": [
+        "stock:ingredients<=3|stock:bread<=1|stock:firewood<=2"
+      ],
+      "tags": [
+        "duty",
+        "outdoor"
+      ]
+    },
+    "floor.sweep": {
+      "nameKey": "ia.sweep",
+      "icon": "hygiene",
+      "objects": [
+        "rug"
+      ],
+      "tags": [
+        "clean",
+        "labor"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": "center",
+          "anim": "work",
+          "minutes": 25,
+          "needs": {
+            "hygiene": -0.05
+          },
+          "effects": {
+            "roomClean": 60
+          }
+        }
+      ],
+      "ads": {
+        "comfort": 8,
+        "fun": 3
+      },
+      "supportAds": {
+        "comfort": 30
+      },
+      "supportWhen": [
+        "roomDirty"
+      ]
+    },
+    "table.wipe": {
+      "nameKey": "ia.wipe_table",
+      "icon": "hygiene",
+      "objects": [
+        "dining_table",
+        "prep_counter"
+      ],
+      "tags": [
+        "clean"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "anim": "work",
+          "minutes": 12,
+          "effects": {
+            "roomClean": 25
+          }
+        }
+      ],
+      "ads": {
+        "comfort": 6,
+        "fun": 2
+      },
+      "supportAds": {
+        "comfort": 20
+      },
+      "supportWhen": [
+        "roomDirty"
+      ]
+    },
+    "cupboard.drink_ale": {
+      "nameKey": "ia.drink_ale",
+      "icon": "water",
+      "objects": [
+        "cupboard"
+      ],
+      "tags": [
+        "drink",
+        "rest",
+        "feast"
+      ],
+      "requires": {
+        "stock": {
+          "ale": 1
+        }
+      },
+      "hours": [
+        12,
+        24
+      ],
+      "steps": [
+        {
+          "at": {
+            "seatNear": "target"
+          },
+          "anim": "eat",
+          "minutes": 25,
+          "needs": {
+            "fun": 0.9,
+            "social": 0.1,
+            "energy": -0.03
+          },
+          "carry": "bowl"
+        }
+      ],
+      "effects": {
+        "stock": {
+          "ale": -1
+        }
+      },
+      "ads": {
+        "fun": 28
+      }
+    },
+    "bed.lounge": {
+      "nameKey": "ia.lounge",
+      "icon": "sleep",
+      "objects": [
+        "bed_straw",
+        "bed_double"
+      ],
+      "tags": [
+        "rest",
+        "lounge",
+        "solitary"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "lie"
+          },
+          "anim": "sleep",
+          "minutes": 40,
+          "needs": {
+            "comfort": 1.0,
+            "fun": 0.25
+          },
+          "blanket": false
+        }
+      ],
+      "ads": {
+        "comfort": 18,
+        "fun": 6
+      },
+      "hoursWeight": [
+        [
+          8,
+          20,
+          1.0
+        ],
+        [
+          20,
+          24,
+          0.3
+        ],
+        [
+          0,
+          8,
+          0.3
+        ]
+      ]
+    },
+    "yard.walk": {
+      "nameKey": "ia.stroll",
+      "icon": "goto",
+      "objects": [
+        "well"
+      ],
+      "tags": [
+        "exercise",
+        "nature",
+        "outdoor"
+      ],
+      "requires": {},
+      "hours": [
+        6,
+        24
+      ],
+      "steps": [
+        {
+          "at": "target",
+          "anim": "idle",
+          "minutes": 3,
+          "needs": {
+            "fun": 0.3,
+            "comfort": -0.05
+          }
+        },
+        {
+          "at": {
+            "object": "woodpile"
+          },
+          "anim": "idle",
+          "minutes": 3,
+          "needs": {
+            "fun": 0.3
+          }
+        },
+        {
+          "at": {
+            "object": "chopping_block"
+          },
+          "anim": "idle",
+          "minutes": 3,
+          "needs": {
+            "fun": 0.3
+          }
+        },
+        {
+          "at": {
+            "object": "lot_exit"
+          },
+          "anim": "idle",
+          "minutes": 5,
+          "needs": {
+            "fun": 0.4,
+            "social": 0.05
+          }
+        }
+      ],
+      "ads": {
+        "fun": 26
+      }
+    },
+    "yard.pick_herbs": {
+      "nameKey": "ia.forage",
+      "icon": "plant",
+      "objects": [
+        "lot_exit"
+      ],
+      "tags": [
+        "nature",
+        "labor",
+        "outdoor",
+        "herbal"
+      ],
+      "requires": {},
+      "hours": [
+        7,
+        18
+      ],
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "stand"
+          },
+          "anim": "idle",
+          "minutes": 60,
+          "hidden": true,
+          "needs": {
+            "fun": 0.25
+          }
+        }
+      ],
+      "effects": {
+        "stock": {
+          "herbs": 1,
+          "ingredients": 1
+        }
+      },
+      "ads": {
+        "fun": 22
+      }
+    },
+    "chair.mend": {
+      "nameKey": "ia.mend",
+      "icon": "axe",
+      "objects": [
+        "chair",
+        "stool",
+        "bench"
+      ],
+      "tags": [
+        "repair",
+        "labor",
+        "woodwork"
+      ],
+      "requires": {},
+      "hours": [
+        8,
+        20
+      ],
+      "steps": [
+        {
+          "at": "target",
+          "anim": "work",
+          "minutes": 30,
+          "needs": {
+            "fun": 0.2
+          }
+        }
+      ],
+      "ads": {
+        "fun": 14,
+        "comfort": 4
+      }
+    },
+    "table.whittle": {
+      "nameKey": "ia.whittle",
+      "icon": "axe",
+      "objects": [
+        "chopping_block"
+      ],
+      "tags": [
+        "creative",
+        "craft",
+        "outdoor",
+        "woodwork"
+      ],
+      "requires": {},
+      "hours": [
+        8,
+        21
+      ],
+      "steps": [
+        {
+          "at": "target",
+          "anim": "work",
+          "minutes": 35,
+          "needs": {
+            "fun": 0.55
+          }
+        }
+      ],
+      "ads": {
+        "fun": 28
+      }
+    },
+    "bench.pray": {
+      "nameKey": "ia.pray",
+      "icon": "emo.pious",
+      "objects": [
+        "bench",
+        "stool"
+      ],
+      "tags": [
+        "pray",
+        "humble",
+        "solitary"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "sit"
+          },
+          "anim": "sit",
+          "minutes": 20,
+          "needs": {
+            "fun": 0.1,
+            "social": 0.1
+          }
+        }
+      ],
+      "moodlets": [
+        {
+          "id": "prayer_calm"
+        }
+      ],
+      "ads": {
+        "fun": 10,
+        "social": 10
+      }
+    },
+    "bookshelf.study": {
+      "nameKey": "ia.study",
+      "icon": "book",
+      "objects": [
+        "bookshelf"
+      ],
+      "tags": [
+        "study",
+        "read",
+        "solitary"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": {
+            "seatNear": "target"
+          },
+          "anim": "sit",
+          "minutes": 45,
+          "needs": {
+            "fun": 0.15,
+            "energy": -0.02
+          },
+          "carry": "book"
+        }
+      ],
+      "ads": {
+        "fun": 18
+      }
+    },
+    "stock.count": {
+      "nameKey": "ia.count_stock",
+      "icon": "ui.coin",
+      "objects": [
+        "cupboard"
+      ],
+      "tags": [
+        "guard",
+        "solitary",
+        "reckon"
+      ],
+      "requires": {},
+      "steps": [
+        {
+          "at": "target",
+          "anim": "work",
+          "minutes": 15,
+          "needs": {
+            "fun": 0.1
+          }
+        }
+      ],
+      "ads": {
+        "fun": 12,
+        "comfort": 6
+      }
+    },
+    "well.stargaze": {
+      "nameKey": "ia.stargaze",
+      "icon": "eye",
+      "objects": [
+        "well"
+      ],
+      "tags": [
+        "romance",
+        "nature",
+        "outdoor",
+        "solitary"
+      ],
+      "requires": {},
+      "hours": [
+        20,
+        24
+      ],
+      "steps": [
+        {
+          "at": "target",
+          "anim": "idle",
+          "minutes": 25,
+          "needs": {
+            "fun": 0.6
+          }
+        }
+      ],
+      "ads": {
+        "fun": 28
+      }
+    },
+    "counter.make_preserves": {
+      "nameKey": "ia.make_preserves",
+      "icon": "item.ingredients",
+      "objects": [
+        "prep_counter"
+      ],
+      "tags": [
+        "cook",
+        "craft"
+      ],
+      "requires": {
+        "stock": {
+          "ingredients": 2
+        }
+      },
+      "hours": [
+        8,
+        20
+      ],
+      "steps": [
+        {
+          "at": "target",
+          "anim": "work",
+          "minutes": 40,
+          "needs": {
+            "fun": 0.3
+          }
+        }
+      ],
+      "effects": {
+        "stock": {
+          "ingredients": -2,
+          "preserves": 2
+        }
+      },
+      "ads": {
+        "fun": 12
+      },
+      "moodlets": [
+        {
+          "id": "burnt_fingers",
+          "chance": 0.05
+        }
+      ]
+    },
+    "lot_exit.run_away": {
+      "nameKey": "ia.run_away",
+      "icon": "goto",
+      "objects": [
+        "lot_exit"
+      ],
+      "requires": {},
+      "tags": [
+        "outdoor"
+      ],
+      "$comment": "스트레스 무너짐 '집을 뛰쳐나감' (stress.json run_away.queue). 자율 광고 없음 (무너짐으로만)",
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "stand"
+          },
+          "anim": "walk",
+          "minutes": 120,
+          "hidden": true,
+          "needs": {
+            "fun": 0.05
+          }
+        }
+      ]
+    },
+    "rug.sleep_floor": {
+      "nameKey": "ia.sleep_floor",
+      "icon": "sleep",
+      "objects": [
+        "rug"
+      ],
+      "requires": {},
+      "$comment": "바닥 잠자리 (식구가 침대보다 많을 때, 중세 오두막의 흔한 잠). 침대보다 광고가 낮아 침대가 비면 침대로",
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "lie"
+          },
+          "anim": "sleep",
+          "minutes": 600,
+          "until": {
+            "need": "energy",
+            "gte": 95
+          },
+          "needs": {
+            "comfort": 0.2
+          },
+          "sleep": true,
+          "outfit": "sleep"
+        }
+      ],
+      "ads": {
+        "energy": 20
+      },
+      "hoursWeight": [
+        [
+          21,
+          24,
+          1.8
+        ],
+        [
+          0,
+          6,
+          1.8
+        ],
+        [
+          6,
+          21,
+          0.1
+        ]
+      ],
+      "tags": [
+        "floor_sleep"
+      ]
+    }
+  }
+}

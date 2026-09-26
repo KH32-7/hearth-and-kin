@@ -1,0 +1,1351 @@
+{
+  "image": "assets/generated/ui/ui-atlas.png",
+  "sprites": {
+    "axe": {
+      "x": 74,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#128,4464,16,16"
+    },
+    "bar.frame": {
+      "x": 234,
+      "y": 234,
+      "w": 48,
+      "h": 8,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#16,68,48,8",
+      "slice": [
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    "bar.frame_metal": {
+      "x": 2,
+      "y": 262,
+      "w": 48,
+      "h": 8,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#16,52,48,8",
+      "slice": [
+        2,
+        4,
+        2,
+        4
+      ]
+    },
+    "bath": {
+      "x": 218,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#192,2496,16,16"
+    },
+    "bladder": {
+      "x": 56,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#224,2160,16,16"
+    },
+    "book": {
+      "x": 2,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,1680,16,16"
+    },
+    "bread": {
+      "x": 200,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,2208,16,16"
+    },
+    "bubble.speech": {
+      "x": 108,
+      "y": 234,
+      "w": 20,
+      "h": 24,
+      "src": "assets/vendor/kenmi-cute-fantasy-ui/Cute_Fantasy_UI/UI/UI_Pop_Up.png#14,14,20,24",
+      "slice": [
+        3,
+        4,
+        7,
+        12
+      ]
+    },
+    "bubble.thought": {
+      "x": 58,
+      "y": 234,
+      "w": 22,
+      "h": 26,
+      "src": "assets/vendor/kenmi-cute-fantasy-ui/Cute_Fantasy_UI/UI/UI_Pop_Up.png#61,13,22,26",
+      "slice": [
+        5,
+        5,
+        9,
+        13
+      ]
+    },
+    "button.round": {
+      "x": 166,
+      "y": 234,
+      "w": 14,
+      "h": 15,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#1,160,14,15"
+    },
+    "button.round_pressed": {
+      "x": 182,
+      "y": 234,
+      "w": 14,
+      "h": 15,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#1,272,14,15"
+    },
+    "button.square": {
+      "x": 198,
+      "y": 234,
+      "w": 16,
+      "h": 14,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#0,208,16,14"
+    },
+    "button.square_pressed": {
+      "x": 216,
+      "y": 234,
+      "w": 16,
+      "h": 14,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#0,320,16,14"
+    },
+    "candle": {
+      "x": 92,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#32,224,16,16"
+    },
+    "clock.day": {
+      "x": 201,
+      "y": 184,
+      "w": 15,
+      "h": 30,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#96,97,15,30"
+    },
+    "clock.dial": {
+      "x": 186,
+      "y": 184,
+      "w": 30,
+      "h": 31,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#81,97,30,31"
+    },
+    "clock.night": {
+      "x": 186,
+      "y": 184,
+      "w": 15,
+      "h": 30,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#81,97,15,30"
+    },
+    "clothes": {
+      "x": 272,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,6464,16,16"
+    },
+    "comfort": {
+      "x": 128,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#128,304,16,16"
+    },
+    "emo.angry": {
+      "x": 182,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#176,2656,16,16"
+    },
+    "emo.ashamed": {
+      "x": 218,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#144,2656,16,16"
+    },
+    "emo.energized": {
+      "x": 74,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,3520,16,16"
+    },
+    "emo.excited": {
+      "x": 110,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#64,2592,16,16"
+    },
+    "emo.focused": {
+      "x": 92,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/extras/Symbols and Runes/Original/16/99.png#0,0,16,16"
+    },
+    "emo.happy": {
+      "x": 56,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#96,3568,16,16"
+    },
+    "emo.inspired": {
+      "x": 128,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/extras/Symbols and Runes/Original/16/714.png#0,0,16,16"
+    },
+    "emo.neutral": {
+      "x": 236,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/extras/Symbols and Runes/Original/16/2.png#0,0,16,16"
+    },
+    "emo.pious": {
+      "x": 146,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#208,2592,16,16"
+    },
+    "emo.sad": {
+      "x": 164,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#112,2928,16,16"
+    },
+    "emo.tense": {
+      "x": 200,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#208,2656,16,16"
+    },
+    "eye": {
+      "x": 20,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#48,2704,16,16"
+    },
+    "fire": {
+      "x": 146,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#80,3488,16,16"
+    },
+    "fx.social_ok": {
+      "x": 92,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#240,3104,16,16"
+    },
+    "goto": {
+      "x": 128,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#128,96,16,16"
+    },
+    "hygiene": {
+      "x": 38,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#208,2496,16,16"
+    },
+    "item.ale": {
+      "x": 182,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#96,2192,16,16"
+    },
+    "item.bread": {
+      "x": 200,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,2208,16,16"
+    },
+    "item.firewood": {
+      "x": 110,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/New updates/Trees and Logs/Original/16/tp14.png#0,0,16,16"
+    },
+    "item.flour": {
+      "x": 146,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#128,2080,16,16"
+    },
+    "item.herbs": {
+      "x": 200,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#32,2080,16,16"
+    },
+    "item.ingredients": {
+      "x": 164,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#128,2016,16,16"
+    },
+    "item.preserves": {
+      "x": 218,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#96,2224,16,16"
+    },
+    "item.water": {
+      "x": 182,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#176,288,16,16"
+    },
+    "item.yarn": {
+      "x": 56,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#80,304,16,16"
+    },
+    "logs": {
+      "x": 110,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/New updates/Trees and Logs/Original/16/tp14.png#0,0,16,16"
+    },
+    "lute": {
+      "x": 74,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#32,3328,16,16"
+    },
+    "need.bladder": {
+      "x": 56,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#224,2160,16,16"
+    },
+    "need.comfort": {
+      "x": 128,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#128,304,16,16"
+    },
+    "need.energy": {
+      "x": 20,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/extras/Symbols and Runes/Original/16/385.png#0,0,16,16"
+    },
+    "need.fun": {
+      "x": 74,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#32,3328,16,16"
+    },
+    "need.hunger": {
+      "x": 2,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#80,2256,16,16"
+    },
+    "need.hygiene": {
+      "x": 38,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#208,2496,16,16"
+    },
+    "need.social": {
+      "x": 92,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#80,3328,16,16"
+    },
+    "need.warmth": {
+      "x": 110,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,3488,16,16"
+    },
+    "outhouse": {
+      "x": 236,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#240,0,16,16"
+    },
+    "panel.brown": {
+      "x": 2,
+      "y": 184,
+      "w": 48,
+      "h": 48,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#16,0,48,48",
+      "slice": [
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "panel.cream": {
+      "x": 52,
+      "y": 184,
+      "w": 48,
+      "h": 48,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#64,0,48,48",
+      "slice": [
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "panel.dark": {
+      "x": 102,
+      "y": 184,
+      "w": 48,
+      "h": 48,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#112,0,48,48",
+      "slice": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    "plant": {
+      "x": 38,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#64,1264,16,16"
+    },
+    "portrait.frame": {
+      "x": 152,
+      "y": 184,
+      "w": 32,
+      "h": 32,
+      "src": "assets/vendor/kenmi-cute-fantasy-ui/Cute_Fantasy_UI/UI/UI_Frames.png#1064,104,32,32"
+    },
+    "raven:a1250": {
+      "x": 182,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#16,1248,16,16"
+    },
+    "raven:a1265": {
+      "x": 200,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,1264,16,16"
+    },
+    "raven:a1275": {
+      "x": 218,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#160,1264,16,16"
+    },
+    "raven:a1281": {
+      "x": 236,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,1280,16,16"
+    },
+    "raven:a1297": {
+      "x": 254,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,1296,16,16"
+    },
+    "raven:a1508": {
+      "x": 272,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#48,1504,16,16"
+    },
+    "raven:a1685": {
+      "x": 2,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#64,1680,16,16"
+    },
+    "raven:a1689": {
+      "x": 20,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#128,1680,16,16"
+    },
+    "raven:a1892": {
+      "x": 38,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#48,1888,16,16"
+    },
+    "raven:a1913": {
+      "x": 56,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#128,1904,16,16"
+    },
+    "raven:a193": {
+      "x": 110,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,192,16,16"
+    },
+    "raven:a1998": {
+      "x": 74,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#208,1984,16,16"
+    },
+    "raven:a2019": {
+      "x": 92,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#32,2016,16,16"
+    },
+    "raven:a2024": {
+      "x": 110,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#112,2016,16,16"
+    },
+    "raven:a2033": {
+      "x": 128,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,2032,16,16"
+    },
+    "raven:a2040": {
+      "x": 146,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#112,2032,16,16"
+    },
+    "raven:a2044": {
+      "x": 164,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#176,2032,16,16"
+    },
+    "raven:a2047": {
+      "x": 182,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#224,2032,16,16"
+    },
+    "raven:a2081": {
+      "x": 200,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,2080,16,16"
+    },
+    "raven:a2085": {
+      "x": 218,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#64,2080,16,16"
+    },
+    "raven:a2087": {
+      "x": 236,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#96,2080,16,16"
+    },
+    "raven:a2088": {
+      "x": 254,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#112,2080,16,16"
+    },
+    "raven:a2110": {
+      "x": 272,
+      "y": 92,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#208,2096,16,16"
+    },
+    "raven:a2112": {
+      "x": 2,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#240,2096,16,16"
+    },
+    "raven:a2122": {
+      "x": 20,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#144,2112,16,16"
+    },
+    "raven:a2145": {
+      "x": 38,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,2144,16,16"
+    },
+    "raven:a2147": {
+      "x": 56,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#32,2144,16,16"
+    },
+    "raven:a2149": {
+      "x": 74,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#64,2144,16,16"
+    },
+    "raven:a2156": {
+      "x": 92,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#176,2144,16,16"
+    },
+    "raven:a2160": {
+      "x": 110,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#240,2144,16,16"
+    },
+    "raven:a2165": {
+      "x": 128,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#64,2160,16,16"
+    },
+    "raven:a2176": {
+      "x": 146,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#240,2160,16,16"
+    },
+    "raven:a2178": {
+      "x": 164,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#16,2176,16,16"
+    },
+    "raven:a2182": {
+      "x": 182,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#80,2176,16,16"
+    },
+    "raven:a2185": {
+      "x": 200,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#128,2176,16,16"
+    },
+    "raven:a2192": {
+      "x": 218,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#240,2176,16,16"
+    },
+    "raven:a2193": {
+      "x": 236,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,2192,16,16"
+    },
+    "raven:a2194": {
+      "x": 254,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#16,2192,16,16"
+    },
+    "raven:a2200": {
+      "x": 272,
+      "y": 110,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#112,2192,16,16"
+    },
+    "raven:a2210": {
+      "x": 2,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#16,2208,16,16"
+    },
+    "raven:a2214": {
+      "x": 20,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#80,2208,16,16"
+    },
+    "raven:a2216": {
+      "x": 38,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#112,2208,16,16"
+    },
+    "raven:a2229": {
+      "x": 56,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#64,2224,16,16"
+    },
+    "raven:a2230": {
+      "x": 74,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#80,2224,16,16"
+    },
+    "raven:a2232": {
+      "x": 92,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#112,2224,16,16"
+    },
+    "raven:a2237": {
+      "x": 110,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#192,2224,16,16"
+    },
+    "raven:a2238": {
+      "x": 128,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#208,2224,16,16"
+    },
+    "raven:a2241": {
+      "x": 146,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,2240,16,16"
+    },
+    "raven:a2242": {
+      "x": 164,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#16,2240,16,16"
+    },
+    "raven:a2272": {
+      "x": 182,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#240,2256,16,16"
+    },
+    "raven:a2280": {
+      "x": 200,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#112,2272,16,16"
+    },
+    "raven:a2292": {
+      "x": 218,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#48,2288,16,16"
+    },
+    "raven:a2295": {
+      "x": 236,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#96,2288,16,16"
+    },
+    "raven:a2307": {
+      "x": 254,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#32,2304,16,16"
+    },
+    "raven:a2311": {
+      "x": 272,
+      "y": 128,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#96,2304,16,16"
+    },
+    "raven:a2318": {
+      "x": 2,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#208,2304,16,16"
+    },
+    "raven:a2328": {
+      "x": 20,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#112,2320,16,16"
+    },
+    "raven:a2362": {
+      "x": 38,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#144,2352,16,16"
+    },
+    "raven:a2379": {
+      "x": 56,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#160,2368,16,16"
+    },
+    "raven:a2593": {
+      "x": 74,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,2592,16,16"
+    },
+    "raven:a2594": {
+      "x": 92,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#16,2592,16,16"
+    },
+    "raven:a278": {
+      "x": 128,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#80,272,16,16"
+    },
+    "raven:a283": {
+      "x": 146,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#160,272,16,16"
+    },
+    "raven:a309": {
+      "x": 164,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#64,304,16,16"
+    },
+    "raven:a321": {
+      "x": 182,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,320,16,16"
+    },
+    "raven:a324": {
+      "x": 200,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#48,320,16,16"
+    },
+    "raven:a326": {
+      "x": 218,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#80,320,16,16"
+    },
+    "raven:a332": {
+      "x": 236,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#176,320,16,16"
+    },
+    "raven:a3323": {
+      "x": 110,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#160,3312,16,16"
+    },
+    "raven:a333": {
+      "x": 254,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#192,320,16,16"
+    },
+    "raven:a3333": {
+      "x": 128,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#64,3328,16,16"
+    },
+    "raven:a3337": {
+      "x": 146,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#128,3328,16,16"
+    },
+    "raven:a335": {
+      "x": 272,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#224,320,16,16"
+    },
+    "raven:a339": {
+      "x": 2,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#32,336,16,16"
+    },
+    "raven:a365": {
+      "x": 20,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#192,352,16,16"
+    },
+    "raven:a368": {
+      "x": 38,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#240,352,16,16"
+    },
+    "raven:a4449": {
+      "x": 164,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,4448,16,16"
+    },
+    "raven:a4452": {
+      "x": 182,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#48,4448,16,16"
+    },
+    "raven:a4460": {
+      "x": 200,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#176,4448,16,16"
+    },
+    "raven:a4465": {
+      "x": 218,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,4464,16,16"
+    },
+    "raven:a4477": {
+      "x": 236,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#192,4464,16,16"
+    },
+    "raven:a4478": {
+      "x": 254,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#208,4464,16,16"
+    },
+    "raven:a4494": {
+      "x": 272,
+      "y": 146,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#208,4480,16,16"
+    },
+    "raven:a4495": {
+      "x": 2,
+      "y": 164,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#224,4480,16,16"
+    },
+    "raven:a4515": {
+      "x": 20,
+      "y": 164,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#32,4512,16,16"
+    },
+    "raven:a4522": {
+      "x": 38,
+      "y": 164,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#144,4512,16,16"
+    },
+    "raven:a489": {
+      "x": 56,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#128,480,16,16"
+    },
+    "raven:a490": {
+      "x": 74,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#144,480,16,16"
+    },
+    "raven:a491": {
+      "x": 92,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#160,480,16,16"
+    },
+    "raven:a492": {
+      "x": 110,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#176,480,16,16"
+    },
+    "raven:a497": {
+      "x": 128,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,496,16,16"
+    },
+    "raven:a506": {
+      "x": 146,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#144,496,16,16"
+    },
+    "raven:a507": {
+      "x": 164,
+      "y": 74,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#160,496,16,16"
+    },
+    "raven:a6463": {
+      "x": 56,
+      "y": 164,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#224,6448,16,16"
+    },
+    "raven:a6479": {
+      "x": 74,
+      "y": 164,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#224,6464,16,16"
+    },
+    "raven:a7496": {
+      "x": 92,
+      "y": 164,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#112,7488,16,16"
+    },
+    "sleep": {
+      "x": 254,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#224,3600,16,16"
+    },
+    "slot.brown": {
+      "x": 2,
+      "y": 234,
+      "w": 26,
+      "h": 26,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#155,107,26,26",
+      "slice": [
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "slot.cream": {
+      "x": 30,
+      "y": 234,
+      "w": 26,
+      "h": 26,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#203,107,26,26",
+      "slice": [
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "slot.dark": {
+      "x": 82,
+      "y": 234,
+      "w": 24,
+      "h": 24,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#252,108,24,24",
+      "slice": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    "slot.metal": {
+      "x": 130,
+      "y": 234,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#0,48,16,16"
+    },
+    "slot.wood": {
+      "x": 148,
+      "y": 234,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-gui-starter/Raven Fantasy - PixelArt Menu, GUI, HUD and UI Kit - Starter Set/Content/Raven Fantasy GUI Starter Set.png#0,64,16,16"
+    },
+    "social": {
+      "x": 92,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#80,3328,16,16"
+    },
+    "stew": {
+      "x": 164,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#32,2320,16,16"
+    },
+    "topic.faith": {
+      "x": 20,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#160,3088,16,16"
+    },
+    "topic.family": {
+      "x": 38,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,64,16,16"
+    },
+    "topic.love": {
+      "x": 272,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#96,3088,16,16"
+    },
+    "topic.plague": {
+      "x": 74,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#240,3168,16,16"
+    },
+    "topic.war": {
+      "x": 56,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#160,384,16,16"
+    },
+    "topic.weather": {
+      "x": 254,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/original/ui/topic_weather.png#0,0,16,16"
+    },
+    "topic.work": {
+      "x": 2,
+      "y": 56,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#208,320,16,16"
+    },
+    "ui.auto": {
+      "x": 2,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#16,16,16,16"
+    },
+    "ui.cancel": {
+      "x": 272,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#240,2544,16,16"
+    },
+    "ui.clock": {
+      "x": 254,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#96,336,16,16"
+    },
+    "ui.coin": {
+      "x": 20,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#32,368,16,16"
+    },
+    "ui.crest": {
+      "x": 38,
+      "y": 38,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#128,7760,16,16"
+    },
+    "ui.select.0": {
+      "x": 218,
+      "y": 184,
+      "w": 26,
+      "h": 28,
+      "src": "assets/vendor/kenmi-cute-fantasy-ui/Cute_Fantasy_UI/UI/UI_Selectors.png#107,10,26,28",
+      "slice": [
+        10,
+        10,
+        10,
+        10
+      ]
+    },
+    "ui.select.1": {
+      "x": 246,
+      "y": 184,
+      "w": 26,
+      "h": 28,
+      "src": "assets/vendor/kenmi-cute-fantasy-ui/Cute_Fantasy_UI/UI/UI_Selectors.png#155,10,26,28",
+      "slice": [
+        10,
+        10,
+        10,
+        10
+      ]
+    },
+    "ui.temp": {
+      "x": 236,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,1504,16,16"
+    },
+    "warmth": {
+      "x": 110,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#0,3488,16,16"
+    },
+    "water": {
+      "x": 182,
+      "y": 2,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#176,288,16,16"
+    },
+    "yarn": {
+      "x": 56,
+      "y": 20,
+      "w": 16,
+      "h": 16,
+      "src": "assets/vendor/raven-fantasy-icons/premium/Premium - Raven Fantasy Icons/Full Spritesheet/16x16.png#80,304,16,16"
+    }
+  }
+}

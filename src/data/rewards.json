@@ -1,0 +1,552 @@
+{
+  "$comment": "GDD 12-5 보상 특성. kind shop = 행복 포인트로 사는 20개, aspiration = 인생 목표 완료 보상(판매 안 함, cost 0). effects = 계약 5절 특성 효과 문법. futureEffects = 문법 밖 효과(질병, 수명, 거래 등 M3 이후 시스템이 읽을 배수/플래그)",
+  "rewards": [
+    {
+      "id": "strong_bladder",
+      "kind": "shop",
+      "nameKey": "reward.strong_bladder",
+      "descKey": "reward.strong_bladder.desc",
+      "icon": "bladder",
+      "cost": 300,
+      "heritable": false,
+      "effects": {
+        "needDecay": {
+          "bladder": 0.5
+        }
+      }
+    },
+    {
+      "id": "catnapper",
+      "kind": "shop",
+      "nameKey": "reward.catnapper",
+      "descKey": "reward.catnapper.desc",
+      "icon": "sleep",
+      "cost": 350,
+      "heritable": false,
+      "effects": {
+        "moodletDuration": {
+          "energized": 1.3
+        }
+      },
+      "futureEffects": {
+        "napRecovery": 2
+      }
+    },
+    {
+      "id": "iron_stomach",
+      "kind": "shop",
+      "nameKey": "reward.iron_stomach",
+      "descKey": "reward.iron_stomach.desc",
+      "icon": "need.hunger",
+      "cost": 300,
+      "heritable": true,
+      "effects": {
+        "needDecay": {
+          "hunger": 0.85
+        }
+      },
+      "futureEffects": {
+        "spoiledFoodImmune": 1
+      }
+    },
+    {
+      "id": "silver_tongue",
+      "kind": "shop",
+      "nameKey": "reward.silver_tongue",
+      "descKey": "reward.silver_tongue.desc",
+      "icon": "social",
+      "cost": 600,
+      "heritable": false,
+      "effects": {
+        "adTag": {
+          "social": 1.2
+        }
+      },
+      "futureEffects": {
+        "socialSuccess": 1.15
+      }
+    },
+    {
+      "id": "cold_hardy",
+      "kind": "shop",
+      "nameKey": "reward.cold_hardy",
+      "descKey": "reward.cold_hardy.desc",
+      "icon": "warmth",
+      "cost": 400,
+      "heritable": true,
+      "effects": {
+        "needDecay": {
+          "warmth": 0.6
+        }
+      }
+    },
+    {
+      "id": "quick_learner",
+      "kind": "shop",
+      "nameKey": "reward.quick_learner",
+      "descKey": "reward.quick_learner.desc",
+      "icon": "book",
+      "cost": 700,
+      "heritable": true,
+      "effects": {
+        "moodletDuration": {
+          "focused": 1.5
+        }
+      },
+      "futureEffects": {
+        "skillXp": 1.2
+      }
+    },
+    {
+      "id": "disease_resistant",
+      "kind": "shop",
+      "nameKey": "reward.disease_resistant",
+      "descKey": "reward.disease_resistant.desc",
+      "icon": "plant",
+      "cost": 700,
+      "heritable": true,
+      "effects": {
+        "moodletDuration": {
+          "tense": 0.9
+        }
+      },
+      "futureEffects": {
+        "diseaseChance": 0.5
+      }
+    },
+    {
+      "id": "parenting_master",
+      "kind": "shop",
+      "nameKey": "reward.parenting_master",
+      "descKey": "reward.parenting_master.desc",
+      "icon": "social",
+      "cost": 500,
+      "heritable": false,
+      "effects": {
+        "adTag": {
+          "family": 1.5
+        }
+      },
+      "futureEffects": {
+        "childSkillXp": 1.25
+      }
+    },
+    {
+      "id": "neighbors_friend",
+      "kind": "shop",
+      "nameKey": "reward.neighbors_friend",
+      "descKey": "reward.neighbors_friend.desc",
+      "icon": "social",
+      "cost": 450,
+      "heritable": false,
+      "effects": {
+        "needDecay": {
+          "social": 0.8
+        }
+      },
+      "futureEffects": {
+        "relationshipDecay": 0.5
+      }
+    },
+    {
+      "id": "long_lived",
+      "kind": "shop",
+      "nameKey": "reward.long_lived",
+      "descKey": "reward.long_lived.desc",
+      "icon": "clock.day",
+      "cost": 900,
+      "heritable": true,
+      "effects": {},
+      "futureEffects": {
+        "lifespan": 1.1
+      }
+    },
+    {
+      "id": "steady_nerves",
+      "kind": "shop",
+      "nameKey": "reward.steady_nerves",
+      "descKey": "reward.steady_nerves.desc",
+      "icon": "eye",
+      "cost": 450,
+      "heritable": false,
+      "effects": {
+        "moodletDuration": {
+          "tense": 0.5
+        }
+      }
+    },
+    {
+      "id": "sunny_soul",
+      "kind": "shop",
+      "nameKey": "reward.sunny_soul",
+      "descKey": "reward.sunny_soul.desc",
+      "icon": "clock.day",
+      "cost": 500,
+      "heritable": false,
+      "effects": {
+        "moodletDuration": {
+          "happy": 1.3,
+          "sad": 0.8
+        }
+      }
+    },
+    {
+      "id": "tireless",
+      "kind": "shop",
+      "nameKey": "reward.tireless",
+      "descKey": "reward.tireless.desc",
+      "icon": "need.energy",
+      "cost": 450,
+      "heritable": false,
+      "effects": {
+        "needDecay": {
+          "energy": 0.8
+        }
+      }
+    },
+    {
+      "id": "fresh_skin",
+      "kind": "shop",
+      "nameKey": "reward.fresh_skin",
+      "descKey": "reward.fresh_skin.desc",
+      "icon": "hygiene",
+      "cost": 250,
+      "heritable": false,
+      "effects": {
+        "needDecay": {
+          "hygiene": 0.6
+        }
+      }
+    },
+    {
+      "id": "thick_skin",
+      "kind": "shop",
+      "nameKey": "reward.thick_skin",
+      "descKey": "reward.thick_skin.desc",
+      "icon": "comfort",
+      "cost": 400,
+      "heritable": false,
+      "effects": {
+        "moodletDuration": {
+          "ashamed": 0.5,
+          "angry": 0.7
+        }
+      }
+    },
+    {
+      "id": "hearth_keeper",
+      "kind": "shop",
+      "nameKey": "reward.hearth_keeper",
+      "descKey": "reward.hearth_keeper.desc",
+      "icon": "fire",
+      "cost": 350,
+      "heritable": false,
+      "effects": {
+        "needDecay": {
+          "warmth": 0.85
+        },
+        "adTag": {
+          "cook": 1.3
+        }
+      }
+    },
+    {
+      "id": "devout_heart",
+      "kind": "shop",
+      "nameKey": "reward.devout_heart",
+      "descKey": "reward.devout_heart.desc",
+      "icon": "candle",
+      "cost": 400,
+      "heritable": false,
+      "effects": {
+        "moodletDuration": {
+          "pious": 1.5
+        },
+        "moodletOnTag": [
+          {
+            "tag": "pray",
+            "moodlet": "prayer_calm"
+          }
+        ]
+      }
+    },
+    {
+      "id": "green_thumb",
+      "kind": "shop",
+      "nameKey": "reward.green_thumb",
+      "descKey": "reward.green_thumb.desc",
+      "icon": "plant",
+      "cost": 500,
+      "heritable": true,
+      "effects": {
+        "adTag": {
+          "nature": 1.3
+        }
+      },
+      "futureEffects": {
+        "cropYield": 1.1
+      }
+    },
+    {
+      "id": "strong_back",
+      "kind": "shop",
+      "nameKey": "reward.strong_back",
+      "descKey": "reward.strong_back.desc",
+      "icon": "axe",
+      "cost": 500,
+      "heritable": true,
+      "effects": {
+        "needDecay": {
+          "comfort": 0.7
+        },
+        "stressOnTag": [
+          {
+            "tag": "labor",
+            "delta": -2
+          }
+        ]
+      }
+    },
+    {
+      "id": "light_sleeper",
+      "kind": "shop",
+      "nameKey": "reward.light_sleeper",
+      "descKey": "reward.light_sleeper.desc",
+      "icon": "sleep",
+      "cost": 300,
+      "heritable": false,
+      "effects": {
+        "needDecay": {
+          "energy": 0.9
+        }
+      },
+      "futureEffects": {
+        "badBedPenalty": 0.5
+      }
+    },
+    {
+      "id": "golden_hand",
+      "kind": "aspiration",
+      "nameKey": "reward.golden_hand",
+      "descKey": "reward.golden_hand.desc",
+      "icon": "ui.coin",
+      "cost": 0,
+      "heritable": false,
+      "effects": {},
+      "futureEffects": {
+        "tradeProfit": 1.2
+      }
+    },
+    {
+      "id": "masters_hand",
+      "kind": "aspiration",
+      "nameKey": "reward.masters_hand",
+      "descKey": "reward.masters_hand.desc",
+      "icon": "axe",
+      "cost": 0,
+      "heritable": false,
+      "effects": {
+        "adTag": {
+          "craft": 1.2
+        }
+      },
+      "futureEffects": {
+        "masterpieceChance": 2
+      }
+    },
+    {
+      "id": "chivalry",
+      "kind": "aspiration",
+      "nameKey": "reward.chivalry",
+      "descKey": "reward.chivalry.desc",
+      "icon": "axe",
+      "cost": 0,
+      "heritable": false,
+      "effects": {},
+      "futureEffects": {
+        "honorLoss": 0.5,
+        "houseFameLoss": 0.5
+      }
+    },
+    {
+      "id": "holy_voice",
+      "kind": "aspiration",
+      "nameKey": "reward.holy_voice",
+      "descKey": "reward.holy_voice.desc",
+      "icon": "candle",
+      "cost": 0,
+      "heritable": false,
+      "effects": {
+        "moodletDuration": {
+          "pious": 1.3
+        }
+      },
+      "futureEffects": {
+        "sermonEffect": 2
+      }
+    },
+    {
+      "id": "family_roots",
+      "kind": "aspiration",
+      "nameKey": "reward.family_roots",
+      "descKey": "reward.family_roots.desc",
+      "icon": "social",
+      "cost": 0,
+      "heritable": true,
+      "effects": {
+        "adTag": {
+          "family": 1.2
+        }
+      },
+      "futureEffects": {
+        "familyRelationshipDecay": 0
+      }
+    },
+    {
+      "id": "born_noble",
+      "kind": "aspiration",
+      "nameKey": "reward.born_noble",
+      "descKey": "reward.born_noble.desc",
+      "icon": "ui.coin",
+      "cost": 0,
+      "heritable": false,
+      "effects": {
+        "moodletDuration": {
+          "ashamed": 0.7
+        }
+      },
+      "futureEffects": {
+        "prideStressImmune": 1
+      }
+    },
+    {
+      "id": "eternal_lover",
+      "kind": "aspiration",
+      "nameKey": "reward.eternal_lover",
+      "descKey": "reward.eternal_lover.desc",
+      "icon": "social",
+      "cost": 0,
+      "heritable": false,
+      "effects": {
+        "moodletDuration": {
+          "excited": 1.3
+        }
+      },
+      "futureEffects": {
+        "ghostStaysWithSpouse": 1
+      }
+    },
+    {
+      "id": "fatal_charm",
+      "kind": "aspiration",
+      "nameKey": "reward.fatal_charm",
+      "descKey": "reward.fatal_charm.desc",
+      "icon": "social",
+      "cost": 0,
+      "heritable": false,
+      "effects": {
+        "adTag": {
+          "flirt": 1.3
+        }
+      },
+      "futureEffects": {
+        "romanceSuccess": 1.3
+      }
+    },
+    {
+      "id": "sages_word",
+      "kind": "aspiration",
+      "nameKey": "reward.sages_word",
+      "descKey": "reward.sages_word.desc",
+      "icon": "book",
+      "cost": 0,
+      "heritable": false,
+      "effects": {
+        "adTag": {
+          "study": 1.2
+        }
+      },
+      "futureEffects": {
+        "unlockAdvise": 1
+      }
+    },
+    {
+      "id": "peoples_song",
+      "kind": "aspiration",
+      "nameKey": "reward.peoples_song",
+      "descKey": "reward.peoples_song.desc",
+      "icon": "lute",
+      "cost": 0,
+      "heritable": false,
+      "effects": {
+        "moodletDuration": {
+          "inspired": 1.5
+        }
+      },
+      "futureEffects": {
+        "performanceFame": 1.5
+      }
+    },
+    {
+      "id": "healing_hand",
+      "kind": "aspiration",
+      "nameKey": "reward.healing_hand",
+      "descKey": "reward.healing_hand.desc",
+      "icon": "plant",
+      "cost": 0,
+      "heritable": false,
+      "effects": {
+        "adTag": {
+          "kind": 1.2
+        }
+      },
+      "futureEffects": {
+        "healSuccess": 1.5
+      }
+    },
+    {
+      "id": "cold_heart",
+      "kind": "aspiration",
+      "nameKey": "reward.cold_heart",
+      "descKey": "reward.cold_heart.desc",
+      "icon": "eye",
+      "cost": 0,
+      "heritable": false,
+      "effects": {
+        "moodletDuration": {
+          "sad": 0.5
+        }
+      }
+    },
+    {
+      "id": "wise_lord",
+      "kind": "aspiration",
+      "nameKey": "reward.wise_lord",
+      "descKey": "reward.wise_lord.desc",
+      "icon": "plant",
+      "cost": 0,
+      "heritable": false,
+      "effects": {},
+      "futureEffects": {
+        "moraleDecay": 0.5
+      }
+    },
+    {
+      "id": "court_tongue",
+      "kind": "aspiration",
+      "nameKey": "reward.court_tongue",
+      "descKey": "reward.court_tongue.desc",
+      "icon": "ui.coin",
+      "cost": 0,
+      "heritable": false,
+      "effects": {
+        "adTag": {
+          "social": 1.1
+        }
+      },
+      "futureEffects": {
+        "courtFavor": 1.5
+      }
+    }
+  ]
+}

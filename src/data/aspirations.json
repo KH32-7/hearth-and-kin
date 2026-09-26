@@ -1,0 +1,988 @@
+{
+  "$comment": "GDD 12-4 인생 목표 (성인 12 + 귀족 2(16-1) + 아동 4), 각 4단계. need 는 모두 만족(AND), { any: [...] } 는 하나만 만족(OR). counter 는 이벤트 문법 이름의 누적 횟수. gte 가 {value, scale} 이면 그 이벤트 뒤 유지된 기간(분). 성인/귀족 완료 보상 rewardTrait = rewards.json id, 아동은 rewardTraitChoices(성인 특성 선택지 보너스) / 1단계는 { any: [원래 사건, M2~M3 에서 생기는 카운터] } (원래 사건은 M4 이후 시스템이 연결, DECISIONS.md)",
+  "aspirations": [
+    {
+      "id": "wealth",
+      "group": "adult",
+      "nameKey": "aspiration.wealth",
+      "descKey": "aspiration.wealth.desc",
+      "icon": "ui.coin",
+      "stages": [
+        {
+          "textKey": "aspiration.wealth.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:savings_reached_quarter",
+                  "gte": 1
+                },
+                {
+                  "counter": "tag:labor",
+                  "gte": 30
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.wealth.s2",
+          "need": [
+            {
+              "counter": "event:property_acquired",
+              "gte": 2
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.wealth.s3",
+          "need": [
+            {
+              "counter": "event:savings_reached_one_and_half",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.wealth.s4",
+          "need": [
+            {
+              "counter": "event:savings_reached_triple",
+              "gte": 1
+            },
+            {
+              "counter": "event:house_above_start_estate",
+              "gte": 1
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "golden_hand"
+    },
+    {
+      "id": "master_craftsman",
+      "group": "adult",
+      "nameKey": "aspiration.master_craftsman",
+      "descKey": "aspiration.master_craftsman.desc",
+      "icon": "axe",
+      "stages": [
+        {
+          "textKey": "aspiration.master_craftsman.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:apprenticeship_done",
+                  "gte": 1
+                },
+                {
+                  "counter": "tag:craft",
+                  "gte": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.master_craftsman.s2",
+          "need": [
+            {
+              "counter": "event:became_journeyman",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.master_craftsman.s3",
+          "need": [
+            {
+              "counter": "event:masterpiece_recognized",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.master_craftsman.s4",
+          "need": [
+            {
+              "counter": "event:became_guild_master",
+              "gte": 1
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "masters_hand"
+    },
+    {
+      "id": "knight_path",
+      "group": "adult",
+      "nameKey": "aspiration.knight_path",
+      "descKey": "aspiration.knight_path.desc",
+      "icon": "axe",
+      "stages": [
+        {
+          "textKey": "aspiration.knight_path.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:became_squire",
+                  "gte": 1
+                },
+                {
+                  "counter": "tag:exercise",
+                  "gte": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.knight_path.s2",
+          "need": [
+            {
+              "counter": "event:tourney_placed",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.knight_path.s3",
+          "need": [
+            {
+              "counter": "event:knighted",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.knight_path.s4",
+          "need": [
+            {
+              "counter": "event:granted_fief",
+              "gte": 1
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "chivalry"
+    },
+    {
+      "id": "clergy_path",
+      "group": "adult",
+      "nameKey": "aspiration.clergy_path",
+      "descKey": "aspiration.clergy_path.desc",
+      "icon": "candle",
+      "stages": [
+        {
+          "textKey": "aspiration.clergy_path.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:joined_monastery",
+                  "gte": 1
+                },
+                {
+                  "counter": "tag:pray",
+                  "gte": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.clergy_path.s2",
+          "need": [
+            {
+              "counter": "event:ordained",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.clergy_path.s3",
+          "need": [
+            {
+              "counter": "event:became_parish_priest",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.clergy_path.s4",
+          "need": [
+            {
+              "counter": "event:became_bishop",
+              "gte": 1
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "holy_voice"
+    },
+    {
+      "id": "family_prosperity",
+      "group": "adult",
+      "nameKey": "aspiration.family_prosperity",
+      "descKey": "aspiration.family_prosperity.desc",
+      "icon": "social",
+      "stages": [
+        {
+          "textKey": "aspiration.family_prosperity.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:married",
+                  "gte": 1
+                },
+                {
+                  "counter": "tag:romance",
+                  "gte": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.family_prosperity.s2",
+          "need": [
+            {
+              "counter": "event:child_born",
+              "gte": 3
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.family_prosperity.s3",
+          "need": [
+            {
+              "counter": "event:grandchild_born",
+              "gte": 5
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.family_prosperity.s4",
+          "need": [
+            {
+              "counter": "event:four_generations_alive",
+              "gte": 1
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "family_roots"
+    },
+    {
+      "id": "rise_in_status",
+      "group": "adult",
+      "nameKey": "aspiration.rise_in_status",
+      "descKey": "aspiration.rise_in_status.desc",
+      "icon": "ui.coin",
+      "stages": [
+        {
+          "textKey": "aspiration.rise_in_status.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:estate_raised",
+                  "gte": 1
+                },
+                {
+                  "counter": "tag:duty",
+                  "gte": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.rise_in_status.s2",
+          "need": [
+            {
+              "counter": "event:estate_raised",
+              "gte": 2
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.rise_in_status.s3",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:married_noble",
+                  "gte": 1
+                },
+                {
+                  "counter": "event:title_granted",
+                  "gte": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.rise_in_status.s4",
+          "need": [
+            {
+              "counter": "event:house_ennobled",
+              "gte": 1
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "born_noble"
+    },
+    {
+      "id": "lifelong_love",
+      "group": "adult",
+      "nameKey": "aspiration.lifelong_love",
+      "descKey": "aspiration.lifelong_love.desc",
+      "icon": "social",
+      "stages": [
+        {
+          "textKey": "aspiration.lifelong_love.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:first_love",
+                  "gte": 1
+                },
+                {
+                  "counter": "tag:romance",
+                  "gte": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.lifelong_love.s2",
+          "need": [
+            {
+              "counter": "event:married",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.lifelong_love.s3",
+          "need": [
+            {
+              "counter": "event:marriage_kept",
+              "gte": {
+                "value": 36000,
+                "scale": "lifespan"
+              }
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.lifelong_love.s4",
+          "need": [
+            {
+              "counter": "event:elder_slept_beside_spouse",
+              "gte": 10
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "eternal_lover"
+    },
+    {
+      "id": "legendary_rake",
+      "group": "adult",
+      "nameKey": "aspiration.legendary_rake",
+      "descKey": "aspiration.legendary_rake.desc",
+      "icon": "lute",
+      "stages": [
+        {
+          "textKey": "aspiration.legendary_rake.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:lover_gained",
+                  "gte": 3
+                },
+                {
+                  "counter": "tag:flirt",
+                  "gte": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.legendary_rake.s2",
+          "need": [
+            {
+              "counter": "event:lover_gained",
+              "gte": 10
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.legendary_rake.s3",
+          "need": [
+            {
+              "counter": "event:scandal_survived",
+              "gte": 3
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.legendary_rake.s4",
+          "need": [
+            {
+              "counter": "event:lover_gained",
+              "gte": 25
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "fatal_charm"
+    },
+    {
+      "id": "village_sage",
+      "group": "adult",
+      "nameKey": "aspiration.village_sage",
+      "descKey": "aspiration.village_sage.desc",
+      "icon": "book",
+      "stages": [
+        {
+          "textKey": "aspiration.village_sage.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:learned_letters",
+                  "gte": 1
+                },
+                {
+                  "counter": "tag:read",
+                  "gte": 15
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.village_sage.s2",
+          "need": [
+            {
+              "counter": "event:scholarly_skill_level5",
+              "gte": 3
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.village_sage.s3",
+          "need": [
+            {
+              "counter": "event:book_written",
+              "gte": 3
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.village_sage.s4",
+          "need": [
+            {
+              "counter": "event:disciple_taken",
+              "gte": 3
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "sages_word"
+    },
+    {
+      "id": "bard",
+      "group": "adult",
+      "nameKey": "aspiration.bard",
+      "descKey": "aspiration.bard.desc",
+      "icon": "lute",
+      "stages": [
+        {
+          "textKey": "aspiration.bard.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:performed",
+                  "gte": 1
+                },
+                {
+                  "counter": "tag:music",
+                  "gte": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.bard.s2",
+          "need": [
+            {
+              "counter": "event:inn_performance",
+              "gte": 20
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.bard.s3",
+          "need": [
+            {
+              "counter": "event:castle_performance",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.bard.s4",
+          "need": [
+            {
+              "counter": "event:song_became_legend",
+              "gte": 1
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "peoples_song"
+    },
+    {
+      "id": "healer",
+      "group": "adult",
+      "nameKey": "aspiration.healer",
+      "descKey": "aspiration.healer.desc",
+      "icon": "plant",
+      "stages": [
+        {
+          "textKey": "aspiration.healer.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:herb_species_gathered",
+                  "gte": 10
+                },
+                {
+                  "counter": "tag:nature",
+                  "gte": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.healer.s2",
+          "need": [
+            {
+              "counter": "event:patient_healed",
+              "gte": 10
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.healer.s3",
+          "need": [
+            {
+              "counter": "event:patient_healed_epidemic",
+              "gte": 5
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.healer.s4",
+          "need": [
+            {
+              "counter": "event:renowned_healer",
+              "gte": 1
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "healing_hand"
+    },
+    {
+      "id": "revenge",
+      "group": "adult",
+      "nameKey": "aspiration.revenge",
+      "descKey": "aspiration.revenge.desc",
+      "icon": "eye",
+      "stages": [
+        {
+          "textKey": "aspiration.revenge.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:nemesis_named",
+                  "gte": 1
+                },
+                {
+                  "counter": "tag:argue",
+                  "gte": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.revenge.s2",
+          "need": [
+            {
+              "counter": "event:nemesis_honor_halved",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.revenge.s3",
+          "need": [
+            {
+              "counter": "event:nemesis_house_fallen",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.revenge.s4",
+          "need": [
+            {
+              "counter": "event:stood_at_nemesis_grave",
+              "gte": 1
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "cold_heart"
+    },
+    {
+      "id": "demesne_prosperity",
+      "group": "noble",
+      "nameKey": "aspiration.demesne_prosperity",
+      "descKey": "aspiration.demesne_prosperity.desc",
+      "icon": "plant",
+      "stages": [
+        {
+          "textKey": "aspiration.demesne_prosperity.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:estate_morale_60",
+                  "gte": 1
+                },
+                {
+                  "counter": "tag:duty",
+                  "gte": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.demesne_prosperity.s2",
+          "need": [
+            {
+              "counter": "event:estate_morale_80",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.demesne_prosperity.s3",
+          "need": [
+            {
+              "counter": "event:demesne_population_grew",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.demesne_prosperity.s4",
+          "need": [
+            {
+              "counter": "event:harvest_without_starvation",
+              "gte": 3
+            },
+            {
+              "counter": "event:estate_morale_80",
+              "gte": 1
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "wise_lord"
+    },
+    {
+      "id": "court_power",
+      "group": "noble",
+      "nameKey": "aspiration.court_power",
+      "descKey": "aspiration.court_power.desc",
+      "icon": "ui.coin",
+      "stages": [
+        {
+          "textKey": "aspiration.court_power.s1_early",
+          "need": [
+            {
+              "any": [
+                {
+                  "counter": "event:presented_at_court",
+                  "gte": 1
+                },
+                {
+                  "counter": "tag:social",
+                  "gte": 20
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.court_power.s2",
+          "need": [
+            {
+              "counter": "event:court_ally_made",
+              "gte": 3
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.court_power.s3",
+          "need": [
+            {
+              "counter": "event:royal_office",
+              "gte": 1
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.court_power.s4",
+          "need": [
+            {
+              "counter": "event:house_fame_legendary",
+              "gte": 1
+            }
+          ]
+        }
+      ],
+      "rewardTrait": "court_tongue"
+    },
+    {
+      "id": "curious_child",
+      "group": "child",
+      "nameKey": "aspiration.curious_child",
+      "descKey": "aspiration.curious_child.desc",
+      "icon": "book",
+      "stages": [
+        {
+          "textKey": "aspiration.curious_child.s1",
+          "need": [
+            {
+              "counter": "done:bookshelf.read",
+              "gte": 3
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.curious_child.s2",
+          "need": [
+            {
+              "counter": "tag:nature",
+              "gte": 5
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.curious_child.s3",
+          "need": [
+            {
+              "counter": "tag:study",
+              "gte": 5
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.curious_child.s4",
+          "need": [
+            {
+              "counter": "event:learned_letters",
+              "gte": 1
+            },
+            {
+              "counter": "tag:read",
+              "gte": 20
+            }
+          ]
+        }
+      ],
+      "rewardTraitChoices": [
+        "bookworm",
+        "creative",
+        "nature_lover"
+      ]
+    },
+    {
+      "id": "popular_child",
+      "group": "child",
+      "nameKey": "aspiration.popular_child",
+      "descKey": "aspiration.popular_child.desc",
+      "icon": "social",
+      "stages": [
+        {
+          "textKey": "aspiration.popular_child.s1",
+          "need": [
+            {
+              "counter": "social:social.chat",
+              "gte": 10
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.popular_child.s2",
+          "need": [
+            {
+              "counter": "social:social.joke",
+              "gte": 10
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.popular_child.s3",
+          "need": [
+            {
+              "counter": "event:friend_made",
+              "gte": 3
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.popular_child.s4",
+          "need": [
+            {
+              "counter": "event:best_friend_made",
+              "gte": 1
+            }
+          ]
+        }
+      ],
+      "rewardTraitChoices": [
+        "sociable",
+        "cheerful",
+        "kind"
+      ]
+    },
+    {
+      "id": "sturdy_child",
+      "group": "child",
+      "nameKey": "aspiration.sturdy_child",
+      "descKey": "aspiration.sturdy_child.desc",
+      "icon": "axe",
+      "stages": [
+        {
+          "textKey": "aspiration.sturdy_child.s1",
+          "need": [
+            {
+              "counter": "tag:exercise",
+              "gte": 5
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.sturdy_child.s2",
+          "need": [
+            {
+              "counter": "done:yard.walk",
+              "gte": 10
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.sturdy_child.s3",
+          "need": [
+            {
+              "counter": "done:well.draw_water",
+              "gte": 10
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.sturdy_child.s4",
+          "need": [
+            {
+              "counter": "tag:exercise",
+              "gte": 30
+            }
+          ]
+        }
+      ],
+      "rewardTraitChoices": [
+        "active",
+        "brave",
+        "diligent"
+      ]
+    },
+    {
+      "id": "good_child",
+      "group": "child",
+      "nameKey": "aspiration.good_child",
+      "descKey": "aspiration.good_child.desc",
+      "icon": "candle",
+      "stages": [
+        {
+          "textKey": "aspiration.good_child.s1",
+          "need": [
+            {
+              "counter": "social:social.hug",
+              "gte": 5
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.good_child.s2",
+          "need": [
+            {
+              "counter": "tag:clean",
+              "gte": 10
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.good_child.s3",
+          "need": [
+            {
+              "counter": "social:social.comfort",
+              "gte": 5
+            }
+          ]
+        },
+        {
+          "textKey": "aspiration.good_child.s4",
+          "need": [
+            {
+              "counter": "tag:charity",
+              "gte": 3
+            },
+            {
+              "counter": "tag:kind",
+              "gte": 20
+            }
+          ]
+        }
+      ],
+      "rewardTraitChoices": [
+        "kind",
+        "humble",
+        "just"
+      ]
+    }
+  ]
+}

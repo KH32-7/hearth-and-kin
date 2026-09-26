@@ -1,0 +1,686 @@
+{
+  "$comment": "GDD 17-1 스킬 25개 (작업자 A, contracts-m4 3절). 레벨 n→n+1 필요 XP = a × n^p. xpBase = 스킬 활동 1분당 XP (lifespan 속도: ÷ 수명 배수). tags = 레시피가 아닌 상호작용에서 경험치를 주는 태그 (레시피는 recipe.skill 로만). levels 효과: quality(+품질 단계) speed(작업 시간 배수) success(+% 성공률) masterwork(걸작 가능, 17-1) unlockKey(해금 설명)",
+  "xpBase": {
+    "value": 0.45,
+    "scale": "lifespan"
+  },
+  "curve": {
+    "a": 100,
+    "p": 1.4
+  },
+  "maxLevel": 10,
+  "bundles": {
+    "labor": [
+      "fitness",
+      "farming",
+      "animal_care",
+      "smithing",
+      "masonry"
+    ],
+    "scholarly": [
+      "reading",
+      "reckoning",
+      "latin",
+      "herbalism",
+      "medicine"
+    ],
+    "creative": [
+      "music",
+      "singing",
+      "dance",
+      "storytelling",
+      "needlework",
+      "carpentry"
+    ]
+  },
+  "skills": {
+    "cooking": {
+      "nameKey": "skill.cooking",
+      "icon": "stew",
+      "category": "household",
+      "tags": [
+        "cook"
+      ],
+      "levels": {
+        "1": {
+          "unlockKey": "skill.cooking.l1"
+        },
+        "2": {
+          "unlockKey": "skill.cooking.l2"
+        },
+        "3": {
+          "unlockKey": "skill.cooking.l3"
+        },
+        "4": {
+          "speed": 0.9,
+          "unlockKey": "skill.cooking.l4"
+        },
+        "5": {
+          "quality": 1
+        },
+        "6": {
+          "unlockKey": "skill.cooking.l6"
+        },
+        "7": {
+          "unlockKey": "skill.cooking.l7"
+        },
+        "8": {
+          "masterwork": true
+        },
+        "10": {
+          "quality": 1,
+          "speed": 0.8
+        }
+      }
+    },
+    "baking": {
+      "nameKey": "skill.baking",
+      "icon": "bread",
+      "category": "household",
+      "tags": [
+        "bake"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.baking.l2"
+        },
+        "3": {
+          "unlockKey": "skill.baking.l3"
+        },
+        "4": {
+          "speed": 0.9,
+          "unlockKey": "skill.baking.l4"
+        },
+        "5": {
+          "quality": 1,
+          "unlockKey": "skill.baking.l5"
+        },
+        "8": {
+          "masterwork": true
+        },
+        "10": {
+          "quality": 1,
+          "speed": 0.8
+        }
+      }
+    },
+    "brewing": {
+      "nameKey": "skill.brewing",
+      "icon": "item.ale",
+      "category": "household",
+      "tags": [
+        "brew"
+      ],
+      "levels": {
+        "1": {
+          "unlockKey": "skill.brewing.l1"
+        },
+        "2": {
+          "unlockKey": "skill.brewing.l2"
+        },
+        "3": {
+          "unlockKey": "skill.brewing.l3"
+        },
+        "4": {
+          "speed": 0.9,
+          "unlockKey": "skill.brewing.l4"
+        },
+        "5": {
+          "quality": 1,
+          "unlockKey": "skill.brewing.l5"
+        },
+        "8": {
+          "masterwork": true
+        },
+        "10": {
+          "quality": 1,
+          "speed": 0.8
+        }
+      }
+    },
+    "needlework": {
+      "nameKey": "skill.needlework",
+      "icon": "yarn",
+      "category": "household",
+      "tags": [
+        "sew"
+      ],
+      "levels": {
+        "1": {
+          "unlockKey": "skill.needlework.l1"
+        },
+        "2": {
+          "unlockKey": "skill.needlework.l2"
+        },
+        "4": {
+          "speed": 0.9,
+          "unlockKey": "skill.needlework.l4"
+        },
+        "5": {
+          "quality": 1
+        },
+        "6": {
+          "unlockKey": "skill.needlework.l6"
+        },
+        "8": {
+          "masterwork": true
+        },
+        "10": {
+          "quality": 1,
+          "speed": 0.8
+        }
+      }
+    },
+    "farming": {
+      "nameKey": "skill.farming",
+      "icon": "plant",
+      "category": "household",
+      "tags": [
+        "farm"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.farming.l2"
+        },
+        "4": {
+          "speed": 0.9
+        },
+        "5": {
+          "quality": 1
+        },
+        "7": {
+          "unlockKey": "skill.farming.l7"
+        },
+        "10": {
+          "quality": 1,
+          "speed": 0.8
+        }
+      }
+    },
+    "animal_care": {
+      "nameKey": "skill.animal_care",
+      "icon": "raven:a1892",
+      "category": "household",
+      "tags": [
+        "animal"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.animal_care.l2"
+        },
+        "4": {
+          "speed": 0.9
+        },
+        "5": {
+          "quality": 1,
+          "unlockKey": "skill.animal_care.l5"
+        },
+        "8": {
+          "success": 20,
+          "unlockKey": "skill.animal_care.l8"
+        }
+      }
+    },
+    "smithing": {
+      "nameKey": "skill.smithing",
+      "icon": "raven:a333",
+      "category": "craft",
+      "tags": [
+        "smith"
+      ],
+      "levels": {
+        "1": {
+          "unlockKey": "skill.smithing.l1"
+        },
+        "2": {
+          "unlockKey": "skill.smithing.l2"
+        },
+        "3": {
+          "unlockKey": "skill.smithing.l3"
+        },
+        "4": {
+          "speed": 0.9,
+          "unlockKey": "skill.smithing.l4"
+        },
+        "5": {
+          "quality": 1,
+          "unlockKey": "skill.smithing.l5"
+        },
+        "6": {
+          "unlockKey": "skill.smithing.l6"
+        },
+        "8": {
+          "masterwork": true
+        },
+        "10": {
+          "quality": 1,
+          "speed": 0.8
+        }
+      }
+    },
+    "carpentry": {
+      "nameKey": "skill.carpentry",
+      "icon": "axe",
+      "category": "craft",
+      "tags": [
+        "woodwork",
+        "repair"
+      ],
+      "levels": {
+        "1": {
+          "unlockKey": "skill.carpentry.l1"
+        },
+        "2": {
+          "unlockKey": "skill.carpentry.l2"
+        },
+        "3": {
+          "unlockKey": "skill.carpentry.l3"
+        },
+        "4": {
+          "speed": 0.9,
+          "unlockKey": "skill.carpentry.l4"
+        },
+        "5": {
+          "quality": 1
+        },
+        "8": {
+          "masterwork": true
+        },
+        "10": {
+          "quality": 1,
+          "speed": 0.8
+        }
+      }
+    },
+    "masonry": {
+      "nameKey": "skill.masonry",
+      "icon": "raven:a4465",
+      "category": "craft",
+      "tags": [
+        "stonework"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.masonry.l2"
+        },
+        "4": {
+          "speed": 0.9
+        },
+        "5": {
+          "quality": 1,
+          "unlockKey": "skill.masonry.l5"
+        },
+        "8": {
+          "masterwork": true
+        },
+        "10": {
+          "quality": 1,
+          "speed": 0.8
+        }
+      }
+    },
+    "leatherwork": {
+      "nameKey": "skill.leatherwork",
+      "icon": "raven:a492",
+      "category": "craft",
+      "tags": [
+        "leather"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.leatherwork.l2"
+        },
+        "4": {
+          "speed": 0.9
+        },
+        "5": {
+          "quality": 1,
+          "unlockKey": "skill.leatherwork.l5"
+        },
+        "8": {
+          "masterwork": true
+        },
+        "10": {
+          "quality": 1,
+          "speed": 0.8
+        }
+      }
+    },
+    "reading": {
+      "nameKey": "skill.reading",
+      "icon": "book",
+      "category": "learning",
+      "tags": [
+        "read",
+        "study"
+      ],
+      "levels": {
+        "1": {
+          "unlockKey": "skill.reading.l1"
+        },
+        "3": {
+          "unlockKey": "skill.reading.l3"
+        },
+        "5": {
+          "speed": 0.85
+        },
+        "8": {
+          "unlockKey": "skill.reading.l8"
+        },
+        "10": {
+          "speed": 0.7
+        }
+      }
+    },
+    "reckoning": {
+      "nameKey": "skill.reckoning",
+      "icon": "raven:a332",
+      "category": "learning",
+      "tags": [
+        "reckon"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.reckoning.l2"
+        },
+        "4": {
+          "success": 10,
+          "unlockKey": "skill.reckoning.l4"
+        },
+        "6": {
+          "unlockKey": "skill.reckoning.l6"
+        },
+        "8": {
+          "success": 20
+        }
+      }
+    },
+    "latin": {
+      "nameKey": "skill.latin",
+      "icon": "raven:a1689",
+      "category": "learning",
+      "tags": [
+        "latin"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.latin.l2"
+        },
+        "5": {
+          "unlockKey": "skill.latin.l5"
+        },
+        "8": {
+          "unlockKey": "skill.latin.l8"
+        },
+        "10": {
+          "speed": 0.8
+        }
+      }
+    },
+    "herbalism": {
+      "nameKey": "skill.herbalism",
+      "icon": "item.herbs",
+      "category": "learning",
+      "tags": [
+        "herbal"
+      ],
+      "levels": {
+        "1": {
+          "unlockKey": "skill.herbalism.l1"
+        },
+        "3": {
+          "unlockKey": "skill.herbalism.l3"
+        },
+        "5": {
+          "success": 10
+        },
+        "8": {
+          "quality": 1
+        }
+      }
+    },
+    "medicine": {
+      "nameKey": "skill.medicine",
+      "icon": "raven:a193",
+      "category": "learning",
+      "tags": [
+        "heal"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.medicine.l2"
+        },
+        "4": {
+          "success": 10,
+          "unlockKey": "skill.medicine.l4"
+        },
+        "6": {
+          "unlockKey": "skill.medicine.l6"
+        },
+        "8": {
+          "success": 20,
+          "unlockKey": "skill.medicine.l8"
+        }
+      }
+    },
+    "music": {
+      "nameKey": "skill.music",
+      "icon": "lute",
+      "category": "art",
+      "tags": [
+        "music"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.music.l2"
+        },
+        "5": {
+          "quality": 1
+        },
+        "8": {
+          "quality": 1,
+          "unlockKey": "skill.music.l8"
+        },
+        "10": {
+          "unlockKey": "skill.music.l10"
+        }
+      }
+    },
+    "singing": {
+      "nameKey": "skill.singing",
+      "icon": "raven:a3333",
+      "category": "art",
+      "tags": [
+        "sing"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.singing.l2"
+        },
+        "5": {
+          "quality": 1
+        },
+        "8": {
+          "quality": 1,
+          "unlockKey": "skill.singing.l8"
+        }
+      }
+    },
+    "dance": {
+      "nameKey": "skill.dance",
+      "icon": "raven:a2594",
+      "category": "art",
+      "tags": [
+        "dance"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.dance.l2"
+        },
+        "5": {
+          "quality": 1
+        },
+        "8": {
+          "quality": 1,
+          "unlockKey": "skill.dance.l8"
+        }
+      }
+    },
+    "storytelling": {
+      "nameKey": "skill.storytelling",
+      "icon": "bubble.speech",
+      "category": "art",
+      "tags": [
+        "story"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.storytelling.l2"
+        },
+        "4": {
+          "success": 5
+        },
+        "6": {
+          "success": 10,
+          "unlockKey": "skill.storytelling.l6"
+        },
+        "9": {
+          "unlockKey": "skill.storytelling.l9"
+        }
+      }
+    },
+    "fitness": {
+      "nameKey": "skill.fitness",
+      "icon": "raven:a2593",
+      "category": "body",
+      "tags": [
+        "exercise"
+      ],
+      "levels": {
+        "3": {
+          "speed": 0.95
+        },
+        "6": {
+          "speed": 0.9
+        },
+        "9": {
+          "speed": 0.85,
+          "unlockKey": "skill.fitness.l9"
+        }
+      }
+    },
+    "martial": {
+      "nameKey": "skill.martial",
+      "icon": "raven:a4449",
+      "category": "body",
+      "tags": [
+        "martial"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.martial.l2"
+        },
+        "4": {
+          "success": 10
+        },
+        "7": {
+          "success": 20,
+          "unlockKey": "skill.martial.l7"
+        },
+        "10": {
+          "success": 30
+        }
+      }
+    },
+    "archery": {
+      "nameKey": "skill.archery",
+      "icon": "raven:a4522",
+      "category": "body",
+      "tags": [
+        "archery"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.archery.l2"
+        },
+        "5": {
+          "success": 15
+        },
+        "8": {
+          "success": 25
+        }
+      }
+    },
+    "riding": {
+      "nameKey": "skill.riding",
+      "icon": "raven:a326",
+      "category": "body",
+      "tags": [
+        "ride"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.riding.l2"
+        },
+        "5": {
+          "success": 15,
+          "unlockKey": "skill.riding.l5"
+        },
+        "8": {
+          "success": 25,
+          "unlockKey": "skill.riding.l8"
+        }
+      }
+    },
+    "faith": {
+      "nameKey": "skill.faith",
+      "icon": "topic.faith",
+      "category": "faith",
+      "tags": [
+        "pray"
+      ],
+      "levels": {
+        "2": {
+          "unlockKey": "skill.faith.l2"
+        },
+        "5": {
+          "unlockKey": "skill.faith.l5"
+        },
+        "7": {
+          "unlockKey": "skill.faith.l7"
+        },
+        "9": {
+          "unlockKey": "skill.faith.l9"
+        }
+      }
+    },
+    "arcana": {
+      "nameKey": "skill.arcana",
+      "icon": "raven:a1685",
+      "category": "faith",
+      "tags": [
+        "arcane"
+      ],
+      "levels": {
+        "1": {
+          "unlockKey": "skill.arcana.l1"
+        },
+        "3": {
+          "success": 5,
+          "unlockKey": "skill.arcana.l3"
+        },
+        "5": {
+          "unlockKey": "skill.arcana.l5"
+        },
+        "7": {
+          "success": 10,
+          "unlockKey": "skill.arcana.l7"
+        },
+        "9": {
+          "success": 15,
+          "unlockKey": "skill.arcana.l9"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,3208 @@
+/**
+ * 시뮬레이션 본체 (M1: 한 사람의 하루). 렌더러/DOM 없이 돌아감 (BRIEF 0장 1).
+ * 한 번의 tick() = 게임 1분.
+ */
+import { Rng } from './core/rng';
+import type { NeedId, ObjectInstance, QueueItem } from './core/types';
+import { NEED_IDS } from './core/types';
+import type { SimData } from './data/simData';
+import { chooseAutonomous, needSolvable, type Candidate } from './action/autonomy';
+import type { SocialDef } from './data/schema';
+import { EMOTION_IDS } from './inner/emotion';
+import {
+  applyInteractionEffects,
+  applyStepEffects,
+  checkRequires,
+  resolveStep,
+  stepStillValid,
+  targetConditionsHold,
+  type Availability,
+} from './action/interactions';
+import { PathFinder } from './action/path';
+import { Builder, type BuildOp, type BuildResult } from './build/builder';
+import { evaluateRooms, roomMoodlet, type RoomInfo } from './build/rooms';
+import { Fire } from './build/fire';
+import { Town, type PeopleMember } from './town/town';
+import { LifeJudge } from './town/lifeJudge';
+import { Rumors } from './town/rumors';
+import type { LifeStage } from './people/person';
+import { NEED_INDEX, Person } from './people/person';
+import { World } from './world/world';
+import { Inner } from './inner/inner';
+import { Relations, firstImpression } from './social/relations';
+import { DEFAULT_RELATIONS, checkSocialRequires, interestsOf, isRomantic, rank, relationRules, socialChance } from './social/rules';
+import type { RelationsData } from './data/schema';
+import { Economy, type Account, type EstateId } from './econ/economy';
+import { Skills } from './people/skills';
+import { Farming } from './farm/farming';
+import { ATTITUDE, COMMUTE_MINUTES, dayPerformance, isWorkday, wageOf, type Attitude } from './people/careers';
+import type { ItemDef } from './data/simData';
+
+export const GOTO_ID = '__goto';
+const NO_TAGS: readonly string[] = [];
+/** 사람 메뉴에서 아예 빼는 이유 (지금 상황이 아니라 관계/신분/나이 조건) */
+const HIDE_REASONS = new Set(['reason.not_adult', 'reason.family', 'reason.already_met', 'reason.estate', 'reason.estate_above', 'reason.estate_below', 'reason.household', 'reason.not_household', 'reason.trait', 'reason.virtue', 'reason.sin', 'reason.relation', 'reason.relation_not']);
+const DX4 = [1, -1, 0, 0];
+const DY4 = [0, 0, 1, -1];
+
+export interface Notice {
+  /** 알림 순번 (단조 증가) */
+  seq?: number;
+  minute: number;
+  personId: number;
+  kind: string;
+  args?: Record<string, string | number>;
+}
+
+/**
+ * 상태를 바꾸는 플레이어/도구 입력. 모두 입력 로그에 {틱, 의도}로 남음 → 같은 시드 + 같은 로그 = 같은 결과 (BRIEF 0장 5)
+ */
+export type SimIntent =
+  | { kind: 'queue'; personId: number; interactionId: string; targetUid: number }
+  | { kind: 'goto'; personId: number; x: number; y: number }
+  | { kind: 'cancel'; personId: number; queueItemId: number }
+  | { kind: 'setNeed'; personId: number; need: NeedId; value: number }
+  | { kind: 'setObjectState'; uid: number; state: Record<string, number | boolean> }
+  | { kind: 'setTime'; minuteOfDay: number }
+  | { kind: 'setAutonomy'; enabled: boolean }
+  | { kind: 'spawn'; name: string; appearance: Record<string, unknown>; x?: number; y?: number; traits?: string[]; estate?: string; sex?: 'male' | 'female'; stage?: 'child' | 'teen' | 'adult' | 'elder' }
+  | { kind: 'choose'; personId: number; option: string }
+  | { kind: 'buyReward'; personId: number; reward: string }
+  | { kind: 'lockWish'; personId: number; wish: string; locked: boolean }
+  | { kind: 'setTraits'; personId: number; traits: string[] }
+  | { kind: 'setStress'; personId: number; value: number }
+  | { kind: 'addMoodlet'; personId: number; moodlet: string }
+  | { kind: 'invite'; personId: number; neighborId: string }
+  | { kind: 'sendHome'; personId: number }
+  | { kind: 'setRelation'; a: number; b: number; friendship?: number; romance?: number; respect?: number; flags?: string[]; met?: boolean }
+  | { kind: 'setCareer'; personId: number; careerId: string | null }
+  | { kind: 'setAttitude'; personId: number; attitude: Attitude }
+  | { kind: 'careerChoice'; personId: number; option: string }
+  | { kind: 'setShop'; open: boolean; priceMult?: number }
+  | { kind: 'setStock'; item: string; n: number }
+  | { kind: 'marketBuy'; personId: number; item: string; n: number }
+  | { kind: 'marketSell'; personId: number; item: string; n: number }
+  | { kind: 'build'; op: BuildOp }
+  | { kind: 'buildUndo' }
+  | { kind: 'buildRedo' }
+  | { kind: 'buildMode'; on: boolean }
+  /** 돈 받기 (빈 부지 시작 건축 자금 23-1, 사건 보상): 십일조 없음 */
+  | { kind: 'grant'; amount: number; reason: string }
+  /** 설정: 공사 시간 (23-3, 기본 꺼짐) */
+  | { kind: 'setConstruction'; on: boolean }
+  /** 화면 범위 (M6 세밀도: 칸, 1층 판 좌표). 카메라가 움직일 때 게임이 보냄 → 입력 로그 (재생 결정론) */
+  | { kind: 'setView'; x0: number; y0: number; x1: number; y1: number }
+  /** 세밀도 강제 (13-6 회귀 테스트, 도구용) */
+  | { kind: 'forceLod'; lod: 'full' | 'simple' | 'summary' | null };
+
+export interface LoggedIntent {
+  tick: number;
+  intent: SimIntent;
+}
+
+export interface MenuEntry {
+  interactionId: string;
+  nameKey: string;
+  icon: string;
+  available: boolean;
+  reasonKey?: string;
+  reasonArgs?: Record<string, string | number>;
+  /** 사회 상호작용: 분류, 지금 성공 확률(%) */
+  category?: string;
+  chance?: number;
+  /** 원형 메뉴 분류 항목: 안에 든 상호작용 수 */
+  count?: number;
+  /** 제작 레시피 분류 (요리/제빵/양조 …) */
+  group?: string;
+}
+
+export interface SimStats {
+  ticks: number;
+  /** 욕구별: 해결 가능한데 0인 채 연속 방치된 최장 분 */
+  maxNeglect: Record<NeedId, number>;
+  neglectStreak: Record<NeedId, number>;
+  stuckEvents: number;
+  unsticks: number;
+  clipViolations: number;
+  pathFails: number;
+  collapses: number;
+  accidents: number;
+  /** 사회 상호작용 성공/실패 (M3 분포 확인) */
+  socialOk: number;
+  socialFail: number;
+  visits: number;
+  /** 헛돎: 3분 넘게 걸리는 단계를 시작하고 2분 안에 끝낸 횟수 (깨자마자 다시 눕기, 시작 즉시 중단 반복 감지) */
+  shortEnds: number;
+  shortEndsBy: Record<string, number>;
+  completed: Record<string, number>;
+  aborted: Record<string, number>;
+  /** 행동별 분 (특성 대표 지표용, M2) */
+  minutesByInteraction: Record<string, number>;
+}
+
+function emptyNeedRecord(): Record<NeedId, number> {
+  return { hunger: 0, energy: 0, hygiene: 0, bladder: 0, fun: 0, social: 0, warmth: 0, comfort: 0 };
+}
+
+export class Simulation {
+  readonly world: World;
+  readonly rng: Rng;
+  readonly persons: Person[] = [];
+  readonly notices: Notice[] = [];
+  readonly stats: SimStats;
+  private readonly path: PathFinder;
+  private nextQueueId = 1;
+  private readonly candBuf: Candidate[] = [];
+  /** 디버그/테스트: 자율 끔 */
+  autonomyEnabled = true;
+  /** 입력 로그 (재생용) */
+  readonly inputLog: LoggedIntent[] = [];
+  /** 내면 엔진 (M2). 내면 데이터가 없으면 null */
+  readonly inner: Inner | null;
+  private readonly seed: number;
+  private nextPersonId = 1;
+  /** 관계 3축 (M3, GDD 14-1) */
+  readonly rel: Relations;
+  readonly relData: RelationsData;
+  /** 가게 (17-3): 조작 가문이 연 가게. 가격 배수(길드 권장 ±20%), 평판 0~100 */
+  readonly shop = { open: false, priceMult: 1, reputation: 30, sales: 0 };
+  /** 초대한 이웃: 도착 분 */
+  readonly pendingVisits: { neighborId: string; at: number; host: number }[] = [];
+  /** 부지 밖에 있는 이웃 (한 번 왔다 간 사람). 다시 오면 같은 인물(같은 id, 관계 유지) */
+  readonly away = new Map<string, Person>();
+  /** 마을 경제 (M4). economy.json 이 없으면 null */
+  readonly econ: Economy | null;
+  /** 스킬 (M4). skills.json 이 없으면 null */
+  readonly skills: Skills | null;
+  /** 농사 (M4). crops.json 이 없으면 null */
+  readonly farm: Farming | null;
+  private readonly skillBuf: string[] = [];
+  /** 조작 가문 시작 형편 (16-2 프리셋): 계정을 열 때 */
+  wealth: 'poor' | 'normal' | 'rich' = 'normal';
+  /** 건축/구매 모드 (M5). build.json 이 없으면 null */
+  readonly builder: Builder | null;
+  buildMode = false;
+  /** 화재 (23-5). build.json 이 없으면 null */
+  readonly fire: Fire | null;
+  /** 마을 (M6). 마을 데이터가 없으면 null (한 부지 모드) */
+  readonly town: Town | null;
+  /** 마을 소식 (18-3): 날, 종류, 인자 */
+  readonly news: { day: number; kind: string; args: Record<string, string | number> }[] = [];
+  /** 생애 판정기, 소문 (M6 마을) */
+  readonly judge: LifeJudge | null;
+  readonly rumors: Rumors | null;
+  /** 죽거나 떠난 사람 (연대기, 통계) */
+  readonly gone: { id: number; name: string; cause: string; day: number; household: number }[] = [];
+  private namePool: { male: string[]; female: string[] } = { male: [], female: [] };
+  /** 이번 틱에 끈 불 (행동이 다 끝난 뒤 치움) */
+  private putOut: number[] = [];
+  private roomsCache: RoomInfo[] = [];
+  private roomsAt = -1;
+  private roomsVersion = -1;
+
+  constructor(readonly data: SimData, seed: number) {
+    this.rng = new Rng(seed);
+    this.seed = seed;
+    this.world = new World(data);
+    this.path = new PathFinder(this.world.grid);
+    this.inner = data.inner && data.stress ? new Inner(this, data.inner, data.stress) : null;
+    this.relData = data.relations ?? DEFAULT_RELATIONS;
+    // 경제는 따로 시드 (경제를 켜도 인물 행동 난수 흐름이 흔들리지 않게)
+    this.econ = data.economy ? new Economy(data.economy, new Rng((seed * 31 + 7) >>> 0)) : null;
+    this.skills = data.skills ? new Skills(data.skills) : null;
+    this.farm = data.crops ? new Farming(data.crops) : null;
+    if (this.farm) for (const o of this.world.objects) if (this.isFarmObj(o)) this.farm.initState(o, (this.world.def(o.defId).tags ?? []).includes('orchard') ? 'apples' : undefined);
+    if (this.econ) this.world.money = () => this.econ!.account(1)?.money ?? 0;
+    this.rel = new Relations(relationRules(this.relData));
+    this.builder = data.build
+      ? new Builder({
+          world: this.world,
+          data,
+          persons: this.persons,
+          econ: this.econ,
+          account: () => this.econ?.account(1) ?? null,
+          estate: () => this.persons.find((q) => q.household === 1)?.estate ?? 'freeman',
+          abortUsing: (uid) => this.abortUsing(uid),
+          unstickAll: () => this.unstickAll(),
+          onConstruction: (_p, ok) => {
+            const host = this.persons.find((q) => q.household === 1);
+            if (host) this.notice(host, ok ? 'construction_done' : 'construction_failed');
+          },
+        })
+      : null;
+    if (this.builder && data.build?.construction.defaultOn) this.builder.construction = true;
+    this.town = data.town
+      ? new Town({
+          world: this.world, data, persons: this.persons, rng: this.rng,
+          addTownPerson: (m, hh, estate, x, y) => this.addTownPerson(m, hh, estate, x, y),
+          relate: (a, b, kind, f, r) => this.relateTown(a, b, kind, f, r),
+          findPath: (p, from, to) => {
+            this.path.who = this.walker(p);
+            const r = this.path.find(from, to, false);
+            this.path.who = null;
+            return r;
+          },
+          goTo: (p, cell) => {
+            if (p.action?.item.autonomous) this.abortAction(p, 'schedule');
+            p.queue = p.queue.filter((q) => !q.autonomous);
+            this.queueInteraction(p.id, GOTO_ID, cell, true);
+          },
+          abortAll: (p) => {
+            if (p.action) this.abortAction(p, 'lod');
+            p.queue = [];
+            this.world.release(p.id);
+            p.engagedWith = 0;
+            p.chatWith = 0;
+            p.pose = 'stand';
+            p.sleeping = false;
+          },
+          walkSpeed: () => this.data.balance.movement.walkTilesPerMinute,
+          engagedWithControlled: (p) => this.engagedWithControlled(p),
+        }, data.town.def, data.town.schedules)
+      : null;
+    if (this.town && data.town?.people) this.town.populate(data.town.people);
+    this.judge = this.town && data.story ? new LifeJudge(this.judgeHost(), data.story) : null;
+    this.rumors = this.town && data.story ? new Rumors(new Rng((seed * 977 + 3) >>> 0), data.story.rumor, this.town) : null;
+    for (const h of data.town?.people?.households ?? []) for (const m of h.members) this.namePool[m.sex].push(m.name);
+    this.fire = data.build
+      ? new Fire({
+          world: this.world,
+          data,
+          persons: this.persons,
+          notice: (p, kind, args) => this.notice(p, kind, args),
+          moodlet: (p, id) => this.addEngineMoodlet(p, id),
+          rush: (p, uid) => this.rushToFire(p, uid),
+          callNeighbor: () => this.callNeighborForFire(),
+          callHome: (p) => this.callHomeForFire(p),
+          abortUsingHook: (uid) => this.abortUsing(uid),
+        }, seed)
+      : null;
+    this.stats = {
+      ticks: 0, maxNeglect: emptyNeedRecord(), neglectStreak: emptyNeedRecord(),
+      stuckEvents: 0, unsticks: 0, clipViolations: 0, pathFails: 0, collapses: 0, accidents: 0, shortEnds: 0, shortEndsBy: {},
+      completed: {}, aborted: {}, minutesByInteraction: {}, socialOk: 0, socialFail: 0, visits: 0,
+    };
+  }
+
+  addPerson(
+    name: string,
+    x = this.data.lot.spawn.x + 0.5,
+    y = this.data.lot.spawn.y + 0.5,
+    opts: {
+      traits?: string[]; estate?: string; sex?: 'male' | 'female'; stage?: Person['stage'];
+      household?: number; virtue?: string | null; sin?: string | null; topics?: string[]; innerSeed?: number;
+    } = {},
+  ): Person {
+    const p = new Person(this.nextPersonId++, name, x, y);
+    for (const n of NEED_IDS) p.setNeed(n, this.data.needs.needs[n].start);
+    if (opts.estate) p.estate = opts.estate;
+    if (opts.sex) p.sex = opts.sex;
+    if (opts.stage) p.stage = opts.stage;
+    if (opts.household) p.household = opts.household;
+    if (opts.topics) p.topics = [...opts.topics];
+    // 경제: 조작 가문 가정 계정 (첫 인물의 신분으로)
+    if (this.econ && p.household < 100 && !this.econ.account(p.household)) this.econ.openAccount(p.household, p.estate as EstateId, this.wealth);
+    // 한 가구는 서로 아는 사이 (첫인상 없음)
+    for (const q of this.persons) if (q.household === p.household) this.rel.ensure(p.id, q.id).met = true;
+    this.persons.push(p);
+    // 내면: 인물마다 따로 시드 (시뮬레이션 진행과 무관하게 같은 인물은 같은 성격)
+    if (this.inner) {
+      this.inner.initPerson(p, new Rng(opts.innerSeed ?? (this.seed * 7919 + p.id * 104729) >>> 0), opts.traits);
+      if (opts.virtue !== undefined) p.virtue = opts.virtue;
+      if (opts.sin !== undefined) p.sin = opts.sin;
+      this.inner.invalidate(p);
+      this.inner.refreshWishes(p);
+    }
+    return p;
+  }
+
+  /** 인물 빼기 (방문객이 돌아감). 예약/붙잡힘/대기열 정리 */
+  removePerson(p: Person): void {
+    if (p.action) this.abortAction(p, 'left');
+    this.world.release(p.id);
+    for (const q of this.persons) {
+      if (q.engagedWith === p.id) q.engagedWith = 0;
+      if (q.chatWith === p.id) q.chatWith = 0;
+      if (q.action && this.data.social[q.action.item.interactionId] && q.action.item.targetUid === p.id) this.abortAction(q, 'target_left');
+      q.queue = q.queue.filter((it) => !(this.data.social[it.interactionId] && it.targetUid === p.id));
+    }
+    const i = this.persons.indexOf(p);
+    if (i >= 0) this.persons.splice(i, 1);
+    this.inner?.forget(p);
+    p.queue = [];
+    (p as { awayDay?: number }).awayDay = this.world.day();
+    p.engagedWith = 0;
+    p.chatWith = 0;
+    if (p.visitor) {
+      this.away.set(p.visitor.neighborId, p);
+      p.visitor = null;
+    }
+  }
+
+  /** 부지 안 또는 부지 밖(왔다 간 이웃) 인물 */
+  personAny(id: number): Person | undefined {
+    const p = this.persons.find((q) => q.id === id);
+    if (p) return p;
+    for (const q of this.away.values()) if (q.id === id) return q;
+    return undefined;
+  }
+
+  interests(p: Person): string[] {
+    return interestsOf(p, (this.relData as { traitTopics?: Record<string, string[]> }).traitTopics ?? {});
+  }
+
+  person(id: number): Person {
+    const p = this.persons.find((x) => x.id === id);
+    if (!p) throw new Error(`인물 없음 ${id}`);
+    return p;
+  }
+
+  /** 가족 전원이 자는 중이면 자동 가속 (GDD 13-8, 27-7) */
+  shouldAutoAccelerate(): boolean {
+    return this.persons.length > 0 && this.persons.every((p) => p.sleeping || p.hidden);
+  }
+
+  // ------------------------------------------------------------------ 명령
+
+  /** 모든 상태 변경 입력의 단일 창구: 로그를 남기고 적용 */
+  apply(intent: SimIntent): unknown {
+    this.inputLog.push({ tick: this.stats.ticks, intent: structuredCloneSafe(intent) });
+    switch (intent.kind) {
+      case 'queue':
+        return this.queueInteraction(intent.personId, intent.interactionId, intent.targetUid);
+      case 'goto':
+        return this.queueGoto(intent.personId, intent.x, intent.y);
+      case 'cancel':
+        this.cancelQueueItem(intent.personId, intent.queueItemId);
+        return true;
+      case 'setNeed':
+        this.person(intent.personId).setNeed(intent.need, intent.value);
+        return true;
+      case 'setObjectState': {
+        const o = this.world.byUid.get(intent.uid);
+        if (o) Object.assign(o.state, intent.state);
+        this.world.updateRoomTemps(true);
+        return !!o;
+      }
+      case 'setTime': {
+        const w = this.world;
+        const dayLen = this.data.balance.time.dayMinutes;
+        const before = w.minute;
+        w.minute = Math.floor(w.minute / dayLen) * dayLen + intent.minuteOfDay;
+        this.shiftTime(w.minute - before);
+        w.updateRoomTemps(true);
+        return { minute: w.minute };
+      }
+      case 'setAutonomy':
+        this.autonomyEnabled = intent.enabled;
+        return true;
+      case 'spawn': {
+        const p = this.addPerson(intent.name, intent.x, intent.y, { traits: intent.traits, estate: intent.estate, sex: intent.sex, stage: intent.stage });
+        p.appearance = intent.appearance;
+        return { id: p.id };
+      }
+      case 'choose':
+        return this.inner?.choose(this.person(intent.personId), intent.option) ?? false;
+      case 'buyReward':
+        return this.inner?.buyReward(this.person(intent.personId), intent.reward) ?? false;
+      case 'lockWish': {
+        const w = this.person(intent.personId).wishes.find((x) => x.id === intent.wish);
+        if (w) w.locked = intent.locked;
+        return !!w;
+      }
+      case 'setTraits': {
+        const p = this.person(intent.personId);
+        p.traits = [...intent.traits];
+        this.inner?.invalidate(p);
+        return true;
+      }
+      case 'setStress':
+        if (this.inner) {
+          const p = this.person(intent.personId);
+          p.stress = 0;
+          this.inner.addStress(p, intent.value);
+        }
+        return true;
+      case 'addMoodlet':
+        return this.inner?.addMoodlet(this.person(intent.personId), intent.moodlet) ?? false;
+      case 'invite':
+        return this.invite(intent.personId, intent.neighborId);
+      case 'sendHome': {
+        const p = this.persons.find((q) => q.id === intent.personId);
+        if (!p?.visitor) return false;
+        this.startLeaving(p);
+        return true;
+      }
+      case 'setCareer':
+        return this.setCareer(this.person(intent.personId), intent.careerId);
+      case 'setAttitude': {
+        const p = this.person(intent.personId);
+        if (p.career) p.career.attitude = intent.attitude;
+        return !!p.career;
+      }
+      case 'careerChoice':
+        return this.careerChoice(this.person(intent.personId), intent.option);
+      case 'marketBuy': {
+        // 장터에서 사기 (장부 가격, 돈만큼). 전략 봇/장터 창 (17-8)
+        const p = this.person(intent.personId);
+        const a = this.account(p);
+        const def = this.item(intent.item);
+        if (!this.econ || !a || !def) return 0;
+        const got = this.econ.buy(a, def, intent.n, def.food ? 'food' : 'goods');
+        this.world.stock[intent.item] = (this.world.stock[intent.item] ?? 0) + got;
+        if (got) this.setQuality(intent.item, got, 1);
+        return got;
+      }
+      case 'marketSell': {
+        const p = this.person(intent.personId);
+        const a = this.account(p);
+        const def = this.item(intent.item);
+        const n = Math.min(intent.n, this.world.stock[intent.item] ?? 0);
+        if (!this.econ || !a || !def || n <= 0) return 0;
+        this.world.stock[intent.item] -= n;
+        return this.econ.sell(a, def, n, 'sale');
+      }
+      case 'setStock':
+        this.world.stock[intent.item] = Math.max(0, intent.n);
+        return true;
+      case 'build': {
+        if (!this.builder) {
+          const r: BuildResult = { ok: false, reason: 'disabled', cost: 0, warnings: [] };
+          return r;
+        }
+        return this.builder.apply(intent.op);
+      }
+      case 'buildUndo':
+        return this.builder?.undo() ?? null;
+      case 'buildRedo':
+        return this.builder?.redo() ?? null;
+      case 'grant': {
+        const a = this.econ?.account(1);
+        if (!a || !this.econ) return false;
+        this.econ.earn(a, Math.max(0, Math.round(intent.amount)), intent.reason, false);
+        return true;
+      }
+      case 'setView':
+        if (this.town) this.town.view = { x0: intent.x0, y0: intent.y0, x1: intent.x1, y1: intent.y1 };
+        return true;
+      case 'forceLod':
+        if (this.town) {
+          this.town.forceLod = intent.lod;
+          this.town.updateLod(this.world.minute);
+        }
+        return true;
+      case 'setConstruction':
+        if (this.builder) this.builder.construction = intent.on;
+        return true;
+      case 'buildMode':
+        this.buildMode = intent.on;
+        if (!intent.on) this.builder?.clearHistory();
+        return true;
+      case 'setShop':
+        this.shop.open = intent.open;
+        if (intent.priceMult !== undefined) this.shop.priceMult = Math.max(0.8, Math.min(1.2, intent.priceMult));
+        return { ...this.shop };
+      case 'setRelation': {
+        const r = this.rel.ensure(intent.a, intent.b);
+        if (intent.friendship !== undefined) r.friendship = intent.friendship;
+        if (intent.romance !== undefined) r.romance = intent.romance;
+        if (intent.respect !== undefined) {
+          r.respectAB = intent.respect;
+          r.respectBA = intent.respect;
+        }
+        if (intent.met !== undefined) r.met = intent.met;
+        for (const f of intent.flags ?? []) r.flags.add(f);
+        return true;
+      }
+    }
+  }
+
+  /** 입력 로그 재생: 새 시뮬레이션에 같은 틱마다 같은 의도를 적용하며 ticks 틱 진행 */
+  static replay(data: SimData, seed: number, persons: Array<string | { name: string; estate?: string; sex?: string; stage?: string }>, log: LoggedIntent[], ticks: number): Simulation {
+    const sim = new Simulation(data, seed);
+    for (const n of persons) {
+      if (typeof n === 'string') sim.addPerson(n);
+      else sim.addPerson(n.name, undefined, undefined, { estate: n.estate, sex: n.sex as never, stage: n.stage as never });
+    }
+    let li = 0;
+    for (let t = 0; t <= ticks; t++) {
+      while (li < log.length && log[li].tick === sim.stats.ticks) sim.apply(log[li++].intent);
+      if (t < ticks) sim.tick();
+    }
+    return sim;
+  }
+
+  queueInteraction(personId: number, interactionId: string, targetUid: number, autonomous = false): { ok: boolean; reason?: string } {
+    const p = this.person(personId);
+    if (interactionId !== GOTO_ID && !this.data.interactions[interactionId] && !this.data.social[interactionId]) return { ok: false, reason: 'unknown' };
+    if (!autonomous && p.queue.length >= this.data.balance.queue.maxLength) return { ok: false, reason: 'queue_full' };
+    if (!autonomous) {
+      // 플레이어 명령은 자율 행동을 밀어냄 (심즈와 같음). 남이 자율로 건 대화에 붙잡혀 있으면 풀려남
+      this.releaseEngaged(p);
+      if (p.action?.item.autonomous) this.abortAction(p, 'player_override');
+      p.queue = p.queue.filter((q) => !q.autonomous);
+      if (p.collapse) return { ok: false, reason: 'incapacitated' };
+    }
+    const item: QueueItem = { id: this.nextQueueId++, interactionId, targetUid, autonomous };
+    p.queue.push(item);
+    return { ok: true };
+  }
+
+  /** 땅 클릭: 그 칸으로 걸어가기 (targetUid 자리에 칸 인덱스를 넣음) */
+  queueGoto(personId: number, x: number, y: number): { ok: boolean } {
+    const g = this.world.grid;
+    if (!g.inBounds(x, y) || !g.walkable(g.idx(x, y))) return { ok: false };
+    return this.queueInteraction(personId, GOTO_ID, g.idx(x, y));
+  }
+
+  /** 다른 사람의 자율 대화에 붙잡혀 있으면 그 대화를 끝냄 (플레이어 명령/취소가 우선) */
+  private releaseEngaged(p: Person): void {
+    if (!p.engagedWith) return;
+    const partner = this.persons.find((q) => q.id === p.engagedWith);
+    if (partner?.action?.item.autonomous) this.abortAction(partner, 'player_override');
+    p.engagedWith = 0;
+  }
+
+  cancelQueueItem(personId: number, queueItemId: number): void {
+    const p = this.person(personId);
+    this.releaseEngaged(p);
+    if (p.action && p.action.item.id === queueItemId) {
+      this.abortAction(p, 'cancelled');
+      return;
+    }
+    p.queue = p.queue.filter((q) => q.id !== queueItemId);
+  }
+
+  menuFor(personId: number, targetUid: number): MenuEntry[] {
+    const p = this.person(personId);
+    const obj = this.world.byUid.get(targetUid);
+    if (!obj) return [];
+    const out: MenuEntry[] = [];
+    for (const c of this.data.compiled.byDef.get(obj.defId) ?? []) {
+      const ia = c.def;
+      let av: Availability = checkRequires(this.world, ia, obj);
+      // 밭 작업: 지금 밭 상태에 맞지 않는 작업(가뭄 아닐 때 물 대기, 익기 전 수확 …)은 메뉴에서 뺌
+      if (!av.ok && c.id.startsWith('farm.') && /^reason\.(min|max)\./.test(av.reasonKey ?? '')) continue;
+      const fr = this.farmOk(p, c.id, obj);
+      if (av.ok && fr) av = { ok: false, reasonKey: fr };
+      if (fr === 'reason.sow_season' || fr === 'reason.not_garden' || fr === 'reason.not_field') continue;
+      const rs = this.recipeSkillOk(p, c.id);
+      if (!rs.ok) {
+        // 스킬이 한참 모자란 레시피는 메뉴에서 뺌 (다음 레벨 것만 회색으로)
+        if ((rs.need ?? 0) - (rs.have ?? 0) > 1) continue;
+        av = { ok: false, reasonKey: 'reason.skill_low', reasonArgs: { skill: `skill.${rs.skill}`, n: rs.need ?? 0 } };
+      }
+      if (av.ok && !resolveStep(this.world, p.id, p.x, p.y, ia.steps[0], obj)) av = { ok: false, reasonKey: 'reason.no_slot' };
+      const group = (ia as { group?: string }).group;
+      out.push({ interactionId: c.id, nameKey: ia.nameKey, icon: ia.icon, available: av.ok, reasonKey: av.reasonKey, reasonArgs: av.reasonArgs, group });
+    }
+    return out;
+  }
+
+  // ------------------------------------------------------------------ 틱
+
+  tick(): void {
+    const w = this.world;
+    w.minute++;
+    this.stats.ticks++;
+    const b = this.data.balance;
+    if (w.minute % b.temperature.roomUpdateMinutes === 0) w.updateRoomTemps();
+    if (this.data.build && w.minute % this.data.build.rooms.checkMinutes === 0) this.roomMoodlets();
+    for (const o of w.objects) {
+      if (o.state.lit && this.world.kindOf(o.defId) === 'hearth') {
+        o.state.fuelMin = Number(o.state.fuelMin) - 1;
+        if (Number(o.state.fuelMin) <= 0) {
+          o.state.lit = false;
+          o.state.fuelMin = 0;
+        }
+      }
+    }
+    if (w.minute % b.time.dayMinutes === 0) {
+      this.newDay(w.day());
+      const house = (a: number, c: number) => {
+        const pa = this.personAny(a);
+        const pc = this.personAny(c);
+        return !!pa && !!pc && pa.household === pc.household;
+      };
+      this.rel.decayDaily(house, (id, t) => !!this.personAny(id)?.traits.includes(t));
+    }
+    this.updateVisits();
+    const town = this.town;
+    if (town && w.minute % (this.data.story?.lod.checkMinutes ?? 10) === 0) town.updateLod(w.minute);
+    for (const p of [...this.persons]) {
+      // 마을 세밀도 (13-6): 간이는 길 따라 걷기만, 요약은 10분마다 욕구만, 아기/유아는 엄마 곁 (M7)
+      if (town && p.lod !== 'full') {
+        if (p.lod === 'simple') town.simpleTick(p, w.minute);
+        else town.summaryTick(p, w.minute);
+        continue;
+      }
+      if (p.infant) continue;
+      // trail은 스냅샷을 보낼 때 비움(takeTrail) → 한 스냅샷에 여러 틱이 들어도 이동 경로가 끊기지 않음
+      if (p.trail.length === 0) p.trail.push(p.x, p.y);
+      if (p.trail.length > 512) p.trail.splice(0, p.trail.length - 2);
+      this.updateNeeds(p);
+      this.inner?.tick(p);
+      this.updatePerson(p);
+      if (this.inner) this.updateSmoke(p);
+      if (p.trail[p.trail.length - 2] !== p.x || p.trail[p.trail.length - 1] !== p.y) p.trail.push(p.x, p.y);
+      this.trackStats(p);
+    }
+    this.updateMultitask();
+    this.fire?.tick();
+    this.builder?.tickConstruction(w.minuteOfDay());
+    if (this.rumors && w.minute % 60 === 0) this.rumors.hourly(this.persons, w.hour(), w.day());
+    if (this.putOut.length) {
+      for (const uid of this.putOut) this.fire?.removeByUid(uid, true);
+      this.putOut.length = 0;
+    }
+  }
+
+  private noticeSeq = 0;
+
+  notice(p: Person, kind: string, args?: Record<string, string | number>): void {
+    // 마을(M6): 조작 가문 밖 사람의 알림은 띄우지 않음 (마을 소식은 town_news 로 따로)
+    if (this.town && p.household !== 1) return;
+    this.notices.push({ seq: ++this.noticeSeq, minute: this.world.minute, personId: p.id, kind, args });
+    if (this.notices.length > 200) this.notices.splice(0, this.notices.length - 200);
+  }
+
+  private currentCompiledStep(p: Person) {
+    if (!p.action || p.action.item.interactionId === GOTO_ID) return null;
+    return this.data.compiled.byId.get(p.action.item.interactionId)?.steps[p.action.stepIndex] ?? null;
+  }
+
+  /** 욕구 i 를 지금 해결할 수 있는가 (몇 분마다 다시 계산하는 캐시) */
+  solvable(p: Person, i: number): boolean {
+    const every = this.data.balance.autonomy.solvableRecheckMinutes;
+    if (this.world.minute - p.solvableAt[i] >= every) {
+      p.solvableAt[i] = this.world.minute;
+      p.solvableVal[i] = needSolvable(this.data, this.world, p, i, (c, bg) => this.reachable(p, c, bg)) ? 1 : 0;
+    }
+    return p.solvableVal[i] === 1;
+  }
+
+
+  private updateNeeds(p: Person): void {
+    if (p.hidden && p.career && p.action?.item.interactionId === `work.${p.career.id}` && this.data.careers?.[p.career.id]?.type === 'journey') return;
+    const nd = this.data.needs;
+    const b = this.data.balance;
+    const cstep = p.action?.phase === 'perform' ? this.currentCompiledStep(p) : null;
+    // 래빗홀 근무/일감 중: 일터에서 먹고 볼일 보고 쉼 → 욕구 감소 배수 (13-9, careers.json rules.rabbitholeNeeds + 직업별)
+    const rh = p.hidden && p.career && p.action && (p.action.item.interactionId === `work.${p.career.id}` || p.action.item.interactionId.startsWith('service.')) ? this.rabbitNeeds(p.career.id) : null;
+    const sleeping = p.sleeping;
+    const sleepDecay = this.data.compiled.sleepDecay;
+    for (let i = 0; i < 8; i++) {
+      const id = NEED_IDS[i];
+      if (id === 'warmth') continue;
+      let rate = nd.needs[id].decayPerHour / 60;
+      if (sleeping) rate *= sleepDecay[i];
+      if (this.inner) rate *= this.inner.fx(p).needDecay[i];
+      if (rh) rate *= rh[i];
+      if (id === 'comfort' && p.pose !== 'stand') rate = 0;
+      p.needs[i] -= rate;
+    }
+    // 온기 (11-1): 체감 기온
+    const wm = nd.warmth;
+    let felt = this.world.temperatureAt(p.x, p.y);
+    if (this.world.nearLitHearth(p.x, p.y, wm.nearHearthTiles)) felt += wm.nearHearthBonusC;
+    // 래빗홀(일터, 장터, 방앗간)은 지붕 아래: 바깥 추위를 그대로 받지 않음 (13-9)
+    if (p.hidden && p.action && this.world.byUid.get(p.action.item.targetUid)?.defId === 'lot_exit') felt = Math.max(felt, wm.comfortableFeltC);
+    const clothing = p.underBlanket
+      ? wm.clothing.underBlanket
+      : p.outfit === 'sleep'
+        ? (wm.clothing.sleepNoBlanket ?? 1)
+        : (wm.clothing[p.outfit] ?? 1);
+    const wi = NEED_INDEX.warmth;
+    if (felt < wm.comfortableFeltC) p.needs[wi] -= ((wm.comfortableFeltC - felt) * wm.decayPerDegreePerHour * clothing) / 60;
+    else if (felt > wm.recoverAboveC) p.needs[wi] += ((felt - wm.recoverAboveC) * wm.recoverPerDegreePerHour) / 60;
+    // 잠: 침대 품질별 에너지
+    if (sleeping) {
+      const bedDef = p.action ? this.world.byUid.get(p.action.stepObj)?.defId : undefined;
+      const perHour = p.collapse ? b.sleep.bedEnergyPerHour.floor : (b.sleep.bedEnergyPerHour[bedDef ?? ''] ?? b.sleep.bedEnergyPerHour.floor);
+      p.needs[NEED_INDEX.energy] += perHour / 60;
+    }
+    if (cstep?.hasNeeds) {
+      // 즐거움 회복: 지루함(같은 놀이 반복) × 좋아하는 활동 +50% (12-3)
+      const bored = this.inner && p.action ? this.inner.boredom(p, p.action.item.interactionId) * this.inner.funMult(p, p.action.item.interactionId, this.data.interactions[p.action.item.interactionId]?.tags ?? NO_TAGS) : 1;
+      for (let i = 0; i < 8; i++) p.needs[i] += i === 4 && cstep.needs[i] > 0 ? cstep.needs[i] * bored : cstep.needs[i];
+    }
+    for (let i = 0; i < 8; i++) p.needs[i] = p.needs[i] < 0 ? 0 : p.needs[i] > 100 ? 100 : p.needs[i];
+
+    // 한계 상황 (11-1 욕구가 0이 되면)
+    if (p.needs[NEED_INDEX.energy] <= 0 && !p.sleeping && !p.collapse) {
+      this.abortAction(p, 'collapse');
+      p.collapse = { kind: 'floor_sleep', remaining: nd.collapse.energyFloorSleepMinutes };
+      p.pose = 'lie';
+      p.anim = 'hurt';
+      p.sleeping = true;
+      p.status = 'incapacitated';
+      this.stats.collapses++;
+      this.notice(p, 'collapse_energy');
+    }
+    if (p.needs[NEED_INDEX.bladder] <= 0) {
+      p.needs[NEED_INDEX.bladder] = 100;
+      p.needs[NEED_INDEX.hygiene] = b.collapse.bladderAccidentHygiene;
+      this.stats.accidents++;
+      this.notice(p, 'accident_bladder');
+      this.addEngineMoodlet(p, 'embarrassed');
+    }
+    if (p.needs[NEED_INDEX.hunger] <= 0) {
+      p.hungerZeroMinutes++;
+      if (p.hungerZeroMinutes >= nd.collapse.hungerZeroWeakenMinutes && !p.weakened) {
+        p.weakened = true;
+        this.notice(p, 'weakened');
+      }
+    } else p.hungerZeroMinutes = 0;
+  }
+
+  private updatePerson(p: Person): void {
+    if (p.collapse) {
+      p.collapse.remaining--;
+      if (p.collapse.remaining <= 0) {
+        if (p.collapse.kind === 'floor_sleep') this.addEngineMoodlet(p, 'slept_on_floor');
+        p.collapse = null;
+        p.sleeping = false;
+        p.pose = 'stand';
+        p.anim = 'idle';
+        p.status = 'available';
+      }
+      return;
+    }
+    // 다른 사람의 사회 상호작용에 붙잡혀 있음 (마주 보고 들어 줌)
+    if (p.engagedWith) {
+      const partner = this.persons.find((q) => q.id === p.engagedWith);
+      if (!partner || !partner.action || !this.data.social[partner.action.item.interactionId] || partner.action.item.targetUid !== p.id) {
+        p.engagedWith = 0;
+      } else {
+        if (partner.action.phase === 'perform') this.facePerson(p, partner);
+        p.anim = 'idle';
+        return;
+      }
+    }
+    if (this.careerDue(p)) this.goToWork(p);
+    else if (!p.action && !p.queue.length && this.autonomyEnabled) this.onsiteWork(p);
+    if (p.careerEvent && this.world.minute - p.careerEvent.since >= 120) {
+      const ev = this.data.careers?.[p.careerEvent.careerId]?.events?.find((e) => e.id === p.careerEvent!.eventId);
+      if (ev) this.careerChoice(p, ev.options[Math.floor(this.rng.next() * ev.options.length)].id);
+      else p.careerEvent = null;
+    }
+    if (p.action) {
+      this.progressAction(p);
+      return;
+    }
+    if (p.queue.length) {
+      this.startAction(p, p.queue[0]);
+      // 제자리에서 바로 수행에 들어갔다면 이번 틱은 시작만 (욕구 효과는 이미 이번 틱 updateNeeds 가 지나감)
+      if ((p.action as { phase: string } | null)?.phase === 'walk') this.progressAction(p);
+      return;
+    }
+    if (!this.autonomyEnabled || p.autonomy === 'off') return;
+    if (this.world.minute < p.idleUntil) return;
+    // 돌아가는 손님은 스스로 다른 일을 고르지 않음 (updateVisits 가 작별/귀가를 넣음)
+    if (p.visitor?.leaving) return;
+    // 막 도착한 손님은 인사할 때까지 문간에서 기다림 (급한 욕구는 예외: 아래 급한 욕구 규칙)
+    if (p.visitor && p.visitor.greetUntil > 0) {
+      let urgent = false;
+      for (const [i, v] of this.data.compiled.interrupt) if (p.needs[i] < v) urgent = true;
+      if (!urgent) {
+        p.anim = 'idle';
+        return;
+      }
+    }
+    const inner = this.inner;
+    // 급한 욕구가 있고 풀 수 있으면 그것을 채우는 행동만 고름 (고르자마자 급한 욕구로 끊기는 헛돎 방지)
+    // 가장 급한 욕구 하나 (기준 대비 가장 많이 모자란 것)
+    let urgentNeed = -1;
+    let worst = Infinity;
+    for (const [i, v] of this.data.compiled.interrupt) {
+      if (p.needs[i] < v && this.solvable(p, i) && p.needs[i] / v < worst) {
+        worst = p.needs[i] / v;
+        urgentNeed = i;
+      }
+    }
+    // 방문객: 남의 집에서는 허용 목록의 물건 상호작용만 (잠/목욕/요리/집안일 안 함)
+    const ex = p.visitor ? this.relData.visit.allowInteractions : null;
+    // 깨우는 욕구(용변, 허기)가 급하고 풀 수 있으면 잠자리에 들지 않음 (눕자마자 깨는 헛돎 방지)
+    let noSleep = false;
+    for (const [i, v] of this.data.compiled.wakeIf) if (p.needs[i] < v + 3 && this.solvable(p, i)) noSleep = true;
+    // 기력이 바닥이면 배고파도 잠 (허기로 못 자고 피로로 장보기를 끊는 교착 방지)
+    if (p.needs[NEED_INDEX.energy] < 15) noSleep = false;
+    const allow = urgentNeed >= 0 || ex || noSleep
+      ? (ci: { id: string; serves: Uint8Array | number[]; def: { tags?: string[]; steps: { sleep?: boolean }[] } }) =>
+          (urgentNeed < 0 || ci.serves[urgentNeed] === 1 || ((ci as { supportAds?: Float64Array }).supportAds?.[urgentNeed] ?? 0) > 0) &&
+          !(ex && !ex.includes(ci.id)) &&
+          !(noSleep && ci.def.steps[0]?.sleep)
+      : undefined;
+    // 마을 NPC: 일과 목적지에서 멀고 급한 욕구가 없으면 그쪽으로 걸어감 (18-2 일과표는 목표, 실제 행동은 자율)
+    if (this.town && p.household !== 1 && urgentNeed < 0 && this.schedulePull(p)) return;
+    const c = chooseAutonomous(
+      this.data, this.world, p, this.rng, this.candBuf,
+      inner ? (tags, id) => inner.adMult(p, tags, id) : undefined,
+      urgentNeed >= 0 ? undefined : (buf, urg) => this.socialCandidates(p, buf, urg),
+      allow as never,
+      this.town ? (o) => this.canUse(p, o) : undefined,
+    );
+    if (c) {
+      this.queueInteraction(p.id, c.interactionId, c.targetUid, true);
+      this.startAction(p, p.queue[0]);
+      if ((p.action as { phase: string } | null)?.phase === 'walk') this.progressAction(p);
+    } else {
+      p.idleUntil = this.world.minute + this.data.balance.autonomy.idleWanderMinutes;
+      p.anim = 'idle';
+    }
+  }
+
+  private startAction(p: Person, item: QueueItem): void {
+    if (this.data.social[item.interactionId]) {
+      this.startSocial(p, item);
+      return;
+    }
+    if (item.interactionId === GOTO_ID) {
+      p.action = {
+        item, stepIndex: 0, phase: 'route', stepObj: -1, slotId: '', goal: item.targetUid,
+        path: [], pathPos: 0, remaining: 0, elapsed: 0, lastProgress: this.world.minute, repaths: 0,
+      };
+      this.routeTo(p, item.targetUid, false);
+      return;
+    }
+    const ia = this.data.interactions[item.interactionId];
+    const target = this.world.byUid.get(item.targetUid);
+    if (!target) {
+      this.dropFront(p, item, 'no_target');
+      return;
+    }
+    let av = checkRequires(this.world, ia, target);
+    const fr = this.farmOk(p, item.interactionId, target);
+    if (av.ok && fr) av = { ok: false, reasonKey: fr };
+    const rs = this.recipeSkillOk(p, item.interactionId);
+    if (av.ok && !rs.ok) av = { ok: false, reasonKey: 'reason.skill_low', reasonArgs: { skill: `skill.${rs.skill}`, n: rs.need ?? 0 } };
+    if (!av.ok) {
+      if (!item.autonomous) this.notice(p, 'cannot', { ...(av.reasonArgs ?? {}), reason: av.reasonKey ?? '', ia: ia.nameKey });
+      this.dropFront(p, item, 'requires');
+      return;
+    }
+    p.action = {
+      item, stepIndex: 0, phase: 'route', stepObj: target.uid, slotId: '', goal: -1,
+      path: [], pathPos: 0, remaining: 0, elapsed: 0, lastProgress: this.world.minute, repaths: 0,
+    };
+    if (!item.autonomous) p.recentObjects.length = 0;
+    this.inner?.onActionStart(p, item.interactionId);
+    this.beginStep(p);
+  }
+
+  private dropFront(p: Person, item: QueueItem, why: string): void {
+    p.queue = p.queue.filter((q) => q.id !== item.id);
+    this.stats.aborted[item.interactionId] = (this.stats.aborted[item.interactionId] ?? 0) + 1;
+    if (why === 'path') this.stats.pathFails++;
+  }
+
+  private beginStep(p: Person): void {
+    const a = p.action!;
+    const ia = this.data.interactions[a.item.interactionId];
+    const step = ia.steps[a.stepIndex];
+    const target = this.world.byUid.get(a.item.targetUid);
+    if (!target) {
+      // 건축/화재로 대상이 사라짐 (리뷰 M5-1)
+      this.finishAction(p, false, 'object_gone');
+      return;
+    }
+    this.world.release(p.id);
+    const r = resolveStep(this.world, p.id, p.x, p.y, step, target);
+    if (!r || !stepStillValid(step, r.obj)) {
+      // 자리를 다른 사람이 쓰고 있을 뿐이면 줄 서서 기다림 (플레이어 명령 20분, 자율 8분)
+      const limit = a.item.autonomous ? this.data.balance.queue.waitAutonomousMinutes : this.data.balance.queue.waitMinutes;
+      if (!r && (a.waited ?? 0) < limit && this.slotBusyOnly(p, step, target)) {
+        a.phase = 'wait';
+        a.lastProgress = this.world.minute;
+        p.anim = 'idle';
+        return;
+      }
+      if (!a.item.autonomous) this.notice(p, 'cannot', { reason: 'reason.no_slot', ia: ia.nameKey });
+      this.finishAction(p, false, 'no_slot');
+      return;
+    }
+    this.world.reserve(r.obj.uid, r.slot.id, p.id);
+    a.stepObj = r.obj.uid;
+    a.slotId = r.slot.id;
+    p.carry = step.carry ?? null;
+    const goal = this.world.slotCell(r.obj, r.slot);
+    this.routeTo(p, goal, r.slot.pose !== 'stand');
+  }
+
+  private routeTo(p: Person, goal: number, allowBlockedGoal: boolean): void {
+    const a = p.action!;
+    const g = this.world.grid;
+    a.goal = goal;
+    // 앉아 있거나 누워 있다가 일어남
+    if (p.pose !== 'stand') {
+      p.pose = 'stand';
+      p.sleeping = false;
+      p.underBlanket = false;
+      p.hidden = false;
+    }
+    let start = g.idx(p.cellX(), p.cellY());
+    this.path.who = this.walker(p);
+    let path = this.path.find(start, goal, allowBlockedGoal);
+    if (!path && !g.walkable(start) && !this.hasExit(start)) {
+      this.unstick(p);
+      start = g.idx(p.cellX(), p.cellY());
+      path = this.path.find(start, goal, allowBlockedGoal);
+    }
+    this.path.who = null;
+    if (!path) {
+      // 원래 대상(식탁, 책장)과 단계 물건(좌석, 화로) 모두 제외 → 자율이 같은 대상을 계속 고르지 않음
+      // 사회 상호작용의 대상은 사람: 물건 uid 와 겹치지 않게 음수 키
+      const uid = a.item.interactionId === GOTO_ID ? -1 : this.data.social[a.item.interactionId] ? -1000 - a.item.targetUid : a.item.targetUid;
+      const fails = (p.pathFails.get(uid) ?? 0) + 1;
+      p.pathFails.set(uid, fails);
+      if (fails >= this.data.balance.movement.pathFailLimit) {
+        const until = this.world.minute + this.data.balance.movement.pathFailExcludeMinutes;
+        p.excludedUntil.set(uid, until);
+        if (a.stepObj >= 0 && a.stepObj !== uid) p.excludedUntil.set(a.stepObj, until);
+        p.pathFails.delete(uid);
+      }
+      this.notice(p, 'no_path');
+      this.finishAction(p, false, 'path');
+      return;
+    }
+    a.path = path;
+    a.pathPos = 0;
+    a.phase = path.length ? 'walk' : 'perform';
+    if (a.phase === 'perform') this.arrive(p);
+  }
+
+  private hasExit(cell: number): boolean {
+    const g = this.world.grid;
+    const x = cell % g.w;
+    const y = Math.floor(cell / g.w);
+    for (let d = 0; d < 4; d++) {
+      const nx = x + DX4[d];
+      const ny = y + DY4[d];
+      if (g.inBounds(nx, ny) && g.walkable(g.idx(nx, ny))) return true;
+    }
+    return false;
+  }
+
+  /** 예약을 무시하면 자리가 있는가 (= 누가 쓰는 중일 뿐, 기다리면 됨) */
+  private slotBusyOnly(p: Person, step: Parameters<typeof resolveStep>[4], target: ObjectInstance): boolean {
+    this.world.ignoreReservations = true;
+    try {
+      return !!resolveStep(this.world, p.id, p.x, p.y, step, target);
+    } finally {
+      this.world.ignoreReservations = false;
+    }
+  }
+
+  private progressAction(p: Person): void {
+    const a = p.action!;
+    if (a.phase === 'wait') {
+      a.waited = (a.waited ?? 0) + 1;
+      a.lastProgress = this.world.minute;
+      this.beginStep(p);
+      return;
+    }
+    if (a.phase === 'perform' && this.data.social[a.item.interactionId]) {
+      this.performSocial(p);
+      return;
+    }
+    if (a.phase === 'walk') {
+      // 감정이 걸음걸이에 드러남 (11-3: 기운 넘침은 빠르게, 슬픔은 느리게)
+      let speed = this.data.balance.movement.walkTilesPerMinute;
+      if (this.inner && p.emotionStage >= 1) speed *= this.inner.walkMult(p);
+      this.walk(p, speed);
+      return;
+    }
+    if (a.phase === 'perform') this.perform(p);
+  }
+
+  private walk(p: Person, budget: number): void {
+    const a = p.action!;
+    const g = this.world.grid;
+    const startX = p.x;
+    const startY = p.y;
+    while (budget > 0 && a.pathPos < a.path.length) {
+      const cell = a.path[a.pathPos];
+      const cx = (cell % g.w) + 0.5;
+      const cy = Math.floor(cell / g.w) + 0.5;
+      // 다음 칸이 그 사이 막혔는지 (다른 사람이 가구를 놓는 등)
+      const last = a.pathPos === a.path.length - 1;
+      // 목표 물건 자신의 칸(침대 발치)은 지나갈 수 있음 (path.ts 와 같은 규칙)
+      const ownCell = g.objAt[cell] !== 0 && g.objAt[cell] === g.objAt[a.goal] && !g.wall[cell];
+      if (!last && !g.walkable(cell) && !ownCell) {
+        a.repaths++;
+        if (a.repaths > 3) {
+          this.finishAction(p, false, 'path');
+          return;
+        }
+        this.routeTo(p, a.goal, true);
+        return;
+      }
+      // 계단/들창으로 다른 층 칸에 오름: 한 칸 거리로 치고 바로 옮김 (렌더러가 계단 높이를 보간)
+      if (g.slabOf(cell) !== g.slabOf(g.idx(p.cellX(), p.cellY()))) {
+        p.x = cx;
+        p.y = cy;
+        budget -= 1;
+        a.pathPos++;
+        p.trail.push(p.x, p.y);
+        continue;
+      }
+      const dx = cx - p.x;
+      const dy = cy - p.y;
+      const d = Math.hypot(dx, dy);
+      if (Math.abs(dx) > Math.abs(dy)) p.facing = dx > 0 ? 'right' : 'left';
+      else if (d > 0) p.facing = dy > 0 ? 'down' : 'up';
+      if (d <= budget) {
+        p.x = cx;
+        p.y = cy;
+        budget -= d;
+        a.pathPos++;
+        p.trail.push(p.x, p.y);
+        // 관통: 목표 물건 자신(침대에 올라가는 칸)이 아닌 가구 칸을 지나감
+        if (!last && g.objAt[cell] !== 0 && g.objAt[cell] !== g.objAt[a.goal]) this.stats.clipViolations++;
+      } else {
+        p.x += (dx / d) * budget;
+        p.y += (dy / d) * budget;
+        budget = 0;
+      }
+    }
+    p.anim = 'walk';
+    if (p.x !== startX || p.y !== startY) a.lastProgress = this.world.minute;
+    if (a.pathPos >= a.path.length) this.arrive(p);
+  }
+
+  private arrive(p: Person): void {
+    const a = p.action!;
+    if (this.data.social[a.item.interactionId]) {
+      this.arriveSocial(p);
+      return;
+    }
+    if (a.item.interactionId === GOTO_ID) {
+      this.finishAction(p, true, 'done');
+      return;
+    }
+    const ia = this.data.interactions[a.item.interactionId];
+    const step = ia.steps[a.stepIndex];
+    const obj = this.world.byUid.get(a.stepObj);
+    const slot = obj ? this.world.slots(obj).find((s) => s.id === a.slotId) : undefined;
+    if (!obj || !slot) {
+      this.finishAction(p, false, 'object_gone');
+      return;
+    }
+    p.x = obj.x + slot.dx + 0.5;
+    p.y = obj.y + slot.dy + 0.5;
+    p.facing = slot.facing;
+    p.pose = slot.pose;
+    p.anim = step.anim;
+    p.sleeping = !!step.sleep;
+    p.underBlanket = !!step.blanket;
+    p.hidden = !!step.hidden;
+    // 숨는 단계 = 래빗홀 (장터, 일터 등 화면 밖 활동, GDD 13-8)
+    if (step.hidden) p.status = 'rabbithole';
+    if (step.outfit) p.outfit = step.outfit;
+    a.phase = 'perform';
+    a.remaining = step.minutes;
+    if (p.career && a.item.interactionId === `work.${p.career.id}`) p.career.workedDay = this.world.day();
+    const ft = (this.data.interactions[a.item.interactionId] as { farmTask?: string } | undefined)?.farmTask;
+    if (ft && this.farm) {
+      const tgt = this.world.byUid.get(a.item.targetUid);
+      const tags = tgt ? this.world.def(tgt.defId).tags ?? [] : [];
+      const sk = this.farm.d.skill;
+      const speed = Math.max(sk.speedMin, 1 - sk.speedPerLevel * (p.skills.farming ?? 0));
+      a.remaining = Math.max(10, Math.round(step.minutes * (tags.includes('orchard') ? 1 : this.farm.sizeOf(tags).work) * speed));
+    }
+    a.elapsed = 0;
+    a.lastProgress = this.world.minute;
+  }
+
+  private perform(p: Person): void {
+    const a = p.action!;
+    const ia = this.data.interactions[a.item.interactionId];
+    const step = ia.steps[a.stepIndex];
+    a.remaining--;
+    if (this.inner && ia.tags) this.inner.onPerformMinute(p, ia.tags);
+    if (this.skills && a.item.interactionId.startsWith('work.') && p.career) {
+      const def = this.data.careers?.[p.career.id];
+      if (def) this.skillMinute(p, NO_TAGS, def.skills[0], Math.round((ATTITUDE[p.career.attitude].xp - 1) * 100), 1, def.skills);
+    } else if (this.skills && a.item.interactionId.startsWith('recipe.')) {
+      // 레시피 경험치는 레시피 스킬로만 (레시피 tags 는 특성 선호용: 제빵에도 cook 이 붙어 있음)
+      const r = this.data.recipes[a.item.interactionId.slice(7)];
+      if (r) this.skillMinute(p, NO_TAGS, r.skill, 0, r.xp);
+    } else if (this.skills && ia.tags && !step.sleep) this.skillMinute(p, ia.tags, (ia as { skill?: string }).skill);
+    a.elapsed++;
+    a.lastProgress = this.world.minute;
+    this.stats.minutesByInteraction[a.item.interactionId] = (this.stats.minutesByInteraction[a.item.interactionId] ?? 0) + 1;
+    let done = a.remaining <= 0;
+    if (step.until && p.need(step.until.need) >= step.until.gte) done = true;
+    // 근무: 퇴근 시각이 되면 끝 (늦게 왔으면 그만큼 짧게 일함). 여정은 정한 날 수가 차면
+    if (p.career && a.item.interactionId === `work.${p.career.id}`) {
+      const def = this.data.careers?.[p.career.id];
+      if (def?.type === 'journey') done = this.world.minute >= (p.career.tripEnd ?? 0);
+      else if (def && this.world.minuteOfDay() >= def.hours[1] * 60) done = true;
+    }
+    // 대상 상태가 바뀌어 더 할 수 없음 (불이 꺼지면 불 쬐기 끝)
+    if (a.stepObj === a.item.targetUid) {
+      const target = this.world.byUid.get(a.item.targetUid);
+      if (target && !targetConditionsHold(ia, target)) {
+        this.finishAction(p, a.elapsed > 1, 'invalid');
+        return;
+      }
+    }
+    const comp = this.data.compiled;
+    if (step.sleep) {
+      // 잠에서 깸: 그 욕구를 지금 풀 수 있을 때만 (못 풀면 1분 자고 깨기를 반복하게 됨)
+      for (const [i, v] of comp.wakeIf) if (p.needs[i] < v && this.solvable(p, i)) done = true;
+    } else if (a.item.autonomous) {
+      // 급한 욕구로 중단 (13-4): 이 행동이 그 욕구를 채우는 길이면 끊지 않고, 풀 방법이 없어도 끊지 않음
+      const c = comp.byId.get(a.item.interactionId)!;
+      // 가장 급한 욕구 하나만 봄 (자율 선택과 같은 기준: 급한 욕구 둘이 번갈아 서로를 끊는 헛돎 방지)
+      let ui = -1;
+      let worst = Infinity;
+      for (const [i, v] of comp.interrupt) {
+        if (p.needs[i] < v && this.solvable(p, i) && p.needs[i] / v < worst) {
+          worst = p.needs[i] / v;
+          ui = i;
+        }
+      }
+      if (ui >= 0) {
+        // 그 욕구를 채우는 길(직접 또는 장보기처럼 채울 거리를 마련하는 보조 광고)이면 끊지 않음
+        if (!c.serves[ui] && !(c.supportAds[ui] > 0)) {
+          this.abortAction(p, 'urgent');
+          return;
+        }
+      }
+    }
+    if (!done) return;
+    const obj = this.world.byUid.get(a.stepObj);
+    if (obj) {
+      applyStepEffects(step, obj);
+      // 청소: 그 물건이 있는 방의 더러움을 줄임
+      if (step.effects?.roomClean) {
+        const s0 = this.world.slots(obj)[0];
+        const room = this.world.grid.roomOf(obj.x + (s0?.dx ?? 0), obj.y + (s0?.dy ?? 0));
+        if (room >= 0) this.world.roomDirt[room] = Math.max(0, this.world.roomDirt[room] - step.effects.roomClean);
+      }
+    }
+    if (a.stepIndex + 1 < ia.steps.length) {
+      a.stepIndex++;
+      p.sleeping = false;
+      p.underBlanket = false;
+      p.hidden = false;
+      this.beginStep(p);
+      return;
+    }
+    const target = this.world.byUid.get(a.item.targetUid);
+    const before = this.inner ? { ...this.world.stock } : null;
+    if (target) applyInteractionEffects(this.world, ia, target);
+    if (ia.effects?.buy || ia.effects?.sell) this.trade(p, ia.effects.buy, ia.effects.sell);
+    const iaId = a.item.interactionId;
+    if (iaId.startsWith('work.')) this.workDone(p, a.elapsed, true);
+    if (iaId.startsWith('recipe.')) this.recipeDone(p, iaId.slice(7), target ?? null);
+    if (iaId.startsWith('service.')) this.serviceDone(p, iaId);
+    if (iaId.startsWith('farm.') && target) this.farmDone(p, iaId, target);
+    const wasSleep = !!step.sleep;
+    const bed = this.world.byUid.get(a.stepObj)?.defId;
+    this.finishAction(p, true, 'done');
+    this.inner?.onActionDone(p, iaId, ia.tags ?? [], ia.moodlets);
+    if (!this.inner) return;
+    if (wasSleep) {
+      if (p.needs[NEED_INDEX.energy] < this.relData.engine.sleptBadlyBelow) this.addEngineMoodlet(p, 'slept_badly');
+      if (bed && this.relData.engine.floorBeds.includes(bed)) this.addEngineMoodlet(p, 'slept_on_floor');
+    }
+    if (ia.tags?.some((tg) => tg === 'eat_good' || tg === 'eat_plain') && !p.moodlets.some((m) => m.id === this.relData.familyMeal.moodlet)) {
+      const family = this.persons.some((q) => q !== p && q.household === p.household && !q.hidden);
+      if (family && this.rng.next() < this.relData.engine.ateAloneChance) this.addEngineMoodlet(p, 'ate_alone');
+    }
+    if (before) this.checkStockLow(p, before);
+  }
+
+  /** 엔진이 붙이는 무드렛 (데이터에 있을 때만) */
+  // ------------------------------------------------------------------ 건축 (M5)
+
+  /** 물건을 쓰거나 향해 가는 사람의 행동을 끊고 대기열에서도 뺌 (팔기/옮기기/불탐) */
+  private abortUsing(uid: number): void {
+    for (const q of this.persons) {
+      const a = q.action;
+      if (a && !this.data.social[a.item.interactionId] && (a.item.targetUid === uid || a.stepObj === uid)) this.abortAction(q, 'object_gone');
+      q.queue = q.queue.filter((it) => this.data.social[it.interactionId] || it.targetUid !== uid);
+    }
+  }
+
+  /** 건축 뒤 설 수 없게 된 칸(벽, 가구, 허공)에 선 사람을 가장 가까운 빈 칸으로 */
+  private unstickAll(): void {
+    const g = this.world.grid;
+    for (const p of this.persons) {
+      if (p.hidden) continue;
+      const c = g.idx(p.cellX(), p.cellY());
+      const own = !!p.action && p.pose !== 'stand' && p.action.stepObj >= 0 && g.objAt[c] === p.action.stepObj + 1;
+      if (!g.walkable(c) && !own) {
+        if (p.action) this.abortAction(p, 'build');
+        this.moveToNearestWalkable(p, false);
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------ 마을 (M6)
+
+  /** people.json 한 사람 → 인물 (생애 7단계는 네 묶음으로도, 아기/유아는 M7 전까지 엄마 곁) */
+  private addTownPerson(m: PeopleMember, household: number, estate: string, x: number, y: number): Person {
+    const coarse = (s: LifeStage): Person['stage'] => (s === 'baby' || s === 'toddler' || s === 'child' ? 'child' : s === 'teen' ? 'teen' : s === 'elder' ? 'elder' : 'adult');
+    const p = this.addPerson(m.name, x, y, { estate, sex: m.sex, stage: coarse(m.stage), household, traits: m.traits, virtue: m.virtue ?? null, sin: m.sin ?? null });
+    p.lifeStage = m.stage;
+    p.ageDays = m.ageDays;
+    p.infant = m.stage === 'baby' || m.stage === 'toddler';
+    let h = 2166136261;
+    for (const ch of m.id) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+    p.appearance = { town: m.id, seed: h, sex: m.sex, stage: coarse(m.stage), estate };
+    // 조작 가문이 아니면 처음엔 요약 (첫 세밀도 판정에서 올라감)
+    if (household !== 1) {
+      p.lod = 'summary';
+      p.lodSince = this.world.minute;
+    }
+    if (p.infant) p.hidden = true;
+    return p;
+  }
+
+  // ------------------------------------------------------------------ 생애 판정기 창구 (18-3)
+
+  private judgeHost(): import('./town/lifeJudge').JudgeHost {
+    return {
+      persons: this.persons,
+      rng: new Rng((this.seed * 131 + 71) >>> 0),
+      rel: this.rel,
+      town: this.town,
+      day: () => this.world.day(),
+      news: (kind, args, subjects) => this.townNews(kind, args, subjects),
+      moodlet: (p, id) => this.addEngineMoodlet(p, id),
+      kill: (p, cause) => this.killPerson(p, cause),
+      birth: (m, f) => this.bornTo(m, f),
+      moveTo: (p, hh, lot) => this.moveHousehold(p, hh, lot),
+      newHousehold: () => Math.max(100, ...this.persons.map((q) => q.household)) + 1,
+      emptyLot: (size) => this.freeLot(size),
+      immigrate: (n) => this.immigrate(n),
+      emigrate: (hh) => {
+        for (const p of this.persons.filter((q) => q.household === hh)) this.killPerson(p, 'moved_away');
+        for (const [lot, h] of this.town!.lotHousehold) if (h === hh) this.town!.lotHousehold.delete(lot);
+      },
+      coarse: (p) => {
+        p.stage = p.lifeStage === 'baby' || p.lifeStage === 'toddler' || p.lifeStage === 'child' ? 'child' : p.lifeStage === 'teen' ? 'teen' : p.lifeStage === 'elder' ? 'elder' : 'adult';
+        const wasInfant = p.infant;
+        p.infant = p.lifeStage === 'baby' || p.lifeStage === 'toddler';
+        if (wasInfant && !p.infant) {
+          // 유아 → 아동: 걸어 다니는 식구가 됨 (엄마 자리 근처)
+          p.hidden = false;
+          const mom = this.persons.find((q) => q.id === p.mother);
+          if (mom) {
+            p.x = mom.x;
+            p.y = mom.y;
+          }
+        }
+        if (p.appearance && 'stage' in p.appearance) p.appearance = { ...p.appearance, stage: p.stage };
+        this.inner?.invalidate(p);
+      },
+    };
+  }
+
+  /** 마을 소식 + 눈에 띄는 일은 소문으로 (당사자와 식구가 먼저 앎) */
+  private townNews(kind: string, rawArgs: Record<string, string | number>, subjects: Person[]): void {
+    const day = this.world.day();
+    // 포고문 인자 (news.json): {house} 가문 이름 키, {place} 집에서 가까운 장소 이름 키
+    const s0 = subjects[0];
+    const args: Record<string, string | number> = { ...rawArgs };
+    if (s0 && this.town) {
+      args.house ??= this.town.householdName.get(s0.household) ?? 'house.newcomers';
+      const lot = s0.homeLot ? this.town.lot(s0.homeLot) : null;
+      const pl = lot ? this.town.nearestPlace((lot.rect[0] + lot.rect[2]) / 2, (lot.rect[1] + lot.rect[3]) / 2) : this.town.placeOf(s0.x, s0.y);
+      args.place ??= pl?.nameKey ?? 'place.well_square';
+    }
+    this.news.push({ day, kind, args });
+    const keep = this.data.story?.news.keep ?? 40;
+    if (this.news.length > keep) this.news.splice(0, this.news.length - keep);
+    const host = this.persons.find((q) => q.household === 1);
+    if (host && subjects.some((s) => s.household !== 1)) this.notice(host, 'town_news', { kind: `news.${kind}`, ...args });
+    if (this.rumors && ['engaged', 'married', 'birth', 'twins', 'death_old', 'death_ill', 'death_child', 'death_cold', 'death_accident', 'death_childbirth', 'stillbirth', 'miscarriage', 'moved_in', 'moved_out', 'new_house'].includes(kind)) {
+      const knowers = this.persons.filter((q) => subjects.some((s) => s.household === q.household));
+      this.rumors.add(kind, subjects, args, day, 1, knowers);
+    }
+  }
+
+  /** 죽음/떠남: 행동을 끊고 목록에서 빼고, 식구에게 슬픔 (20장 장례는 M11) */
+  private killPerson(p: Person, cause: string): void {
+    if (p.action) this.abortAction(p, 'gone');
+    this.world.release(p.id);
+    for (const q of this.persons) {
+      if (q.engagedWith === p.id) q.engagedWith = 0;
+      if (q.chatWith === p.id) q.chatWith = 0;
+      if (q.spouse === p.id) q.spouse = 0;
+      if (q.betrothed === p.id) q.betrothed = 0;
+      if (cause !== 'moved_away' && q !== p) {
+        const r = this.rel.get(p.id, q.id);
+        const kin = q.household === p.household || r?.flags.has('family') || r?.flags.has('spouse');
+        if (kin) this.addEngineMoodlet(q, p.stage === 'child' ? 'child_death_grief' : 'funeral_grief');
+      }
+    }
+    const i = this.persons.indexOf(p);
+    if (i >= 0) this.persons.splice(i, 1);
+    this.inner?.forget(p);
+    this.rumors?.forget(p.id);
+    if (p.townId) this.town?.personById.delete(p.townId);
+    this.gone.push({ id: p.id, name: p.name, cause, day: this.world.day(), household: p.household });
+    if (this.gone.length > 500) this.gone.shift();
+    if (p.household === 1 && cause !== 'moved_away') this.notice(p, 'death', { name: p.name, cause: `death.cause.${cause}` });
+  }
+
+  /** 출생: 엄마 가구의 아기 (M7 전까지 엄마 곁에 숨어 지냄) */
+  private bornTo(mother: Person, father: Person | null): Person | null {
+    const sex: 'male' | 'female' = this.rng.next() < 0.5 ? 'male' : 'female';
+    const pool = this.namePool[sex];
+    const name = pool.length ? pool[Math.floor(this.rng.next() * pool.length)] : sex === 'male' ? '아기' : '아기';
+    const baby = this.addPerson(name, mother.x, mother.y, { estate: mother.estate, sex, stage: 'child', household: mother.household });
+    baby.lifeStage = 'baby';
+    baby.ageDays = 0;
+    baby.infant = true;
+    baby.hidden = true;
+    baby.mother = mother.id;
+    baby.father = father?.id ?? 0;
+    baby.homeLot = mother.homeLot;
+    baby.lod = mother.lod === 'full' ? 'summary' : mother.lod;
+    baby.appearance = { town: `born_${baby.id}`, seed: (baby.id * 2654435761) >>> 0, sex, stage: 'child', estate: mother.estate };
+    for (const q of this.persons) {
+      if (q === baby || q.household !== baby.household) continue;
+      const r = this.rel.ensure(baby.id, q.id);
+      r.met = true;
+      r.flags.add('family');
+      r.friendship = 30;
+    }
+    return baby;
+  }
+
+  /** 가구 옮기기 (혼인, 분가) */
+  private moveHousehold(p: Person, household: number, lot: string | null): void {
+    // 분가한 새 가구는 옮겨 가는 사람(남편 쪽)의 가문 이름을 이어받음
+    if (this.town && !this.town.householdName.has(household)) {
+      const old = this.town.householdName.get(p.household);
+      if (old) this.town.householdName.set(household, old);
+    }
+    p.household = household;
+    p.homeLot = lot;
+    if (lot && this.town) this.town.lotHousehold.set(lot, household);
+    for (const q of this.persons) if (q !== p && q.household === household) this.rel.ensure(p.id, q.id).met = true;
+    // 아기/유아는 엄마를 따라감
+    for (const c of this.persons) if (c.infant && c.mother === p.id) {
+      c.household = household;
+      c.homeLot = lot;
+    }
+  }
+
+  /** 빈 부지 (집이 있고 아무도 안 사는 곳 먼저, 없으면 빈 땅) */
+  private freeLot(size: string): string | null {
+    const t = this.town;
+    if (!t) return null;
+    const used = new Set(t.lotHousehold.keys());
+    const cand = t.lots.filter((l) => !used.has(l.id));
+    return (cand.find((l) => l.house && l.size === size) ?? cand.find((l) => l.house) ?? cand[0])?.id ?? null;
+  }
+
+  /** 외지인 가족 이주 (18-3 안전판): 마을 끝 길에서 들어와 빈 집에 삶 */
+  private immigrate(n: number): Person[] {
+    const t = this.town;
+    if (!t) return [];
+    const lot = this.freeLot('small');
+    const hh = Math.max(100, ...this.persons.map((q) => q.household)) + 1;
+    const ex = this.world.exits[0];
+    const out: Person[] = [];
+    const estate = this.rng.next() < 0.5 ? 'freeman' : 'serf';
+    for (let k = 0; k < n; k++) {
+      const sex: 'male' | 'female' = k === 0 ? 'male' : k === 1 ? 'female' : this.rng.next() < 0.5 ? 'male' : 'female';
+      const pool = this.namePool[sex];
+      const name = pool.length ? pool[Math.floor(this.rng.next() * pool.length)] : '나그네';
+      const stage: import('./people/person').LifeStage = k < 2 ? 'young' : 'child';
+      const p = this.addTownPerson({ id: `im_${this.world.day()}_${k}_${hh}`, name, sex, stage, ageDays: Math.floor(this.rng.next() * 10) }, hh, estate, (ex?.x ?? 1) + 0.5, (ex?.y ?? 1) + 0.5);
+      p.homeLot = lot;
+      out.push(p);
+    }
+    if (lot) t.lotHousehold.set(lot, hh);
+    if (out.length >= 2) {
+      this.relateTown(out[0], out[1], 'spouse', 50, 50);
+      for (let k = 2; k < out.length; k++) {
+        this.relateTown(out[0], out[k], 'parent', 50, 0);
+        this.relateTown(out[1], out[k], 'parent', 50, 0);
+      }
+    }
+    return out;
+  }
+
+  /** 가족/인연 관계 (people.json relations/ties) */
+  private relateTown(a: Person, b: Person, kind: string, friendship: number, romance: number): void {
+    const r = this.rel.ensure(a.id, b.id);
+    r.met = true;
+    r.friendship = friendship;
+    r.romance = romance;
+    if (kind === 'spouse') {
+      r.flags.add('spouse');
+      a.spouse = b.id;
+      b.spouse = a.id;
+    } else if (kind === 'betrothed' || kind === 'engaged') {
+      r.flags.add('engaged');
+      a.betrothed = b.id;
+      b.betrothed = a.id;
+    } else if (kind === 'parent') {
+      r.flags.add('family');
+      if (a.sex === 'female') b.mother = a.id;
+      else b.father = a.id;
+    } else if (kind === 'sibling') r.flags.add('family');
+    else if (kind !== 'tie') r.flags.add(kind);
+  }
+
+  /** 마을: 자기 집 부지 물건, 공공/바깥 물건, 손님이면 초대한 집 물건만 */
+  private canUse(p: Person, o: ObjectInstance): boolean {
+    const owner = this.town!.ownerOf(o.x, o.y);
+    if (owner === 0 || owner === p.household) return true;
+    if (p.visitor && owner === 1) return true;
+    return false;
+  }
+
+  /** 일과 목적지에서 멀면 그쪽으로 (한 번 넣으면 도착할 때까지). 넣었으면 true */
+  private schedulePull(p: Person): boolean {
+    const t = this.town!;
+    const b = t.blockAt(p, this.world.minute);
+    const at = t.resolveAt(p, b);
+    const goal = t.targetCell(p, at);
+    const g = this.world.grid;
+    const gx = goal % g.w;
+    const gy = Math.floor(goal / g.w);
+    const here = at === 'home' ? t.lotOf(p.x, p.y)?.id === p.homeLot : t.placeOf(p.x, p.y)?.id === at || Math.abs(gx - p.x) + Math.abs(gy - p.y) < 6;
+    if (here) return false;
+    if ((p.excludedUntil.get(-1) ?? -1) > this.world.minute) return false;
+    this.queueInteraction(p.id, GOTO_ID, goal, true);
+    this.startAction(p, p.queue[0]);
+    if ((p.action as { phase: string } | null)?.phase === 'walk') this.progressAction(p);
+    return true;
+  }
+
+  /** 조작 가문과 어울리는 중 (세밀도 승급 조건) */
+  private engagedWithControlled(p: Person): boolean {
+    const partner = p.engagedWith || p.chatWith || (p.action && this.data.social[p.action.item.interactionId] ? p.action.item.targetUid : 0);
+    if (partner && this.persons.find((q) => q.id === partner)?.household === 1) return true;
+    for (const q of this.persons) {
+      if (q.household !== 1) continue;
+      if (q.engagedWith === p.id || q.chatWith === p.id) return true;
+      if (q.action && this.data.social[q.action.item.interactionId] && q.action.item.targetUid === p.id) return true;
+    }
+    return false;
+  }
+
+  /** 불을 끄러 달려감: 하던 일을 끊고 끄기를 맨 앞에 (자는 사람도 깸) */
+  private rushToFire(p: Person, uid: number): void {
+    // 길이 없어 한동안 제외된 불이면 다시 달려가지 않음
+    if ((p.excludedUntil.get(uid) ?? -1) > this.world.minute) return;
+    if (p.action) this.abortAction(p, 'fire');
+    p.sleeping = false;
+    p.queue = p.queue.filter((q) => !q.autonomous);
+    p.queue.unshift({ id: this.nextQueueId++, interactionId: 'fire.extinguish', targetUid: uid, autonomous: false });
+  }
+
+  /** 이웃이 연기를 보고 도우러 옴 (23-5): 부지에 없는 이웃 하나가 곧 도착 */
+  private callNeighborForFire(): boolean {
+    const host = this.persons.find((q) => q.household === 1);
+    if (!host || !this.world.exits.length) return false;
+    const free = this.data.neighbors.filter((n) => !this.persons.some((q) => q.visitor?.neighborId === n.id) && !this.pendingVisits.some((v) => v.neighborId === n.id));
+    if (!free.length) return false;
+    const nb = free[Math.floor(this.rng.next() * free.length)];
+    this.pendingVisits.push({ neighborId: nb.id, at: this.world.minute + 5, host: host.id });
+    this.notice(host, 'fire_neighbor', { name: nb.name });
+    return true;
+  }
+
+  /** 일터/장터에 나간 가족에게 집에 불이 났다는 소식 → 일찍 돌아옴 (13-9 조기 귀가) */
+  private callHomeForFire(p: Person): void {
+    if (!p.hidden || !p.action) return;
+    this.notice(p, 'fire_home');
+    this.abortAction(p, 'fire_home');
+    // 길 끝에서 다시 나타남 (래빗홀에서 돌아옴)
+    p.hidden = false;
+  }
+
+  /** 방 목록 (점수, 이름). 부지가 바뀌거나 한 시간이 지나면 다시 계산 */
+  rooms(): RoomInfo[] {
+    const w = this.world;
+    if (this.roomsVersion !== w.lotVersion || w.minute - this.roomsAt >= 60) {
+      this.roomsCache = evaluateRooms(w, this.data);
+      this.roomsVersion = w.lotVersion;
+      this.roomsAt = w.minute;
+    }
+    return this.roomsCache;
+  }
+
+  /** 방 점수 무드렛 (11-2): 한 시간마다 집 안 사람에게 */
+  private roomMoodlets(): void {
+    if (!this.inner || !this.data.build) return;
+    const rooms = this.rooms();
+    for (const p of this.persons) {
+      if (p.hidden || p.visitor) continue;
+      const r = this.world.grid.roomOf(p.cellX(), p.cellY());
+      if (r < 0 || !rooms[r]) continue;
+      const m = roomMoodlet(this.data, rooms[r].score, p.estate);
+      if (m) this.addEngineMoodlet(p, m);
+    }
+  }
+
+  /** 내구도 (23-4): 쓸 때마다 닳고 100 이면 고장 */
+  private wearObject(p: Person, uid: number, interactionId: string): void {
+    const b = this.data.build;
+    if (!b || this.data.social[interactionId] || interactionId === 'obj.repair') return;
+    const o = this.world.byUid.get(uid);
+    if (!o) return;
+    const d = this.data.objects[o.defId];
+    if (!d?.durable) return;
+    const kind = this.world.kindOf(o.defId);
+    // 고장 났지만 쓰는 물건: 삐걱거리는 침대 무드렛 (화로는 연기로)
+    const mood = o.state.broken ? b.wear.brokenUsable[kind] : undefined;
+    if (mood && mood !== 'smoky_room') this.addEngineMoodlet(p, mood);
+    const q = d.quality ?? 1;
+    // 좋은 물건일수록 덜 닳음
+    const per = (b.wear.perUseByKind[kind] ?? b.wear.perUse) * (1.3 - q * 0.15);
+    const after = Math.min(100, Number(o.state.wear ?? 0) + per);
+    o.state.wear = Math.round(after * 10) / 10;
+    if (after >= 100 && !o.state.broken) {
+      o.state.broken = true;
+      this.notice(p, 'object_broken', { object: d.nameKey });
+    }
+  }
+
+  private addEngineMoodlet(p: Person, id: string): void {
+    if (this.inner?.moodletExists(id)) this.inner.addMoodlet(p, id);
+  }
+
+  /** 재고가 기준 아래로 떨어지면 사건 (걱정 "빵이 떨어질까" 등) */
+  private checkStockLow(_p: Person, before: Record<string, number>): void {
+    const low = this.relData.engine.stockLow;
+    for (const [k, v] of Object.entries(this.world.stock)) {
+      const th = low[k] ?? low.default ?? 1;
+      if ((before[k] ?? 0) > th && v <= th) {
+        for (const q of this.persons) if (q.household === 1) this.inner!.event(q, `stock_low:${k}`);
+      }
+    }
+  }
+
+  /** 연기 찬 방 (작은 방에서 불 켠 화로 곁에 오래): 중세 오두막은 굴뚝이 시원찮음 */
+  private updateSmoke(p: Person): void {
+    const e = this.relData.engine;
+    const room = this.world.grid.roomOf(p.cellX(), p.cellY());
+    // 굴뚝 (23-2): 벽에 붙은 화로는 굴뚝이 저절로 생김. 굴뚝 없는 화로(한가운데 화덕)나 막힌 굴뚝(고장)이면 방 크기와 상관없이 연기.
+    // 건축 데이터가 없는 옛 부지(M1~M4 테스트)는 예전 규칙: 작은 방 화롯가
+    const hearth = room >= 0 && !p.hidden ? this.world.litHearthNear(p.x, p.y, 6) : null;
+    const smoky = !!hearth && (this.data.build ? !this.world.hasChimney(hearth) || !!hearth.state.broken : (this.world.grid.roomSizes[room] ?? 0) <= e.smokeRoomMaxCells);
+    if (!smoky) {
+      p.smokeMinutes = 0;
+      return;
+    }
+    if (++p.smokeMinutes === e.smokeMinutes) this.addEngineMoodlet(p, 'smoky_room');
+  }
+
+  private finishAction(p: Person, success: boolean, why: string): void {
+    const a = p.action;
+    if (!a) return;
+    const id = a.item.interactionId;
+    if (a.phase === 'perform' && id !== GOTO_ID && a.elapsed <= 2 && why !== 'cancelled' && why !== 'player_override') {
+      const st = this.data.interactions[id]?.steps[a.stepIndex];
+      const minutes = this.data.social[id]?.minutes ?? st?.minutes ?? 0;
+      // 헛돎 = 시작 직후 중단, 또는 잠을 1~2분 만에 깸 (욕구가 차서 끝난 until 종료는 정상)
+      if (minutes > 3 && (why !== 'done' || st?.sleep)) {
+        this.stats.shortEnds++;
+        this.stats.shortEndsBy[id] = (this.stats.shortEndsBy[id] ?? 0) + 1;
+      }
+    }
+    if (success) {
+      this.stats.completed[id] = (this.stats.completed[id] ?? 0) + 1;
+      this.wearObject(p, a.item.targetUid, id);
+      if (id === 'construction.work' && this.builder && this.data.build) this.builder.addWork(a.item.targetUid, this.data.build.construction.familyWorkPerHour, true);
+      if (id === 'fire.extinguish' && !this.putOut.includes(a.item.targetUid)) {
+        // 물이 있으면 물통 하나를 씀 (없으면 흙)
+        if ((this.world.stock.water ?? 0) > 0) this.world.stock.water--;
+        this.putOut.push(a.item.targetUid);
+      }
+      // 사회 상호작용은 performSocial 이 -사람id 로 따로 넣음 (targetUid 는 사람 id 라 물건 uid 와 겹침)
+      if (a.item.autonomous && !this.data.social[id]) {
+        p.recentObjects.push(a.item.targetUid);
+        if (p.recentObjects.length > 6) p.recentObjects.shift();
+      }
+    } else {
+      this.stats.aborted[id] = (this.stats.aborted[id] ?? 0) + 1;
+      if (why === 'path') this.stats.pathFails++;
+    }
+    this.world.release(p.id);
+    if (!success && id.startsWith('work.') && a.phase === 'perform') this.workDone(p, a.elapsed, false);
+    // 사회 상호작용이 끝나면 붙잡혀 있던 상대를 놓아 줌
+    if (this.data.social[id]) {
+      const t = this.persons.find((q) => q.id === a.item.targetUid);
+      if (t && t.engagedWith === p.id) t.engagedWith = 0;
+    }
+    p.queue = p.queue.filter((q) => q.id !== a.item.id);
+    p.action = null;
+    p.carry = null;
+    p.sleeping = false;
+    p.underBlanket = false;
+    p.hidden = false;
+    if (!p.collapse) p.status = 'available';
+    if (p.outfit === 'sleep' || p.outfit === 'bath') p.outfit = 'everyday';
+    // 앉거나 누웠던 자리에서 일어나 옆 칸으로 (예약이 풀렸는데 앉아 있으면 둘이 한 의자에 앉게 됨)
+    if (p.pose !== 'stand' && !p.collapse) this.standUpBeside(p, a.stepObj);
+    p.anim = 'idle';
+  }
+
+  /** 앉거나 누운 자리에서 일어나면: 그 물건의 빈 서기 슬롯 → 없으면 벽을 넘지 않는 가장 가까운 빈 칸 */
+  private standUpBeside(p: Person, uid: number): void {
+    p.pose = 'stand';
+    const g = this.world.grid;
+    const obj = this.world.byUid.get(uid);
+    if (obj) {
+      // 출구에서 닿는 칸 먼저 (가구 사이 틈으로 일어나 갇히지 않게), 없으면 걸을 수 있는 아무 칸
+      const reach = this.world.reachFromExits();
+      const cand = this.world.slots(obj).filter((s) => s.pose === 'stand');
+      cand.sort((a, b) => {
+        const ia = g.inBounds(obj.x + a.dx, obj.y + a.dy) ? reach[g.idx(obj.x + a.dx, obj.y + a.dy)] : 0;
+        const ib = g.inBounds(obj.x + b.dx, obj.y + b.dy) ? reach[g.idx(obj.x + b.dx, obj.y + b.dy)] : 0;
+        return ib - ia;
+      });
+      for (const s of cand) {
+        const x = obj.x + s.dx;
+        const y = obj.y + s.dy;
+        if (g.inBounds(x, y) && g.walkable(g.idx(x, y)) && reach[g.idx(x, y)]) {
+          p.x = x + 0.5;
+          p.y = y + 0.5;
+          return;
+        }
+      }
+      // 닿는 설 자리가 없으면 가구에서 가장 가까운 닿는 칸으로 (틈에 갇히지 않게)
+      if (this.moveToNearestWalkable(p, false, true)) return;
+      for (const s of cand) {
+        const x = obj.x + s.dx;
+        const y = obj.y + s.dy;
+        if (g.inBounds(x, y) && g.walkable(g.idx(x, y))) {
+          p.x = x + 0.5;
+          p.y = y + 0.5;
+          return;
+        }
+      }
+    }
+    if (!g.walkable(g.idx(p.cellX(), p.cellY()))) this.moveToNearestWalkable(p, false);
+  }
+
+  private abortAction(p: Person, why: string): void {
+    if (!p.action) return;
+    this.finishAction(p, false, why);
+  }
+
+  private trackStats(p: Person): void {
+    const s = this.stats;
+    const b = this.data.balance;
+    for (let i = 0; i < 8; i++) {
+      const id = NEED_IDS[i];
+      if (p.needs[i] <= 0.0001 && this.solvable(p, i)) {
+        s.neglectStreak[id]++;
+        if (s.neglectStreak[id] > s.maxNeglect[id]) s.maxNeglect[id] = s.neglectStreak[id];
+      } else s.neglectStreak[id] = 0;
+    }
+    const a = p.action;
+    if (a && this.world.minute - a.lastProgress >= b.movement.stuckMinutes) {
+      s.stuckEvents++;
+      this.notice(p, 'stuck');
+      this.abortAction(p, 'stuck');
+    }
+  }
+
+  reachable(p: Person, cell: number, blockedGoal: boolean): boolean {
+    const g = this.world.grid;
+    const start = g.idx(p.cellX(), p.cellY());
+    if (start === cell) return true;
+    this.path.who = this.walker(p);
+    const ok = this.path.find(start, cell, blockedGoal) !== null;
+    this.path.who = null;
+    return ok;
+  }
+
+  /** 잠긴 문 판정용: 조작 가정 식구인지, 가장보다 신분이 같거나 높은지 */
+  private walker(p: Person): { family: boolean; rankOk: boolean } {
+    const head = this.persons.find((q) => q.household === 1);
+    return { family: p.household === 1, rankOk: !head || rank(p) >= rank(head) };
+  }
+
+  /** 안전장치: 서 있는 칸에서 나갈 길이 전혀 없으면 가장 가까운 빈 칸으로 옮김 (13-5 절대 안 되는 것) */
+  private unstick(p: Person): boolean {
+    return this.moveToNearestWalkable(p, true);
+  }
+
+  private bfsQueue = new Int32Array(0);
+  private bfsSeen = new Uint8Array(0);
+
+  /** 벽을 넘지 않는 너비 우선 탐색(가구 칸은 통과)으로 가장 가까운 걸을 수 있는 칸 */
+  private moveToNearestWalkable(p: Person, count: boolean, needReach = false): boolean {
+    const g = this.world.grid;
+    const reach = needReach ? this.world.reachFromExits() : null;
+    const n = g.w * g.h;
+    if (this.bfsQueue.length !== n) {
+      this.bfsQueue = new Int32Array(n);
+      this.bfsSeen = new Uint8Array(n);
+    }
+    this.bfsSeen.fill(0);
+    const start = g.idx(p.cellX(), p.cellY());
+    let head = 0;
+    let tail = 0;
+    this.bfsQueue[tail++] = start;
+    this.bfsSeen[start] = 1;
+    while (head < tail) {
+      const cur = this.bfsQueue[head++];
+      if (cur !== start && g.walkable(cur) && (!reach || reach[cur])) {
+        p.x = (cur % g.w) + 0.5;
+        p.y = Math.floor(cur / g.w) + 0.5;
+        p.pose = 'stand';
+        if (count) {
+          this.stats.unsticks++;
+          this.notice(p, 'unstuck');
+        }
+        return true;
+      }
+      const cx = cur % g.w;
+      const cy = (cur - cx) / g.w;
+      for (let d = 0; d < 4; d++) {
+        const nx = cx + DX4[d];
+        const ny = cy + DY4[d];
+        if (!g.inBounds(nx, ny)) continue;
+        const ni = g.idx(nx, ny);
+        if (this.bfsSeen[ni] || (g.wall[ni] && !g.door[ni])) continue;
+        this.bfsSeen[ni] = 1;
+        this.bfsQueue[tail++] = ni;
+      }
+    }
+    return false;
+  }
+
+  /** 시계를 되돌리거나 건너뛸 때(디버그/캡처) 사람의 시각 기준값도 같이 옮김 */
+  shiftTime(delta: number): void {
+    for (const p of this.persons) {
+      p.idleUntil += delta;
+      for (const [k, v] of p.excludedUntil) p.excludedUntil.set(k, v + delta);
+      if (p.action) p.action.lastProgress += delta;
+      p.solvableAt.fill(-1e9);
+      this.inner?.shiftTime(p, delta);
+      if (p.visitor) {
+        p.visitor.leaveAt += delta;
+        if (p.visitor.greetUntil > 0) p.visitor.greetUntil += delta;
+        if (p.visitor.leftAt > 0) p.visitor.leftAt += delta;
+      }
+    }
+    for (const v of this.pendingVisits) v.at += delta;
+  }
+
+
+  // ------------------------------------------------------------------ 사회 상호작용 (사람 대상, GDD 14)
+
+  friendship(a: number, b: number): number {
+    return this.rel.friendship(a, b);
+  }
+
+  /** 상대에게 이 사회 상호작용을 지금 걸 수 있는가 */
+  socialAvailability(p: Person, t: Person, def: SocialDef, autonomous = false): Availability {
+    if (t === p || t.hidden || t.sleeping || t.collapse) return { ok: false, reasonKey: 'reason.target_busy' };
+    if (t.engagedWith && t.engagedWith !== p.id) return { ok: false, reasonKey: 'reason.target_busy' };
+    if (t.action && (!t.action.item.autonomous || this.data.social[t.action.item.interactionId])) return { ok: false, reasonKey: 'reason.target_busy' };
+    // 자율로 거는 말은 상대가 한가하거나 쉬는 중일 때만 (하던 일을 끊는 것은 플레이어 명령만)
+    if (autonomous && t.action) {
+      // 자율로 거는 말은 상대가 놀이 중일 때만 끼어듦 (요리·목욕·일 같은 할 일은 끊지 않음)
+      const c = this.data.compiled.byId.get(t.action.item.interactionId);
+      if (!c || !(c.ads[4] > 0) || c.def.tags?.some((tg) => tg === 'labor' || tg === 'cook' || tg === 'duty')) return { ok: false, reasonKey: 'reason.target_busy' };
+      for (let i = 0; i < 8; i++) if (c.serves[i] && t.needs[i] < 30) return { ok: false, reasonKey: 'reason.target_busy' };
+      if (t.pose === 'lie') return { ok: false, reasonKey: 'reason.target_busy' };
+    }
+    if (t.visitor?.leaving) return { ok: false, reasonKey: 'reason.target_busy' };
+    if (p.visitor?.leaving && def !== this.data.social['social.farewell']) return { ok: false, reasonKey: 'reason.target_busy' };
+    return checkSocialRequires(this.rel, p, t, def, this.world.stock);
+  }
+
+  /** 사람을 눌렀을 때 원형 메뉴 */
+  menuForPerson(personId: number, targetPersonId: number): MenuEntry[] {
+    const p = this.person(personId);
+    const t = this.persons.find((q) => q.id === targetPersonId);
+    if (!t || t === p) return [];
+    const out: MenuEntry[] = [];
+    for (const [id, def] of Object.entries(this.data.social)) {
+      const av = this.socialAvailability(p, t, def);
+      // 조건이 영영 안 맞는 것(로맨스 대상 아님, 신분 조건 등)은 메뉴에서 뺌. 지금만 안 되는 것은 회색으로
+      if (!av.ok && HIDE_REASONS.has(av.reasonKey ?? '')) continue;
+      const chance = av.ok ? Math.round(socialChance(this.relData, this.rel, p, t, def, null, (x) => this.interests(x), this.atmosphere(p)).chance) : undefined;
+      out.push({ interactionId: id, nameKey: def.nameKey, icon: def.icon, available: av.ok, reasonKey: av.reasonKey, reasonArgs: av.reasonArgs, category: def.category, chance });
+    }
+    return out;
+  }
+
+  private socialCandidates(p: Person, buf: Candidate[], urg: Float64Array): void {
+    const b = this.data.balance.autonomy;
+    const inner = this.inner;
+    const now = this.world.minute;
+    const list = this.socialAds();
+    const R = (b as { socialRadiusTiles?: number }).socialRadiusTiles ?? 24;
+    for (const t of this.persons) {
+      if (t === p) continue;
+      // 마을(M6): 멀리 있는 사람, 전체 세밀도가 아닌 사람은 자율 교류 후보가 아님
+      if (Math.abs(t.x - p.x) > R || Math.abs(t.y - p.y) > R || t.lod !== 'full' || t.infant) continue;
+      // 닿을 수 없어 제외해 둔 상대 (길찾기/자리 실패)
+      if ((p.excludedUntil.get(-1000 - t.id) ?? 0) > now) continue;
+      const dist = Math.hypot(t.x - p.x, t.y - p.y);
+      this.socialPick.length = 0;
+      this.socialPickW.length = 0;
+      let best = 0;
+      for (let li = 0; li < list.length; li++) {
+        const [id, def] = list[li];
+        let s = 0;
+        for (let i = 0; i < 8; i++) {
+          const n = NEED_IDS[i];
+          let a = def.ads?.[n] ?? 0;
+          if (def.adsWhenActorEmotion && p.emotionStage >= 1) a += def.adsWhenActorEmotion[EMOTION_IDS[p.emotion]]?.[n] ?? 0;
+          if (a) s += (urg[i] * a) / 100;
+        }
+        if (s <= 0) continue;
+        if (!this.socialAvailability(p, t, def, true).ok) continue;
+        if (inner) s *= inner.adMult(p, def.tags, id);
+        if (isRomantic(def) && this.isPartner(p.id, t.id)) s *= (this.relData as { partnerRomanceAdMult?: number }).partnerRomanceAdMult ?? 1;
+        s /= 1 + dist / b.distanceRefTiles;
+        let repeats = 0;
+        for (const u of p.recentObjects) if (u === -t.id) repeats++;
+        if (repeats >= b.repeatWindow) s *= b.repeatPenalty;
+        if (s < b.minScore) continue;
+        this.socialPick.push(li);
+        this.socialPickW.push(s);
+        if (s > best) best = s;
+      }
+      // 심즈처럼: 상대를 후보 하나로 (점수는 가장 높은 것), 무엇을 할지는 그 상대에게 가능한 것 중 가중 무작위.
+      // 80종이 넘어 상위 몇 개만 고르면 늘 수다/농담만 하게 됨 → 다양성
+      if (this.socialPick.length) {
+        const k = this.rng.weighted(this.socialPickW);
+        buf.push({ interactionId: list[this.socialPick[k < 0 ? 0 : k]][0], target: null, targetUid: t.id, score: best });
+      }
+    }
+  }
+  private readonly socialPick: number[] = [];
+  private readonly socialPickW: number[] = [];
+
+  isPartner(a: number, b: number): boolean {
+    const f = this.rel.get(a, b)?.flags;
+    return !!f && (f.has('spouse') || f.has('lover') || f.has('engaged'));
+  }
+
+  private socialAdList: [string, SocialDef][] | null = null;
+  /** 자율 광고가 있는 사회 상호작용만 (불러올 때 한 번) */
+  private socialAds(): [string, SocialDef][] {
+    if (!this.socialAdList) {
+      this.socialAdList = Object.entries(this.data.social).filter(([, d]) => (d.ads && Object.values(d.ads).some((v) => (v ?? 0) > 0)) || d.adsWhenActorEmotion);
+    }
+    return this.socialAdList;
+  }
+
+  private startSocial(p: Person, item: QueueItem): void {
+    const def = this.data.social[item.interactionId];
+    const t = this.persons.find((q) => q.id === item.targetUid);
+    const av = t ? this.socialAvailability(p, t, def, item.autonomous) : { ok: false, reasonKey: 'reason.target_busy' };
+    if (!t || !av.ok) {
+      if (!item.autonomous) this.notice(p, 'cannot', { reason: av.reasonKey ?? 'reason.unknown', ia: def.nameKey });
+      this.dropFront(p, item, 'requires');
+      return;
+    }
+    p.action = {
+      item, stepIndex: 0, phase: 'route', stepObj: -1, slotId: 'social', goal: -1,
+      path: [], pathPos: 0, remaining: 0, elapsed: 0, lastProgress: this.world.minute, repaths: 0,
+    };
+    if (!item.autonomous) {
+      p.recentObjects.length = 0;
+      // 플레이어가 건 말: 상대는 하던 자율 행동을 멈추고 그 자리에서 기다림 (심즈처럼, 돌아다녀서 놓치지 않게)
+      if (t.action?.item.autonomous && !t.sleeping) this.abortAction(t, 'social_wait');
+      t.queue = t.queue.filter((q) => !q.autonomous);
+      if (!t.engagedWith) t.engagedWith = p.id;
+    }
+    this.inner?.onActionStart(p, item.interactionId);
+    this.routeToPerson(p, t);
+  }
+
+  /** 상대 옆 걸을 수 있는 칸 중 나와 가장 가까운 곳으로 */
+  private routeToPerson(p: Person, t: Person): void {
+    const g = this.world.grid;
+    const tx = t.cellX();
+    const ty = t.cellY();
+    const d0 = Math.hypot(t.x - p.x, t.y - p.y);
+    // 이미 옆(좌우/대각) 칸이면 그 자리에서. 같은 칸이거나 바로 위아래면 옆 칸으로 옮겨 마주 봄
+    const sideBy = Math.abs(t.cellX() - p.cellX()) >= 1;
+    if (d0 <= 1.6 && d0 >= 0.9 && sideBy && g.walkable(g.idx(p.cellX(), p.cellY()))) {
+      this.arriveSocial(p);
+      return;
+    }
+    let best = -1;
+    let bestD = Infinity;
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        if (!dx && !dy) continue;
+        const x = tx + dx;
+        const y = ty + dy;
+        if (!g.inBounds(x, y)) continue;
+        const i = g.idx(x, y);
+        if (!g.walkable(i)) continue;
+        // 대각선 칸은 벽 모서리를 끼지 않을 때만 (말 거는 자리)
+        if (dx && dy && (!g.walkable(g.idx(tx + dx, ty)) || !g.walkable(g.idx(tx, ty + dy)))) continue;
+        let taken = false;
+        for (const q of this.persons) if (q !== p && q !== t && q.cellX() === x && q.cellY() === y) taken = true;
+        if (taken) continue;
+        // 옆으로 나란히 마주 보는 자리를 먼저 (위아래로 서면 뒷사람이 앞사람 그림에 가려짐)
+        const d = Math.hypot(x + 0.5 - p.x, y + 0.5 - p.y) + (dx && dy ? 0.3 : 0) + (!dx ? 2.5 : 0);
+        if (d < bestD) {
+          bestD = d;
+          best = i;
+        }
+      }
+    }
+    if (best < 0) {
+      // 말 걸 자리가 없음: 이 상대를 잠시 제외 (자율이 같은 실패를 반복하지 않게)
+      p.excludedUntil.set(-1000 - t.id, this.world.minute + this.data.balance.movement.pathFailExcludeMinutes);
+      if (!p.action!.item.autonomous) this.notice(p, 'cannot', { reason: 'reason.no_slot', ia: this.data.social[p.action!.item.interactionId]?.nameKey ?? '' });
+      this.finishAction(p, false, 'no_slot');
+      return;
+    }
+    this.routeTo(p, best, false);
+  }
+
+  private arriveSocial(p: Person): void {
+    const a = p.action!;
+    const def = this.data.social[a.item.interactionId];
+    const t = this.persons.find((q) => q.id === a.item.targetUid);
+    const av = t ? this.socialAvailability(p, t, def, a.item.autonomous) : { ok: false, reasonKey: 'reason.target_busy' };
+    if (!t || !av.ok) {
+      if (!a.item.autonomous) this.notice(p, 'cannot', { reason: av.reasonKey ?? 'reason.unknown', ia: def.nameKey });
+      this.finishAction(p, false, 'target_left');
+      return;
+    }
+    if (Math.hypot(t.x - p.x, t.y - p.y) > 1.6) {
+      // 상대가 움직임: 다시 따라감 (몇 번까지만)
+      a.repaths++;
+      if (a.repaths > 3) {
+        if (!a.item.autonomous) this.notice(p, 'cannot', { reason: 'reason.target_moved', ia: def.nameKey });
+        this.finishAction(p, false, 'target_moved');
+      } else this.routeToPerson(p, t);
+      return;
+    }
+    // 상대가 하던 자율 행동은 멈추고 마주 봄
+    if (t.action) this.abortAction(t, 'social');
+    t.queue = t.queue.filter((q) => !q.autonomous);
+    t.engagedWith = p.id;
+    // 상대가 앉았다/누웠다 일어나며 자리를 옮겼으면 다시 다가감 (붙잡아 둔 채)
+    if (Math.hypot(t.x - p.x, t.y - p.y) > 1.6 && a.repaths < 3) {
+      a.repaths++;
+      this.routeToPerson(p, t);
+      return;
+    }
+    // 상대가 걸어오다 멈춰 같은 칸에 겹치거나 바로 위아래면: 상대를 붙잡아 둔 채 옆 칸으로 옮김 (몇 번까지만)
+    const overlap = Math.hypot(t.x - p.x, t.y - p.y) < 0.9 || (Math.abs(t.x - p.x) < 0.5 && a.repaths < 2);
+    if (overlap && a.repaths < 3) {
+      a.repaths++;
+      this.routeToPerson(p, t);
+      return;
+    }
+    // 처음 만남: 첫인상 (14-2)
+    this.meet(p, t);
+    // 대화 주제 (14-3): 둘 다 관심 있는 주제가 있으면 그것, 없으면 상호작용 주제 중 하나
+    if (def.topics.length) {
+      const shared = def.topics.filter((tp) => this.interests(p).includes(tp) && this.interests(t).includes(tp));
+      const pool = shared.length ? shared : def.topics;
+      a.topic = pool[Math.floor(this.rng.next() * pool.length)];
+    }
+    this.facePerson(p, t);
+    this.facePerson(t, p);
+    p.anim = 'idle';
+    t.anim = 'idle';
+    a.phase = 'perform';
+    a.remaining = def.minutes;
+    a.elapsed = 0;
+    a.lastProgress = this.world.minute;
+  }
+
+  private facePerson(p: Person, t: Person): void {
+    const dx = t.x - p.x;
+    const dy = t.y - p.y;
+    p.facing = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : dy > 0 ? 'down' : 'up';
+  }
+
+  private performSocial(p: Person): void {
+    const a = p.action!;
+    const def = this.data.social[a.item.interactionId];
+    const t = this.persons.find((q) => q.id === a.item.targetUid);
+    if (!t || t.engagedWith !== p.id || t.hidden || t.sleeping || t.collapse) {
+      this.finishAction(p, false, 'target_left');
+      return;
+    }
+    a.remaining--;
+    a.elapsed++;
+    a.lastProgress = this.world.minute;
+    for (let i = 0; i < 8; i++) {
+      const n = NEED_IDS[i];
+      const v = def.needs?.[n];
+      if (v) p.needs[i] = Math.max(0, Math.min(100, p.needs[i] + v));
+      const tv = def.targetNeeds?.[n];
+      if (tv) t.needs[i] = Math.max(0, Math.min(100, t.needs[i] + tv));
+    }
+    this.stats.minutesByInteraction[a.item.interactionId] = (this.stats.minutesByInteraction[a.item.interactionId] ?? 0) + 1;
+    if (this.inner) {
+      this.inner.onPerformMinute(p, def.tags);
+      // 상대는 '걸린 대화'로 따로 셈 (내성적인 사람이 말을 걸려도 교류 지표가 오르지 않게, 놀림당한 쪽이 심술 지표를 얻지 않게)
+      t.tagMinutes.social_recv = (t.tagMinutes.social_recv ?? 0) + 1;
+    }
+    if (a.remaining > 0) return;
+    // 성공 판정 (14-3)
+    const cp = socialChance(this.relData, this.rel, p, t, def, a.topic ?? null, (x) => this.interests(x), this.atmosphere(p));
+    const ok = this.rng.next() * 100 < cp.chance;
+    const out = ok ? def.success : def.failure;
+    // 살림 소모 (선물, 빵 나눠 주기 …): 성공/실패 무관 (contracts-m3 1절)
+    if (def.requires.stock) {
+      const before = { ...this.world.stock };
+      for (const [k, n] of Object.entries(def.requires.stock)) this.world.stock[k] = Math.max(0, (this.world.stock[k] ?? 0) - n);
+      if (this.inner) this.checkStockLow(p, before);
+    }
+    if (ok) this.stats.socialOk++;
+    else this.stats.socialFail++;
+    const rude = def.estateRule === 'rude' || def.category === 'mean';
+    const up = rank(p) < rank(t);
+    let respect = out.respect;
+    // 신분 규칙: 낮은 신분이 높은 신분에게 무례하면 성공해도 존중 대신 처벌 위험 (처벌 자체는 M9 사건), 높은 쪽의 모욕은 "오만함" 소문
+    if (rude && up && ok) {
+      respect = Math.min(0, respect);
+      if (this.rng.next() < this.relData.success.rudePunishChance) {
+        this.notice(p, 'punish_risk', { target: t.name, ia: def.nameKey });
+        this.inner?.event(p, 'rude_to_superior');
+      }
+    } else if (rude && rank(p) > rank(t)) this.inner?.event(p, 'arrogance');
+    const r = this.rel.change(p.id, t.id, { friendship: out.friendship + (cp.sharedTopic && ok ? 1 : 0), romance: out.romance }, this.world.day());
+    if (respect) this.rel.addRespect(t.id, p.id, respect);
+    for (const f of out.flagsAdd) r.flags.add(f);
+    for (const f of out.flagsRemove) r.flags.delete(f);
+    if (ok && def.minutes >= 15 && this.rng.next() < 0.35) r.sharedMemories++;
+    p.lastSocial = { minute: this.world.minute, ok, target: t.id, ia: a.item.interactionId };
+    if (p.visitor?.customer && a.item.interactionId === 'social.haggle' && t.household === 1) this.shopSale(p, t, ok);
+    this.notice(p, 'social_result', { ia: def.nameKey, id: a.item.interactionId, target: t.id, ok: ok ? 1 : 0, chance: Math.round(cp.chance), df: out.friendship, dr: out.romance });
+    if (a.item.autonomous) {
+      p.recentObjects.push(-t.id);
+      if (p.recentObjects.length > 6) p.recentObjects.shift();
+    }
+    const id = a.item.interactionId;
+    this.finishAction(p, true, 'done');
+    const inner = this.inner;
+    if (inner) {
+      inner.onActionDone(p, id, def.tags, out.moodlets, t.id);
+      for (const m of out.targetMoodlets) if (m.chance === undefined || this.rng.next() < m.chance) inner.addMoodlet(t, m.id, { withPerson: p.id });
+      if (ok) {
+        for (const rm of def.removeMoodlets) inner.removeMoodlet(p, rm);
+        for (const rm of def.targetRemoveMoodlets) inner.removeMoodlet(t, rm);
+      }
+      inner.count(t, `social_recv:${id}`);
+      inner.count(p, `social:${id}`);
+      inner.event(p, `social:${id}`);
+      if (ok) inner.event(p, `social_ok:${id}`);
+      for (const e of out.events) inner.event(p, e.replace(/^event:/, ''));
+      inner.thought(t, `action_done:${id}`);
+    }
+  }
+
+  /** 처음 만남: 첫인상 (14-2). 이미 만났으면 아무 일 없음 */
+  meet(p: Person, t: Person): void {
+    const r = this.rel.ensure(p.id, t.id);
+    if (r.met) return;
+    r.met = true;
+    // 같은 가구는 이미 아는 사이 (첫인상 없음)
+    if (p.household === t.household) return;
+    const [a, b] = r.a === p.id ? [p, t] : [t, p];
+    const fi = firstImpression(this.rel['rules'], {
+      estateA: a.estate, estateB: b.estate, hygieneA: a.needs[NEED_INDEX.hygiene], hygieneB: b.needs[NEED_INDEX.hygiene],
+      traitsA: a.traits, traitsB: b.traits, dressOkA: true, dressOkB: true, looksA: 0, looksB: 0, reputationA: 0, reputationB: 0,
+    }, this.rng.next(), this.rng.next());
+    r.friendship = fi.friendship;
+    r.respectAB = fi.respectAB;
+    r.respectBA = fi.respectBA;
+    this.notice(p, 'first_meet', { target: t.id, other: t.name, f: Math.round(fi.friendship) });
+  }
+
+  /** 분위기 보정 (14-3): 불 켠 난로 곁 +3, 더러운 방 −3 */
+  private atmosphere(p: Person): number {
+    let m = 0;
+    if (this.world.nearLitHearth(p.x, p.y, 4)) m += 3;
+    const room = this.world.grid.roomOf(p.cellX(), p.cellY());
+    if (room >= 0 && (this.world.roomDirt[room] ?? 0) >= this.data.balance.roomDirt.dirtyAt) m -= 3;
+    return m;
+  }
+
+  // ------------------------------------------------------------------ 멀티태스킹, 가족 식사 (M3)
+
+  private multitaskTag(p: Person): string | null {
+    const a = p.action;
+    if (!a || a.phase !== 'perform' || p.sleeping || p.hidden) return null;
+    const c = this.data.compiled.byId.get(a.item.interactionId);
+    const tags = c?.def.tags;
+    if (!tags) return null;
+    for (const tg of this.relData.multitask.tags) if (tags.includes(tg)) return tg;
+    return null;
+  }
+
+  /** 먹거나 쉬면서 옆 사람과 이야기 (심즈 멀티태스킹): 교류 욕구 조금, 우정 조금. 가족이 함께 먹으면 가족 식사 무드렛 */
+  private updateMultitask(): void {
+    const mt = this.relData.multitask;
+    const fm = this.relData.familyMeal;
+    const active: Person[] = [];
+    for (const p of this.persons) {
+      if (this.multitaskTag(p)) active.push(p);
+      else p.chatWith = 0;
+    }
+    for (const p of active) {
+      let best: Person | null = null;
+      let bestD = mt.radius;
+      let family = 0;
+      const eating = this.multitaskTag(p)!.startsWith('eat');
+      const room = this.world.grid.roomOf(p.cellX(), p.cellY());
+      for (const q of active) {
+        if (q === p) continue;
+        const d = Math.hypot(q.x - p.x, q.y - p.y);
+        if (d > mt.radius || this.world.grid.roomOf(q.cellX(), q.cellY()) !== room) continue;
+        if (d < bestD || (d === bestD && best && q.id < best.id)) {
+          best = q;
+          bestD = d;
+        }
+        if (eating && q.household === p.household && d <= fm.radius && this.multitaskTag(q)!.startsWith('eat')) family++;
+      }
+      p.chatWith = best ? best.id : 0;
+      if (!best) continue;
+      this.meet(p, best);
+      p.needs[NEED_INDEX.social] = Math.min(100, p.needs[NEED_INDEX.social] + mt.socialPerMinute);
+      // 우정은 쌍마다 한 번만 (작은 id 쪽이 올림)
+      if (p.id < best.id || best.chatWith !== p.id) {
+        const r = this.rel.ensure(p.id, best.id);
+        r.friendship = Math.min(100, r.friendship + mt.friendshipPerHour / 60);
+      }
+      if (this.inner) {
+        p.tagMinutes.social = (p.tagMinutes.social ?? 0) + 1;
+        if (this.rng.next() < mt.chatMoodletChancePerHour / 60 && this.inner.moodletExists('table_talk')) this.inner.addMoodlet(p, 'table_talk', { withPerson: best.id });
+        if (eating && family + 1 >= fm.minPeople && !p.moodlets.some((m) => m.id === fm.moodlet)) this.inner.addMoodlet(p, fm.moodlet);
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------ 가게 (M4, 17-3)
+
+  /** 팔 수 있는 물건 (제작품 분류) */
+  private shopStock(): string[] {
+    const cats = ['goods', 'tool', 'baked', 'cloth', 'drink', 'preserved', 'prepared', 'metal'];
+    return Object.entries(this.world.stock).filter(([k, v]) => v > 0 && cats.includes(this.item(k)?.category ?? '') && k !== 'firewood').map(([k]) => k);
+  }
+
+  /** 가게를 연 동안(9~17시) 손님: 한 시간에 평판에 따라 한 명쯤. 이웃 중 부지에 없는 사람이 손님으로 걸어 들어옴 */
+  private shopCustomers(): void {
+    const sh = this.shop;
+    if (!sh.open || !this.econ) return;
+    const h = this.world.hour();
+    if (h < 9 || h >= 17) return;
+    if (!this.shopStock().length) return;
+    const keeper = this.persons.find((q) => q.household === 1 && !q.hidden && (q.stage === 'adult' || q.stage === 'elder'));
+    if (!keeper) return;
+    if (this.persons.some((q) => q.visitor?.customer)) return;
+    const perHour = 0.25 + sh.reputation / 250 - (sh.priceMult - 1) * 1.5;
+    if (this.rng.next() >= perHour / 60) return;
+    const free = this.data.neighbors.filter((n) => !this.persons.some((q) => q.visitor?.neighborId === n.id) && !this.pendingVisits.some((v) => v.neighborId === n.id));
+    if (!free.length) return;
+    const nb = free[Math.floor(this.rng.next() * free.length)];
+    this.arriveVisitor(nb.id, keeper.id);
+    const v = this.persons.find((q) => q.visitor?.neighborId === nb.id);
+    if (!v?.visitor) return;
+    v.visitor.customer = true;
+    v.visitor.greetUntil = 0;
+    v.visitor.leaveAt = this.world.minute + 45;
+    // 손님은 가게 주인과 곧장 흥정 (처음이면 인사 삼아 아는 사이가 됨)
+    const r = this.rel.ensure(v.id, keeper.id);
+    if (!r.met) this.meet(v, keeper);
+    if (this.data.social['social.haggle']) this.queueInteraction(v.id, 'social.haggle', keeper.id, false);
+    this.notice(keeper, 'customer', { name: nb.name });
+  }
+
+  /** 손님 흥정 끝: 성공(손님이 깎음) 0.85배, 실패 제값. 물건 하나 팖, 평판 */
+  private shopSale(customer: Person, keeper: Person, ok: boolean): void {
+    const e = this.econ;
+    const acct = e?.account(keeper.household);
+    const list = this.shopStock();
+    if (!e || !acct || !list.length) return;
+    const item = list[Math.floor(this.rng.next() * list.length)];
+    const def = this.item(item)!;
+    const q = this.world.quality[item] ?? 1;
+    const price = Math.round(e.itemPrice(def) * this.shop.priceMult * (1 + 0.1 * (q - 1)) * (ok ? 0.85 : 1));
+    this.world.stock[item] -= 1;
+    e.earn(acct, price, 'shop');
+    this.shop.sales++;
+    // 평판: 품질이 좋고 값이 싸면 오름 (17-3 "품질, 가격, 응대")
+    this.shop.reputation = Math.max(0, Math.min(100, this.shop.reputation + (q - 1) * 1.5 + (1 - this.shop.priceMult) * 10 + (ok ? 0.5 : -0.5)));
+    this.notice(keeper, 'shop_sale', { item: `item.${item}`, m: price });
+    keeper.lastWork = { minute: this.world.minute, wage: price };
+    if (customer.visitor) customer.visitor.leaveAt = this.world.minute + 5;
+  }
+
+  // ------------------------------------------------------------------ 이웃 방문 (M3)
+
+  /** 이웃 초대: 잠시 뒤 길 끝(부지 출구)에서 걸어 들어옴 */
+  invite(hostId: number, neighborId: string): { ok: boolean; reason?: string; at?: number } {
+    const nb = this.data.neighbors.find((n) => n.id === neighborId);
+    if (!nb) return { ok: false, reason: 'unknown' };
+    if (this.persons.some((q) => q.visitor?.neighborId === neighborId) || this.pendingVisits.some((v) => v.neighborId === neighborId)) return { ok: false, reason: 'already' };
+    if (!this.world.exits.length) return { ok: false, reason: 'no_exit' };
+    const [lo, hi] = this.relData.visit.arriveAfterMinutes;
+    const at = this.world.minute + Math.round(lo + this.rng.next() * (hi - lo));
+    this.pendingVisits.push({ neighborId, at, host: hostId });
+    const host = this.persons.find((q) => q.id === hostId);
+    if (host) this.notice(host, 'invited', { name: nb.name });
+    return { ok: true, at };
+  }
+
+  private updateVisits(): void {
+    const m = this.world.minute;
+    this.shopCustomers();
+    for (let i = this.pendingVisits.length - 1; i >= 0; i--) {
+      const v = this.pendingVisits[i];
+      if (m < v.at) continue;
+      this.pendingVisits.splice(i, 1);
+      this.arriveVisitor(v.neighborId, v.host);
+    }
+    for (const p of [...this.persons]) {
+      const vi = p.visitor;
+      if (!vi) continue;
+      if (vi.leaving) {
+        // 먼저 작별 인사(할 수 있으면), 그다음 길 끝까지 걸어가 사라짐. 길이 막혀 90분이 지나면 그냥 사라짐
+        const ex = this.world.exits[0];
+        // 출구 칸 1칸 안이면 떠남 (goto 가 같은 틱에 끝나도 놓치지 않게 거리만 봄)
+        const atExit = !!ex && Math.abs(p.cellX() - ex.x) + Math.abs(p.cellY() - ex.y) <= 1 && vi.saidBye;
+        if (atExit || m - vi.leftAt > 90) {
+          this.notice(p, 'visitor_left', { name: p.name });
+          this.removePerson(p);
+        } else if (!p.action && !p.queue.length) {
+          if (!vi.saidBye) {
+            vi.saidBye = true;
+            if (this.tryFarewell(p)) continue;
+          }
+          this.walkToExit(p);
+        }
+        continue;
+      }
+      if (vi.greetUntil > 0 && !p.action && !p.queue.length) {
+        if (this.tryGreet(p) || m >= vi.greetUntil) vi.greetUntil = 0;
+      }
+      let low = false;
+      for (const n of ['energy', 'bladder', 'hunger'] as const) if (p.needs[NEED_INDEX[n]] < this.relData.visit.leaveIfNeedBelow) low = true;
+      if (m >= vi.leaveAt || low) this.startLeaving(p);
+    }
+  }
+
+  private arriveVisitor(neighborId: string, hostId: number): void {
+    const idx = this.data.neighbors.findIndex((n) => n.id === neighborId);
+    const nb = this.data.neighbors[idx];
+    const ex = this.world.exits[0];
+    if (!nb || !ex) return;
+    let p = this.away.get(neighborId);
+    if (p) {
+      // 다시 찾아옴: 같은 사람 (관계, 성격, 기억 그대로). 부지 밖에서 지낸 동안 욕구는 적당히 채워진 것으로
+      this.away.delete(neighborId);
+      p.x = ex.x + 0.5;
+      p.y = ex.y + 0.5;
+      p.trail.length = 0;
+      p.action = null;
+      p.pose = 'stand';
+      p.sleeping = false;
+      p.hidden = false;
+      for (let i = 0; i < 8; i++) p.needs[i] = Math.max(p.needs[i], 70);
+      if ((p as { awayDay?: number }).awayDay !== this.world.day()) {
+        p.todayCount.clear();
+        p.lastDayTags.clear();
+      }
+      this.persons.push(p);
+    } else {
+      p = this.addPerson(nb.name, ex.x + 0.5, ex.y + 0.5, {
+        traits: nb.traits, estate: nb.estate, sex: nb.sex, stage: nb.stage, household: 100 + idx,
+        virtue: nb.virtue ?? null, sin: nb.sin ?? null, topics: nb.topics, innerSeed: nb.seed,
+      });
+      p.appearance = { neighbor: nb.id, seed: nb.seed, sex: nb.sex };
+    }
+    const [lo, hi] = this.relData.visit.stayMinutes;
+    // 도착하면 먼저 초대한 사람(바쁘면 다른 식구)에게 인사하러 감. 모두 바쁘면 30분까지 기다림 (updateVisits)
+    p.visitor = { neighborId, leaveAt: this.world.minute + Math.round(lo + this.rng.next() * (hi - lo)), leaving: false, greetUntil: this.world.minute + 30, host: hostId, leftAt: 0, saidBye: false };
+    this.stats.visits++;
+    this.notice(p, 'visitor_arrived', { name: nb.name, host: hostId });
+  }
+
+  /** 방문객 인사: 초대한 사람 → 다른 식구 순서로, 지금 말을 걸 수 있는 사람에게 */
+  private tryGreet(p: Person): boolean {
+    const vi = p.visitor!;
+    const greetId = this.data.social['social.greet'] ? 'social.greet' : 'social.chat';
+    const def = this.data.social[greetId];
+    if (!def) return true;
+    const hosts = this.persons.filter((q) => q.household !== p.household && !q.visitor).sort((a, b) => Number(b.id === vi.host) - Number(a.id === vi.host));
+    for (const h of hosts) {
+      // 이미 아는 사이면 인사 대신 안부 (첫인사 건네기는 처음 만난 사이 전용)
+      const id = this.rel.get(p.id, h.id)?.met ? (this.data.social['social.ask_after'] ? 'social.ask_after' : 'social.chat') : greetId;
+      const d = this.data.social[id];
+      // 손님이 문간에 왔다는 사건: 식구가 하던 자율 행동(집안일 포함)을 멈추고 맞음 (플레이어 명령과 같은 우선)
+      if (d && this.socialAvailability(p, h, d, false).ok) {
+        this.queueInteraction(p.id, id, h.id, false);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  startLeaving(p: Person): void {
+    if (!p.visitor || p.visitor.leaving) return;
+    p.visitor.leaving = true;
+    p.visitor.leftAt = this.world.minute;
+    if (p.action) this.abortAction(p, 'leaving');
+    p.queue = [];
+    this.notice(p, 'visitor_leaving', { name: p.name });
+  }
+
+  /** 작별 인사: 가장 친한 식구 중 지금 말을 걸 수 있는 사람에게 */
+  private tryFarewell(p: Person): boolean {
+    const def = this.data.social['social.farewell'];
+    if (!def) return false;
+    const hosts = this.persons.filter((q) => q.household !== p.household && !q.visitor).sort((a, b) => this.rel.friendship(p.id, b.id) - this.rel.friendship(p.id, a.id));
+    for (const h of hosts) {
+      if (this.socialAvailability(p, h, def, false).ok) {
+        this.queueInteraction(p.id, 'social.farewell', h.id, false);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private walkToExit(p: Person): void {
+    const ex = this.world.exits[0];
+    if (!ex) return;
+    const g = this.world.grid;
+    p.queue = [];
+    const item: QueueItem = { id: this.nextQueueId++, interactionId: GOTO_ID, targetUid: g.idx(ex.x, ex.y), autonomous: false };
+    p.queue.push(item);
+    this.startAction(p, item);
+  }
+
+  // ------------------------------------------------------------------ 스킬 (M4)
+
+  /** 스킬 활동 1분: 태그로 걸리는 스킬 + 상호작용이 지정한 스킬 (17-1) */
+  skillMinute(p: Person, tags: readonly string[], skill?: string, extraPct = 0, xpMult = 1, more?: readonly string[]): void {
+    const sk = this.skills!;
+    const list = sk.skillsForTags(tags, this.skillBuf);
+    if (skill && !list.includes(skill)) list.push(skill);
+    if (more) for (const s of more) if (!list.includes(s)) list.push(s);
+    if (!list.length) return;
+    const emo = p.emotionStage >= 1 ? EMOTION_IDS[p.emotion] : null;
+    // 여러 스킬에 걸리면 나눠 받음 (한 행동으로 스킬 여럿을 한꺼번에 올리지 않게)
+    const share = 1 / list.length;
+    for (const id of list) {
+      const up = sk.gain(p, id, share, emo, extraPct, 1, xpMult);
+      if (up !== null) {
+        this.notice(p, 'skill_up', { skill: `skill.${id}`, level: up });
+        this.inner?.event(p, `skill:${id}:${up}`);
+        p.lastSkillUp = { minute: this.world.minute, skill: id, level: up };
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------ 농사 (M4, GDD 31)
+
+  isFarmObj(o: ObjectInstance): boolean {
+    const tags = this.world.def(o.defId).tags ?? [];
+    return tags.includes('field') || tags.includes('orchard');
+  }
+
+  private cal(): { seasonDays: number; seasons: string[] } {
+    return (this.data.economy as { calendar?: { seasonDays: number; seasons: string[] } } | null)?.calendar ?? { seasonDays: 7, seasons: ['spring', 'summer', 'autumn', 'winter'] };
+  }
+
+  /** 씨 뿌리기 계절/텃밭 여부 (요구조건 밖 규칙) */
+  farmOk(p: Person, interactionId: string, obj: ObjectInstance): string | null {
+    if (!this.farm || !interactionId.startsWith('farm.sow.')) return null;
+    const c = this.cal();
+    return this.farm.canSow(interactionId.slice(9), obj, this.world.def(obj.defId).tags ?? [], this.world.day(), c.seasons, c.seasonDays, p.estate);
+  }
+
+  private farmDone(p: Person, iaId: string, o: ObjectInstance): void {
+    const f = this.farm;
+    if (!f) return;
+    const task = (this.data.interactions[iaId] as { farmTask?: string }).farmTask;
+    const tags = this.world.def(o.defId).tags ?? [];
+    const day = this.world.day();
+    switch (task) {
+      case 'till':
+        o.state.tilled = 1;
+        break;
+      case 'sow': {
+        if (iaId.startsWith('farm.plant.')) {
+          const cid = iaId.slice(11);
+          const price = Math.round((f.d.crops[cid]?.perennial?.saplingPrice ?? 24) * 4);
+          const acct = this.account(p);
+          if (this.econ && acct) this.econ.spend(acct, price, 'goods');
+          f.plant(o, cid, day, this.cal().seasonDays);
+          this.notice(p, 'sowed', { crop: f.d.crops[cid].nameKey });
+          break;
+        }
+        const cid = iaId.slice(9);
+        // 씨앗: 구획 크기만큼 (중 구획 = crops.json seed.perPlot 의 35%, 텃밭은 더 적게)
+        const seed = f.d.crops[cid]?.seed;
+        if (seed) {
+          const need = Math.max(1, Math.round(seed.perPlot * 0.35 * f.sizeOf(tags).yield));
+          this.world.stock[seed.item] = Math.max(0, (this.world.stock[seed.item] ?? 0) - need);
+        }
+        f.sow(o, cid);
+        this.notice(p, 'sowed', { crop: f.d.crops[cid].nameKey });
+        break;
+      }
+      case 'weed':
+        o.state.weeds = 0;
+        o.state.care = Math.min(0.2, Number(o.state.care) + 0.1);
+        break;
+      case 'water':
+        o.state.protect = day + 2;
+        break;
+      case 'fertilize':
+        this.world.stock.manure = Math.max(0, (this.world.stock.manure ?? 0) - 2);
+        o.state.fert = Math.min(100, Number(o.state.fert) + 10);
+        o.state.care = Math.min(0.2, Number(o.state.care) + 0.05);
+        o.state.fertN = Number(o.state.fertN) + 1;
+        break;
+      case 'scarecrow':
+        o.state.scare = 1;
+        break;
+      case 'harvest': {
+        f.yearMult = this.econ ? this.econ.yearMultNow : 1;
+        const r = f.harvest(o, tags, p.skills.farming ?? 0, this.cal().seasonDays, day);
+        if (r) {
+          this.world.stock[r.item] = (this.world.stock[r.item] ?? 0) + r.n;
+          this.setQuality(r.item, r.n, 1);
+          if (r.straw && this.item('straw')) this.world.stock.straw = (this.world.stock.straw ?? 0) + r.straw;
+          this.notice(p, 'harvested', { item: `item.${r.item}`, n: r.n });
+          p.lastHarvest = { minute: this.world.minute, item: r.item, n: r.n };
+          this.inner?.event(p, 'harvest');
+          if (r.n > 0) this.addEngineMoodlet(p, 'good_harvest');
+        }
+        break;
+      }
+      case 'glean': {
+        const n = 3 + Math.floor(this.rng.next() * 4);
+        this.world.stock.wheat = (this.world.stock.wheat ?? 0) + n;
+        o.state.glean = 0;
+        this.notice(p, 'harvested', { item: 'item.wheat', n });
+        break;
+      }
+    }
+  }
+
+  /** 하루 경계: 밭 성장/잡초/재해, 마을 가뭄 */
+  private farmDaily(day: number): void {
+    const f = this.farm;
+    if (!f) return;
+    const c = this.cal();
+    const host = this.persons.find((q) => q.household === 1);
+    const h = {
+      day: () => day, season: () => this.world.season, seasonDays: () => c.seasonDays, rng: this.rng,
+      notice: (kind: string, args?: Record<string, string | number>) => {
+        if (host) this.notice(host, kind, args);
+      },
+    };
+    const fields = this.world.objects.filter((o) => this.isFarmObj(o));
+    const plots = fields.filter((o) => !(this.world.def(o.defId).tags ?? []).includes('orchard'));
+    f.villageDaily(plots, h);
+    f.villageHail(fields, h);
+    for (const o of fields) f.daily(o, h, (this.world.def(o.defId).tags ?? []).includes('orchard'));
+  }
+
+  // ------------------------------------------------------------------ 제작 (M4, GDD 17-5)
+
+  recipeSkillOk(p: Person, interactionId: string): { ok: boolean; skill?: string; need?: number; have?: number } {
+    if (!interactionId.startsWith('recipe.')) return { ok: true };
+    const r = this.data.recipes[interactionId.slice(7)];
+    if (!r || !this.skills) return { ok: true };
+    const have = p.skills[r.skill] ?? 0;
+    return have >= r.level ? { ok: true } : { ok: false, skill: r.skill, need: r.level, have };
+  }
+
+  /** 제작 결과 품질 0~4: 스킬 레벨 효과 + 감정 (영감/집중 +1) + 걸작 확률 (17-1) */
+  private craftQuality(p: Person, skill: string): number {
+    const sk = this.skills;
+    const lv = p.skills[skill] ?? 0;
+    // 기본 품질 1 + skills.json 레벨 효과 quality (17-1 "레벨 효과는 skills.json 별도 필드")
+    let q = 1;
+    if (sk) q = Math.min(3, q + sk.effects(p, skill).quality);
+    const emo = p.emotionStage >= 1 ? EMOTION_IDS[p.emotion] : null;
+    if ((emo === 'inspired' || emo === 'focused') && this.rng.next() < 0.5) q = Math.min(3, q + 1);
+    if (lv >= 8 && (emo === 'inspired' || emo === 'focused') && this.rng.next() < 0.1) q = 4;
+    return q;
+  }
+
+  private recipeDone(p: Person, rid: string, station: ObjectInstance | null): void {
+    const r = this.data.recipes[rid];
+    if (!r) return;
+    const q = r.quality ? this.craftQuality(p, r.skill) : 1;
+    if (r.wait && station) {
+      // 양조/절임: 작업대에 담가 두고 며칠 뒤 산출 (하루 경계에서 꺼냄)
+      const days = r.wait.scale === 'season' ? r.wait.value * (((this.data.economy as { calendar?: { seasonDays: number } } | null)?.calendar?.seasonDays ?? 7) / 7) : r.wait.value;
+      station.state.brewing = Object.keys(this.data.recipes).indexOf(rid) + 1;
+      station.state.readyDay = this.world.day() + Math.max(1, Math.round(days));
+      station.state.quality = q;
+      this.notice(p, 'recipe_waiting', { recipe: r.nameKey, days: Math.max(1, Math.round(days)) });
+    } else {
+      for (const [k, n] of Object.entries(r.outputs)) {
+        this.setQuality(k, n, q);
+        if (this.data.build?.craftedFurniture?.[k]) for (let i = 0; i < n; i++) (this.world.makers[k] ??= []).push(p.id);
+      }
+      this.notice(p, 'crafted', { recipe: r.nameKey, q });
+      if (q >= 4) {
+        this.notice(p, 'masterwork', { recipe: r.nameKey });
+        this.addEngineMoodlet(p, 'masterwork');
+        this.inner?.event(p, 'masterwork');
+      }
+    }
+    p.lastCraft = { minute: this.world.minute, recipe: rid, quality: q };
+    this.inner?.event(p, `craft:${rid}`);
+    if (p.career) this.deliverOrders(p);
+  }
+
+  /** 품목 평균 품질 (판매 값, 음식 무드렛) — 새로 들어온 n 개의 품질을 섞음 */
+  private setQuality(item: string, n: number, q: number): void {
+    const w = this.world;
+    const have = Math.max(0, (w.stock[item] ?? 0) - n);
+    const old = w.quality[item] ?? 1;
+    w.quality[item] = (old * have + q * n) / Math.max(1, have + n);
+  }
+
+  /** 하루 경계: 다 익은 양조/절임을 꺼냄 */
+  private finishWaits(day: number): void {
+    const ids = Object.keys(this.data.recipes);
+    for (const o of this.world.objects) {
+      const b = Number(o.state.brewing ?? 0);
+      if (!b || Number(o.state.readyDay ?? 0) > day) continue;
+      const rid = ids[b - 1];
+      const r = this.data.recipes[rid];
+      o.state.brewing = 0;
+      o.state.readyDay = 0;
+      if (!r) continue;
+      for (const [k, n] of Object.entries(r.outputs)) {
+        this.world.stock[k] = (this.world.stock[k] ?? 0) + n;
+        this.setQuality(k, n, Number(o.state.quality ?? 1));
+      }
+      const host = this.persons.find((q) => q.household === 1);
+      if (host) this.notice(host, 'recipe_ready', { recipe: r.nameKey });
+    }
+  }
+
+  // ------------------------------------------------------------------ 현장형 직업 (대장장이 등, 17-2 "일 목록")
+
+  /** 출근일 아침: 오늘 주문 3~6건 (careers.json orders) */
+  private makeOrders(p: Person, day: number): void {
+    const st = p.career!;
+    const def = this.data.careers![st.id];
+    const o = def.orders as unknown as { perDay: [number, number]; feeMult?: [number, number]; pool: Array<{ item: string; qty: [number, number]; weight: number; minRank?: number } | string> };
+    // 주문이 없는 현장형(사제, 기사, 음유시인)도 오늘 근무일로 기록 → 하루 끝 일당/승급 정산
+    (st as { orderDay?: number }).orderDay = day;
+    st.orders = [];
+    if (!o) return;
+    // 솜씨가 닿는 주문만 (그 품목 레시피 레벨 ≤ 지금 레벨 + 1: 조금 벅찬 주문은 들어옴)
+    const canMake = (item: string) => Object.values(this.data.recipes).some((r) => (r.outputs[item] ?? 0) > 0 && r.level <= (p.skills[r.skill] ?? 0) + 1);
+    const pool = o.pool.map((x) => (typeof x === 'string' ? { item: x, qty: [1, 2] as [number, number], weight: 1 } : x)).filter((x) => (x.minRank ?? 0) <= st.rank && this.item(x.item) && canMake(x.item));
+    if (!pool.length) return;
+    const n = o.perDay[0] + Math.floor(this.rng.next() * (o.perDay[1] - o.perDay[0] + 1));
+    const w = pool.map((x) => x.weight);
+    for (let i = 0; i < n; i++) {
+      const pick = pool[Math.max(0, this.rng.weighted(w))];
+      const qty = pick.qty[0] + Math.floor(this.rng.next() * (pick.qty[1] - pick.qty[0] + 1));
+      const fm = o.feeMult ?? [1.1, 1.4];
+      const base = this.econ ? this.econ.itemPrice(this.item(pick.item)!) : this.item(pick.item)!.base;
+      const pay = Math.round(base * qty * (fm[0] + this.rng.next() * (fm[1] - fm[0])));
+      st.orders.push({ item: pick.item, qty, pay, done: false });
+    }
+    this.notice(p, 'orders_today', { n, job: def.nameKey });
+  }
+
+  /** 현장 근무 중이면: 다음 주문 품목을 만드는 레시피를 고름 (재료가 없으면 장부에서 사 옴) */
+  private onsiteWork(p: Person): boolean {
+    const st = p.career;
+    if (!st || p.visitor) return false;
+    const def = this.data.careers?.[st.id];
+    if (!def || def.type !== 'onsite') return false;
+    const day = this.world.day();
+    const m = this.world.minuteOfDay();
+    if (!isWorkday(def, day) || m < def.hours[0] * 60 || m >= def.hours[1] * 60) return false;
+    if ((st as { orderDay?: number }).orderDay !== day) {
+      this.makeOrders(p, day);
+      st.lastDay = day;
+    }
+    this.deliverOrders(p);
+    // 급한 욕구가 있으면 그것부터 (자율에 맡김)
+    for (const [i, v] of this.data.compiled.interrupt) if (p.needs[i] < v + 10) return false;
+    // 아직 못 끝낸 주문 중 지금 솜씨로 만들 수 있는 첫 주문
+    let rid: string | undefined;
+    for (const o of st.orders) {
+      if (o.done || (this.world.stock[o.item] ?? 0) >= o.qty) continue;
+      rid = Object.keys(this.data.recipes).find((k) => {
+        const r = this.data.recipes[k];
+        return (r.outputs[o.item] ?? 0) > 0 && !r.wait && this.data.interactions[`recipe.${k}`] && (p.skills[r.skill] ?? 0) >= r.level;
+      });
+      if (rid) break;
+    }
+    if (!st.orders.some((o) => !o.done)) return this.serviceWork(p, def, st, day);
+    if (!rid) {
+      // 발효/숙성 품목 주문 (에일, 맥주 …): 빈 통에 담가 둠. 다 익은 재고로 다음 주문을 넘김
+      for (const o of st.orders) {
+        if (o.done) continue;
+        const wk = Object.keys(this.data.recipes).find((k) => {
+          const r = this.data.recipes[k];
+          return (r.outputs[o.item] ?? 0) > 0 && !!r.wait && (p.skills[r.skill] ?? 0) >= r.level && this.data.interactions[`recipe.${k}`];
+        });
+        if (!wk) continue;
+        const ia = this.data.interactions[`recipe.${wk}`];
+        const vat = this.world.objects.find((x) => ia.objects.includes(x.defId) && !Number(x.state.brewing ?? 0));
+        if (!vat) continue;
+        this.buyInputs(p, def, st, wk);
+        if (!checkRequires(this.world, ia, vat).ok) continue;
+        this.queueInteraction(p.id, `recipe.${wk}`, vat.uid, true);
+        return true;
+      }
+      return false;
+    }
+    this.buyInputs(p, def, st, rid);
+    const ia = this.data.interactions[`recipe.${rid}`];
+    const station = this.world.objects.find((o) => ia.objects.includes(o.defId));
+    if (!station || !checkRequires(this.world, ia, station).ok) return false;
+    this.queueInteraction(p.id, `recipe.${rid}`, station.uid, true);
+    return true;
+  }
+
+  /** 서비스 일감: 오늘 몫(perDay)만큼 부지 밖으로 나가 일하고 사례금 (17-2 현장형 "손님 응대") */
+  private serviceWork(p: Person, def: import('./people/careers').CareerDef, st: import('./people/careers').CareerState, day: number): boolean {
+    const svc = (def as { services?: { perDay: [number, number]; pool: Array<{ id: string }> } }).services;
+    if (!svc?.pool.length) return false;
+    const s2 = st as { svcDay?: number; svcLeft?: number };
+    if (s2.svcDay !== day) {
+      s2.svcDay = day;
+      s2.svcLeft = svc.perDay[0] + Math.floor(this.rng.next() * (svc.perDay[1] - svc.perDay[0] + 1));
+    }
+    if (!s2.svcLeft) return false;
+    const exit = this.world.objects.find((o) => o.defId === 'lot_exit');
+    if (!exit) return false;
+    const pick = svc.pool[Math.floor(this.rng.next() * svc.pool.length)];
+    const id = `service.${st.id}.${pick.id}`;
+    if (!this.data.interactions[id]) return false;
+    s2.svcLeft--;
+    this.queueInteraction(p.id, id, exit.uid, true);
+    return true;
+  }
+
+  private serviceDone(p: Person, iaId: string): void {
+    const [, cid, sid] = iaId.split('.');
+    const def = this.data.careers?.[cid];
+    const st = p.career;
+    if (!def || !st || st.id !== cid) return;
+    const sv = (def as { services?: { pool: Array<{ id: string; fee: [number, number] }> } }).services?.pool.find((x) => x.id === sid);
+    if (!sv) return;
+    const rank = def.ranks[st.rank] as { feeMult?: number };
+    const fee = Math.round((sv.fee[0] + this.rng.next() * (sv.fee[1] - sv.fee[0])) * 4 * (rank.feeMult ?? 1));
+    const acct = this.account(p);
+    if (this.econ && acct && fee > 0) this.econ.earn(acct, fee, 'shop');
+    st.perf += 3;
+    p.lastWork = { minute: this.world.minute, wage: fee };
+    this.inner?.event(p, `service:${sid}`);
+  }
+
+  /** 주문 재료/연료가 모자라면 사 옴. 도제/직인은 공방(장인)이 대 주므로 제 몫(share)만큼만 가계가 부담 (17-2) */
+  private buyInputs(p: Person, def: import('./people/careers').CareerDef, st: import('./people/careers').CareerState, rid: string): void {
+    const r = this.data.recipes[rid];
+    const acct = this.account(p);
+    const share = (def.ranks[st.rank] as { share?: number } | undefined)?.share ?? 1;
+    for (const [k, n] of [...Object.entries(r.inputs), ...Object.entries(r.fuel ?? {})]) {
+      const lack = n - (this.world.stock[k] ?? 0);
+      const it = this.item(k);
+      if (lack <= 0 || !it) continue;
+      if (share >= 1 && this.econ && acct) {
+        const got = this.econ.buy(acct, it, lack, 'materials');
+        this.world.stock[k] = (this.world.stock[k] ?? 0) + got;
+      } else {
+        // 공방 재료: 몫 비율만큼만 가계 돈
+        if (share > 0 && this.econ && acct) this.econ.spend(acct, Math.round(this.econ.itemPrice(it) * lack * share), 'materials');
+        this.world.stock[k] = (this.world.stock[k] ?? 0) + lack;
+      }
+    }
+  }
+
+  /** 주문 품목이 재고에 다 있으면 넘기고 값을 받음 (도제는 몫 0, 직인 절반, 장인 전부 — careers ranks share) */
+  private deliverOrders(p: Person): void {
+    const st = p.career;
+    if (!st) return;
+    const def = this.data.careers?.[st.id];
+    for (const o of st.orders) {
+      if (o.done || (this.world.stock[o.item] ?? 0) < o.qty) continue;
+      this.world.stock[o.item] -= o.qty;
+      o.done = true;
+      const share = (def?.ranks[st.rank] as { share?: number } | undefined)?.share ?? 1;
+      const q = this.world.quality[o.item] ?? 1;
+      const pay = Math.round(o.pay * share * (1 + 0.1 * (q - 1)));
+      const acct = this.account(p);
+      if (this.econ && acct && pay > 0) this.econ.earn(acct, pay, 'shop');
+      st.perf += 4 * (1 + 0.2 * (q - 1));
+      this.notice(p, 'order_done', { item: `item.${o.item}`, qty: o.qty, pay });
+      p.lastWork = { minute: this.world.minute, wage: pay };
+      this.inner?.event(p, 'order_done');
+    }
+  }
+
+  /** 하루 끝: 못 끝낸 주문은 성과 감점 */
+  private onsiteEndOfDay(day: number): void {
+    for (const p of this.persons) {
+      const st = p.career;
+      const def = st ? this.data.careers?.[st.id] : undefined;
+      if (!st || !def || def.type !== 'onsite' || (st as { orderDay?: number }).orderDay !== day) continue;
+      const wage = def.ranks[st.rank]?.wage;
+      const acct = this.account(p);
+      if (wage && this.econ && acct) this.econ.earn(acct, wage, 'wage');
+      const slowItem = (item: string) => Object.values(this.data.recipes).some((r) => (r.outputs[item] ?? 0) > 0 && !!r.wait);
+      const left = st.orders.filter((o) => !o.done && !slowItem(o.item)).length;
+      if (left) {
+        st.perf -= left * 3;
+        this.notice(p, 'orders_missed', { n: left });
+      }
+      st.days++;
+      this.careerVerdict(p, def, st);
+      st.orders = [];
+    }
+  }
+
+  // ------------------------------------------------------------------ 직업 (M4, GDD 17-2)
+
+  setCareer(p: Person, careerId: string | null): { ok: boolean; reason?: string } {
+    if (p.career && p.action && (p.action.item.interactionId === `work.${p.career.id}` || p.action.item.interactionId.startsWith('service.'))) this.abortAction(p, 'career_change');
+    p.queue = p.queue.filter((q) => !q.interactionId.startsWith('work.') && !q.interactionId.startsWith('service.'));
+    if (!careerId) {
+      if (p.career) this.notice(p, 'quit_job', { job: this.data.careers?.[p.career.id]?.nameKey ?? '' });
+      p.career = null;
+      return { ok: true };
+    }
+    const def = this.data.careers?.[careerId];
+    if (!def || def.npc_role) return { ok: false, reason: 'unknown' };
+    if (!def.estates.includes(p.estate)) return { ok: false, reason: 'estate' };
+    if (def.literacy && (p.skills.reading ?? 0) < 1) return { ok: false, reason: 'literacy' };
+    if (p.stage === 'child' || p.stage === 'teen') return { ok: false, reason: 'age' };
+    // 장인 신분이 제 공방 직업을 얻으면 장인 등급부터 (17-2 장인 경로). 나머지는 맨 아래부터
+    const startRank = def.type === 'onsite' && p.estate === 'artisan' ? Math.min(2, def.ranks.length - 1) : 0;
+    p.career = { id: careerId, rank: startRank, perf: 0, days: 0, attitude: 'normal', lastDay: -1, warned: false, orders: [] };
+    this.notice(p, 'new_job', { job: def.nameKey });
+    this.inner?.event(p, `job:${careerId}`);
+    return { ok: true };
+  }
+
+  /** 지금 출근할 시각인가 (래빗홀형, 오늘 아직 안 감) */
+  private careerDue(p: Person): boolean {
+    const st = p.career;
+    if (!st || p.collapse || p.visitor) return false;
+    const def = this.data.careers?.[st.id];
+    if (!def || def.type === 'onsite') return false;
+    const day = this.world.day();
+    if (st.lastDay === day || !isWorkday(def, day)) return false;
+    if (def.type === 'journey') {
+      const prep = (def as { journey?: { prepDays?: { value: number } } }).journey?.prepDays?.value ?? 2;
+      if (st.tripEnd && day < Math.floor(st.tripEnd / 1440) + prep) return false;
+    }
+    const m = this.world.minuteOfDay();
+    const start = def.hours[0] * 60 - COMMUTE_MINUTES;
+    // 늦어도 퇴근 2시간 전까지는 감 (늦은 만큼 일당이 줄고 성과 감점)
+    if (m < start || m > def.hours[1] * 60 - 120) return false;
+    if (p.action?.item.interactionId === `work.${st.id}`) return false;
+    if (p.queue.some((q) => q.interactionId === `work.${st.id}`)) return false;
+    return true;
+  }
+
+  /** 출근: 하던 자율 행동(잠 포함)을 멈추고 일터로 (심즈처럼 출근은 자동) */
+  private goToWork(p: Person): void {
+    const st = p.career!;
+    const exit = this.world.objects.find((o) => o.defId === 'lot_exit');
+    if (!exit) return;
+    if (p.action && (p.action.item.autonomous || p.sleeping)) this.abortAction(p, 'work');
+    this.releaseEngaged(p);
+    p.queue = p.queue.filter((q) => !q.autonomous);
+    const item: QueueItem = { id: this.nextQueueId++, interactionId: `work.${st.id}`, targetUid: exit.uid, autonomous: false };
+    p.queue.unshift(item);
+    st.lastDay = this.world.day();
+    const def = this.data.careers![st.id];
+    if (def.type === 'journey') {
+      const jd = (def as { journey?: { days: [number, number] } }).journey?.days ?? [3, 5];
+      const days = jd[0] + Math.floor(this.rng.next() * (jd[1] - jd[0] + 1));
+      st.tripEnd = this.world.minute + days * 1440;
+      this.notice(p, 'journey_start', { days });
+      return;
+    }
+    this.notice(p, 'go_work', { job: def.nameKey });
+  }
+
+  /** 근무를 마침 (다 채웠거나 중간에 그만둠): 일당, 성과, 태도 스트레스, 승급/경고/해고, 일터 사건 */
+  private workDone(p: Person, minutes: number, full: boolean): void {
+    const st = p.career;
+    if (!st) return;
+    const def = this.data.careers?.[st.id];
+    if (!def) return;
+    if (def.type === 'journey') return this.journeyDone(p, def, st, minutes, full);
+    const shift = Math.max(60, (def.hours[1] - def.hours[0]) * 60);
+    const frac = Math.min(1, minutes / shift);
+    const emo = p.emotionStage >= 1 ? EMOTION_IDS[p.emotion] : null;
+    const perfToday = dayPerformance(p, def, st, emo) * frac - (full ? 0 : 5);
+    st.perf += perfToday;
+    st.days++;
+    // 일당 = 등급 일당 × (1 + 성과 보정 −20% ~ +30%) × 근무 비율 (17-7)
+    const pm = this.econ ? this.econ.d.income.performance : { min: -0.2, max: 0.3 };
+    const perfMod = Math.max(pm.min, Math.min(pm.max, (perfToday - 10) / 40));
+    const wage = Math.round(wageOf(def, st) * (1 + perfMod) * frac);
+    const acct = this.account(p);
+    if (this.econ && acct && wage > 0) this.econ.earn(acct, wage, 'wage');
+    if (this.inner) this.inner.addStress(p, ATTITUDE[st.attitude].stress * frac);
+    this.notice(p, 'work_done', { job: def.nameKey, wage, perf: Math.round(perfToday) });
+    p.lastWork = { minute: this.world.minute, wage };
+    this.inner?.event(p, `work_done:${st.id}`);
+    // 승급 (17-2 "성과가 차면 승급 사건") / 경고 / 해고
+    this.careerVerdict(p, def, st);
+    if (!p.career) return;
+    // 일터 사건 카드 (24-1): 근무 끝에 가끔
+    if (full && def.events?.length && !p.careerEvent && this.rng.next() < 0.3) {
+      const ev = def.events[Math.floor(this.rng.next() * def.events.length)];
+      p.careerEvent = { careerId: st.id, eventId: ev.id, since: this.world.minute };
+      this.notice(p, 'career_event', { job: def.nameKey });
+    }
+  }
+
+  private rabbitCache = new Map<string, Float64Array>();
+  /** 근무 중 욕구 감소 배수 (욕구 순서 NEED_IDS) */
+  private rabbitNeeds(careerId: string): Float64Array {
+    let r = this.rabbitCache.get(careerId);
+    if (!r) {
+      const rules = this.data.careerRules?.rabbitholeNeeds ?? { hunger: 0.5, energy: 1, hygiene: 1, bladder: 0, fun: 0.5, social: 0.3, warmth: 0, comfort: 0.5 };
+      const own = (this.data.careers?.[careerId] as { rabbitholeNeeds?: Record<string, number> } | undefined)?.rabbitholeNeeds ?? {};
+      r = new Float64Array(8);
+      for (let i = 0; i < 8; i++) r[i] = own[NEED_IDS[i]] ?? rules[NEED_IDS[i]] ?? 1;
+      this.rabbitCache.set(careerId, r);
+    }
+    return r;
+  }
+
+  /** 교역 여정 결산 (17-7): 수익 = 투자액 × (기본 25% + 셈×2% + 이야기×1% + 등급) × 사건 배수 − 하루 비용, 12% 손실 사건 */
+  private journeyDone(p: Person, def: import('./people/careers').CareerDef, st: import('./people/careers').CareerState, minutes: number, full: boolean): void {
+    const e = this.econ;
+    const acct = this.account(p);
+    const days = Math.max(1, Math.round(minutes / 1440));
+    for (let i = 0; i < 8; i++) p.needs[i] = Math.max(p.needs[i], 60);
+    if (!e || !acct) return;
+    const I = e.d.income.trade;
+    const S = e.S(p.estate as EstateId) * 4;
+    const invest = Math.max(0, Math.min(Math.round(acct.money * 0.8), Math.round(S * 0.4)));
+    const rankBonus = (def.ranks[st.rank] as { rankBonus?: number }).rankBonus ?? 0;
+    const r = I.baseReturn + (p.skills.reckoning ?? 0) * I.perReckoning + (p.skills.storytelling ?? 0) * I.perStory + rankBonus;
+    let profit = invest * r * (I.eventMult[0] + this.rng.next() * (I.eventMult[1] - I.eventMult[0]));
+    let lost = false;
+    if (this.rng.next() < I.lossChance) {
+      profit = -invest * (I.lossRange[0] + this.rng.next() * (I.lossRange[1] - I.lossRange[0]));
+      lost = true;
+    }
+    profit -= I.costPerDay * 4 * days;
+    if (!full) profit *= 0.5;
+    profit = Math.round(profit);
+    if (profit >= 0) e.earn(acct, profit, 'trade');
+    else e.spend(acct, -profit, 'trade_loss');
+    const pp = (def as { journey?: { perfPerTrip?: { profit: number; loss: number } } }).journey?.perfPerTrip ?? { profit: 6, loss: -4 };
+    st.perf += profit >= 0 ? pp.profit * 10 / 6 : pp.loss * 10 / 6;
+    st.days += days;
+    p.lastWork = { minute: this.world.minute, wage: Math.max(0, profit) };
+    this.notice(p, lost ? 'journey_loss' : 'journey_done', { m: Math.abs(profit), days });
+    this.inner?.event(p, lost ? 'trade_loss' : 'trade_profit');
+    if (st.perf >= def.promoteAt && st.rank < def.ranks.length - 1) {
+      st.rank++;
+      st.perf = 0;
+      this.notice(p, 'promoted', { job: def.nameKey, rank: def.ranks[st.rank].nameKey });
+      this.addEngineMoodlet(p, 'promoted');
+    }
+  }
+
+  /** 일터 사건 선택지 고름 */
+  careerChoice(p: Person, option: string): boolean {
+    const ce = p.careerEvent;
+    if (!ce) return false;
+    const ev = this.data.careers?.[ce.careerId]?.events?.find((e) => e.id === ce.eventId);
+    const opt = ev?.options.find((o) => o.id === option);
+    if (!ev || !opt) return false;
+    const e = opt.effects ?? {};
+    if (p.career && p.career.id === ce.careerId && e.performance) p.career.perf += e.performance;
+    const acct = this.account(p);
+    if (e.money && this.econ && acct) {
+      if (e.money > 0) this.econ.earn(acct, e.money, 'work_event');
+      else this.econ.spend(acct, -e.money, 'work_event');
+    }
+    for (const m of e.moodlets ?? []) this.addEngineMoodlet(p, m);
+    if (e.skillXp && this.skills) for (const [s, xp] of Object.entries(e.skillXp)) this.skills.gain(p, s, xp / 0.45, null);
+    p.careerEvent = null;
+    this.inner?.event(p, `career_event:${ev.id}:${opt.id}`);
+    return true;
+  }
+
+  /** 승급 / 경고 / 해고 (래빗홀, 현장형 공통, 17-2) */
+  private careerVerdict(p: Person, def: import('./people/careers').CareerDef, st: import('./people/careers').CareerState): void {
+    if (st.perf >= def.promoteAt && st.rank < def.ranks.length - 1) {
+      st.rank++;
+      st.perf = 0;
+      st.warned = false;
+      this.notice(p, 'promoted', { job: def.nameKey, rank: def.ranks[st.rank].nameKey });
+      this.addEngineMoodlet(p, 'promoted');
+      this.inner?.event(p, 'promoted');
+    } else if (st.perf <= -60) {
+      this.notice(p, 'fired', { job: def.nameKey });
+      this.addEngineMoodlet(p, 'fired');
+      this.inner?.event(p, 'fired');
+      p.career = null;
+    } else if (st.perf <= -30 && !st.warned) {
+      st.warned = true;
+      this.notice(p, 'work_warning', { job: def.nameKey });
+    }
+  }
+
+  /** 하루 끝: 출근일인데 안 간 사람 성과 감점, 선택 대기 오래되면 자동 선택 */
+  private careerEndOfDay(day: number): void {
+    for (const p of this.persons) {
+      const st = p.career;
+      if (!st) continue;
+      const def = this.data.careers?.[st.id];
+      if (!def || def.type !== 'rabbithole') continue;
+      if (isWorkday(def, day) && st.workedDay !== day) {
+        st.perf -= 15;
+        this.notice(p, 'missed_work', { job: def.nameKey });
+        this.careerVerdict(p, def, st);
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------ 경제 (M4)
+
+  item(id: string): ItemDef | undefined {
+    return this.data.items[id];
+  }
+
+  account(p: Person): Account | undefined {
+    return this.econ?.account(p.household);
+  }
+
+  /** 장터에서 사고팔기 (상호작용 효과 buy/sell). 파는 수 -1 = 가진 만큼 다 */
+  private trade(p: Person, buy?: Record<string, number>, sell?: Record<string, number>): void {
+    const e = this.econ;
+    const a = this.account(p);
+    if (!e || !a) {
+      // 경제가 없는 부지(M1 테스트): 예전처럼 공짜로 채움
+      if (buy) for (const [k, n] of Object.entries(buy)) this.world.stock[k] = (this.world.stock[k] ?? 0) + n;
+      return;
+    }
+    let spent = 0;
+    let got = 0;
+    if (sell) {
+      for (const [k, n0] of Object.entries(sell)) {
+        const def = this.item(k);
+        const have = this.world.stock[k] ?? 0;
+        const n = Math.min(have, n0 < 0 ? have : n0);
+        if (!def || n <= 0) continue;
+        got += e.sell(a, def, n, 'sale');
+        this.world.stock[k] = have - n;
+      }
+    }
+    if (buy) {
+      // 장보기 목록 = 채울 목표 재고 (모자라는 만큼만 삼)
+      for (const [k, want] of Object.entries(buy)) {
+        const def = this.item(k);
+        const n = Math.max(0, want - (this.world.stock[k] ?? 0));
+        if (!def || n <= 0) continue;
+        const before = a.money;
+        const k2 = e.buy(a, def, n, def.food || def.ledger === 'vegetables' || def.ledger === 'grain' ? 'food' : k === 'firewood' ? 'fuel' : 'goods');
+        spent += before - a.money;
+        if (k2 > 0) {
+          this.world.stock[k] = (this.world.stock[k] ?? 0) + k2;
+          this.setQuality(k, k2, 1);
+        }
+      }
+    }
+    if (spent || got) this.notice(p, 'market_trip', { spent, got });
+  }
+
+  /** 하루가 바뀜: 계절, 저장고 부패, 경제 정산 (17-9 자정 정산) */
+  private newDay(day: number): void {
+    this.fire?.newDay();
+    if (this.judge) {
+      this.judge.daily();
+      this.rumors?.daily(day);
+    }
+    const w = this.world;
+    if (day > 0) {
+      this.careerEndOfDay(day - 1);
+      this.onsiteEndOfDay(day - 1);
+    }
+    // 계절부터 (밭/과수는 오늘의 계절로 자람)
+    const cal = (this.data.economy as { calendar?: { seasonDays: number; seasons: string[] } } | null)?.calendar;
+    if (cal) {
+      const s = cal.seasons[Math.floor(day / cal.seasonDays) % cal.seasons.length] as typeof w.season;
+      if (s !== w.season) {
+        w.season = s;
+        w.updateRoomTemps(true);
+        for (const p of this.persons) if (p.household < 100) this.notice(p, 'season', { season: `hud.season.${s}` });
+      }
+    }
+    this.finishWaits(day);
+    this.farmDaily(day);
+    this.spoilStorage(day);
+    const e = this.econ;
+    if (!e) return;
+    const host = this.persons.find((q) => q.household === 1);
+    // 현물 납부 (31-6): 세금일에 돈이 모자라면 곡물을 기준가로 쳐서 냄
+    const acct1 = e.account(1);
+    if (acct1 && host) {
+      const due = e.taxDue(acct1, day - 1);
+      let short = due - acct1.money;
+      for (const g of ['wheat', 'rye', 'barley', 'oats', 'beans']) {
+        if (short <= 0) break;
+        const def = this.item(g);
+        const have = w.stock[g] ?? 0;
+        if (!def || have <= 0) continue;
+        const n = Math.min(have, Math.ceil(short / Math.max(1, def.base)));
+        w.stock[g] = have - n;
+        e.earn(acct1, n * def.base, 'inkind', false);
+        short -= n * def.base;
+        this.notice(host, 'tax_inkind', { item: `item.${g}`, n });
+      }
+    }
+    e.endOfDay(day - 1, {
+      notice: (h, kind, args) => {
+        const q = this.persons.find((x) => x.household === h);
+        if (q) this.notice(q, kind, args);
+      },
+    });
+    // 조작 가정 구휼 (17-9): 먹을 것이 식구 하루치도 없고 돈도 없으면 교회 빵
+    const a = e.account(1);
+    if (a && host) {
+      const members = this.persons.filter((q) => q.household === 1).length;
+      let food = 0;
+      for (const [k, v] of Object.entries(w.stock)) if (this.item(k)?.food || k === 'bread' || k === 'preserves' || k === 'ingredients') food += v;
+      const dayCost = members * 6;
+      if (food < members && a.money < dayCost && a.reliefDays < (this.data.economy as { relief: { church: { maxDays: number } } }).relief.church.maxDays) {
+        e.relief(a, day, undefined);
+        w.stock.bread = (w.stock.bread ?? 0) + members;
+        this.notice(host, 'relief_church', { n: members });
+        this.inner?.event(host, 'relief_church');
+      } else if (food >= members) a.reliefDays = 0;
+    }
+  }
+
+  /** 저장고 부패 (17-5): 묶음을 재고에 맞추고, 기간이 지난 묶음은 버림 */
+  private spoilStorage(day: number): void {
+    const w = this.world;
+    const SD = (this.data.economy as { calendar?: { seasonDays: number } } | null)?.calendar?.seasonDays ?? 7;
+    const lost: string[] = [];
+    // 지하 저장고가 있으면 부패 속도 절반 (23-2, 17-5)
+    const cellar = w.hasCellar();
+    for (const [k, v] of Object.entries(w.stock)) {
+      const sp = this.item(k)?.spoil;
+      let list = w.batches.get(k);
+      if (!list) {
+        list = [];
+        w.batches.set(k, list);
+      }
+      // 재고와 맞춤: 늘었으면 오늘 들어온 묶음, 줄었으면 오래된 것부터 먹은 것으로
+      let sum = 0;
+      for (const b of list) sum += b.qty;
+      if (v > sum) list.push({ qty: v - sum, day });
+      else {
+        let take = sum - v;
+        while (take > 0 && list.length) {
+          const t = Math.min(take, list[0].qty);
+          list[0].qty -= t;
+          take -= t;
+          if (list[0].qty <= 0) list.shift();
+        }
+      }
+      if (!sp) continue;
+      const life = (sp.scale === 'season' ? sp.value * (SD / 7) : sp.value) * (cellar ? 2 : 1);
+      let spoiled = 0;
+      while (list.length && day - list[0].day >= life) spoiled += list.shift()!.qty;
+      if (spoiled > 0) {
+        w.stock[k] = Math.max(0, v - spoiled);
+        lost.push(`${k}:${spoiled}`);
+      }
+    }
+    const host = this.persons.find((q) => q.household === 1);
+    if (host && lost.length) for (const l of lost) {
+      const [item, n] = l.split(':');
+      this.notice(host, 'spoiled', { item: `item.${item}`, n: Number(n) });
+    }
+  }
+
+  // ------------------------------------------------------------------ 관찰
+
+  /** 결정론 검사용 해시 (FNV-1a) */
+  worldHash(): string {
+    const parts: (string | number)[] = [this.world.minute, this.rng.state];
+    for (const p of this.persons) {
+      parts.push(p.x.toFixed(4), p.y.toFixed(4), ...Array.from(p.needs, (v) => v.toFixed(4)), p.queue.length, p.action?.item.interactionId ?? '-');
+      parts.push(p.pose, p.action?.phase ?? '-', p.action?.stepIndex ?? -1, p.action?.slotId ?? '-', p.status, p.carry ?? '-');
+      parts.push(p.id, p.estate, p.stage, p.household, p.emotion, p.emotionStage, p.stress.toFixed(3), p.happiness.toFixed(3), p.traits.join(','));
+      for (const m of p.moodlets) parts.push(m.id, m.strength);
+      for (const wi of p.wishes) parts.push(wi.id);
+    }
+    for (const [uid, m] of this.world.reservations) for (const [slot, pid] of m) parts.push(`r${uid}:${slot}:${pid}`);
+    for (const o of this.world.objects) parts.push(o.uid, JSON.stringify(o.state));
+    for (const k of Object.keys(this.world.stock).sort()) parts.push(k, this.world.stock[k]);
+    for (const p of this.persons) {
+      parts.push(p.engagedWith, p.chatWith, p.action?.topic ?? '-', p.idleUntil, p.recentObjects.join(','));
+      if (p.visitor) parts.push(p.visitor.neighborId, p.visitor.leaveAt, p.visitor.greetUntil, p.visitor.leaving ? 1 : 0, p.visitor.saidBye ? 1 : 0);
+    }
+    for (const v of this.pendingVisits) parts.push(`v${v.neighborId}:${v.at}:${v.host}`);
+    for (const k of [...this.away.keys()].sort()) {
+      const q = this.away.get(k)!;
+      parts.push(`a${k}:${q.id}`, ...Array.from(q.needs, (v) => v.toFixed(3)), q.stress.toFixed(3));
+    }
+    parts.push(this.shop.open ? 1 : 0, this.shop.priceMult, this.shop.reputation.toFixed(3), this.shop.sales);
+    for (const p of this.persons) {
+      for (const k of Object.keys(p.skills).sort()) parts.push(k, p.skills[k], (p.skillXp[k] ?? 0).toFixed(3));
+      if (p.career) parts.push(JSON.stringify(p.career));
+      if (p.careerEvent) parts.push(p.careerEvent.eventId, p.careerEvent.since);
+    }
+    for (const k of Object.keys(this.world.quality).sort()) parts.push(k, this.world.quality[k].toFixed(4));
+    for (const k of [...this.world.batches.keys()].sort()) for (const b of this.world.batches.get(k)!) parts.push(k, b.qty, b.day);
+    this.rel.hashParts(parts);
+    this.econ?.hashParts(parts);
+    let h = 0x811c9dc5;
+    const str = parts.join('|');
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h.toString(16).padStart(8, '0');
+  }
+
+  actionOf(p: Person): { interactionId: string; targetUid: number; stepObj: number; phase: string; remaining: number } | null {
+    const a = p.action;
+    if (!a) return null;
+    return { interactionId: a.item.interactionId, targetUid: a.item.targetUid, stepObj: a.stepObj, phase: a.phase, remaining: a.remaining };
+  }
+
+  feltTemp(p: Person): number {
+    let felt = this.world.temperatureAt(p.x, p.y);
+    const wm = this.data.needs.warmth;
+    if (this.world.nearLitHearth(p.x, p.y, wm.nearHearthTiles)) felt += wm.nearHearthBonusC;
+    return felt;
+  }
+
+  objectById(uid: number): ObjectInstance | undefined {
+    return this.world.byUid.get(uid);
+  }
+}
+
+/** 의도 객체 복사 (로그가 호출자 객체 변경에 흔들리지 않게). 워커/Node 모두 structuredClone 있음 */
+function structuredCloneSafe<T>(v: T): T {
+  return typeof structuredClone === 'function' ? structuredClone(v) : (JSON.parse(JSON.stringify(v)) as T);
+}

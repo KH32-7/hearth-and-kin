@@ -1,0 +1,42 @@
+{
+  "$comment": "LPC 인물 색 보정 (BRIEF M0 화풍 비교). 블라인드 판정(artifacts/critique) 지적 반영: 순흑 → 짙은 갈색 바닥, 높은 채도 압축, 그림자 난색 이동(파랑/보라 제외), 외곽선 = Epic 외곽선 색. 비교 시트 artifacts/palette/grade-compare.png",
+  "character": {
+    "saturation": 1.06,
+    "value": 1.12,
+    "contrast": 1.0,
+    "tint": [
+      1,
+      1,
+      1
+    ],
+    "paletteSnap": 0,
+    "snapMaxDeltaE": 14,
+    "outline": {
+      "maxV": 0.16,
+      "rgb": [
+        75,
+        58,
+        60
+      ]
+    },
+    "valueFloor": 0.18,
+    "satCompress": 0.12,
+    "warmShift": {
+      "hue": 18,
+      "amount": 0.35,
+      "window": 100
+    },
+    "darkTint": {
+      "hue": 20,
+      "sat": 0.35,
+      "maxV": 0.42
+    },
+    "hueSat": [
+      {
+        "hue": 52,
+        "window": 25,
+        "mult": 0.7
+      }
+    ]
+  }
+}

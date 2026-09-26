@@ -1,0 +1,1414 @@
+{
+  "$comment": "GDD 17-4 물가, 17-5 저장고 품목 (작업자 A, contracts-m4 1절). base = 기준가(파딩/단위). ledger/ration = economy.json goods 장부 품목과 환산량 (null 이면 장부 밖). spoil 부패 기간 (없으면 안 상함). food = 한 단위 먹을 때 허기 회복과 품질(0~3). storage = 보관 가구. source = 레시피 밖에서 들어오는 길 (crop 밭 수확 / animal 가축 / forage 채집·낚시·벌목 / hunt 사냥 / well 우물 / market 장터·외지 상인). 레시피로만 생기는 품목은 source 없음",
+  "items": {
+    "wheat": {
+      "nameKey": "item.wheat",
+      "icon": "raven:a3323",
+      "category": "grain",
+      "ledger": "grain",
+      "ration": 1,
+      "base": 2,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "storage": "grain_bin",
+      "source": [
+        "crop"
+      ]
+    },
+    "barley": {
+      "nameKey": "item.barley",
+      "icon": "raven:a2088",
+      "category": "grain",
+      "ledger": "grain",
+      "ration": 1,
+      "base": 2,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "storage": "grain_bin",
+      "source": [
+        "crop"
+      ]
+    },
+    "oats": {
+      "nameKey": "item.oats",
+      "icon": "raven:a2040",
+      "category": "grain",
+      "ledger": "grain",
+      "ration": 0.8,
+      "base": 2,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "storage": "grain_bin",
+      "source": [
+        "crop"
+      ]
+    },
+    "rye": {
+      "nameKey": "item.rye",
+      "icon": "raven:a2033",
+      "category": "grain",
+      "ledger": "grain",
+      "ration": 1,
+      "base": 2,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "storage": "grain_bin",
+      "source": [
+        "crop"
+      ]
+    },
+    "beans": {
+      "nameKey": "item.beans",
+      "icon": "raven:a2328",
+      "category": "vegetable",
+      "ledger": "grain",
+      "ration": 1,
+      "base": 2,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "storage": "grain_bin",
+      "source": [
+        "crop"
+      ]
+    },
+    "malt": {
+      "nameKey": "item.malt",
+      "icon": "raven:a2044",
+      "category": "grain",
+      "ledger": "grain",
+      "ration": 1.5,
+      "base": 3,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "storage": "grain_bin"
+    },
+    "flour": {
+      "nameKey": "item.flour",
+      "icon": "item.flour",
+      "category": "grain",
+      "ledger": "flour",
+      "ration": 1,
+      "base": 3,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "storage": "grain_bin",
+      "source": [
+        "market"
+      ]
+    },
+    "rye_flour": {
+      "nameKey": "item.rye_flour",
+      "icon": "raven:a2112",
+      "category": "grain",
+      "ledger": "flour",
+      "ration": 1,
+      "base": 3,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "storage": "grain_bin"
+    },
+    "turnip": {
+      "nameKey": "item.turnip",
+      "icon": "raven:a2081",
+      "category": "vegetable",
+      "ledger": "vegetables",
+      "ration": 1,
+      "base": 1,
+      "spoil": {
+        "value": 4,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 10,
+        "quality": 0
+      },
+      "storage": "cellar",
+      "source": [
+        "crop"
+      ]
+    },
+    "cabbage": {
+      "nameKey": "item.cabbage",
+      "icon": "raven:a2085",
+      "category": "vegetable",
+      "ledger": "vegetables",
+      "ration": 1,
+      "base": 1,
+      "spoil": {
+        "value": 4,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 10,
+        "quality": 0
+      },
+      "storage": "cellar",
+      "source": [
+        "crop"
+      ]
+    },
+    "onion": {
+      "nameKey": "item.onion",
+      "icon": "raven:a2024",
+      "category": "vegetable",
+      "ledger": "vegetables",
+      "ration": 1,
+      "base": 1,
+      "spoil": {
+        "value": 4,
+        "scale": "season"
+      },
+      "storage": "cellar",
+      "source": [
+        "crop"
+      ]
+    },
+    "leek": {
+      "nameKey": "item.leek",
+      "icon": "raven:a2087",
+      "category": "vegetable",
+      "ledger": "vegetables",
+      "ration": 1,
+      "base": 1,
+      "spoil": {
+        "value": 4,
+        "scale": "season"
+      },
+      "storage": "cellar",
+      "source": [
+        "crop"
+      ]
+    },
+    "herbs": {
+      "nameKey": "item.herbs",
+      "icon": "item.herbs",
+      "category": "herb",
+      "ledger": "vegetables",
+      "ration": 0.5,
+      "base": 1,
+      "spoil": {
+        "value": 4,
+        "scale": "season"
+      },
+      "storage": "cupboard",
+      "source": [
+        "crop",
+        "forage"
+      ]
+    },
+    "medicinal_herbs": {
+      "nameKey": "item.medicinal_herbs",
+      "icon": "raven:a1265",
+      "category": "herb",
+      "ledger": null,
+      "ration": null,
+      "base": 2,
+      "spoil": {
+        "value": 21,
+        "scale": "season"
+      },
+      "storage": "cupboard",
+      "source": [
+        "crop",
+        "forage"
+      ]
+    },
+    "moonwort": {
+      "nameKey": "item.moonwort",
+      "icon": "raven:a1297",
+      "category": "herb",
+      "ledger": null,
+      "ration": null,
+      "base": 48,
+      "spoil": {
+        "value": 21,
+        "scale": "season"
+      },
+      "storage": "chest",
+      "source": [
+        "crop",
+        "forage"
+      ]
+    },
+    "flax": {
+      "nameKey": "item.flax",
+      "icon": "raven:a1281",
+      "category": "material",
+      "ledger": null,
+      "ration": null,
+      "base": 2,
+      "storage": "grain_bin",
+      "source": [
+        "crop"
+      ]
+    },
+    "grapes": {
+      "nameKey": "item.grapes",
+      "icon": "raven:a2272",
+      "category": "fruit",
+      "ledger": "vegetables",
+      "ration": 1,
+      "base": 1,
+      "spoil": {
+        "value": 4,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 8,
+        "quality": 1
+      },
+      "storage": "cellar",
+      "source": [
+        "crop"
+      ]
+    },
+    "apples": {
+      "nameKey": "item.apples",
+      "icon": "raven:a2019",
+      "category": "fruit",
+      "ledger": "vegetables",
+      "ration": 1,
+      "base": 1,
+      "spoil": {
+        "value": 14,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 10,
+        "quality": 1
+      },
+      "storage": "cellar",
+      "source": [
+        "crop"
+      ]
+    },
+    "pears": {
+      "nameKey": "item.pears",
+      "icon": "raven:a2379",
+      "category": "fruit",
+      "ledger": "vegetables",
+      "ration": 1,
+      "base": 1,
+      "spoil": {
+        "value": 7,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 10,
+        "quality": 1
+      },
+      "storage": "cellar",
+      "source": [
+        "crop"
+      ]
+    },
+    "milk": {
+      "nameKey": "item.milk",
+      "icon": "raven:a2216",
+      "category": "dairy",
+      "ledger": "dairy",
+      "ration": 1,
+      "base": 2,
+      "spoil": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 10,
+        "quality": 0
+      },
+      "storage": "cellar",
+      "source": [
+        "animal"
+      ]
+    },
+    "eggs": {
+      "nameKey": "item.eggs",
+      "icon": "raven:a2292",
+      "category": "dairy",
+      "ledger": "dairy",
+      "ration": 0.5,
+      "base": 1,
+      "bundle": {
+        "n": 4,
+        "price": 4
+      },
+      "spoil": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "storage": "cupboard",
+      "source": [
+        "animal"
+      ]
+    },
+    "cheese": {
+      "nameKey": "item.cheese",
+      "icon": "raven:a2241",
+      "category": "dairy",
+      "ledger": "dairy",
+      "ration": 4,
+      "base": 8,
+      "spoil": {
+        "value": 21,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 25,
+        "quality": 1
+      },
+      "storage": "cellar"
+    },
+    "butter": {
+      "nameKey": "item.butter",
+      "icon": "raven:a2193",
+      "category": "dairy",
+      "ledger": "dairy",
+      "ration": 4,
+      "base": 8,
+      "spoil": {
+        "value": 7,
+        "scale": "season"
+      },
+      "storage": "cellar"
+    },
+    "honey": {
+      "nameKey": "item.honey",
+      "icon": "raven:a2232",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 6,
+      "food": {
+        "hunger": 5,
+        "quality": 2
+      },
+      "storage": "cupboard",
+      "source": [
+        "animal",
+        "market"
+      ]
+    },
+    "meat": {
+      "nameKey": "item.meat",
+      "icon": "raven:a2145",
+      "category": "meat",
+      "ledger": "meat",
+      "ration": 1,
+      "base": 4,
+      "spoil": {
+        "value": 2,
+        "scale": "absolute"
+      },
+      "storage": "cellar",
+      "source": [
+        "animal",
+        "hunt",
+        "market"
+      ]
+    },
+    "chicken": {
+      "nameKey": "item.chicken",
+      "icon": "raven:a2149",
+      "category": "meat",
+      "ledger": "meat",
+      "ration": 3,
+      "base": 12,
+      "spoil": {
+        "value": 2,
+        "scale": "absolute"
+      },
+      "storage": "cellar",
+      "source": [
+        "animal",
+        "market"
+      ]
+    },
+    "fish": {
+      "nameKey": "item.fish",
+      "icon": "raven:a1913",
+      "category": "fish",
+      "ledger": "meat",
+      "ration": 1,
+      "base": 3,
+      "spoil": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "storage": "cellar",
+      "source": [
+        "forage",
+        "market"
+      ]
+    },
+    "tallow": {
+      "nameKey": "item.tallow",
+      "icon": "raven:a2242",
+      "category": "material",
+      "ledger": null,
+      "ration": null,
+      "base": 3,
+      "storage": "cupboard",
+      "source": [
+        "market"
+      ]
+    },
+    "wool": {
+      "nameKey": "item.wool",
+      "icon": "raven:a321",
+      "category": "material",
+      "ledger": null,
+      "ration": null,
+      "base": 3,
+      "storage": "chest",
+      "source": [
+        "animal",
+        "market"
+      ]
+    },
+    "feathers": {
+      "nameKey": "item.feathers",
+      "icon": "comfort",
+      "category": "material",
+      "ledger": null,
+      "ration": null,
+      "base": 32,
+      "storage": "chest",
+      "source": [
+        "animal",
+        "market"
+      ]
+    },
+    "straw": {
+      "nameKey": "item.straw",
+      "icon": "raven:a1275",
+      "category": "material",
+      "ledger": null,
+      "ration": null,
+      "base": 1,
+      "storage": "woodpile",
+      "source": [
+        "crop",
+        "market"
+      ]
+    },
+    "timber": {
+      "nameKey": "item.timber",
+      "icon": "raven:a490",
+      "category": "material",
+      "ledger": null,
+      "ration": null,
+      "base": 4,
+      "storage": "woodpile",
+      "source": [
+        "forage",
+        "market"
+      ]
+    },
+    "firewood": {
+      "nameKey": "item.firewood",
+      "icon": "item.firewood",
+      "category": "fuel",
+      "ledger": "firewood",
+      "ration": 1,
+      "base": 2,
+      "storage": "woodpile",
+      "source": [
+        "forage",
+        "market"
+      ]
+    },
+    "charcoal": {
+      "nameKey": "item.charcoal",
+      "icon": "raven:a497",
+      "category": "fuel",
+      "ledger": null,
+      "ration": null,
+      "base": 3,
+      "storage": "woodpile",
+      "source": [
+        "market"
+      ]
+    },
+    "iron": {
+      "nameKey": "item.iron",
+      "icon": "raven:a506",
+      "category": "metal",
+      "ledger": "iron",
+      "ration": 1,
+      "base": 24,
+      "storage": "chest",
+      "source": [
+        "market"
+      ]
+    },
+    "salt": {
+      "nameKey": "item.salt",
+      "icon": "raven:a2110",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 2,
+      "storage": "cupboard",
+      "source": [
+        "market"
+      ]
+    },
+    "water": {
+      "nameKey": "item.water",
+      "icon": "item.water",
+      "category": "drink",
+      "ledger": null,
+      "ration": null,
+      "base": 0,
+      "storage": "cellar",
+      "source": [
+        "well"
+      ]
+    },
+    "yeast": {
+      "nameKey": "item.yeast",
+      "icon": "raven:a2122",
+      "category": "material",
+      "ledger": null,
+      "ration": null,
+      "base": 1,
+      "spoil": {
+        "value": 3,
+        "scale": "absolute"
+      },
+      "storage": "cupboard",
+      "source": [
+        "market"
+      ]
+    },
+    "ingredients": {
+      "nameKey": "item.ingredients",
+      "icon": "item.ingredients",
+      "category": "prepared",
+      "ledger": "vegetables",
+      "ration": 1,
+      "base": 1,
+      "spoil": {
+        "value": 4,
+        "scale": "season"
+      },
+      "storage": "cellar"
+    },
+    "preserves": {
+      "nameKey": "item.preserves",
+      "icon": "item.preserves",
+      "category": "preserved",
+      "ledger": "preserves",
+      "ration": 1,
+      "base": 5,
+      "spoil": {
+        "value": 14,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 30,
+        "quality": 1
+      },
+      "storage": "cellar"
+    },
+    "ale": {
+      "nameKey": "item.ale",
+      "icon": "item.ale",
+      "category": "drink",
+      "ledger": "ale",
+      "ration": 1,
+      "base": 3,
+      "bundle": {
+        "n": 4,
+        "price": 12
+      },
+      "spoil": {
+        "value": 14,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 5,
+        "quality": 1
+      },
+      "storage": "cellar"
+    },
+    "beer": {
+      "nameKey": "item.beer",
+      "icon": "raven:a2200",
+      "category": "drink",
+      "ledger": "ale",
+      "ration": 1.33,
+      "base": 4,
+      "spoil": {
+        "value": 21,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 5,
+        "quality": 1
+      },
+      "storage": "cellar"
+    },
+    "cider": {
+      "nameKey": "item.cider",
+      "icon": "raven:a2237",
+      "category": "drink",
+      "ledger": "ale",
+      "ration": 1,
+      "base": 3,
+      "spoil": {
+        "value": 21,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 4,
+        "quality": 1
+      },
+      "storage": "cellar"
+    },
+    "mead": {
+      "nameKey": "item.mead",
+      "icon": "raven:a2194",
+      "category": "drink",
+      "ledger": "ale",
+      "ration": 2,
+      "base": 6,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 5,
+        "quality": 2
+      },
+      "storage": "cellar"
+    },
+    "wine": {
+      "nameKey": "item.wine",
+      "icon": "raven:a2295",
+      "category": "drink",
+      "ledger": "ale",
+      "ration": 2.67,
+      "base": 8,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 4,
+        "quality": 2
+      },
+      "storage": "cellar"
+    },
+    "vinegar": {
+      "nameKey": "item.vinegar",
+      "icon": "raven:a2318",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 4,
+      "storage": "cupboard"
+    },
+    "bread": {
+      "nameKey": "item.bread",
+      "icon": "item.bread",
+      "category": "baked",
+      "ledger": "bread",
+      "ration": 1,
+      "base": 3,
+      "bundle": {
+        "n": 4,
+        "price": 12
+      },
+      "spoil": {
+        "value": 3,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 20,
+        "quality": 1
+      },
+      "storage": "cupboard"
+    },
+    "dark_bread": {
+      "nameKey": "item.dark_bread",
+      "icon": "raven:a2185",
+      "category": "baked",
+      "ledger": "bread",
+      "ration": 0.67,
+      "base": 2,
+      "bundle": {
+        "n": 4,
+        "price": 8
+      },
+      "spoil": {
+        "value": 4,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 20,
+        "quality": 0
+      },
+      "storage": "cupboard"
+    },
+    "white_bread": {
+      "nameKey": "item.white_bread",
+      "icon": "raven:a2210",
+      "category": "baked",
+      "ledger": "bread",
+      "ration": 1.67,
+      "base": 5,
+      "spoil": {
+        "value": 3,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 25,
+        "quality": 2
+      },
+      "storage": "cupboard"
+    },
+    "hardtack": {
+      "nameKey": "item.hardtack",
+      "icon": "raven:a2214",
+      "category": "baked",
+      "ledger": "bread",
+      "ration": 0.67,
+      "base": 2,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 18,
+        "quality": 0
+      },
+      "storage": "cupboard"
+    },
+    "honey_cake": {
+      "nameKey": "item.honey_cake",
+      "icon": "raven:a2238",
+      "category": "baked",
+      "ledger": null,
+      "ration": null,
+      "base": 8,
+      "spoil": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 20,
+        "quality": 3
+      },
+      "storage": "cupboard"
+    },
+    "meat_pie": {
+      "nameKey": "item.meat_pie",
+      "icon": "raven:a2362",
+      "category": "baked",
+      "ledger": null,
+      "ration": null,
+      "base": 8,
+      "spoil": {
+        "value": 2,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 50,
+        "quality": 2
+      },
+      "storage": "cupboard"
+    },
+    "fruit_pie": {
+      "nameKey": "item.fruit_pie",
+      "icon": "raven:a2229",
+      "category": "baked",
+      "ledger": null,
+      "ration": null,
+      "base": 8,
+      "spoil": {
+        "value": 3,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 40,
+        "quality": 2
+      },
+      "storage": "cupboard"
+    },
+    "porridge": {
+      "nameKey": "item.porridge",
+      "icon": "raven:a368",
+      "category": "prepared",
+      "ledger": null,
+      "ration": null,
+      "base": 2,
+      "spoil": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 45,
+        "quality": 0
+      },
+      "storage": "cupboard"
+    },
+    "pottage": {
+      "nameKey": "item.pottage",
+      "icon": "raven:a2311",
+      "category": "prepared",
+      "ledger": null,
+      "ration": null,
+      "base": 2,
+      "spoil": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 50,
+        "quality": 0
+      },
+      "storage": "cupboard"
+    },
+    "stew": {
+      "nameKey": "item.stew",
+      "icon": "stew",
+      "category": "prepared",
+      "ledger": null,
+      "ration": null,
+      "base": 4,
+      "spoil": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 70,
+        "quality": 1
+      },
+      "storage": "cupboard"
+    },
+    "roast_meat": {
+      "nameKey": "item.roast_meat",
+      "icon": "raven:a2192",
+      "category": "prepared",
+      "ledger": null,
+      "ration": null,
+      "base": 6,
+      "spoil": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 70,
+        "quality": 2
+      },
+      "storage": "cupboard"
+    },
+    "roast_fowl": {
+      "nameKey": "item.roast_fowl",
+      "icon": "raven:a2307",
+      "category": "prepared",
+      "ledger": null,
+      "ration": null,
+      "base": 5,
+      "spoil": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 65,
+        "quality": 2
+      },
+      "storage": "cupboard"
+    },
+    "fish_stew": {
+      "nameKey": "item.fish_stew",
+      "icon": "raven:a2280",
+      "category": "prepared",
+      "ledger": null,
+      "ration": null,
+      "base": 3,
+      "spoil": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 60,
+        "quality": 1
+      },
+      "storage": "cupboard"
+    },
+    "omelette": {
+      "nameKey": "item.omelette",
+      "icon": "raven:a2182",
+      "category": "prepared",
+      "ledger": null,
+      "ration": null,
+      "base": 3,
+      "spoil": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 40,
+        "quality": 1
+      },
+      "storage": "cupboard"
+    },
+    "frumenty": {
+      "nameKey": "item.frumenty",
+      "icon": "raven:a2178",
+      "category": "prepared",
+      "ledger": null,
+      "ration": null,
+      "base": 3,
+      "spoil": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "food": {
+        "hunger": 55,
+        "quality": 1
+      },
+      "storage": "cupboard"
+    },
+    "salt_meat": {
+      "nameKey": "item.salt_meat",
+      "icon": "raven:a2147",
+      "category": "preserved",
+      "ledger": "preserves",
+      "ration": 1,
+      "base": 5,
+      "spoil": {
+        "value": 14,
+        "scale": "season"
+      },
+      "storage": "cellar"
+    },
+    "smoked_meat": {
+      "nameKey": "item.smoked_meat",
+      "icon": "raven:a2160",
+      "category": "preserved",
+      "ledger": "preserves",
+      "ration": 1.4,
+      "base": 7,
+      "spoil": {
+        "value": 14,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 30,
+        "quality": 1
+      },
+      "storage": "cellar"
+    },
+    "salt_fish": {
+      "nameKey": "item.salt_fish",
+      "icon": "raven:a2165",
+      "category": "preserved",
+      "ledger": "preserves",
+      "ration": 0.8,
+      "base": 4,
+      "spoil": {
+        "value": 14,
+        "scale": "season"
+      },
+      "storage": "cellar"
+    },
+    "smoked_fish": {
+      "nameKey": "item.smoked_fish",
+      "icon": "raven:a1998",
+      "category": "preserved",
+      "ledger": "preserves",
+      "ration": 1,
+      "base": 5,
+      "spoil": {
+        "value": 14,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 30,
+        "quality": 1
+      },
+      "storage": "cellar"
+    },
+    "sausage": {
+      "nameKey": "item.sausage",
+      "icon": "raven:a2156",
+      "category": "preserved",
+      "ledger": "preserves",
+      "ration": 1,
+      "base": 5,
+      "spoil": {
+        "value": 14,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 35,
+        "quality": 1
+      },
+      "storage": "cellar"
+    },
+    "dried_fruit": {
+      "nameKey": "item.dried_fruit",
+      "icon": "raven:a2047",
+      "category": "preserved",
+      "ledger": "preserves",
+      "ration": 0.8,
+      "base": 4,
+      "spoil": {
+        "value": 21,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 12,
+        "quality": 1
+      },
+      "storage": "cupboard"
+    },
+    "jam": {
+      "nameKey": "item.jam",
+      "icon": "raven:a2230",
+      "category": "preserved",
+      "ledger": "preserves",
+      "ration": 1.2,
+      "base": 6,
+      "spoil": {
+        "value": 21,
+        "scale": "season"
+      },
+      "food": {
+        "hunger": 10,
+        "quality": 2
+      },
+      "storage": "cupboard"
+    },
+    "yarn": {
+      "nameKey": "item.yarn",
+      "icon": "item.yarn",
+      "category": "cloth",
+      "ledger": null,
+      "ration": null,
+      "base": 5,
+      "storage": "chest"
+    },
+    "linen_thread": {
+      "nameKey": "item.linen_thread",
+      "icon": "raven:a309",
+      "category": "cloth",
+      "ledger": null,
+      "ration": null,
+      "base": 5,
+      "storage": "chest"
+    },
+    "cloth": {
+      "nameKey": "item.cloth",
+      "icon": "raven:a339",
+      "category": "cloth",
+      "ledger": "cloth",
+      "ration": 1,
+      "base": 16,
+      "storage": "chest"
+    },
+    "linen": {
+      "nameKey": "item.linen",
+      "icon": "raven:a507",
+      "category": "cloth",
+      "ledger": "cloth",
+      "ration": 1,
+      "base": 16,
+      "storage": "chest"
+    },
+    "tunic": {
+      "nameKey": "item.tunic",
+      "icon": "clothes",
+      "category": "cloth",
+      "ledger": null,
+      "ration": null,
+      "base": 144,
+      "storage": "chest"
+    },
+    "linen_shirt": {
+      "nameKey": "item.linen_shirt",
+      "icon": "raven:a7496",
+      "category": "cloth",
+      "ledger": null,
+      "ration": null,
+      "base": 48,
+      "storage": "chest"
+    },
+    "cloak": {
+      "nameKey": "item.cloak",
+      "icon": "raven:a6479",
+      "category": "cloth",
+      "ledger": null,
+      "ration": null,
+      "base": 240,
+      "storage": "chest"
+    },
+    "hood": {
+      "nameKey": "item.hood",
+      "icon": "raven:a6463",
+      "category": "cloth",
+      "ledger": null,
+      "ration": null,
+      "base": 36,
+      "storage": "chest"
+    },
+    "feather_bed": {
+      "nameKey": "item.feather_bed",
+      "icon": "sleep",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 576,
+      "storage": "chest"
+    },
+    "straw_bed": {
+      "nameKey": "item.straw_bed",
+      "icon": "sleep",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 96,
+      "storage": "chest"
+    },
+    "nails": {
+      "nameKey": "item.nails",
+      "icon": "raven:a4494",
+      "category": "metal",
+      "ledger": null,
+      "ration": null,
+      "base": 1,
+      "storage": "chest"
+    },
+    "horseshoes": {
+      "nameKey": "item.horseshoes",
+      "icon": "raven:a324",
+      "category": "metal",
+      "ledger": "horseshoes",
+      "ration": 1,
+      "base": 32,
+      "storage": "chest"
+    },
+    "hinge": {
+      "nameKey": "item.hinge",
+      "icon": "raven:a4495",
+      "category": "metal",
+      "ledger": null,
+      "ration": null,
+      "base": 12,
+      "storage": "chest"
+    },
+    "knife": {
+      "nameKey": "item.knife",
+      "icon": "raven:a4452",
+      "category": "tool",
+      "ledger": "tools",
+      "ration": 0.5,
+      "base": 30,
+      "storage": "chest"
+    },
+    "sickle": {
+      "nameKey": "item.sickle",
+      "icon": "raven:a4460",
+      "category": "tool",
+      "ledger": "tools",
+      "ration": 1,
+      "base": 60,
+      "storage": "chest"
+    },
+    "hoe": {
+      "nameKey": "item.hoe",
+      "icon": "raven:a4477",
+      "category": "tool",
+      "ledger": "tools",
+      "ration": 1,
+      "base": 60,
+      "storage": "chest"
+    },
+    "shears": {
+      "nameKey": "item.shears",
+      "icon": "raven:a3337",
+      "category": "tool",
+      "ledger": "tools",
+      "ration": 0.5,
+      "base": 30,
+      "storage": "chest"
+    },
+    "axe": {
+      "nameKey": "item.axe",
+      "icon": "axe",
+      "category": "tool",
+      "ledger": "tools",
+      "ration": 1.3,
+      "base": 78,
+      "storage": "chest"
+    },
+    "pot": {
+      "nameKey": "item.pot",
+      "icon": "raven:a2176",
+      "category": "tool",
+      "ledger": "tools",
+      "ration": 2,
+      "base": 120,
+      "storage": "chest"
+    },
+    "scythe": {
+      "nameKey": "item.scythe",
+      "icon": "raven:a4515",
+      "category": "tool",
+      "ledger": "tools",
+      "ration": 1.5,
+      "base": 90,
+      "storage": "chest"
+    },
+    "plowshare": {
+      "nameKey": "item.plowshare",
+      "icon": "raven:a4478",
+      "category": "tool",
+      "ledger": "tools",
+      "ration": 2,
+      "base": 120,
+      "storage": "chest"
+    },
+    "stool": {
+      "nameKey": "item.stool",
+      "icon": "raven:a489",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 12,
+      "storage": "chest"
+    },
+    "bench_wood": {
+      "nameKey": "item.bench_wood",
+      "icon": "raven:a491",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 30,
+      "storage": "chest"
+    },
+    "chest": {
+      "nameKey": "item.chest",
+      "icon": "raven:a283",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 72,
+      "storage": "chest"
+    },
+    "barrel": {
+      "nameKey": "item.barrel",
+      "icon": "raven:a278",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 48,
+      "storage": "cellar"
+    },
+    "cart_wheel": {
+      "nameKey": "item.cart_wheel",
+      "icon": "raven:a335",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 84,
+      "storage": "woodpile"
+    },
+    "salve": {
+      "nameKey": "item.salve",
+      "icon": "raven:a365",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 8,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "storage": "cupboard"
+    },
+    "tonic": {
+      "nameKey": "item.tonic",
+      "icon": "raven:a1508",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 6,
+      "spoil": {
+        "value": 21,
+        "scale": "season"
+      },
+      "storage": "cupboard"
+    },
+    "poultice": {
+      "nameKey": "item.poultice",
+      "icon": "raven:a1250",
+      "category": "goods",
+      "ledger": null,
+      "ration": null,
+      "base": 4,
+      "spoil": {
+        "value": 3,
+        "scale": "absolute"
+      },
+      "storage": "cupboard"
+    },
+    "manure": {
+      "nameKey": "item.manure",
+      "icon": "raven:a1275",
+      "category": "material",
+      "ledger": null,
+      "ration": null,
+      "base": 1,
+      "storage": "woodpile",
+      "source": [
+        "animal",
+        "market"
+      ]
+    },
+    "leather": {
+      "nameKey": "item.leather",
+      "icon": "raven:a492",
+      "category": "material",
+      "ledger": "cloth",
+      "ration": 1.5,
+      "base": 24,
+      "storage": "chest",
+      "source": [
+        "market"
+      ]
+    },
+    "shoes": {
+      "nameKey": "item.shoes",
+      "icon": "raven:a6479",
+      "category": "goods",
+      "ledger": "cloth",
+      "ration": 3,
+      "base": 48,
+      "storage": "chest",
+      "source": [
+        "market"
+      ]
+    }
+  }
+}

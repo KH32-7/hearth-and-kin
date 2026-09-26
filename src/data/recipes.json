@@ -1,0 +1,1959 @@
+{
+  "$comment": "GDD 17-5 생산 사슬 레시피 80개 (작업자 A, contracts-m4 2절). group = 분류(개수 검사용). minutes = 손이 가는 시간 (absolute). wait = 발효/훈제/숙성처럼 손을 떼고 기다리는 시간 (선택, 끝나면 outputs 가 들어옴). fuel = 불 때는 연료 (화로 레시피는 불 켠 화로가 전제이고, 굽기처럼 장작을 더 먹는 것만 fuel). service = 결과 품목 없이 수선하는 일 (엔진이 옷/연장 상태를 고침). xp = 기본 0.45 XP/분 × 이 값",
+  "recipes": {
+    "cook_oat_porridge": {
+      "nameKey": "recipe.cook_oat_porridge",
+      "icon": "raven:a368",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 0,
+      "inputs": {
+        "oats": 1,
+        "water": 1
+      },
+      "outputs": {
+        "porridge": 3
+      },
+      "minutes": 30,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "cook_barley_porridge": {
+      "nameKey": "recipe.cook_barley_porridge",
+      "icon": "raven:a368",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 0,
+      "inputs": {
+        "barley": 1,
+        "water": 1
+      },
+      "outputs": {
+        "porridge": 3
+      },
+      "minutes": 30,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "cook_vegetable_pottage": {
+      "nameKey": "recipe.cook_vegetable_pottage",
+      "icon": "raven:a2311",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 0,
+      "inputs": {
+        "cabbage": 1,
+        "turnip": 1,
+        "onion": 1,
+        "water": 2
+      },
+      "outputs": {
+        "pottage": 4
+      },
+      "minutes": 40,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "cook_herb_broth": {
+      "nameKey": "recipe.cook_herb_broth",
+      "icon": "raven:a2311",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 0,
+      "inputs": {
+        "herbs": 1,
+        "leek": 1,
+        "water": 2
+      },
+      "outputs": {
+        "pottage": 2
+      },
+      "minutes": 25,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "prepare_stew_makings": {
+      "nameKey": "recipe.prepare_stew_makings",
+      "icon": "item.ingredients",
+      "group": "cooking",
+      "station": "prep_counter",
+      "skill": "cooking",
+      "level": 0,
+      "inputs": {
+        "turnip": 2,
+        "onion": 1,
+        "leek": 1
+      },
+      "outputs": {
+        "ingredients": 4
+      },
+      "minutes": 20,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "cook_pease_pottage": {
+      "nameKey": "recipe.cook_pease_pottage",
+      "icon": "raven:a2311",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 1,
+      "inputs": {
+        "beans": 2,
+        "onion": 1,
+        "water": 2
+      },
+      "outputs": {
+        "pottage": 4
+      },
+      "minutes": 50,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "cook_omelette": {
+      "nameKey": "recipe.cook_omelette",
+      "icon": "raven:a2182",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 1,
+      "inputs": {
+        "eggs": 3,
+        "herbs": 1
+      },
+      "outputs": {
+        "omelette": 2
+      },
+      "minutes": 15,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "render_tallow": {
+      "nameKey": "recipe.render_tallow",
+      "icon": "raven:a2242",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 1,
+      "inputs": {
+        "meat": 1
+      },
+      "outputs": {
+        "tallow": 2
+      },
+      "minutes": 40,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": false
+    },
+    "cook_milk_porridge": {
+      "nameKey": "recipe.cook_milk_porridge",
+      "icon": "raven:a368",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 2,
+      "inputs": {
+        "oats": 1,
+        "milk": 1
+      },
+      "outputs": {
+        "porridge": 4
+      },
+      "minutes": 30,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "cook_meat_stew": {
+      "nameKey": "recipe.cook_meat_stew",
+      "icon": "stew",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 2,
+      "inputs": {
+        "meat": 1,
+        "ingredients": 2,
+        "water": 2
+      },
+      "outputs": {
+        "stew": 4
+      },
+      "minutes": 50,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "cook_fish_stew": {
+      "nameKey": "recipe.cook_fish_stew",
+      "icon": "raven:a2280",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 2,
+      "inputs": {
+        "fish": 2,
+        "onion": 1,
+        "leek": 1,
+        "water": 1
+      },
+      "outputs": {
+        "fish_stew": 4
+      },
+      "minutes": 40,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "cook_frumenty": {
+      "nameKey": "recipe.cook_frumenty",
+      "icon": "raven:a2178",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 2,
+      "inputs": {
+        "wheat": 2,
+        "milk": 1
+      },
+      "outputs": {
+        "frumenty": 3
+      },
+      "minutes": 45,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "cook_winter_stew": {
+      "nameKey": "recipe.cook_winter_stew",
+      "icon": "stew",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 3,
+      "inputs": {
+        "salt_meat": 1,
+        "beans": 1,
+        "cabbage": 1,
+        "water": 2
+      },
+      "outputs": {
+        "stew": 4
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "cook_salt_fish_stew": {
+      "nameKey": "recipe.cook_salt_fish_stew",
+      "icon": "raven:a2280",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 3,
+      "inputs": {
+        "salt_fish": 1,
+        "onion": 1,
+        "beans": 1,
+        "water": 2
+      },
+      "outputs": {
+        "fish_stew": 3
+      },
+      "minutes": 50,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "cook_sausage_supper": {
+      "nameKey": "recipe.cook_sausage_supper",
+      "icon": "stew",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 3,
+      "inputs": {
+        "sausage": 1,
+        "cabbage": 1,
+        "onion": 1
+      },
+      "outputs": {
+        "stew": 3
+      },
+      "minutes": 40,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "roast_meat": {
+      "nameKey": "recipe.roast_meat",
+      "icon": "raven:a2192",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 3,
+      "inputs": {
+        "meat": 2,
+        "herbs": 1
+      },
+      "outputs": {
+        "roast_meat": 3
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 1
+      }
+    },
+    "roast_fowl": {
+      "nameKey": "recipe.roast_fowl",
+      "icon": "raven:a2307",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 4,
+      "inputs": {
+        "chicken": 1,
+        "herbs": 1,
+        "onion": 1
+      },
+      "outputs": {
+        "roast_fowl": 4
+      },
+      "minutes": 70,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 1
+      }
+    },
+    "cook_pottage_cauldron": {
+      "nameKey": "recipe.cook_pottage_cauldron",
+      "icon": "raven:a2311",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 4,
+      "inputs": {
+        "cabbage": 2,
+        "turnip": 2,
+        "onion": 1,
+        "beans": 1,
+        "water": 4
+      },
+      "outputs": {
+        "pottage": 10
+      },
+      "minutes": 80,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "cook_feast_frumenty": {
+      "nameKey": "recipe.cook_feast_frumenty",
+      "icon": "raven:a2178",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 6,
+      "inputs": {
+        "wheat": 2,
+        "milk": 2,
+        "eggs": 2,
+        "honey": 1
+      },
+      "outputs": {
+        "frumenty": 6
+      },
+      "minutes": 60,
+      "xp": 1.2,
+      "tags": [
+        "cook",
+        "labor",
+        "feast"
+      ],
+      "quality": true
+    },
+    "cook_feast_roast": {
+      "nameKey": "recipe.cook_feast_roast",
+      "icon": "raven:a2192",
+      "group": "cooking",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 7,
+      "inputs": {
+        "meat": 3,
+        "herbs": 1,
+        "onion": 1,
+        "honey": 1
+      },
+      "outputs": {
+        "roast_meat": 6
+      },
+      "minutes": 120,
+      "xp": 1.2,
+      "tags": [
+        "cook",
+        "labor",
+        "feast"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 2
+      }
+    },
+    "salt_meat": {
+      "nameKey": "recipe.salt_meat",
+      "icon": "raven:a2147",
+      "group": "preserving",
+      "station": "salting_tub",
+      "skill": "cooking",
+      "level": 0,
+      "inputs": {
+        "meat": 3,
+        "salt": 1
+      },
+      "outputs": {
+        "salt_meat": 3
+      },
+      "minutes": 30,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "craft"
+      ],
+      "quality": false
+    },
+    "salt_fish": {
+      "nameKey": "recipe.salt_fish",
+      "icon": "raven:a2165",
+      "group": "preserving",
+      "station": "salting_tub",
+      "skill": "cooking",
+      "level": 0,
+      "inputs": {
+        "fish": 3,
+        "salt": 1
+      },
+      "outputs": {
+        "salt_fish": 3
+      },
+      "minutes": 30,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "craft"
+      ],
+      "quality": false
+    },
+    "pickle_vegetables": {
+      "nameKey": "recipe.pickle_vegetables",
+      "icon": "item.preserves",
+      "group": "preserving",
+      "station": "salting_tub",
+      "skill": "cooking",
+      "level": 0,
+      "inputs": {
+        "cabbage": 3,
+        "salt": 1
+      },
+      "outputs": {
+        "preserves": 2
+      },
+      "minutes": 40,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "craft"
+      ],
+      "quality": true
+    },
+    "dry_fruit": {
+      "nameKey": "recipe.dry_fruit",
+      "icon": "raven:a2047",
+      "group": "preserving",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 0,
+      "inputs": {
+        "apples": 4
+      },
+      "outputs": {
+        "dried_fruit": 2
+      },
+      "minutes": 30,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "craft"
+      ],
+      "quality": false,
+      "wait": {
+        "value": 2,
+        "scale": "absolute"
+      }
+    },
+    "churn_butter": {
+      "nameKey": "recipe.churn_butter",
+      "icon": "raven:a2193",
+      "group": "preserving",
+      "station": "churn",
+      "skill": "cooking",
+      "level": 0,
+      "inputs": {
+        "milk": 4
+      },
+      "outputs": {
+        "butter": 1
+      },
+      "minutes": 45,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor"
+      ],
+      "quality": true
+    },
+    "make_cheese": {
+      "nameKey": "recipe.make_cheese",
+      "icon": "raven:a2241",
+      "group": "preserving",
+      "station": "churn",
+      "skill": "cooking",
+      "level": 1,
+      "inputs": {
+        "milk": 6,
+        "salt": 1
+      },
+      "outputs": {
+        "cheese": 2
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "craft"
+      ],
+      "quality": true,
+      "wait": {
+        "value": 3,
+        "scale": "absolute"
+      }
+    },
+    "smoke_fish": {
+      "nameKey": "recipe.smoke_fish",
+      "icon": "raven:a1998",
+      "group": "preserving",
+      "station": "smokehouse",
+      "skill": "cooking",
+      "level": 1,
+      "inputs": {
+        "fish": 3
+      },
+      "outputs": {
+        "smoked_fish": 3
+      },
+      "minutes": 40,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "craft"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 2
+      },
+      "wait": {
+        "value": 1,
+        "scale": "absolute"
+      }
+    },
+    "smoke_meat": {
+      "nameKey": "recipe.smoke_meat",
+      "icon": "raven:a2160",
+      "group": "preserving",
+      "station": "smokehouse",
+      "skill": "cooking",
+      "level": 2,
+      "inputs": {
+        "meat": 3,
+        "salt": 1
+      },
+      "outputs": {
+        "smoked_meat": 3
+      },
+      "minutes": 50,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "craft"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 2
+      },
+      "wait": {
+        "value": 1,
+        "scale": "absolute"
+      }
+    },
+    "make_sausage": {
+      "nameKey": "recipe.make_sausage",
+      "icon": "raven:a2156",
+      "group": "preserving",
+      "station": "prep_counter",
+      "skill": "cooking",
+      "level": 2,
+      "inputs": {
+        "meat": 2,
+        "salt": 1,
+        "herbs": 1
+      },
+      "outputs": {
+        "sausage": 3
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "craft"
+      ],
+      "quality": true
+    },
+    "make_jam": {
+      "nameKey": "recipe.make_jam",
+      "icon": "raven:a2230",
+      "group": "preserving",
+      "station": "hearth",
+      "skill": "cooking",
+      "level": 2,
+      "inputs": {
+        "apples": 2,
+        "pears": 2,
+        "honey": 1
+      },
+      "outputs": {
+        "jam": 3
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "craft"
+      ],
+      "quality": true
+    },
+    "mill_wheat": {
+      "nameKey": "recipe.mill_wheat",
+      "icon": "item.flour",
+      "group": "baking",
+      "station": "mill",
+      "skill": "baking",
+      "level": 0,
+      "inputs": {
+        "wheat": 4
+      },
+      "outputs": {
+        "flour": 3
+      },
+      "minutes": 60,
+      "xp": 0.3,
+      "tags": [
+        "labor",
+        "outdoor"
+      ],
+      "quality": false
+    },
+    "mill_rye": {
+      "nameKey": "recipe.mill_rye",
+      "icon": "raven:a2112",
+      "group": "baking",
+      "station": "mill",
+      "skill": "baking",
+      "level": 0,
+      "inputs": {
+        "rye": 4
+      },
+      "outputs": {
+        "rye_flour": 3
+      },
+      "minutes": 60,
+      "xp": 0.3,
+      "tags": [
+        "labor",
+        "outdoor"
+      ],
+      "quality": false
+    },
+    "bake_bread": {
+      "nameKey": "recipe.bake_bread",
+      "icon": "item.bread",
+      "group": "baking",
+      "station": "oven",
+      "skill": "baking",
+      "level": 0,
+      "inputs": {
+        "flour": 2,
+        "water": 1,
+        "yeast": 1
+      },
+      "outputs": {
+        "bread": 4
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor",
+        "bake"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 1
+      }
+    },
+    "bake_dark_bread": {
+      "nameKey": "recipe.bake_dark_bread",
+      "icon": "raven:a2185",
+      "group": "baking",
+      "station": "oven",
+      "skill": "baking",
+      "level": 0,
+      "inputs": {
+        "rye_flour": 2,
+        "water": 1,
+        "yeast": 1
+      },
+      "outputs": {
+        "dark_bread": 5
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor",
+        "bake"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 1
+      }
+    },
+    "bake_hardtack": {
+      "nameKey": "recipe.bake_hardtack",
+      "icon": "raven:a2214",
+      "group": "baking",
+      "station": "oven",
+      "skill": "baking",
+      "level": 2,
+      "inputs": {
+        "flour": 2,
+        "water": 1,
+        "salt": 1
+      },
+      "outputs": {
+        "hardtack": 6
+      },
+      "minutes": 70,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor",
+        "bake"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 1
+      }
+    },
+    "bake_honey_cake": {
+      "nameKey": "recipe.bake_honey_cake",
+      "icon": "raven:a2238",
+      "group": "baking",
+      "station": "oven",
+      "skill": "baking",
+      "level": 3,
+      "inputs": {
+        "flour": 2,
+        "honey": 1,
+        "eggs": 2,
+        "butter": 1
+      },
+      "outputs": {
+        "honey_cake": 4
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor",
+        "bake"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 1
+      }
+    },
+    "bake_meat_pie": {
+      "nameKey": "recipe.bake_meat_pie",
+      "icon": "raven:a2362",
+      "group": "baking",
+      "station": "oven",
+      "skill": "baking",
+      "level": 3,
+      "inputs": {
+        "flour": 2,
+        "meat": 1,
+        "onion": 1,
+        "butter": 1
+      },
+      "outputs": {
+        "meat_pie": 4
+      },
+      "minutes": 80,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor",
+        "bake"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 1
+      }
+    },
+    "bake_bread_batch": {
+      "nameKey": "recipe.bake_bread_batch",
+      "icon": "item.bread",
+      "group": "baking",
+      "station": "oven",
+      "skill": "baking",
+      "level": 4,
+      "inputs": {
+        "flour": 6,
+        "water": 3,
+        "yeast": 2
+      },
+      "outputs": {
+        "bread": 14
+      },
+      "minutes": 150,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor",
+        "bake"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 2
+      }
+    },
+    "bake_fruit_pie": {
+      "nameKey": "recipe.bake_fruit_pie",
+      "icon": "raven:a2229",
+      "group": "baking",
+      "station": "oven",
+      "skill": "baking",
+      "level": 4,
+      "inputs": {
+        "flour": 2,
+        "apples": 3,
+        "honey": 1,
+        "butter": 1
+      },
+      "outputs": {
+        "fruit_pie": 4
+      },
+      "minutes": 80,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor",
+        "bake"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 1
+      }
+    },
+    "bake_white_bread": {
+      "nameKey": "recipe.bake_white_bread",
+      "icon": "raven:a2210",
+      "group": "baking",
+      "station": "oven",
+      "skill": "baking",
+      "level": 5,
+      "inputs": {
+        "flour": 3,
+        "eggs": 1,
+        "milk": 1,
+        "yeast": 1
+      },
+      "outputs": {
+        "white_bread": 4
+      },
+      "minutes": 80,
+      "xp": 1.0,
+      "tags": [
+        "cook",
+        "labor",
+        "bake"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 1
+      }
+    },
+    "malt_barley": {
+      "nameKey": "recipe.malt_barley",
+      "icon": "raven:a2044",
+      "group": "brewing",
+      "station": "brew_vat",
+      "skill": "brewing",
+      "level": 0,
+      "inputs": {
+        "barley": 3,
+        "water": 2
+      },
+      "outputs": {
+        "malt": 3
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "brew",
+        "labor"
+      ],
+      "quality": false,
+      "fuel": {
+        "firewood": 1
+      },
+      "wait": {
+        "value": 3,
+        "scale": "absolute"
+      }
+    },
+    "brew_ale": {
+      "nameKey": "recipe.brew_ale",
+      "icon": "item.ale",
+      "group": "brewing",
+      "station": "brew_vat",
+      "skill": "brewing",
+      "level": 0,
+      "inputs": {
+        "malt": 2,
+        "water": 4
+      },
+      "outputs": {
+        "ale": 8,
+        "yeast": 1
+      },
+      "minutes": 120,
+      "xp": 1.0,
+      "tags": [
+        "brew",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 1
+      },
+      "wait": {
+        "value": 2,
+        "scale": "absolute"
+      }
+    },
+    "press_cider": {
+      "nameKey": "recipe.press_cider",
+      "icon": "raven:a2237",
+      "group": "brewing",
+      "station": "press",
+      "skill": "brewing",
+      "level": 1,
+      "inputs": {
+        "apples": 6
+      },
+      "outputs": {
+        "cider": 5
+      },
+      "minutes": 90,
+      "xp": 1.0,
+      "tags": [
+        "brew",
+        "labor"
+      ],
+      "quality": true,
+      "wait": {
+        "value": 3,
+        "scale": "absolute"
+      }
+    },
+    "make_vinegar": {
+      "nameKey": "recipe.make_vinegar",
+      "icon": "raven:a2318",
+      "group": "brewing",
+      "station": "brew_vat",
+      "skill": "brewing",
+      "level": 2,
+      "inputs": {
+        "cider": 2
+      },
+      "outputs": {
+        "vinegar": 2
+      },
+      "minutes": 20,
+      "xp": 1.0,
+      "tags": [
+        "brew",
+        "craft"
+      ],
+      "quality": false,
+      "wait": {
+        "value": 7,
+        "scale": "absolute"
+      }
+    },
+    "brew_beer": {
+      "nameKey": "recipe.brew_beer",
+      "icon": "raven:a2200",
+      "group": "brewing",
+      "station": "brew_vat",
+      "skill": "brewing",
+      "level": 3,
+      "inputs": {
+        "malt": 3,
+        "water": 4,
+        "herbs": 2
+      },
+      "outputs": {
+        "beer": 8
+      },
+      "minutes": 150,
+      "xp": 1.0,
+      "tags": [
+        "brew",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 1
+      },
+      "wait": {
+        "value": 3,
+        "scale": "absolute"
+      }
+    },
+    "press_wine": {
+      "nameKey": "recipe.press_wine",
+      "icon": "raven:a2295",
+      "group": "brewing",
+      "station": "press",
+      "skill": "brewing",
+      "level": 3,
+      "inputs": {
+        "grapes": 8
+      },
+      "outputs": {
+        "wine": 5
+      },
+      "minutes": 120,
+      "xp": 1.0,
+      "tags": [
+        "brew",
+        "labor"
+      ],
+      "quality": true,
+      "wait": {
+        "value": 7,
+        "scale": "absolute"
+      }
+    },
+    "brew_mead": {
+      "nameKey": "recipe.brew_mead",
+      "icon": "raven:a2194",
+      "group": "brewing",
+      "station": "brew_vat",
+      "skill": "brewing",
+      "level": 4,
+      "inputs": {
+        "honey": 3,
+        "water": 3,
+        "yeast": 1
+      },
+      "outputs": {
+        "mead": 6
+      },
+      "minutes": 90,
+      "xp": 1.0,
+      "tags": [
+        "brew",
+        "labor"
+      ],
+      "quality": true,
+      "wait": {
+        "value": 7,
+        "scale": "absolute"
+      }
+    },
+    "brew_ale_batch": {
+      "nameKey": "recipe.brew_ale_batch",
+      "icon": "item.ale",
+      "group": "brewing",
+      "station": "brew_vat",
+      "skill": "brewing",
+      "level": 5,
+      "inputs": {
+        "malt": 5,
+        "water": 10
+      },
+      "outputs": {
+        "ale": 20,
+        "yeast": 2
+      },
+      "minutes": 240,
+      "xp": 1.0,
+      "tags": [
+        "brew",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "firewood": 2
+      },
+      "wait": {
+        "value": 2,
+        "scale": "absolute"
+      }
+    },
+    "spin_wool": {
+      "nameKey": "recipe.spin_wool",
+      "icon": "item.yarn",
+      "group": "needlework",
+      "station": "spinning_wheel",
+      "skill": "needlework",
+      "level": 0,
+      "inputs": {
+        "wool": 2
+      },
+      "outputs": {
+        "yarn": 2
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "sew",
+        "craft",
+        "labor"
+      ],
+      "quality": false
+    },
+    "spin_flax": {
+      "nameKey": "recipe.spin_flax",
+      "icon": "raven:a309",
+      "group": "needlework",
+      "station": "spinning_wheel",
+      "skill": "needlework",
+      "level": 0,
+      "inputs": {
+        "flax": 3
+      },
+      "outputs": {
+        "linen_thread": 2
+      },
+      "minutes": 90,
+      "xp": 1.0,
+      "tags": [
+        "sew",
+        "craft",
+        "labor"
+      ],
+      "quality": false
+    },
+    "sew_hood": {
+      "nameKey": "recipe.sew_hood",
+      "icon": "raven:a6463",
+      "group": "needlework",
+      "station": "loom",
+      "skill": "needlework",
+      "level": 0,
+      "inputs": {
+        "cloth": 1,
+        "yarn": 1
+      },
+      "outputs": {
+        "hood": 1
+      },
+      "minutes": 90,
+      "xp": 1.0,
+      "tags": [
+        "sew",
+        "craft",
+        "creative"
+      ],
+      "quality": true
+    },
+    "mend_clothes": {
+      "nameKey": "recipe.mend_clothes",
+      "icon": "clothes",
+      "group": "needlework",
+      "station": "loom",
+      "skill": "needlework",
+      "level": 0,
+      "inputs": {
+        "yarn": 1
+      },
+      "outputs": {},
+      "minutes": 30,
+      "xp": 0.8,
+      "tags": [
+        "sew",
+        "repair",
+        "craft"
+      ],
+      "quality": false,
+      "service": true
+    },
+    "weave_wool": {
+      "nameKey": "recipe.weave_wool",
+      "icon": "raven:a339",
+      "group": "needlework",
+      "station": "loom",
+      "skill": "needlework",
+      "level": 1,
+      "inputs": {
+        "yarn": 4
+      },
+      "outputs": {
+        "cloth": 2
+      },
+      "minutes": 180,
+      "xp": 1.0,
+      "tags": [
+        "sew",
+        "craft",
+        "labor"
+      ],
+      "quality": true
+    },
+    "sew_linen_shirt": {
+      "nameKey": "recipe.sew_linen_shirt",
+      "icon": "raven:a7496",
+      "group": "needlework",
+      "station": "loom",
+      "skill": "needlework",
+      "level": 1,
+      "inputs": {
+        "linen": 2,
+        "linen_thread": 1
+      },
+      "outputs": {
+        "linen_shirt": 1
+      },
+      "minutes": 120,
+      "xp": 1.0,
+      "tags": [
+        "sew",
+        "craft",
+        "creative"
+      ],
+      "quality": true
+    },
+    "weave_linen": {
+      "nameKey": "recipe.weave_linen",
+      "icon": "raven:a507",
+      "group": "needlework",
+      "station": "loom",
+      "skill": "needlework",
+      "level": 2,
+      "inputs": {
+        "linen_thread": 4
+      },
+      "outputs": {
+        "linen": 2
+      },
+      "minutes": 180,
+      "xp": 1.0,
+      "tags": [
+        "sew",
+        "craft",
+        "labor"
+      ],
+      "quality": true
+    },
+    "sew_tunic": {
+      "nameKey": "recipe.sew_tunic",
+      "icon": "clothes",
+      "group": "needlework",
+      "station": "loom",
+      "skill": "needlework",
+      "level": 2,
+      "inputs": {
+        "cloth": 3,
+        "yarn": 2
+      },
+      "outputs": {
+        "tunic": 1
+      },
+      "minutes": 240,
+      "xp": 1.0,
+      "tags": [
+        "sew",
+        "craft",
+        "creative"
+      ],
+      "quality": true
+    },
+    "sew_cloak": {
+      "nameKey": "recipe.sew_cloak",
+      "icon": "raven:a6479",
+      "group": "needlework",
+      "station": "loom",
+      "skill": "needlework",
+      "level": 4,
+      "inputs": {
+        "cloth": 5,
+        "yarn": 2
+      },
+      "outputs": {
+        "cloak": 1
+      },
+      "minutes": 300,
+      "xp": 1.1,
+      "tags": [
+        "sew",
+        "craft",
+        "creative"
+      ],
+      "quality": true
+    },
+    "sew_feather_bed": {
+      "nameKey": "recipe.sew_feather_bed",
+      "icon": "sleep",
+      "group": "needlework",
+      "station": "loom",
+      "skill": "needlework",
+      "level": 6,
+      "inputs": {
+        "linen": 4,
+        "feathers": 6,
+        "linen_thread": 2
+      },
+      "outputs": {
+        "feather_bed": 1
+      },
+      "minutes": 480,
+      "xp": 1.2,
+      "tags": [
+        "sew",
+        "craft",
+        "creative"
+      ],
+      "quality": true
+    },
+    "forge_nails": {
+      "nameKey": "recipe.forge_nails",
+      "icon": "raven:a4494",
+      "group": "smithing",
+      "station": "forge",
+      "skill": "smithing",
+      "level": 0,
+      "inputs": {
+        "iron": 1
+      },
+      "outputs": {
+        "nails": 40
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "smith",
+        "craft",
+        "labor"
+      ],
+      "quality": false,
+      "fuel": {
+        "charcoal": 1
+      }
+    },
+    "forge_horseshoes": {
+      "nameKey": "recipe.forge_horseshoes",
+      "icon": "raven:a324",
+      "group": "smithing",
+      "station": "forge",
+      "skill": "smithing",
+      "level": 0,
+      "inputs": {
+        "iron": 1
+      },
+      "outputs": {
+        "horseshoes": 1
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "smith",
+        "craft",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "charcoal": 1
+      }
+    },
+    "mend_tools": {
+      "nameKey": "recipe.mend_tools",
+      "icon": "raven:a333",
+      "group": "smithing",
+      "station": "forge",
+      "skill": "smithing",
+      "level": 0,
+      "inputs": {},
+      "outputs": {},
+      "minutes": 30,
+      "xp": 0.8,
+      "tags": [
+        "smith",
+        "repair",
+        "labor"
+      ],
+      "quality": false,
+      "fuel": {
+        "charcoal": 1
+      },
+      "service": true
+    },
+    "forge_hinge": {
+      "nameKey": "recipe.forge_hinge",
+      "icon": "raven:a4495",
+      "group": "smithing",
+      "station": "forge",
+      "skill": "smithing",
+      "level": 1,
+      "inputs": {
+        "iron": 1
+      },
+      "outputs": {
+        "hinge": 3
+      },
+      "minutes": 60,
+      "xp": 1.0,
+      "tags": [
+        "smith",
+        "craft",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "charcoal": 1
+      }
+    },
+    "forge_knife": {
+      "nameKey": "recipe.forge_knife",
+      "icon": "raven:a4452",
+      "group": "smithing",
+      "station": "forge",
+      "skill": "smithing",
+      "level": 1,
+      "inputs": {
+        "iron": 1,
+        "timber": 1
+      },
+      "outputs": {
+        "knife": 2
+      },
+      "minutes": 90,
+      "xp": 1.0,
+      "tags": [
+        "smith",
+        "craft",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "charcoal": 1
+      }
+    },
+    "forge_sickle": {
+      "nameKey": "recipe.forge_sickle",
+      "icon": "raven:a4460",
+      "group": "smithing",
+      "station": "forge",
+      "skill": "smithing",
+      "level": 2,
+      "inputs": {
+        "iron": 1,
+        "timber": 1
+      },
+      "outputs": {
+        "sickle": 1
+      },
+      "minutes": 120,
+      "xp": 1.0,
+      "tags": [
+        "smith",
+        "craft",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "charcoal": 2
+      }
+    },
+    "forge_hoe": {
+      "nameKey": "recipe.forge_hoe",
+      "icon": "raven:a4477",
+      "group": "smithing",
+      "station": "forge",
+      "skill": "smithing",
+      "level": 2,
+      "inputs": {
+        "iron": 1,
+        "timber": 1
+      },
+      "outputs": {
+        "hoe": 1
+      },
+      "minutes": 120,
+      "xp": 1.0,
+      "tags": [
+        "smith",
+        "craft",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "charcoal": 2
+      }
+    },
+    "forge_shears": {
+      "nameKey": "recipe.forge_shears",
+      "icon": "raven:a3337",
+      "group": "smithing",
+      "station": "forge",
+      "skill": "smithing",
+      "level": 3,
+      "inputs": {
+        "iron": 1
+      },
+      "outputs": {
+        "shears": 2
+      },
+      "minutes": 120,
+      "xp": 1.0,
+      "tags": [
+        "smith",
+        "craft",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "charcoal": 1
+      }
+    },
+    "forge_axe": {
+      "nameKey": "recipe.forge_axe",
+      "icon": "axe",
+      "group": "smithing",
+      "station": "forge",
+      "skill": "smithing",
+      "level": 3,
+      "inputs": {
+        "iron": 2,
+        "timber": 1
+      },
+      "outputs": {
+        "axe": 1
+      },
+      "minutes": 150,
+      "xp": 1.0,
+      "tags": [
+        "smith",
+        "craft",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "charcoal": 2
+      }
+    },
+    "forge_pot": {
+      "nameKey": "recipe.forge_pot",
+      "icon": "raven:a2176",
+      "group": "smithing",
+      "station": "forge",
+      "skill": "smithing",
+      "level": 4,
+      "inputs": {
+        "iron": 3
+      },
+      "outputs": {
+        "pot": 1
+      },
+      "minutes": 180,
+      "xp": 1.0,
+      "tags": [
+        "smith",
+        "craft",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "charcoal": 3
+      }
+    },
+    "forge_scythe": {
+      "nameKey": "recipe.forge_scythe",
+      "icon": "raven:a4515",
+      "group": "smithing",
+      "station": "forge",
+      "skill": "smithing",
+      "level": 5,
+      "inputs": {
+        "iron": 2,
+        "timber": 2
+      },
+      "outputs": {
+        "scythe": 1
+      },
+      "minutes": 180,
+      "xp": 1.0,
+      "tags": [
+        "smith",
+        "craft",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "charcoal": 3
+      }
+    },
+    "forge_plowshare": {
+      "nameKey": "recipe.forge_plowshare",
+      "icon": "raven:a4478",
+      "group": "smithing",
+      "station": "forge",
+      "skill": "smithing",
+      "level": 6,
+      "inputs": {
+        "iron": 3
+      },
+      "outputs": {
+        "plowshare": 1
+      },
+      "minutes": 240,
+      "xp": 1.1,
+      "tags": [
+        "smith",
+        "craft",
+        "labor"
+      ],
+      "quality": true,
+      "fuel": {
+        "charcoal": 4
+      }
+    },
+    "make_stool": {
+      "nameKey": "recipe.make_stool",
+      "icon": "raven:a489",
+      "group": "carpentry",
+      "station": "workbench",
+      "skill": "carpentry",
+      "level": 0,
+      "inputs": {
+        "timber": 2
+      },
+      "outputs": {
+        "stool": 1
+      },
+      "minutes": 90,
+      "xp": 1.0,
+      "tags": [
+        "woodwork",
+        "craft",
+        "creative"
+      ],
+      "quality": true
+    },
+    "make_bench": {
+      "nameKey": "recipe.make_bench",
+      "icon": "raven:a491",
+      "group": "carpentry",
+      "station": "workbench",
+      "skill": "carpentry",
+      "level": 0,
+      "inputs": {
+        "timber": 3,
+        "nails": 6
+      },
+      "outputs": {
+        "bench_wood": 1
+      },
+      "minutes": 120,
+      "xp": 1.0,
+      "tags": [
+        "woodwork",
+        "craft",
+        "creative"
+      ],
+      "quality": true
+    },
+    "make_straw_bed": {
+      "nameKey": "recipe.make_straw_bed",
+      "icon": "sleep",
+      "group": "carpentry",
+      "station": "workbench",
+      "skill": "carpentry",
+      "level": 1,
+      "inputs": {
+        "timber": 4,
+        "straw": 6,
+        "linen": 1
+      },
+      "outputs": {
+        "straw_bed": 1
+      },
+      "minutes": 180,
+      "xp": 1.0,
+      "tags": [
+        "woodwork",
+        "craft",
+        "creative"
+      ],
+      "quality": true
+    },
+    "make_chest": {
+      "nameKey": "recipe.make_chest",
+      "icon": "raven:a283",
+      "group": "carpentry",
+      "station": "workbench",
+      "skill": "carpentry",
+      "level": 2,
+      "inputs": {
+        "timber": 4,
+        "nails": 8,
+        "hinge": 2
+      },
+      "outputs": {
+        "chest": 1
+      },
+      "minutes": 240,
+      "xp": 1.0,
+      "tags": [
+        "woodwork",
+        "craft",
+        "creative"
+      ],
+      "quality": true
+    },
+    "make_barrel": {
+      "nameKey": "recipe.make_barrel",
+      "icon": "raven:a278",
+      "group": "carpentry",
+      "station": "workbench",
+      "skill": "carpentry",
+      "level": 3,
+      "inputs": {
+        "timber": 4,
+        "iron": 1
+      },
+      "outputs": {
+        "barrel": 1
+      },
+      "minutes": 180,
+      "xp": 1.0,
+      "tags": [
+        "woodwork",
+        "craft",
+        "creative"
+      ],
+      "quality": true
+    },
+    "make_cart_wheel": {
+      "nameKey": "recipe.make_cart_wheel",
+      "icon": "raven:a335",
+      "group": "carpentry",
+      "station": "workbench",
+      "skill": "carpentry",
+      "level": 4,
+      "inputs": {
+        "timber": 5,
+        "iron": 1
+      },
+      "outputs": {
+        "cart_wheel": 1
+      },
+      "minutes": 240,
+      "xp": 1.1,
+      "tags": [
+        "woodwork",
+        "craft",
+        "creative"
+      ],
+      "quality": true
+    },
+    "make_salve": {
+      "nameKey": "recipe.make_salve",
+      "icon": "raven:a365",
+      "group": "herbalism",
+      "station": "prep_counter",
+      "skill": "herbalism",
+      "level": 0,
+      "inputs": {
+        "medicinal_herbs": 2,
+        "tallow": 1
+      },
+      "outputs": {
+        "salve": 2
+      },
+      "minutes": 45,
+      "xp": 1.0,
+      "tags": [
+        "herbal",
+        "nature",
+        "craft"
+      ],
+      "quality": true
+    },
+    "brew_tonic": {
+      "nameKey": "recipe.brew_tonic",
+      "icon": "raven:a1508",
+      "group": "herbalism",
+      "station": "hearth",
+      "skill": "herbalism",
+      "level": 0,
+      "inputs": {
+        "medicinal_herbs": 2,
+        "water": 1
+      },
+      "outputs": {
+        "tonic": 2
+      },
+      "minutes": 30,
+      "xp": 1.0,
+      "tags": [
+        "herbal",
+        "nature",
+        "craft"
+      ],
+      "quality": true
+    },
+    "make_poultice": {
+      "nameKey": "recipe.make_poultice",
+      "icon": "raven:a1250",
+      "group": "herbalism",
+      "station": "prep_counter",
+      "skill": "herbalism",
+      "level": 1,
+      "inputs": {
+        "medicinal_herbs": 1,
+        "oats": 1
+      },
+      "outputs": {
+        "poultice": 2
+      },
+      "minutes": 20,
+      "xp": 1.0,
+      "tags": [
+        "herbal",
+        "nature",
+        "craft"
+      ],
+      "quality": true
+    },
+    "make_oxymel": {
+      "nameKey": "recipe.make_oxymel",
+      "icon": "raven:a1508",
+      "group": "herbalism",
+      "station": "hearth",
+      "skill": "herbalism",
+      "level": 3,
+      "inputs": {
+        "honey": 1,
+        "vinegar": 1,
+        "medicinal_herbs": 1
+      },
+      "outputs": {
+        "tonic": 3
+      },
+      "minutes": 40,
+      "xp": 1.0,
+      "tags": [
+        "herbal",
+        "nature",
+        "craft"
+      ],
+      "quality": true
+    }
+  }
+}

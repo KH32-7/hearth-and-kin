@@ -1,0 +1,233 @@
+{
+  "$comment": "마을 이웃 12명 (계약 artifacts/contracts-m3.md 4절). 신분: 농노 4, 자유민 3, 장인 2, 상인 1, 성직자 1, 기사 1. 성인·노년만 (아동은 M7). 특성 3개 (traits.json conflicts/crossConflicts 지킴). topics = 관심 대화 주제(선택, 공유 주제 보너스 14-3). 검사: npx tsx tools/check-social.ts",
+  "neighbors": [
+    {
+      "id": "nb_hilda",
+      "name": "힐다",
+      "sex": "female",
+      "stage": "adult",
+      "estate": "serf",
+      "traits": [
+        "sociable",
+        "kind",
+        "nature_lover"
+      ],
+      "virtue": "charity",
+      "sin": null,
+      "seed": 101,
+      "topics": [
+        "family",
+        "food"
+      ]
+    },
+    {
+      "id": "nb_osric",
+      "name": "오스릭",
+      "sex": "male",
+      "stage": "adult",
+      "estate": "serf",
+      "traits": [
+        "hot_tempered",
+        "diligent",
+        "drinker"
+      ],
+      "virtue": null,
+      "sin": "wrath",
+      "seed": 102,
+      "topics": [
+        "work",
+        "war"
+      ]
+    },
+    {
+      "id": "nb_agnes",
+      "name": "아그네스",
+      "sex": "female",
+      "stage": "elder",
+      "estate": "serf",
+      "traits": [
+        "gossip",
+        "cheerful",
+        "family_oriented"
+      ],
+      "virtue": null,
+      "sin": "envy",
+      "seed": 103,
+      "topics": [
+        "gossip",
+        "family"
+      ]
+    },
+    {
+      "id": "nb_maud",
+      "name": "모드",
+      "sex": "female",
+      "stage": "adult",
+      "estate": "serf",
+      "traits": [
+        "lazy",
+        "cynical",
+        "humble"
+      ],
+      "virtue": null,
+      "sin": "sloth",
+      "seed": 104,
+      "topics": [
+        "food",
+        "weather"
+      ]
+    },
+    {
+      "id": "nb_godwin",
+      "name": "고드윈",
+      "sex": "male",
+      "stage": "adult",
+      "estate": "freeman",
+      "traits": [
+        "ambitious",
+        "cunning",
+        "active"
+      ],
+      "virtue": null,
+      "sin": "greed",
+      "seed": 105,
+      "topics": [
+        "work",
+        "gossip"
+      ]
+    },
+    {
+      "id": "nb_edith",
+      "name": "이디스",
+      "sex": "female",
+      "stage": "adult",
+      "estate": "freeman",
+      "traits": [
+        "romantic",
+        "creative",
+        "introvert"
+      ],
+      "virtue": "chastity",
+      "sin": null,
+      "seed": 106,
+      "topics": [
+        "love",
+        "faith"
+      ]
+    },
+    {
+      "id": "nb_rowan",
+      "name": "로완",
+      "sex": "male",
+      "stage": "adult",
+      "estate": "freeman",
+      "traits": [
+        "flirt",
+        "sociable",
+        "brave"
+      ],
+      "virtue": null,
+      "sin": "lust",
+      "seed": 107,
+      "topics": [
+        "love",
+        "war"
+      ]
+    },
+    {
+      "id": "nb_baldric",
+      "name": "발드릭",
+      "sex": "male",
+      "stage": "elder",
+      "estate": "artisan",
+      "traits": [
+        "handy",
+        "suspicious",
+        "just"
+      ],
+      "virtue": "diligence",
+      "sin": null,
+      "seed": 108,
+      "topics": [
+        "work",
+        "faith"
+      ]
+    },
+    {
+      "id": "nb_mabel",
+      "name": "메이블",
+      "sex": "female",
+      "stage": "adult",
+      "estate": "artisan",
+      "traits": [
+        "neat",
+        "creative",
+        "mean"
+      ],
+      "virtue": "temperance",
+      "sin": "envy",
+      "seed": 109,
+      "topics": [
+        "work",
+        "gossip"
+      ]
+    },
+    {
+      "id": "nb_rosamund",
+      "name": "로저먼드",
+      "sex": "female",
+      "stage": "adult",
+      "estate": "merchant",
+      "traits": [
+        "gourmet",
+        "cunning",
+        "sociable"
+      ],
+      "virtue": null,
+      "sin": "gluttony",
+      "seed": 110,
+      "topics": [
+        "food",
+        "work"
+      ]
+    },
+    {
+      "id": "nb_anselm",
+      "name": "안셀름",
+      "sex": "male",
+      "stage": "elder",
+      "estate": "clergy",
+      "traits": [
+        "bookworm",
+        "calm",
+        "kind"
+      ],
+      "virtue": "patience",
+      "sin": null,
+      "seed": 111,
+      "topics": [
+        "faith",
+        "plague"
+      ]
+    },
+    {
+      "id": "nb_gerard",
+      "name": "제라르",
+      "sex": "male",
+      "stage": "adult",
+      "estate": "knight",
+      "traits": [
+        "brave",
+        "just",
+        "ambitious"
+      ],
+      "virtue": null,
+      "sin": "pride",
+      "seed": 112,
+      "topics": [
+        "war",
+        "faith"
+      ]
+    }
+  ]
+}

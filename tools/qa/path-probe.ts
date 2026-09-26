@@ -1,0 +1,12 @@
+import { readFileSync } from 'node:fs';
+import { validateSimData } from '../../src/sim/data/simData';
+import { Simulation } from '../../src/sim/sim';
+import { PathFinder } from '../../src/sim/action/path';
+const j = (p: string) => JSON.parse(readFileSync(p, 'utf8'));
+const data = validateSimData({ needs: j('src/data/needs.json'), balance: j('src/data/balance.json'), interactions: j('src/data/interactions.json'), objects: j('src/data/objects.json'), lot: j('src/data/lots/cottage.json') } as never);
+const sim = new Simulation(data, 1);
+const g = sim.world.grid;
+const pf = new PathFinder(g);
+const [ax, ay, bx, by] = process.argv.slice(2).map(Number);
+const r = pf.find(g.idx(ax, ay), g.idx(bx, by), false);
+console.log(r ? r.map((i) => `${i % g.w},${Math.floor(i / g.w)}`).join(' ') : 'null', 'door?', g.door[g.idx(10, 5)], 'walk', g.walkable(g.idx(10, 5)), 'room', g.room[g.idx(9,5)], g.room[g.idx(11,5)]);

@@ -1,0 +1,3364 @@
+[
+  {
+    "id": "lpc:arms/hands/gloves/male",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/arms/hands/gloves/male",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "Michael Whitlock (bigbeargames)",
+      "Matthew Krohn (makrohn)",
+      "Johannes Sjölund (wulax)",
+      "bluecarrot16",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"arms/hands/gloves/male\" by Michael Whitlock (bigbeargames), Matthew Krohn (makrohn), Johannes Sjölund (wulax), bluecarrot16, JaidynReiman. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites http://opengameart.org/content/lpc-clothing-updates",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "arms_gloves"
+    ]
+  },
+  {
+    "id": "lpc:arms/hands/gloves/thin",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/arms/hands/gloves/thin",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "Michael Whitlock (bigbeargames)",
+      "Matthew Krohn (makrohn)",
+      "Johannes Sjölund (wulax)",
+      "bluecarrot16",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"arms/hands/gloves/thin\" by Michael Whitlock (bigbeargames), Matthew Krohn (makrohn), Johannes Sjölund (wulax), bluecarrot16, JaidynReiman. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites http://opengameart.org/content/lpc-clothing-updates",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "arms_gloves"
+    ]
+  },
+  {
+    "id": "lpc:beards/beard/5oclock_shadow",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/beards/beard/5oclock_shadow",
+    "source": "https://opengameart.org/content/lpc-base-character-expressions",
+    "authors": [
+      "JaidynReiman",
+      "Thane Brimhall (pennomi)",
+      "laetissima"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"beards/beard/5oclock_shadow\" by JaidynReiman, Thane Brimhall (pennomi), laetissima. License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-base-character-expressions",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "beards_5oclock_shadow"
+    ]
+  },
+  {
+    "id": "lpc:beards/beard/basic",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/beards/beard/basic",
+    "source": "https://opengameart.org/content/lpc-white-beard",
+    "authors": [
+      "JaidynReiman",
+      "Carlo Enrico Victoria (Nemisys)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"beards/beard/basic\" by JaidynReiman, Carlo Enrico Victoria (Nemisys). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-white-beard",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "beards_beard"
+    ]
+  },
+  {
+    "id": "lpc:beards/beard/medium",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/beards/beard/medium",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Hair",
+    "authors": [
+      "ElizaWy"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"beards/beard/medium\" by ElizaWy. License: OGA-BY 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Hair https://opengameart.org/content/lpc-expanded-sit-run-jump-more",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "beards_medium"
+    ]
+  },
+  {
+    "id": "lpc:beards/mustache/basic",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/beards/mustache/basic",
+    "source": "https://opengameart.org/content/lpc-brunet-mustache",
+    "authors": [
+      "JaidynReiman",
+      "Carlo Enrico Victoria (Nemisys)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"beards/mustache/basic\" by JaidynReiman, Carlo Enrico Victoria (Nemisys). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-brunet-mustache",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "beards_mustache"
+    ]
+  },
+  {
+    "id": "lpc:beards/beard/trimmed",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/beards/beard/trimmed",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Hair",
+    "authors": [
+      "ElizaWy"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"beards/beard/trimmed\" by ElizaWy. License: OGA-BY 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Hair https://opengameart.org/content/lpc-expanded-sit-run-jump-more",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "beards_trimmed"
+    ]
+  },
+  {
+    "id": "lpc:torso/waist/obi",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/waist/obi",
+    "source": "https://opengameart.org/content/lpc-kimono-relm",
+    "authors": [
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0+",
+      "CC-BY 3.0+",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/waist/obi\" by JaidynReiman. License: OGA-BY 3.0+ / CC-BY 3.0+ / GPL 3.0. https://opengameart.org/content/lpc-kimono-relm",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "belt_obi"
+    ]
+  },
+  {
+    "id": "lpc:body/bodies/male",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/body/bodies/male",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman",
+      "Benjamin K. Smith (BenCreating)",
+      "Evert",
+      "Eliza Wyatt (ElizaWy)",
+      "TheraHedwig",
+      "MuffinElZangano",
+      "Durrani",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"body/bodies/male\" by bluecarrot16, JaidynReiman, Benjamin K. Smith (BenCreating), Evert, Eliza Wyatt (ElizaWy), TheraHedwig, MuffinElZangano, Durrani, Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-male-jumping-animation-by-durrani https://opengameart.org/content/lpc-runcycle-and-diagonal-walkcycle https://opengameart.org/content/lpc-revised-character-basics https://opengameart.org/content/lpc-be-seated https://opengameart.org/content/lpc-runcycle-for-male-muscular-and-pregnant-character-bases-with-modular-heads https://opengameart.org/content/lpc-jump-expanded https://opengameart.org/content/lpc-character-bases",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "body"
+    ]
+  },
+  {
+    "id": "lpc:body/bodies/female",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/body/bodies/female",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "Benjamin K. Smith (BenCreating)",
+      "bluecarrot16",
+      "TheraHedwig",
+      "Evert",
+      "MuffinElZangano",
+      "Durrani",
+      "Pierre Vigier (pvigier)",
+      "ElizaWy",
+      "Matthew Krohn (makrohn)",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"body/bodies/female\" by Benjamin K. Smith (BenCreating), bluecarrot16, TheraHedwig, Evert, MuffinElZangano, Durrani, Pierre Vigier (pvigier), ElizaWy, Matthew Krohn (makrohn), Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-ladies https://opengameart.org/content/lpc-7-womens-shirts https://opengameart.org/content/lpc-jump-expanded https://opengameart.org/content/lpc-be-seated https://opengameart.org/content/lpc-revised-character-basics https://gitlab.com/vagabondgame/lpc-characters https://opengameart.org/content/lpc-male-jumping-animation-by-durrani https://opengameart.org/content/lpc-runcycle-and-diagonal-walkcycle",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "body"
+    ]
+  },
+  {
+    "id": "lpc:body/bodies/muscular",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/body/bodies/muscular",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman",
+      "Evert",
+      "TheraHedwig",
+      "MuffinElZangano",
+      "Durrani",
+      "Sander Frenken (castelonia)",
+      "Benjamin K. Smith (BenCreating)",
+      "Eliza Wyatt (ElizaWy)",
+      "dalonedrau",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"body/bodies/muscular\" by bluecarrot16, JaidynReiman, Evert, TheraHedwig, MuffinElZangano, Durrani, Sander Frenken (castelonia), Benjamin K. Smith (BenCreating), Eliza Wyatt (ElizaWy), dalonedrau, Stephen Challener (Redshrike). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-barbarian-sprite-base https://opengameart.org/content/lpc-muscular-swing-animation https://opengameart.org/content/lpc-muscular-hurt-animation https://opengameart.org/content/lpc-jump-expanded https://opengameart.org/content/lpc-revised-character-basics https://opengameart.org/content/lpc-be-seated https://opengameart.org/content/lpc-jump-expanded https://opengameart.org/content/lpc-character-bases https://opengameart.org/content/lpc-male-jumping-animation-by-durrani",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "body"
+    ]
+  },
+  {
+    "id": "lpc:body/bodies/teen",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/body/bodies/teen",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "Evert",
+      "TheraHedwig",
+      "Benjamin K. Smith (BenCreating)",
+      "MuffinElZangano",
+      "Durrani",
+      "Pierre Vigier (pvigier)",
+      "Eliza Wyatt (ElizaWy)",
+      "Matthew Krohn (makrohn)",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"body/bodies/teen\" by bluecarrot16, Evert, TheraHedwig, Benjamin K. Smith (BenCreating), MuffinElZangano, Durrani, Pierre Vigier (pvigier), Eliza Wyatt (ElizaWy), Matthew Krohn (makrohn), Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-ladies https://opengameart.org/content/lpc-teen-unisex-base-clothes https://opengameart.org/content/lpc-jump-expanded https://opengameart.org/content/lpc-revised-character-basics https://opengameart.org/content/lpc-be-seated https://gitlab.com/vagabondgame/lpc-characters https://opengameart.org/content/lpc-male-jumping-animation-by-durrani https://opengameart.org/content/lpc-jump-expanded",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "body"
+    ]
+  },
+  {
+    "id": "lpc:body/bodies/pregnant",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/body/bodies/pregnant",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman",
+      "Evert",
+      "TheraHedwig",
+      "MuffinElZangano",
+      "Durrani",
+      "Benjamin K. Smith (BenCreating)",
+      "Pierre Vigier (pvigier)",
+      "Eliza Wyatt (ElizaWy)",
+      "Matthew Krohn (makrohn)",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"body/bodies/pregnant\" by bluecarrot16, JaidynReiman, Evert, TheraHedwig, MuffinElZangano, Durrani, Benjamin K. Smith (BenCreating), Pierre Vigier (pvigier), Eliza Wyatt (ElizaWy), Matthew Krohn (makrohn), Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-ladies https://opengameart.org/content/lpc-pregnancy-bases-maternity-wear https://opengameart.org/content/lpc-7-womens-shirts https://opengameart.org/content/lpc-jump-expanded https://gitlab.com/vagabondgame/lpc-characters https://opengameart.org/content/lpc-jump-expanded https://opengameart.org/content/lpc-male-jumping-animation-by-durrani https://opengameart.org/content/lpc-runcycle-and-diagonal-walkcycle",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "body"
+    ]
+  },
+  {
+    "id": "lpc:body/bodies/child",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/body/bodies/child",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "Benjamin K. Smith (BenCreating)",
+      "ElizaWy",
+      "MuffinElZangano",
+      "Durrani",
+      "Nila122",
+      "kheftel",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"body/bodies/child\" by bluecarrot16, Benjamin K. Smith (BenCreating), ElizaWy, MuffinElZangano, Durrani, Nila122, kheftel, Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-child-standing-template https://opengameart.org/content/lpc-children-walk-animation https://opengameart.org/content/lpc-male-jumping-animation-by-durrani https://opengameart.org/content/lpc-male-jumping-animation-by-durrani https://opengameart.org/content/lpc-jump-expanded https://opengameart.org/content/lpc-jump-expanded",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "body"
+    ]
+  },
+  {
+    "id": "lpc:cape/solid/fg",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/cape/solid/fg",
+    "source": "https://opengameart.org/content/lpc-curly-hair-elven-ears-white-cape-with-blue-trim-and-more",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"cape/solid/fg\" by bluecarrot16, JaidynReiman. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-curly-hair-elven-ears-white-cape-with-blue-trim-and-more https://opengameart.org/content/lpc-roman-armor http://opengameart.org/content/lpc-clothing-updates",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "cape_solid"
+    ]
+  },
+  {
+    "id": "lpc:cape/solid/bg",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/cape/solid/bg",
+    "source": "https://opengameart.org/content/lpc-curly-hair-elven-ears-white-cape-with-blue-trim-and-more",
+    "authors": [
+      "Nila122",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"cape/solid/bg\" by Nila122, JaidynReiman. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-curly-hair-elven-ears-white-cape-with-blue-trim-and-more https://opengameart.org/content/lpc-roman-armor",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "cape_solid"
+    ]
+  },
+  {
+    "id": "lpc:cape/trim",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/cape/trim",
+    "source": "https://opengameart.org/content/lpc-curly-hair-elven-ears-white-cape-with-blue-trim-and-more",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"cape/trim\" by bluecarrot16, JaidynReiman. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-curly-hair-elven-ears-white-cape-with-blue-trim-and-more http://opengameart.org/content/lpc-clothing-updates",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "cape_trim"
+    ]
+  },
+  {
+    "id": "lpc:child/",
+    "pack": "hearth-and-kin (derived from LPC)",
+    "files": "assets/generated/lpc/child/",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "Benjamin K. Smith (BenCreating)",
+      "ElizaWy",
+      "MuffinElZangano",
+      "Durrani",
+      "Nila122",
+      "kheftel",
+      "Stephen Challener (Redshrike)",
+      "Hearth & Kin (pixel-edit script tools/lpc/gen-child-garments.ts)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0"
+    ],
+    "attribution": "\"child/\" by bluecarrot16, Benjamin K. Smith (BenCreating), ElizaWy, MuffinElZangano, Durrani, Nila122, kheftel, Stephen Challener (Redshrike), Hearth & Kin (pixel-edit script tools/lpc/gen-child-garments.ts). License: CC-BY-SA 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-child-standing-template https://opengameart.org/content/lpc-children-walk-animation https://opengameart.org/content/lpc-male-jumping-animation-by-durrani https://opengameart.org/content/lpc-male-jumping-animation-by-durrani https://opengameart.org/content/lpc-jump-expanded https://opengameart.org/content/lpc-jump-expanded",
+    "modified": true,
+    "notes": "pixel-edited by tools/lpc/gen-child-garments.ts; see assets/SHARE_ALIKE.md",
+    "usedBy": [
+      "child_dress",
+      "child_dress_long",
+      "child_hose",
+      "child_shoes",
+      "child_tunic",
+      "child_tunic_long"
+    ]
+  },
+  {
+    "id": "lpc:feet/armour/plate",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/armour/plate",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "Matthew Krohn (makrohn)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"feet/armour/plate\" by Matthew Krohn (makrohn), Johannes Sjölund (wulax). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_armour"
+    ]
+  },
+  {
+    "id": "lpc:feet/armour/plate/female",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/armour/plate/female",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "Matthew Krohn (makrohn)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"feet/armour/plate/female\" by Matthew Krohn (makrohn), Johannes Sjölund (wulax). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_armour"
+    ]
+  },
+  {
+    "id": "lpc:feet/boots/basic",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/boots/basic",
+    "source": "https://opengameart.org/content/lpc-clothes-and-hair",
+    "authors": [
+      "JaidynReiman",
+      "bluecarrot16",
+      "Nila122"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 2.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"feet/boots/basic\" by JaidynReiman, bluecarrot16, Nila122. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 2.0 / GPL 3.0. https://opengameart.org/content/lpc-clothes-and-hair https://opengameart.org/content/lpc-expanded-socks-shoes",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_boots_basic"
+    ]
+  },
+  {
+    "id": "lpc:feet/boots/basic/thin",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/boots/basic/thin",
+    "source": "https://opengameart.org/content/lpc-clothes-and-hair",
+    "authors": [
+      "JaidynReiman",
+      "bluecarrot16",
+      "Nila122"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 2.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"feet/boots/basic/thin\" by JaidynReiman, bluecarrot16, Nila122. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 2.0 / GPL 3.0. https://opengameart.org/content/lpc-clothes-and-hair https://opengameart.org/content/lpc-expanded-socks-shoes",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_boots_basic"
+    ]
+  },
+  {
+    "id": "lpc:feet/boots/fold",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/boots/fold",
+    "source": "https://opengameart.org/content/lpc-kimono-relm",
+    "authors": [
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0+",
+      "CC-BY 3.0+",
+      "GPL 3.0"
+    ],
+    "attribution": "\"feet/boots/fold\" by JaidynReiman. License: OGA-BY 3.0+ / CC-BY 3.0+ / GPL 3.0. https://opengameart.org/content/lpc-kimono-relm https://opengameart.org/content/lpc-expanded-socks-shoes",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_boots_fold"
+    ]
+  },
+  {
+    "id": "lpc:feet/boots/rimmed",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/boots/rimmed",
+    "source": "https://opengameart.org/content/lpc-kimono-relm",
+    "authors": [
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0+",
+      "CC-BY 3.0+",
+      "GPL 3.0"
+    ],
+    "attribution": "\"feet/boots/rimmed\" by JaidynReiman. License: OGA-BY 3.0+ / CC-BY 3.0+ / GPL 3.0. https://opengameart.org/content/lpc-kimono-relm https://opengameart.org/content/lpc-expanded-socks-shoes",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_boots_rim"
+    ]
+  },
+  {
+    "id": "lpc:feet/sandals",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/sandals",
+    "source": "https://opengameart.org/content/lpc-roman-armor",
+    "authors": [
+      "Nila122",
+      "JaidynReiman",
+      "Matthew Krohn (makrohn)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 2.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"feet/sandals\" by Nila122, JaidynReiman, Matthew Krohn (makrohn), Johannes Sjölund (wulax). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 2.0 / GPL 3.0. https://opengameart.org/content/lpc-roman-armor http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-expanded-socks-shoes",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_sandals"
+    ]
+  },
+  {
+    "id": "lpc:feet/shoes",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/shoes",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "JaidynReiman",
+      "bluecarrot16",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"feet/shoes\" by JaidynReiman, bluecarrot16, Johannes Sjölund (wulax). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-expanded-socks-shoes",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_shoes_basic"
+    ]
+  },
+  {
+    "id": "lpc:feet/shoes/basic/thin",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/shoes/basic/thin",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "JaidynReiman",
+      "Joe White",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"feet/shoes/basic/thin\" by JaidynReiman, Joe White, Johannes Sjölund (wulax). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-expanded-socks-shoes",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_shoes_basic"
+    ]
+  },
+  {
+    "id": "lpc:feet/shoes/ghillies",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/shoes/ghillies",
+    "source": "https://opengameart.org/content/lpc-2-characters",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman",
+      "Thane Brimhall (pennomi)",
+      "laetissima",
+      "Matthew Krohn (makrohn)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"feet/shoes/ghillies\" by bluecarrot16, JaidynReiman, Thane Brimhall (pennomi), laetissima, Matthew Krohn (makrohn). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-2-characters http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-expanded-socks-shoes",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_shoes_ghillies"
+    ]
+  },
+  {
+    "id": "lpc:feet/shoes/revised/male",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/shoes/revised/male",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing",
+    "authors": [
+      "JaidynReiman",
+      "ElizaWy",
+      "Bluecarrot16",
+      "Stephen Challener (Redshrike)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"feet/shoes/revised/male\" by JaidynReiman, ElizaWy, Bluecarrot16, Stephen Challener (Redshrike), Johannes Sjölund (wulax). License: OGA-BY 3.0 / GPL 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-socks-shoes",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_shoes_revised"
+    ]
+  },
+  {
+    "id": "lpc:feet/shoes/revised",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/shoes/revised",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing",
+    "authors": [
+      "ElizaWy",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"feet/shoes/revised\" by ElizaWy, JaidynReiman. License: OGA-BY 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-socks-shoes",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_shoes_revised"
+    ]
+  },
+  {
+    "id": "lpc:feet/slippers",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/feet/slippers",
+    "source": "https://opengameart.org/content/thin-mage-clothing-set",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman",
+      "Joe White",
+      "Luke Mehl"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"feet/slippers\" by bluecarrot16, JaidynReiman, Joe White, Luke Mehl. License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/thin-mage-clothing-set http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-expanded-socks-shoes",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "feet_slippers"
+    ]
+  },
+  {
+    "id": "lpc:hair/balding",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/balding",
+    "source": "https://opengameart.org/content/lpc-hair",
+    "authors": [
+      "ElizaWy"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"hair/balding\" by ElizaWy. License: OGA-BY 3.0. https://opengameart.org/content/lpc-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_balding"
+    ]
+  },
+  {
+    "id": "lpc:hair/bangs_bun",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/bangs_bun",
+    "source": "https://opengameart.org/content/lpc-hair",
+    "authors": [
+      "ElizaWy",
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "CC0"
+    ],
+    "attribution": "\"hair/bangs_bun\" by ElizaWy, bluecarrot16. License: CC0. https://opengameart.org/content/lpc-hair https://github.com/ElizaWy/LPC/blob/main/Characters/Hair https://opengameart.org/content/lpc-expanded-sit-run-jump-more",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_bangs_bun"
+    ]
+  },
+  {
+    "id": "lpc:hair/bangsshort",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/bangsshort",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "JaidynReiman",
+      "Manuel Riecke (MrBeast)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/bangsshort\" by JaidynReiman, Manuel Riecke (MrBeast). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_bangsshort"
+    ]
+  },
+  {
+    "id": "lpc:hair/bedhead",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/bedhead",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "JaidynReiman",
+      "Manuel Riecke (MrBeast)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/bedhead\" by JaidynReiman, Manuel Riecke (MrBeast). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_bedhead"
+    ]
+  },
+  {
+    "id": "lpc:hair/braid",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/braid",
+    "source": "https://opengameart.org/content/3-hairs-for-lpc",
+    "authors": [
+      "Nila122",
+      "ElizaWy"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0",
+      "GPL 2.0"
+    ],
+    "attribution": "\"hair/braid\" by Nila122, ElizaWy. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0 / GPL 2.0. https://opengameart.org/content/3-hairs-for-lpc https://opengameart.org/content/lpc-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_braid"
+    ]
+  },
+  {
+    "id": "lpc:hair/braid2",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/braid2",
+    "source": "https://opengameart.org/content/lpc-heroine",
+    "authors": [
+      "Yamilian",
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/braid2\" by Yamilian, bluecarrot16. License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-heroine https://opengameart.org/content/lpc-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_braid2"
+    ]
+  },
+  {
+    "id": "lpc:hair/buzzcut",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/buzzcut",
+    "source": "https://opengameart.org/content/lpc-hair",
+    "authors": [
+      "ElizaWy"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"hair/buzzcut\" by ElizaWy. License: OGA-BY 3.0. https://opengameart.org/content/lpc-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_buzzcut"
+    ]
+  },
+  {
+    "id": "lpc:hair/curly_short",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/curly_short",
+    "source": "https://opengameart.org/content/lpc-hair",
+    "authors": [
+      "ElizaWy"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"hair/curly_short\" by ElizaWy. License: OGA-BY 3.0. https://opengameart.org/content/lpc-hair https://opengameart.org/content/lpc-expanded-sit-run-jump-more",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_curly_short"
+    ]
+  },
+  {
+    "id": "lpc:hair/half_up",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/half_up",
+    "source": "https://opengameart.org/content/lpc-hair",
+    "authors": [
+      "ElizaWy"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"hair/half_up\" by ElizaWy. License: OGA-BY 3.0. https://opengameart.org/content/lpc-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_half_up"
+    ]
+  },
+  {
+    "id": "lpc:hair/long",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/long",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "JaidynReiman",
+      "Manuel Riecke (MrBeast)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/long\" by JaidynReiman, Manuel Riecke (MrBeast). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_long"
+    ]
+  },
+  {
+    "id": "lpc:hair/long_messy",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/long_messy",
+    "source": "https://opengameart.org/content/puck-overland",
+    "authors": [
+      "Mandi Paugh",
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "GPL 2.0",
+      "GPL 3.0",
+      "CC-BY 3.0"
+    ],
+    "attribution": "\"hair/long_messy\" by Mandi Paugh, bluecarrot16. License: GPL 2.0 / GPL 3.0 / CC-BY 3.0. https://opengameart.org/content/puck-overland https://opengameart.org/content/lpc-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_long_messy"
+    ]
+  },
+  {
+    "id": "lpc:hair/long_straight",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/long_straight",
+    "source": "https://opengameart.org/content/lpc-long-straight-hair-with-12-colors",
+    "authors": [
+      "JaidynReiman",
+      "thecilekli",
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "CC0"
+    ],
+    "attribution": "\"hair/long_straight\" by JaidynReiman, thecilekli, bluecarrot16. License: CC0. https://opengameart.org/content/lpc-long-straight-hair-with-12-colors https://opengameart.org/content/lpc-hair https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_long_straight"
+    ]
+  },
+  {
+    "id": "lpc:hair/long_tied",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/long_tied",
+    "source": "https://opengameart.org/content/lpc-long-tied-hair-with-12-colors",
+    "authors": [
+      "JaidynReiman",
+      "thecilekli",
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "CC0"
+    ],
+    "attribution": "\"hair/long_tied\" by JaidynReiman, thecilekli, bluecarrot16. License: CC0. https://opengameart.org/content/lpc-long-tied-hair-with-12-colors https://opengameart.org/content/lpc-hair https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_long_tied"
+    ]
+  },
+  {
+    "id": "lpc:hair/loose",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/loose",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "JaidynReiman",
+      "Manuel Riecke (MrBeast)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/loose\" by JaidynReiman, Manuel Riecke (MrBeast). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_loose"
+    ]
+  },
+  {
+    "id": "lpc:hair/messy",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/messy",
+    "source": "https://opengameart.org/content/lpc-clothes-for-children",
+    "authors": [
+      "Nila122"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/messy\" by Nila122. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-clothes-for-children",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_messy"
+    ]
+  },
+  {
+    "id": "lpc:hair/messy1",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/messy1",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "JaidynReiman",
+      "Manuel Riecke (MrBeast)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/messy1\" by JaidynReiman, Manuel Riecke (MrBeast). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_messy1"
+    ]
+  },
+  {
+    "id": "lpc:hair/mop",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/mop",
+    "source": "https://opengameart.org/content/alternate-lpc-character-sprites-george",
+    "authors": [
+      "Radomir Dopieralski",
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/mop\" by Radomir Dopieralski, bluecarrot16. License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/alternate-lpc-character-sprites-george https://opengameart.org/content/lpc-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_mop"
+    ]
+  },
+  {
+    "id": "lpc:hair/page",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/page",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "Page",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/page\" by Page, Johannes Sjölund (wulax). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_page"
+    ]
+  },
+  {
+    "id": "lpc:hair/page2",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/page2",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "JaidynReiman",
+      "ElizaWy",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/page2\" by JaidynReiman, ElizaWy, Johannes Sjölund (wulax). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://github.com/ElizaWy/LPC/tree/main/Characters/Hair https://opengameart.org/content/lpc-expanded-sit-run-jump-more",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_page2"
+    ]
+  },
+  {
+    "id": "lpc:hair/parted",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/parted",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "JaidynReiman",
+      "Joe White",
+      "Manuel Riecke (MrBeast)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/parted\" by JaidynReiman, Joe White, Manuel Riecke (MrBeast). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://github.com/jrconway3/Universal-LPC-spritesheet/commit/46ddcf05a0e43e7aa6ffd47d350eef0eb529ac24 https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_parted"
+    ]
+  },
+  {
+    "id": "lpc:hair/parted_side_bangs",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/parted_side_bangs",
+    "source": "https://opengameart.org/content/lpc-1-hairstyle-2-hair-extensions-3-previously-unofficially-released-hairstyles",
+    "authors": [
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0+",
+      "CC-BY 3.0+",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/parted_side_bangs\" by JaidynReiman. License: OGA-BY 3.0+ / CC-BY 3.0+ / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-1-hairstyle-2-hair-extensions-3-previously-unofficially-released-hairstyles https://github.com/jrconway3/Universal-LPC-spritesheet/commit/46ddcf05a0e43e7aa6ffd47d350eef0eb529ac24",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_parted_side_bangs",
+      "hair_topknot_long"
+    ]
+  },
+  {
+    "id": "lpc:hair/parted_side_bangs2",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/parted_side_bangs2",
+    "source": "https://opengameart.org/content/lpc-1-hairstyle-2-hair-extensions-3-previously-unofficially-released-hairstyles",
+    "authors": [
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0+",
+      "CC-BY 3.0+",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/parted_side_bangs2\" by JaidynReiman. License: OGA-BY 3.0+ / CC-BY 3.0+ / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-1-hairstyle-2-hair-extensions-3-previously-unofficially-released-hairstyles https://github.com/jrconway3/Universal-LPC-spritesheet/commit/46ddcf05a0e43e7aa6ffd47d350eef0eb529ac24",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_parted_side_bangs2"
+    ]
+  },
+  {
+    "id": "lpc:hair/pigtails_bangs",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/pigtails_bangs",
+    "source": "https://opengameart.org/content/steampun-a-fy-with-concept-art",
+    "authors": [
+      "Emilio J. Sanchez-Sierra",
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/pigtails_bangs\" by Emilio J. Sanchez-Sierra, bluecarrot16. License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/steampun-a-fy-with-concept-art https://opengameart.org/content/lpc-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_pigtails_bangs"
+    ]
+  },
+  {
+    "id": "lpc:hair/plain",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/plain",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "JaidynReiman",
+      "Manuel Riecke (MrBeast)",
+      "Joe White"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/plain\" by JaidynReiman, Manuel Riecke (MrBeast), Joe White. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/ponytail-and-plain-hairstyles https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_plain"
+    ]
+  },
+  {
+    "id": "lpc:hair/ponytail",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/ponytail",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "JaidynReiman",
+      "Manuel Riecke (MrBeast)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/ponytail\" by JaidynReiman, Manuel Riecke (MrBeast). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_ponytail"
+    ]
+  },
+  {
+    "id": "lpc:hair/princess",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/princess",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "JaidynReiman",
+      "Lanea Zimmerman (Sharm)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/princess\" by JaidynReiman, Lanea Zimmerman (Sharm). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_princess"
+    ]
+  },
+  {
+    "id": "lpc:hair/relm_ponytail",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/relm_ponytail",
+    "source": "https://opengameart.org/content/lpc-relm-hair-xlong-ponytail",
+    "authors": [
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0+",
+      "CC-BY 3.0+",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/relm_ponytail\" by JaidynReiman. License: OGA-BY 3.0+ / CC-BY 3.0+ / GPL 3.0. https://opengameart.org/content/lpc-relm-hair-xlong-ponytail https://opengameart.org/content/lpc-expanded-xlong-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_relm_ponytail"
+    ]
+  },
+  {
+    "id": "lpc:hair/relm_short",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/relm_short",
+    "source": "https://opengameart.org/content/lpc-relm-hair-xlong-ponytail",
+    "authors": [
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0+",
+      "CC-BY 3.0+",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/relm_short\" by JaidynReiman. License: OGA-BY 3.0+ / CC-BY 3.0+ / GPL 3.0. https://opengameart.org/content/lpc-relm-hair-xlong-ponytail",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_relm_short"
+    ]
+  },
+  {
+    "id": "lpc:hair/shoulderl",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/shoulderl",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "JaidynReiman",
+      "Lanea Zimmerman (Sharm)",
+      "Manuel Riecke (MrBeast)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/shoulderl\" by JaidynReiman, Lanea Zimmerman (Sharm), Manuel Riecke (MrBeast). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://github.com/jrconway3/Universal-LPC-spritesheet/commit/c32ce8a7edd9fc7fe7daa62a39cf64e5946020a2 https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_shoulderl"
+    ]
+  },
+  {
+    "id": "lpc:hair/swoop_side",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/swoop_side",
+    "source": "https://opengameart.org/content/lpc-1-hairstyle-2-hair-extensions-3-previously-unofficially-released-hairstyles",
+    "authors": [
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0+",
+      "CC-BY 3.0+",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/swoop_side\" by JaidynReiman. License: OGA-BY 3.0+ / CC-BY 3.0+ / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-1-hairstyle-2-hair-extensions-3-previously-unofficially-released-hairstyles https://github.com/jrconway3/Universal-LPC-spritesheet/commit/46ddcf05a0e43e7aa6ffd47d350eef0eb529ac24",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_swoop_side"
+    ]
+  },
+  {
+    "id": "lpc:hair/extensions/ponytails/topknot_long",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/extensions/ponytails/topknot_long",
+    "source": "https://opengameart.org/content/lpc-1-hairstyle-2-hair-extensions-3-previously-unofficially-released-hairstyles",
+    "authors": [
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0+",
+      "CC-BY 3.0+",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/extensions/ponytails/topknot_long\" by JaidynReiman. License: OGA-BY 3.0+ / CC-BY 3.0+ / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-1-hairstyle-2-hair-extensions-3-previously-unofficially-released-hairstyles",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_topknot_long"
+    ]
+  },
+  {
+    "id": "lpc:hair/unkempt",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/unkempt",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "JaidynReiman",
+      "Manuel Riecke (MrBeast)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/unkempt\" by JaidynReiman, Manuel Riecke (MrBeast). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_unkempt"
+    ]
+  },
+  {
+    "id": "lpc:hair/wavy",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/wavy",
+    "source": "https://opengameart.org/content/3-hairs-for-lpc",
+    "authors": [
+      "JaidynReiman",
+      "Nila122"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 2.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/wavy\" by JaidynReiman, Nila122. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 2.0 / GPL 3.0. https://opengameart.org/content/3-hairs-for-lpc https://opengameart.org/content/lpc-expanded-hair",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_wavy"
+    ]
+  },
+  {
+    "id": "lpc:hair/wavy/child",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hair/wavy/child",
+    "source": "https://opengameart.org/content/3-hairs-for-lpc",
+    "authors": [
+      "Nila122"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 2.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hair/wavy/child\" by Nila122. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 2.0 / GPL 3.0. https://opengameart.org/content/3-hairs-for-lpc",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hair_wavy_child"
+    ]
+  },
+  {
+    "id": "lpc:hat/pirate/bonnie",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hat/pirate/bonnie",
+    "source": "https://opengameart.org/content/lpc-pirates",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"hat/pirate/bonnie\" by bluecarrot16, JaidynReiman. License: OGA-BY 3.0. https://opengameart.org/content/lpc-pirates https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hat_cap_bonnie"
+    ]
+  },
+  {
+    "id": "lpc:hat/cloth/leather_cap",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hat/cloth/leather_cap",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "Johannes Sjölund (wulax)",
+      "Matthew Krohn (Makrohn)",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hat/cloth/leather_cap\" by Johannes Sjölund (wulax), Matthew Krohn (Makrohn), JaidynReiman. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hat_cap_leather"
+    ]
+  },
+  {
+    "id": "lpc:hat/formal/crown",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hat/formal/crown",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "DarkwallLKE",
+      "Charles Sanchez (CharlesGabriel)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hat/formal/crown\" by DarkwallLKE, Charles Sanchez (CharlesGabriel). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-crown https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hat_formal_crown"
+    ]
+  },
+  {
+    "id": "lpc:hat/formal/tiara",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hat/formal/tiara",
+    "source": "https://opengameart.org/content/female-mage-clothing-set",
+    "authors": [
+      "Luke Mehl"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hat/formal/tiara\" by Luke Mehl. License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/female-mage-clothing-set https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hat_formal_tiara"
+    ]
+  },
+  {
+    "id": "lpc:hat/pirate/kerchief",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hat/pirate/kerchief",
+    "source": "https://opengameart.org/content/more-lpc-clothes-and-hair",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman",
+      "Nila122"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 2.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hat/pirate/kerchief\" by bluecarrot16, JaidynReiman, Nila122. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 2.0 / GPL 3.0. https://opengameart.org/content/more-lpc-clothes-and-hair https://opengameart.org/content/lpc-pirates https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hat_headband_kerchief"
+    ]
+  },
+  {
+    "id": "lpc:hat/headband/tied",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hat/headband/tied",
+    "source": "https://opengameart.org/content/lpc-lizard-headgear",
+    "authors": [
+      "Nila122"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hat/headband/tied\" by Nila122. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-lizard-headgear https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hat_headband_tied"
+    ]
+  },
+  {
+    "id": "lpc:hat/helmet/bascinet",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hat/helmet/bascinet",
+    "source": "https://opengameart.org/content/lpc-realistic-helmet-pack",
+    "authors": [
+      "bluecarrot16",
+      "ElizaWy",
+      "Sander Frenken (castelonia)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 4.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hat/helmet/bascinet\" by bluecarrot16, ElizaWy, Sander Frenken (castelonia). License: OGA-BY 3.0 / CC-BY-SA 4.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-realistic-helmet-pack https://opengameart.org/content/lpc-helmets-mega-pack https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hat_helmet_bascinet"
+    ]
+  },
+  {
+    "id": "lpc:hat/helmet/mail",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hat/helmet/mail",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "Napsio (Vitruvian Studio)",
+      "Johannes Sjölund (wulax)",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hat/helmet/mail\" by Napsio (Vitruvian Studio), Johannes Sjölund (wulax), JaidynReiman. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hat_helmet_mail"
+    ]
+  },
+  {
+    "id": "lpc:hat/helmet/nasal",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hat/helmet/nasal",
+    "source": "https://opengameart.org/content/lpc-helmets",
+    "authors": [
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "CC-BY 3.0",
+      "CC-BY 4.0",
+      "OGA-BY 3.0",
+      "GPL 2.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hat/helmet/nasal\" by bluecarrot16. License: CC-BY 3.0 / CC-BY 4.0 / OGA-BY 3.0 / GPL 2.0 / GPL 3.0. https://opengameart.org/content/lpc-helmets https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hat_helmet_nasal"
+    ]
+  },
+  {
+    "id": "lpc:hat/cloth/hood",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hat/cloth/hood",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "Johannes Sjölund (wulax)",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hat/cloth/hood\" by Johannes Sjölund (wulax), JaidynReiman. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hat_hood_cloth"
+    ]
+  },
+  {
+    "id": "lpc:hat/cloth/hijab",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hat/cloth/hijab",
+    "source": "https://opengameart.org/content/lpc-hijab",
+    "authors": [
+      "thecilekli"
+    ],
+    "licenses": [
+      "CC0"
+    ],
+    "attribution": "\"hat/cloth/hijab\" by thecilekli. License: CC0. https://opengameart.org/content/lpc-hijab https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hat_hood_hijab"
+    ]
+  },
+  {
+    "id": "lpc:hat/cloth/hood_sack/adult",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/hat/cloth/hood_sack/adult",
+    "source": "https://opengameart.org/content/lpc-lizard-headgear",
+    "authors": [
+      "Nila122",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"hat/cloth/hood_sack/adult\" by Nila122, JaidynReiman. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-lizard-headgear https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "hat_hood_sack_cloth"
+    ]
+  },
+  {
+    "id": "lpc:head/wrinkles",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/wrinkles",
+    "source": "https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator",
+    "authors": [
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "CC0"
+    ],
+    "attribution": "\"head/wrinkles\" by bluecarrot16. License: CC0.",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "head_wrinkles"
+    ]
+  },
+  {
+    "id": "lpc:head/heads/human/child",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/heads/human/child",
+    "source": "https://opengameart.org/content/",
+    "authors": [
+      "Stephen Challener (Redshrike)",
+      "kheftel",
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"head/heads/human/child\" by Stephen Challener (Redshrike), kheftel, bluecarrot16. License: OGA-BY 3.0 / CC-BY 3.0 / GPL 3.0. https://opengameart.org/content/ https://opengameart.org/content/lpc-child-standing-template https://opengameart.org/content/lpc-character-bases",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "heads_human_child"
+    ]
+  },
+  {
+    "id": "lpc:head/heads/human/female",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/heads/human/female",
+    "source": "https://opengameart.org/content/",
+    "authors": [
+      "bluecarrot16",
+      "Benjamin K. Smith (BenCreating)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"head/heads/human/female\" by bluecarrot16, Benjamin K. Smith (BenCreating), Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/ https://opengameart.org/content/lpc-character-bases",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "heads_human_female"
+    ]
+  },
+  {
+    "id": "lpc:head/heads/human/female_elderly",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/heads/human/female_elderly",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "Benjamin K. Smith (BenCreating)",
+      "Eliza Wyatt (ElizaWy)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY 3.0"
+    ],
+    "attribution": "\"head/heads/human/female_elderly\" by Benjamin K. Smith (BenCreating), Eliza Wyatt (ElizaWy), Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-revised-elders https://opengameart.org/content/lpc-character-bases",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "heads_human_female_elderly"
+    ]
+  },
+  {
+    "id": "lpc:head/heads/human/female_small",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/heads/human/female_small",
+    "source": "https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator",
+    "authors": [
+      "ElizaWy",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY"
+    ],
+    "attribution": "\"head/heads/human/female_small\" by ElizaWy, Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY.",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "heads_human_female_small"
+    ]
+  },
+  {
+    "id": "lpc:head/heads/human/male",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/heads/human/male",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "Benjamin K. Smith (BenCreating)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"head/heads/human/male\" by bluecarrot16, Benjamin K. Smith (BenCreating), Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-character-bases",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "heads_human_male"
+    ]
+  },
+  {
+    "id": "lpc:head/heads/human/male_elderly",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/heads/human/male_elderly",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "Benjamin K. Smith (BenCreating)",
+      "Eliza Wyatt (ElizaWy)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY 3.0"
+    ],
+    "attribution": "\"head/heads/human/male_elderly\" by Benjamin K. Smith (BenCreating), Eliza Wyatt (ElizaWy), Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-revised-elders https://opengameart.org/content/lpc-character-bases",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "heads_human_male_elderly"
+    ]
+  },
+  {
+    "id": "lpc:head/heads/human/male_gaunt",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/heads/human/male_gaunt",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "Stephen Challener (Redshrike)",
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"head/heads/human/male_gaunt\" by Stephen Challener (Redshrike), bluecarrot16. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-folk",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "heads_human_male_gaunt"
+    ]
+  },
+  {
+    "id": "lpc:head/heads/human/male_plump",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/heads/human/male_plump",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "Stephen Challener (Redshrike)",
+      "??"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"head/heads/human/male_plump\" by Stephen Challener (Redshrike), ??. License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-folk",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "heads_human_male_plump"
+    ]
+  },
+  {
+    "id": "lpc:head/heads/human/male_small",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/heads/human/male_small",
+    "source": "https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator",
+    "authors": [
+      "ElizaWy",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY"
+    ],
+    "attribution": "\"head/heads/human/male_small\" by ElizaWy, Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY.",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "heads_human_male_small"
+    ]
+  },
+  {
+    "id": "lpc:legs/armour/plate",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/legs/armour/plate",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman",
+      "Michael Whitlock (bigbeargames)",
+      "Matthew Krohn (makrohn)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"legs/armour/plate\" by bluecarrot16, JaidynReiman, Michael Whitlock (bigbeargames), Matthew Krohn (makrohn), Johannes Sjölund (wulax). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "legs_armour"
+    ]
+  },
+  {
+    "id": "lpc:legs/formal",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/legs/formal",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman",
+      "ElizaWy",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"legs/formal\" by bluecarrot16, JaidynReiman, ElizaWy, Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-2-characters https://opengameart.org/content/lpc-gentleman https://opengameart.org/content/lpc-expanded-pants",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "legs_formal"
+    ]
+  },
+  {
+    "id": "lpc:legs/formal/thin",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/legs/formal/thin",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman",
+      "ElizaWy",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"legs/formal/thin\" by bluecarrot16, JaidynReiman, ElizaWy, Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-2-characters https://opengameart.org/content/lpc-gentleman https://opengameart.org/content/lpc-expanded-pants",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "legs_formal"
+    ]
+  },
+  {
+    "id": "lpc:legs/hose/male",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/legs/hose/male",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing",
+    "authors": [
+      "JaidynReiman",
+      "ElizaWy",
+      "bluecarrot16",
+      "JaidynReiman",
+      "ElizaWy",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"legs/hose/male\" by JaidynReiman, ElizaWy, bluecarrot16, JaidynReiman, ElizaWy, Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0 / GPL 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-pants",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "legs_hose"
+    ]
+  },
+  {
+    "id": "lpc:legs/hose",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/legs/hose",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing",
+    "authors": [
+      "ElizaWy",
+      "JaidynReiman",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"legs/hose\" by ElizaWy, JaidynReiman, Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-pants",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "legs_hose"
+    ]
+  },
+  {
+    "id": "lpc:legs/pants/male",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/legs/pants/male",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman",
+      "ElizaWy",
+      "Matthew Krohn (makrohn)",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0",
+      "CC-BY-SA 3.0"
+    ],
+    "attribution": "\"legs/pants/male\" by bluecarrot16, JaidynReiman, ElizaWy, Matthew Krohn (makrohn), Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0 / GPL 3.0 / CC-BY-SA 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-expanded-pants",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "legs_pants"
+    ]
+  },
+  {
+    "id": "lpc:legs/pants/thin",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/legs/pants/thin",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman",
+      "ElizaWy",
+      "Joe White",
+      "Matthew Krohn (makrohn)",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0",
+      "CC-BY-SA 3.0"
+    ],
+    "attribution": "\"legs/pants/thin\" by bluecarrot16, JaidynReiman, ElizaWy, Joe White, Matthew Krohn (makrohn), Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0 / GPL 3.0 / CC-BY-SA 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-medieval-fantasy-character-sprites http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-expanded-pants",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "legs_pants"
+    ]
+  },
+  {
+    "id": "lpc:legs/pants2/male",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/legs/pants2/male",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing",
+    "authors": [
+      "JaidynReiman",
+      "ElizaWy",
+      "Bluecarrot16",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"legs/pants2/male\" by JaidynReiman, ElizaWy, Bluecarrot16, Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0 / GPL 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-pants",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "legs_pants2"
+    ]
+  },
+  {
+    "id": "lpc:legs/pants2",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/legs/pants2",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing",
+    "authors": [
+      "ElizaWy",
+      "JaidynReiman",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"legs/pants2\" by ElizaWy, JaidynReiman, Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-pants",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "legs_pants2"
+    ]
+  },
+  {
+    "id": "lpc:legs/shorts/shorts/male",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/legs/shorts/shorts/male",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing",
+    "authors": [
+      "JaidynReiman",
+      "ElizaWy",
+      "Bluecarrot16",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"legs/shorts/shorts/male\" by JaidynReiman, ElizaWy, Bluecarrot16, Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0 / GPL 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-pants",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "legs_shorts"
+    ]
+  },
+  {
+    "id": "lpc:legs/shorts/shorts",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/legs/shorts/shorts",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing",
+    "authors": [
+      "ElizaWy",
+      "JaidynReiman",
+      "Johannes Sjölund (wulax)",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"legs/shorts/shorts\" by ElizaWy, JaidynReiman, Johannes Sjölund (wulax), Stephen Challener (Redshrike). License: OGA-BY 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-pants",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "legs_shorts"
+    ]
+  },
+  {
+    "id": "lpc:legs/skirts/plain",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/legs/skirts/plain",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "bluecarrot16",
+      "Pierre Vigier (pvigier)",
+      "Johannes Sjölund (wulax)",
+      "Ahmad3366",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"legs/skirts/plain\" by bluecarrot16, Pierre Vigier (pvigier), Johannes Sjölund (wulax), Ahmad3366, JaidynReiman. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "legs_skirts_plain"
+    ]
+  },
+  {
+    "id": "lpc:neck/amulet/cross",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/neck/amulet/cross",
+    "source": "https://opengameart.org/content/lpc-jewelry",
+    "authors": [
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "CC0"
+    ],
+    "attribution": "\"neck/amulet/cross\" by bluecarrot16. License: CC0. https://opengameart.org/content/lpc-jewelry",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "neck_amulet_cross"
+    ]
+  },
+  {
+    "id": "lpc:neck/capeclip",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/neck/capeclip",
+    "source": "https://opengameart.org/content/lpc-curly-hair-elven-ears-white-cape-with-blue-trim-and-more",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"neck/capeclip\" by bluecarrot16, JaidynReiman. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-curly-hair-elven-ears-white-cape-with-blue-trim-and-more http://opengameart.org/content/lpc-clothing-updates",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "neck_capeclip"
+    ]
+  },
+  {
+    "id": "lpc:neck/necklace/chain",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/neck/necklace/chain",
+    "source": "https://opengameart.org/content/lpc-jewelry",
+    "authors": [
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "CC0"
+    ],
+    "attribution": "\"neck/necklace/chain\" by bluecarrot16. License: CC0. https://opengameart.org/content/lpc-jewelry",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "neck_necklace_chain"
+    ]
+  },
+  {
+    "id": "lpc:shoulders/mantal",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/shoulders/mantal",
+    "source": "https://opengameart.org/content/lpc-pirates",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"shoulders/mantal\" by bluecarrot16, JaidynReiman. License: OGA-BY 3.0 / GPL 3.0. https://opengameart.org/content/lpc-pirates",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "shoulders_mantal"
+    ]
+  },
+  {
+    "id": "lpc:shoulders/mantal/thin",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/shoulders/mantal/thin",
+    "source": "https://opengameart.org/content/lpc-pirates",
+    "authors": [
+      "bluecarrot16",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"shoulders/mantal/thin\" by bluecarrot16, JaidynReiman. License: OGA-BY 3.0 / GPL 3.0. https://opengameart.org/content/lpc-pirates",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "shoulders_mantal"
+    ]
+  },
+  {
+    "id": "lpc:torso/aprons/apron",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/aprons/apron",
+    "source": "https://opengameart.org/content/lpc-aprons",
+    "authors": [
+      "Nila122"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 2.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/aprons/apron\" by Nila122. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 2.0 / GPL 3.0. https://opengameart.org/content/lpc-aprons",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_aprons_apron"
+    ]
+  },
+  {
+    "id": "lpc:torso/chainmail",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/chainmail",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "Johannes Sjölund (wulax)",
+      "Napsio (Vitruvian Studio)",
+      "JaidynReiman"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/chainmail\" by Johannes Sjölund (wulax), Napsio (Vitruvian Studio), JaidynReiman. License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_chainmail"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/longsleeve/longsleeve/male",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/longsleeve/longsleeve/male",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "JaidynReiman",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/clothes/longsleeve/longsleeve/male\" by JaidynReiman, Johannes Sjölund (wulax). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_longsleeve"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/longsleeve/longsleeve/female",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/longsleeve/longsleeve/female",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/clothes/longsleeve/longsleeve/female\" by bluecarrot16, ElizaWy, JaidynReiman, Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-7-womens-shirts http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_longsleeve"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/longsleeve/longsleeve/teen",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/longsleeve/longsleeve/teen",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/clothes/longsleeve/longsleeve/teen\" by bluecarrot16, ElizaWy, JaidynReiman, Stephen Challener (Redshrike), Johannes Sjölund (wulax). License: OGA-BY 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-teen-unisex-base-clothes http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_longsleeve"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/longsleeve/longsleeve/pregnant",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/longsleeve/longsleeve/pregnant",
+    "source": "https://opengameart.org/content/lpc-7-womens-shirts",
+    "authors": [
+      "bluecarrot16",
+      "ElizaWy",
+      "Stephen Challener (Redshrike)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/clothes/longsleeve/longsleeve/pregnant\" by bluecarrot16, ElizaWy, Stephen Challener (Redshrike), Johannes Sjölund (wulax). License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-7-womens-shirts http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_longsleeve"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/longsleeve/longsleeve2",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/longsleeve/longsleeve2",
+    "source": "https://opengameart.org/content/lpc-revised-character-basics",
+    "authors": [
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"torso/clothes/longsleeve/longsleeve2\" by ElizaWy, JaidynReiman, Stephen Challener (Redshrike), Johannes Sjölund (wulax). License: OGA-BY 3.0. https://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_longsleeve2"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/longsleeve/longsleeve2_buttoned",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/longsleeve/longsleeve2_buttoned",
+    "source": "http://opengameart.org/content/lpc-revised-character-basics",
+    "authors": [
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"torso/clothes/longsleeve/longsleeve2_buttoned\" by ElizaWy, JaidynReiman, Stephen Challener (Redshrike), Johannes Sjölund (wulax). License: OGA-BY 3.0. http://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_longsleeve2_buttoned"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/longsleeve/longsleeve2_scoop",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/longsleeve/longsleeve2_scoop",
+    "source": "http://opengameart.org/content/lpc-revised-character-basics",
+    "authors": [
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"torso/clothes/longsleeve/longsleeve2_scoop\" by ElizaWy, JaidynReiman, Stephen Challener (Redshrike), Johannes Sjölund (wulax). License: OGA-BY 3.0. http://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_longsleeve2_scoop"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/longsleeve/longsleeve2_vneck",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/longsleeve/longsleeve2_vneck",
+    "source": "http://opengameart.org/content/lpc-revised-character-basics",
+    "authors": [
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"torso/clothes/longsleeve/longsleeve2_vneck\" by ElizaWy, JaidynReiman, Stephen Challener (Redshrike), Johannes Sjölund (wulax). License: OGA-BY 3.0. http://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_longsleeve2_vneck"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/longsleeve/scoop/female",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/longsleeve/scoop/female",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/clothes/longsleeve/scoop/female\" by bluecarrot16, ElizaWy, JaidynReiman, Stephen Challener (Redshrike). License: OGA-BY 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-pregnancy-bases-maternity-wear https://opengameart.org/content/lpc-7-womens-shirts http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_longsleeve_scoop"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/longsleeve/scoop/pregnant",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/longsleeve/scoop/pregnant",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "ElizaWy",
+      "Stephen Challener (Redshrike)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/clothes/longsleeve/scoop/pregnant\" by bluecarrot16, ElizaWy, Stephen Challener (Redshrike), Johannes Sjölund (wulax). License: OGA-BY 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-pregnancy-bases-maternity-wear https://opengameart.org/content/lpc-7-womens-shirts http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_longsleeve_scoop"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/longsleeve/scoop/male",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/longsleeve/scoop/male",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/clothes/longsleeve/scoop/male\" by bluecarrot16, ElizaWy, JaidynReiman, Stephen Challener (Redshrike). License: OGA-BY 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_longsleeve_scoop"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/longsleeve/scoop/teen",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/longsleeve/scoop/teen",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/clothes/longsleeve/scoop/teen\" by bluecarrot16, ElizaWy, JaidynReiman, Stephen Challener (Redshrike). License: OGA-BY 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_longsleeve_scoop"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/shortsleeve/shortsleeve/male",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/shortsleeve/shortsleeve/male",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/clothes/shortsleeve/shortsleeve/male\" by bluecarrot16, ElizaWy, JaidynReiman, Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles http://opengameart.org/content/lpc-revised-character-basics http://opengameart.org/content/lpc-clothing-updates https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_shortsleeve"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/shortsleeve/shortsleeve/female",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/shortsleeve/shortsleeve/female",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/clothes/shortsleeve/shortsleeve/female\" by bluecarrot16, ElizaWy, JaidynReiman, Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-7-womens-shirts http://opengameart.org/content/lpc-revised-character-basics http://opengameart.org/content/lpc-clothing-updates https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_shortsleeve"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/shortsleeve/shortsleeve/teen",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/shortsleeve/shortsleeve/teen",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "Nyom",
+      "bluecarrot16",
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/clothes/shortsleeve/shortsleeve/teen\" by Nyom, bluecarrot16, ElizaWy, JaidynReiman, Stephen Challener (Redshrike). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-7-womens-shirts http://opengameart.org/content/lpc-revised-character-basics http://opengameart.org/content/lpc-clothing-updates https://opengameart.org/content/lpc-teen-androgynous-short-sleeve-shirt https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_shortsleeve"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/shortsleeve/shortsleeve/pregnant",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/shortsleeve/shortsleeve/pregnant",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "bluecarrot16",
+      "ElizaWy",
+      "Stephen Challener (Redshrike)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/clothes/shortsleeve/shortsleeve/pregnant\" by bluecarrot16, ElizaWy, Stephen Challener (Redshrike), Johannes Sjölund (wulax). License: OGA-BY 3.0 / GPL 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles https://opengameart.org/content/lpc-pregnancy-bases-maternity-wear https://opengameart.org/content/lpc-revised-character-basics http://opengameart.org/content/lpc-clothing-updates",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_shortsleeve"
+    ]
+  },
+  {
+    "id": "lpc:torso/clothes/sleeveless/sleeveless2",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/clothes/sleeveless/sleeveless2",
+    "source": "http://opengameart.org/content/lpc-revised-character-basics",
+    "authors": [
+      "ElizaWy",
+      "JaidynReiman",
+      "Stephen Challener (Redshrike)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"torso/clothes/sleeveless/sleeveless2\" by ElizaWy, JaidynReiman, Stephen Challener (Redshrike), Johannes Sjölund (wulax). License: OGA-BY 3.0. http://opengameart.org/content/lpc-revised-character-basics https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing https://opengameart.org/content/lpc-expanded-sit-run-jump-more https://opengameart.org/content/lpc-expanded-simple-shirts",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_clothes_sleeveless2"
+    ]
+  },
+  {
+    "id": "lpc:torso/jacket/tabard",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/jacket/tabard",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "bluecarrot16",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/jacket/tabard\" by bluecarrot16, Johannes Sjölund (wulax). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites http://opengameart.org/content/lpc-clothing-updates",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_jacket_tabard"
+    ]
+  },
+  {
+    "id": "lpc:torso/jacket/tabard/female",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/torso/jacket/tabard/female",
+    "source": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+    "authors": [
+      "JaidynReiman",
+      "Matthew Krohn (makrohn)",
+      "Johannes Sjölund (wulax)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0"
+    ],
+    "attribution": "\"torso/jacket/tabard/female\" by JaidynReiman, Matthew Krohn (makrohn), Johannes Sjölund (wulax). License: OGA-BY 3.0 / CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-medieval-fantasy-character-sprites https://opengameart.org/content/lpc-combat-armor-for-women http://opengameart.org/content/lpc-clothing-updates",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "torso_jacket_tabard"
+    ]
+  },
+  {
+    "id": "lpc:head/faces",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/faces",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Head",
+    "authors": [
+      "JaidynReiman",
+      "ElizaWy",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"head/faces\" by JaidynReiman, ElizaWy, Stephen Challener (Redshrike). License: OGA-BY 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Head https://opengameart.org/content/ulpc-expanded-expressions",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "face_closed@elderly",
+      "face_closed@female",
+      "face_closed@male"
+    ]
+  },
+  {
+    "id": "lpc:head/faces/elderly/closed",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/faces/elderly/closed",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Head",
+    "authors": [
+      "JaidynReiman",
+      "ElizaWy",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"head/faces/elderly/closed\" by JaidynReiman, ElizaWy, Stephen Challener (Redshrike). License: OGA-BY 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Head https://opengameart.org/content/ulpc-expanded-expressions",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "face_closed@elderly",
+      "face_closed@female",
+      "face_closed@male"
+    ]
+  },
+  {
+    "id": "lpc:head/faces/female/closed",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/faces/female/closed",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Head",
+    "authors": [
+      "JaidynReiman",
+      "ElizaWy",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"head/faces/female/closed\" by JaidynReiman, ElizaWy, Stephen Challener (Redshrike). License: OGA-BY 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Head https://opengameart.org/content/ulpc-expanded-expressions",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "face_closed@elderly",
+      "face_closed@female",
+      "face_closed@male"
+    ]
+  },
+  {
+    "id": "lpc:head/faces/male/closed",
+    "pack": "Universal LPC Spritesheet Character Generator",
+    "files": "assets/vendor/lpc/lpc-generator/spritesheets/head/faces/male/closed",
+    "source": "https://github.com/ElizaWy/LPC/tree/main/Characters/Head",
+    "authors": [
+      "JaidynReiman",
+      "ElizaWy",
+      "Stephen Challener (Redshrike)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"head/faces/male/closed\" by JaidynReiman, ElizaWy, Stephen Challener (Redshrike). License: OGA-BY 3.0. https://github.com/ElizaWy/LPC/tree/main/Characters/Head https://opengameart.org/content/ulpc-expanded-expressions",
+    "modified": false,
+    "notes": "unmodified layer; palette-swapped at runtime (src/render/lpc/recolor.ts)",
+    "usedBy": [
+      "face_closed@elderly",
+      "face_closed@female",
+      "face_closed@male"
+    ]
+  },
+  {
+    "id": "lpc:child/face_closed",
+    "pack": "hearth-and-kin (derived from LPC)",
+    "files": "assets/generated/lpc/child/face_closed",
+    "source": "https://opengameart.org/content/",
+    "authors": [
+      "Stephen Challener (Redshrike)",
+      "kheftel",
+      "bluecarrot16",
+      "Hearth & Kin (pixel-edit script tools/lpc/gen-child-garments.ts)"
+    ],
+    "licenses": [
+      "CC-BY 3.0",
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"child/face_closed\" by Stephen Challener (Redshrike), kheftel, bluecarrot16, Hearth & Kin (pixel-edit script tools/lpc/gen-child-garments.ts). License: CC-BY 3.0 / OGA-BY 3.0. https://opengameart.org/content/ https://opengameart.org/content/lpc-child-standing-template https://opengameart.org/content/lpc-character-bases",
+    "modified": true,
+    "notes": "pixel-edited by tools/lpc/gen-child-garments.ts; see assets/SHARE_ALIKE.md",
+    "usedBy": [
+      "child_face_closed"
+    ]
+  },
+  {
+    "id": "world:epic-interiors",
+    "pack": "Epic RPG World - Village (interiors) V1.3 (free)",
+    "files": "assets/vendor/epic-rpg-world-free-interiors",
+    "source": "https://rafaelmatos.itch.io/epic-rpg-world-free-house-interiors",
+    "authors": [
+      "Rafael Matos"
+    ],
+    "licenses": [
+      "RafaelMatos asset licence (use in games, modification allowed; no redistribution/resale incl. modified; no AI training)"
+    ],
+    "attribution": "Epic RPG World by Rafael Matos (rafaelmatos.itch.io)",
+    "modified": true,
+    "notes": "furniture/props/floors/window/door/candle used directly or composited by tools/world/build-world.ts into assets/generated/world (bed_double widened, hearth unlit/lit/pot, prep_counter, dining_table, washbasin, washtub, rug, candlestick lit, wall door/window). Derivatives must not be redistributed outside the game.",
+    "usedBy": [
+      "src/data/artpacks/epic.json"
+    ]
+  },
+  {
+    "id": "world:epic-village",
+    "pack": "Epic RPG World Collection - The Village",
+    "files": "assets/vendor/epic-rpg-world/RafaelMatos/ERW - The Village",
+    "source": "Unity Asset Store (RafaelMatos) / https://rafaelmatos.itch.io",
+    "authors": [
+      "Rafael Matos"
+    ],
+    "licenses": [
+      "Unity Asset Store EULA + RafaelMatos terms (no redistribution incl. modified)"
+    ],
+    "attribution": "Epic RPG World by Rafael Matos",
+    "modified": true,
+    "notes": "walls1.png wall design 6 half-timber recomposed into 32px wall faces (assets/generated/world/wall_timber_*); doors-0_19 narrowed into the outhouse; barrels_2, washbasin1, potted-flower_13, bucket1, logs_10 used as-is",
+    "usedBy": [
+      "src/data/artpacks/epic.json"
+    ]
+  },
+  {
+    "id": "world:epic-grassland2",
+    "pack": "Epic RPG World Collection - Grassland 2.0",
+    "files": "assets/vendor/epic-rpg-world/RafaelMatos/ERW-Grassland 2.0",
+    "source": "Unity Asset Store (RafaelMatos)",
+    "authors": [
+      "Rafael Matos"
+    ],
+    "licenses": [
+      "Unity Asset Store EULA + RafaelMatos terms (no redistribution incl. modified)"
+    ],
+    "attribution": "Epic RPG World by Rafael Matos",
+    "modified": true,
+    "notes": "base grass / dirt1 to grass tiles (as-is), waterwell, wood log 21, trunk 4 (+axe = chopping_block), cauldron1 (hearth pot)",
+    "usedBy": [
+      "src/data/artpacks/epic.json"
+    ]
+  },
+  {
+    "id": "world:szadi-fireplace-flames",
+    "pack": "Szadi - Fantasy Lands Houses v1.0",
+    "files": "assets/vendor/szadi-fantasy-lands-houses/_PNG/Interriors/Anim/FL_Houses_fireplaceA.png",
+    "source": "purchased (see assets/README.md)",
+    "authors": [
+      "Szadi art."
+    ],
+    "licenses": [
+      "Szadi licence: commercial use, modification allowed, no resale"
+    ],
+    "attribution": "Fantasy Lands Houses by Szadi art.",
+    "modified": true,
+    "notes": "only the flame pixels of the 8 fireplace frames, clipped into the Epic fireplace opening (hearth_lit*)",
+    "usedBy": [
+      "src/data/artpacks/epic.json"
+    ]
+  },
+  {
+    "id": "world:lpc-spinning-wheel",
+    "pack": "LPC Revised (Objects/Furniture/Sewing & Weaving)",
+    "files": "assets/vendor/lpc/lpc-revised/Objects/Furniture/Sewing & Weaving/Spinning Wheel.png",
+    "source": "https://opengameart.org/content/lpc-tailor",
+    "authors": [
+      "bluecarrot16",
+      "Eliza Wyatt (DeathsDarling)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"Spinning Wheel\" by BlueCarrot16, edited by Eliza Wyatt. License: OGA-BY 3.0. https://opengameart.org/content/lpc-tailor",
+    "modified": true,
+    "notes": "wood recoloured to the Epic RPG World wood ramp, composited with an Epic stool (assets/generated/world/spinning_wheel*.png)",
+    "usedBy": [
+      "spinning_wheel"
+    ]
+  },
+  {
+    "id": "world:lpc-tavern-lute",
+    "pack": "[LPC] Tavern",
+    "files": "assets/vendor/lpc/oga/lpc-tavern/lpc-tavern/lute.png",
+    "source": "https://opengameart.org/content/lpc-tavern",
+    "authors": [
+      "bluecarrot16",
+      "Lanea Zimmerman (Sharm)",
+      "William.Thompsonj",
+      "Jetrel",
+      "DCSS Contributors",
+      "Reemax",
+      "Hyptosis",
+      "Daniel Eddeland (Daneeklu)",
+      "BenCreating",
+      "Evert",
+      "tapatilorenzo"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0"
+    ],
+    "attribution": "\"[LPC] Tavern\" by bluecarrot16, Lanea Zimmerman (Sharm), William.Thompsonj, Jetrel, DCSS Contributors, Reemax, Hyptosis, Daniel Eddeland (Daneeklu), BenCreating, Evert, tapatilorenzo. License: CC-BY-SA 3.0. https://opengameart.org/content/lpc-tavern",
+    "modified": true,
+    "notes": "one lute frame rotated upright, recoloured to Epic wood ramp, wall peg added -> assets/generated/world/lute.png (share-alike, see SHARE_ALIKE.md)",
+    "usedBy": [
+      "lute"
+    ]
+  },
+  {
+    "id": "ui:raven-fantasy-icons",
+    "pack": "Raven Fantasy Icons Premium (+ Crops and Food 2, Pets and Animals, Symbols and Runes)",
+    "files": "assets/vendor/raven-fantasy-icons (원본, 커밋 안 함) → assets/generated/ui/ui-atlas.png (빌드 산출물, gitignore)",
+    "source": "https://clockworkraven.itch.io/",
+    "authors": [
+      "Clockwork Raven Studios"
+    ],
+    "licenses": [
+      "구매 라이선스: 상업 사용 가능, 표기 선택, 재배포 금지"
+    ],
+    "attribution": "Icons: Raven Fantasy Icons by Clockwork Raven Studios",
+    "modified": false,
+    "notes": "칸을 픽셀 그대로 복사 (tools/build-ui-atlas.py). 선별 기록 assets/curation.md",
+    "usedBy": [
+      "src/data/ui/atlas.json 아이콘 (need.*, emo.*, item.*, topic.*, fx.*)"
+    ]
+  },
+  {
+    "id": "ui:raven-gui-starter",
+    "pack": "Raven Fantasy GUI Starter Set",
+    "files": "assets/vendor/raven-gui-starter (원본, 커밋 안 함)",
+    "source": "https://clockworkraven.itch.io/raven-fantasy-pixelart-menu-gui-hud-and-ui-kit-starter-set",
+    "authors": [
+      "Clockwork Raven Studios"
+    ],
+    "licenses": [
+      "구매 라이선스: 상업 사용 가능, 표기 선택, 재배포 금지"
+    ],
+    "attribution": "GUI: Raven Fantasy GUI Starter Set by Clockwork Raven Studios",
+    "modified": false,
+    "notes": "패널/막대/버튼/시계 조각 (tools/build-ui-atlas.py PIECES)",
+    "usedBy": [
+      "src/data/ui/atlas.json 조각 (panel.*, bar.*, button.*, clock.*, slot.*)"
+    ]
+  },
+  {
+    "id": "ui:kenmi-cute-fantasy-ui",
+    "pack": "Cute Fantasy UI",
+    "files": "assets/vendor/kenmi-cute-fantasy-ui (원본, 커밋 안 함)",
+    "source": "https://kenmi-art.itch.io/",
+    "authors": [
+      "Kenmi"
+    ],
+    "licenses": [
+      "구매 라이선스: 상업/비상업 사용, 수정 가능, 재배포/재판매 금지 (read_me.txt)"
+    ],
+    "attribution": "UI: Cute Fantasy UI by Kenmi",
+    "modified": false,
+    "notes": "선택 표시, 말풍선, 초상화 판",
+    "usedBy": [
+      "ui.select.*",
+      "bubble.*",
+      "portrait.frame"
+    ]
+  },
+  {
+    "id": "ui:original-icons",
+    "pack": "가문 연대기 직접 그린 아이콘",
+    "files": "assets/original/ui/*.png (tools/icons/draw-originals.py)",
+    "source": "이 프로젝트",
+    "authors": [
+      "가문 연대기 개발"
+    ],
+    "licenses": [
+      "프로젝트 저작물"
+    ],
+    "attribution": "",
+    "modified": false,
+    "notes": "구매 팩에 없는 그림을 Raven 톤(외곽선 색)에 맞춰 점 단위로 그림: topic_weather(비구름)",
+    "usedBy": [
+      "topic.weather"
+    ]
+  },
+  {
+    "id": "world:epic-grassland-blacksmith",
+    "pack": "Epic RPG World Collection - Grass Land (old)",
+    "files": "assets/vendor/epic-rpg-world/RafaelMatos/ERW-Grass Land/Props/Atlas-Props-individual sprites",
+    "source": "Unity Asset Store (RafaelMatos)",
+    "authors": [
+      "Rafael Matos"
+    ],
+    "licenses": [
+      "Unity Asset Store EULA + RafaelMatos terms (no redistribution incl. modified)"
+    ],
+    "attribution": "Epic RPG World by Rafael Matos",
+    "modified": true,
+    "notes": "M4: blacksmith props_40 (cold forge), forge1-anim1_frame1..8 (fire) + forge chimney-smoke1_frame1..16 composited into forge / forge_active; blacksmith props_18 used only as the colour ramp for the anvil and the press screw (assets/generated/world/forge*.png, anvil.png, press.png)",
+    "usedBy": [
+      "forge",
+      "anvil",
+      "press"
+    ]
+  },
+  {
+    "id": "world:epic-grassland2-m4",
+    "pack": "Epic RPG World Collection - Grassland 2.0",
+    "files": "assets/vendor/epic-rpg-world/RafaelMatos/ERW-Grassland 2.0",
+    "source": "Unity Asset Store (RafaelMatos)",
+    "authors": [
+      "Rafael Matos"
+    ],
+    "licenses": [
+      "Unity Asset Store EULA + RafaelMatos terms (no redistribution incl. modified)"
+    ],
+    "attribution": "Epic RPG World by Rafael Matos",
+    "modified": true,
+    "notes": "M4: crops update (Props/Static props/sheet4-sprites crops-* stages 1-5: wheat, green bean, radish, red cabbage, garlic, tomato, blueberry, artichoke, grape) as-is or recoloured into assets/generated/world/crops.png (crop_<id>_<0-4>, 13 crops) and orchard_grapes_*; grass tufts 3/7/12 → crop_weeds; plowed soil and watered.png + dirt1 to grass (- transparency).png → field_plot_*/garden_plot_*; campfire 5/6 + Animated props/campfire smoke.png → smokehouse*; tree - color scheme 2 - 2 used only as the green ramp for the LPC fruit trees. Mapping table: assets/curation.md",
+    "usedBy": [
+      "crop_*",
+      "field_plot",
+      "garden_plot",
+      "orchard_tree",
+      "smokehouse"
+    ]
+  },
+  {
+    "id": "world:epic-interiors-m4",
+    "pack": "Epic RPG World - Village (interiors) V1.3 (free)",
+    "files": "assets/vendor/epic-rpg-world-free-interiors",
+    "source": "https://rafaelmatos.itch.io/epic-rpg-world-free-house-interiors",
+    "authors": [
+      "Rafael Matos"
+    ],
+    "licenses": [
+      "RafaelMatos asset licence (use in games, modification allowed; no redistribution/resale incl. modified; no AI training)"
+    ],
+    "attribution": "Epic RPG World by Rafael Matos (rafaelmatos.itch.io)",
+    "modified": true,
+    "notes": "M4: fireplace_0 → oven (embers → ash when cold, ember flicker when working); kitchen_props6_3 meat rack, iron recoloured to wood → smokehouse",
+    "usedBy": [
+      "oven",
+      "smokehouse"
+    ]
+  },
+  {
+    "id": "world:epic-village-m4",
+    "pack": "Epic RPG World Collection - The Village",
+    "files": "assets/vendor/epic-rpg-world/RafaelMatos/ERW - The Village/tilesets and props/props-sprites",
+    "source": "Unity Asset Store (RafaelMatos) / https://rafaelmatos.itch.io",
+    "authors": [
+      "Rafael Matos"
+    ],
+    "licenses": [
+      "Unity Asset Store EULA + RafaelMatos terms (no redistribution incl. modified)"
+    ],
+    "attribution": "Epic RPG World by Rafael Matos",
+    "modified": true,
+    "notes": "M4: grain-crate_2 as-is (salting_tub); barrels_3 water → ale (brew_vat); barrels_1 narrowed + lid/dasher (churn); barrels_0 cut to a low vat of mash under a drawn timber frame (press)",
+    "usedBy": [
+      "salting_tub",
+      "brew_vat",
+      "churn",
+      "press"
+    ]
+  },
+  {
+    "id": "world:lpc-rev-loom",
+    "pack": "LPC Revised (Objects/Furniture/Sewing & Weaving/Loom.png)",
+    "files": "assets/vendor/lpc/lpc-revised/Objects/Furniture/Sewing & Weaving/Loom.png",
+    "source": "https://opengameart.org/content/lpc-tailor",
+    "authors": [
+      "bluecarrot16",
+      "Eliza Wyatt (DeathsDarling)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"Loom\" by BlueCarrot16, edited by Eliza Wyatt. License: OGA-BY 3.0. https://opengameart.org/content/lpc-tailor",
+    "modified": true,
+    "notes": "loom frame wood recoloured to the Epic wood ramp; its own cream cloth overlays (4 sizes) = loom (half woven) / loom_active (cloth growing)",
+    "usedBy": [
+      "loom"
+    ]
+  },
+  {
+    "id": "world:lpc-rev-anvil",
+    "pack": "LPC Revised (Objects/Furniture/Smithing/Anvils.png)",
+    "files": "assets/vendor/lpc/lpc-revised/Objects/Furniture/Smithing/Anvils.png",
+    "source": "https://opengameart.org/content/lpc-blacksmith",
+    "authors": [
+      "bluecarrot16",
+      "Eliza Wyatt (DeathsDarling)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"Anvil\" by BlueCarrot16, recoloured by Eliza Wyatt. License: OGA-BY 3.0. https://opengameart.org/content/lpc-blacksmith",
+    "modified": true,
+    "notes": "smallest anvil (0,0,36,32), soft shadow dropped, iron recoloured to the Epic anvil ramp (the Epic anvil is 51 px wide, too big for one cell)",
+    "usedBy": [
+      "anvil"
+    ]
+  },
+  {
+    "id": "world:lpc-rev-carpentry-workbench",
+    "pack": "LPC Revised (Objects/Furniture/Workbench, Carpentry.png)",
+    "files": "assets/vendor/lpc/lpc-revised/Objects/Furniture/Workbench, Carpentry.png",
+    "source": "https://opengameart.org/content/lpc-woodshop",
+    "authors": [
+      "bluecarrot16",
+      "Eliza Wyatt (DeathsDarling)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"Workbench, Carpentry\" by BlueCarrot16, recoloured by Eliza Wyatt. License: OGA-BY 3.0. https://opengameart.org/content/lpc-woodshop",
+    "modified": true,
+    "notes": "front-view bench, 20 columns of the plank run removed so it fits 2 cells, wood → Epic wood ramp",
+    "usedBy": [
+      "workbench"
+    ]
+  },
+  {
+    "id": "world:lpc-fruit-trees",
+    "pack": "[LPC] Fruit Trees",
+    "files": "assets/vendor/lpc/oga/lpc-fruit-trees/lpc-fruit-trees/fruit-trees.png",
+    "source": "https://opengameart.org/content/lpc-fruit-trees",
+    "authors": [
+      "bluecarrot16",
+      "Joshua Taylor",
+      "cynicmusic"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0"
+    ],
+    "attribution": "\"[LPC] Fruit Trees\" by bluecarrot16, Joshua Taylor, and cynicmusic. Commissioned by castelonia. License: CC-BY-SA 3.0 / GPL 3.0. https://opengameart.org/content/lpc-fruit-trees Based on \"Fruit and Veggie Inventory\" by Joshua Taylor (CC-BY-SA 3.0, https://opengameart.org/content/fruit-and-veggie-inventory) and \"Pixelsphere 32x32 Tileset + Grass + Trees\" by cynicmusic (CC0).",
+    "modified": true,
+    "notes": "apple (leaves 0,0 / fruit 0,2048) and pear (leaves 384,0 / fruit 288,2432) trees: greens → Epic tree green ramp, trunk → Epic wood ramp; blossom stage = fruit pixels recoloured pale pink-white -> assets/generated/world/orchard_{apples,pears}_{0,1,2}.png (share-alike, see SHARE_ALIKE.md)",
+    "usedBy": [
+      "orchard_tree"
+    ]
+  },
+  {
+    "id": "world:catalog-epic",
+    "pack": "Epic RPG World - Village (interiors) V1.3 / The Village / Grassland 2.0 / Grass Land",
+    "files": "assets/vendor/epic-rpg-world-free-interiors, assets/vendor/epic-rpg-world/RafaelMatos/{ERW - The Village, ERW-Grassland 2.0, ERW-Grass Land}",
+    "source": "itch.io / Unity Asset Store (RafaelMatos)",
+    "authors": [
+      "Rafael Matos"
+    ],
+    "licenses": [
+      "RafaelMatos asset licence / Unity Asset Store EULA (no redistribution incl. modified)"
+    ],
+    "attribution": "Epic RPG World by Rafael Matos",
+    "modified": true,
+    "notes": "M5 구매 카탈로그 (tools/world/build-catalog.ts): furniture_and_props_sprites, props-sprites, Decorations_sprites(lamp, flowers_plants, porch-stairs-carpet), Grassland 2.0 sheet1/sheet2/items-flowers-mushrooms 와 Platform-grass to water(연못), Grass Land old 소품을 그대로 또는 좁히기/넓히기(침대), 나무 4톤·천 8색 팔레트 교체 → assets/generated/world/catalog_atlas_*.png",
+    "usedBy": [
+      "catalog (bedroom kitchen dining living hygiene work decor light kids animal outdoor religion)"
+    ]
+  },
+  {
+    "id": "world:catalog-epic-sea",
+    "pack": "Epic RPG World Collection - Sea Adventures (GL2 expansion)",
+    "files": "assets/vendor/epic-rpg-world/RafaelMatos/ERW-Sea Adventures-GL2 Expansion/props/atlas-props-sprites/little stalls_3.png",
+    "source": "Unity Asset Store (RafaelMatos)",
+    "authors": [
+      "Rafael Matos"
+    ],
+    "licenses": [
+      "Unity Asset Store EULA + RafaelMatos terms (no redistribution incl. modified)"
+    ],
+    "attribution": "Epic RPG World by Rafael Matos",
+    "modified": false,
+    "notes": "M5 구매 카탈로그 (tools/world/build-catalog.ts): 천막 좌판(little stalls_3) 그대로 → assets/generated/world/catalog_atlas_*.png",
+    "usedBy": [
+      "market_stall"
+    ]
+  },
+  {
+    "id": "world:catalog-lpc-revised",
+    "pack": "LPC Revised (Objects)",
+    "files": "assets/vendor/lpc/lpc-revised/Objects (Mirror Standing, Thrones, Chair Dining A, Table Ornate Wood, Table Workshop, Smithing/*, Sewing & Weaving/*, Sawhorse, Shavehorse, Trough, Rugs/*, Small Items/{Games, Baskets A, Hay & Straw, Tools Carpentry, Fabric/*}, Wall Items/Mirrors)",
+    "source": "https://github.com/ElizaWy/LPC (LPC Revised)",
+    "authors": [
+      "ElizaWy",
+      "bluecarrot16",
+      "and contributors listed in each Credits.txt"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "LPC Revised objects by ElizaWy, bluecarrot16 et al. (see assets/vendor/lpc/lpc-revised/Objects/**/Credits.txt). License: OGA-BY 3.0",
+    "modified": true,
+    "notes": "M5 구매 카탈로그 (tools/world/build-catalog.ts): 잘라내기, 일부 나무색을 Epic 나무 램프로 색 보정 → assets/generated/world/catalog_atlas_*.png",
+    "usedBy": [
+      "catalog"
+    ]
+  },
+  {
+    "id": "world:catalog-lpc-medieval-deco",
+    "pack": "[LPC] Medieval Village Decorations",
+    "files": "assets/vendor/lpc/oga/lpc-medieval-village-decorations/decoration_medieval/decorations-medieval.png",
+    "source": "https://opengameart.org/content/lpc-medieval-village-decorations",
+    "authors": [
+      "bluecarrot16",
+      "Lanea Zimmerman (Sharm)",
+      "Reemax (Tuomo Untinen)",
+      "Xenodora",
+      "Johann C",
+      "Johannes Sjölund",
+      "Casper Nilsson",
+      "Daniel Cook",
+      "Rayane Félix (RayaneFLX)",
+      "Wolthera van Hövell tot Westerflier",
+      "and others (CREDITS-decorations-medieval.txt)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0"
+    ],
+    "attribution": "\"[LPC] Medieval Village Decorations\" by bluecarrot16 et al. (see CREDITS-decorations-medieval.txt). License: CC-BY-SA 3.0. https://opengameart.org/content/lpc-medieval-village-decorations",
+    "modified": true,
+    "notes": "M5 구매 카탈로그 (tools/world/build-catalog.ts): 묘비, 석상, 성수반, 해시계, 간판, 등불, 횃불, 모닥불, 분수, 구유, 건초, 개집, 수레, 우물, 모루, 장작, 연장, 걸어 둔 천, 과녁 등 잘라내기 + 나무색 Epic 램프 보정 (share-alike: catalog_atlas_sa_*.png, SHARE_ALIKE.md) → assets/generated/world/catalog_atlas_*.png",
+    "usedBy": [
+      "catalog"
+    ]
+  },
+  {
+    "id": "world:catalog-lpc-tavern-deco",
+    "pack": "[LPC] Tavern",
+    "files": "assets/vendor/lpc/oga/lpc-tavern/lpc-tavern/tavern-deco.png",
+    "source": "https://opengameart.org/content/lpc-tavern",
+    "authors": [
+      "bluecarrot16",
+      "Lanea Zimmerman (Sharm)",
+      "William.Thompsonj",
+      "Jetrel",
+      "DCSS Contributors",
+      "Reemax",
+      "Hyptosis",
+      "Daniel Eddeland (Daneeklu)",
+      "BenCreating",
+      "Evert",
+      "tapatilorenzo"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0"
+    ],
+    "attribution": "\"[LPC] Tavern\" by bluecarrot16 et al. (see CREDITS-tavern.txt). License: CC-BY-SA 3.0. https://opengameart.org/content/lpc-tavern",
+    "modified": false,
+    "notes": "M5 구매 카탈로그 (tools/world/build-catalog.ts): 약초 다발, 마늘 타래, 장기판/말판, 북, 류트, 샹들리에, 제단 촛대, 박제, 가죽 깔개, 휘장, 문장 기 잘라내기 (share-alike: catalog_atlas_sa_*.png) → assets/generated/world/catalog_atlas_*.png",
+    "usedBy": [
+      "catalog"
+    ]
+  },
+  {
+    "id": "world:catalog-lpc-city-inside",
+    "pack": "[LPC] City inside",
+    "files": "assets/vendor/lpc/oga/lpc-city-inside/LPC_city_inside/city_inside.png",
+    "source": "https://opengameart.org/content/lpc-city-inside",
+    "authors": [
+      "Tuomo Untinen (Reemax)",
+      "Lanea Zimmerman (Sharm)",
+      "Daniel Armstrong (HughSpectrum)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0"
+    ],
+    "attribution": "\"[LPC] City inside\" by Tuomo Untinen, based on LPC base tiles by Lanea Zimmerman and Daniel Armstrong (see credits.txt). License: CC-BY-SA 3.0",
+    "modified": false,
+    "notes": "M5 구매 카탈로그 (tools/world/build-catalog.ts): 붉은 양탄자, 아이 침대, 쇠 화로, 독서대, 흉상 잘라내기 (share-alike) → assets/generated/world/catalog_atlas_*.png",
+    "usedBy": [
+      "catalog"
+    ]
+  },
+  {
+    "id": "world:catalog-lpc-house-interior",
+    "pack": "[LPC] House interior and decorations",
+    "files": "assets/vendor/lpc/oga/lpc-house-interior-and-decorations/LPC_house_interior/interior.png",
+    "source": "https://opengameart.org/content/lpc-house-interior-and-decorations",
+    "authors": [
+      "Tuomo Untinen (Reemax)",
+      "Lanea Zimmerman (Sharm)",
+      "Hyptosis",
+      "Daniel Eddeland",
+      "Manuel Riecke (MrBeast)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0"
+    ],
+    "attribution": "\"[LPC] House interior and decorations\" by Tuomo Untinen et al. (see credits.txt). License: CC-BY-SA 3.0",
+    "modified": false,
+    "notes": "M5 구매 카탈로그 (tools/world/build-catalog.ts): 작은 침대, 증류대 잘라내기 (share-alike) → assets/generated/world/catalog_atlas_*.png",
+    "usedBy": [
+      "bed_child",
+      "alchemy_table"
+    ]
+  },
+  {
+    "id": "world:catalog-lpc-castle",
+    "pack": "LPC: Interior Castle Tiles",
+    "files": "assets/vendor/lpc/oga/lpc-interior-castle-tiles/castle.png",
+    "source": "https://opengameart.org/content/lpc-interior-castle-tiles",
+    "authors": [
+      "Lanea Zimmerman (Sharm)"
+    ],
+    "licenses": [
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"LPC: Interior Castle Tiles\" by Lanea Zimmerman (Sharm). License: OGA-BY 3.0 (multi-licensed CC-BY/CC-BY-SA/GPL/OGA-BY)",
+    "modified": false,
+    "notes": "M5 구매 카탈로그 (tools/world/build-catalog.ts): 휘장 침대, 금빛 의자/긴 의자/발받침, 큰 쇠 촛대, 부지깽이, 초상, 타원 탁자, 은 촛대, 장미 병, 유리 화분 나무, 붉은 양탄자 잘라내기 → assets/generated/world/catalog_atlas_*.png",
+    "usedBy": [
+      "catalog"
+    ]
+  },
+  {
+    "id": "world:catalog-lpc-farm",
+    "pack": "[LPC] Farm",
+    "files": "assets/vendor/lpc/oga/lpc-farm/lpc-farm/barn.png",
+    "source": "http://opengameart.org/content/lpc-farm",
+    "authors": [
+      "bluecarrot16",
+      "Wolthera van Hövell tot Westerflier (TheraHedwig)",
+      "Ivan Voirol"
+    ],
+    "licenses": [
+      "CC-BY 4.0"
+    ],
+    "attribution": "\"[LPC] Farm\" by bluecarrot16, Wolthera van Hövell tot Westerflier (TheraHedwig), and Ivan Voirol. License: CC-BY 4.0. http://opengameart.org/content/lpc-farm",
+    "modified": true,
+    "notes": "M5 구매 카탈로그 (tools/world/build-catalog.ts): 짚 벌통, 벌통 선반, 나무 벌집, 말뚝, 버터 교반기 잘라내기 (교반기 나무색 Epic 램프 보정) → assets/generated/world/catalog_atlas_*.png",
+    "usedBy": [
+      "beehive_skep",
+      "skep_shelf",
+      "bee_tower",
+      "hitching_post",
+      "butter_churn"
+    ]
+  }
+]

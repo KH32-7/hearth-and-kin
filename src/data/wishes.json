@@ -1,0 +1,2948 @@
+{
+  "$comment": "GDD 12-5 소원/걱정 (계약 4절). when: traitsAny/estates/stages/emotionsAny/minHour 는 계약, maxHour/seasons/virtuesAny(덕·죄 id)/likesAny(likes.json 항목 id)/aspirationsAny 는 확장(엔진이 모르면 무시해도 소원이 넓게 뜰 뿐). 이벤트 문법: done:/tag:/need_high:/moodlet:/emotion:/social:/stock_low:/event:",
+  "wishes": [
+    {
+      "id": "wish_bake_bread",
+      "kind": "wish",
+      "textKey": "wish.wish_bake_bread",
+      "icon": "bread",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "gourmet",
+          "diligent"
+        ]
+      },
+      "fulfill": {
+        "event": "done:counter.bake_bread"
+      },
+      "points": 30,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_bake_for_family",
+      "kind": "wish",
+      "textKey": "wish.wish_bake_for_family",
+      "icon": "bread",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "family_oriented",
+          "kind"
+        ],
+        "stages": [
+          "adult",
+          "elder"
+        ]
+      },
+      "fulfill": {
+        "event": "done:counter.bake_bread"
+      },
+      "points": 30,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_cook_stew",
+      "kind": "wish",
+      "textKey": "wish.wish_cook_stew",
+      "icon": "stew",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "gourmet",
+          "family_oriented"
+        ],
+        "stages": [
+          "teen",
+          "adult",
+          "elder"
+        ]
+      },
+      "fulfill": {
+        "event": "done:hearth.cook_stew"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_eat_hot_meal",
+      "kind": "wish",
+      "textKey": "wish.wish_eat_hot_meal",
+      "icon": "stew",
+      "weight": 1,
+      "when": {},
+      "fulfill": {
+        "event": "done:table.eat_stew"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_snack_bread",
+      "kind": "wish",
+      "textKey": "wish.wish_snack_bread",
+      "icon": "item.bread",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child",
+          "teen"
+        ]
+      },
+      "fulfill": {
+        "event": "done:cupboard.snack_bread"
+      },
+      "points": 10,
+      "expire": {
+        "value": 360,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_light_fire",
+      "kind": "wish",
+      "textKey": "wish.wish_light_fire",
+      "icon": "fire",
+      "weight": 1,
+      "when": {
+        "seasons": [
+          "autumn",
+          "winter"
+        ]
+      },
+      "fulfill": {
+        "event": "done:hearth.light_fire"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_warm_by_fire",
+      "kind": "wish",
+      "textKey": "wish.wish_warm_by_fire",
+      "icon": "warmth",
+      "weight": 1,
+      "when": {
+        "seasons": [
+          "winter"
+        ]
+      },
+      "fulfill": {
+        "event": "done:hearth.warm_up"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_bathe",
+      "kind": "wish",
+      "textKey": "wish.wish_bathe",
+      "icon": "bath",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "neat"
+        ]
+      },
+      "fulfill": {
+        "event": "done:washtub.bathe"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_wash_face",
+      "kind": "wish",
+      "textKey": "wish.wish_wash_face",
+      "icon": "hygiene",
+      "weight": 1,
+      "when": {
+        "minHour": 5,
+        "maxHour": 10
+      },
+      "fulfill": {
+        "event": "done:washbasin.wash_face"
+      },
+      "points": 10,
+      "expire": {
+        "value": 240,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_wash_hands",
+      "kind": "wish",
+      "textKey": "wish.wish_wash_hands",
+      "icon": "water",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child"
+        ]
+      },
+      "fulfill": {
+        "event": "done:barrel.wash_hands"
+      },
+      "points": 10,
+      "expire": {
+        "value": 360,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_change_clothes",
+      "kind": "wish",
+      "textKey": "wish.wish_change_clothes",
+      "icon": "clothes",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "neat",
+          "flirt"
+        ]
+      },
+      "fulfill": {
+        "event": "done:clothes.change"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_nap",
+      "kind": "wish",
+      "textKey": "wish.wish_nap",
+      "icon": "sleep",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "lazy"
+        ],
+        "minHour": 11,
+        "maxHour": 16
+      },
+      "fulfill": {
+        "event": "done:bed.nap"
+      },
+      "points": 20,
+      "expire": {
+        "value": 360,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_lounge",
+      "kind": "wish",
+      "textKey": "wish.wish_lounge",
+      "icon": "sleep",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "lazy"
+        ],
+        "virtuesAny": [
+          "sloth"
+        ]
+      },
+      "fulfill": {
+        "event": "done:bed.lounge"
+      },
+      "points": 20,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_read_book",
+      "kind": "wish",
+      "textKey": "wish.wish_read_book",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "bookworm"
+        ]
+      },
+      "fulfill": {
+        "event": "done:bookshelf.read"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_study",
+      "kind": "wish",
+      "textKey": "wish.wish_study",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "bookworm",
+          "ambitious"
+        ],
+        "stages": [
+          "child",
+          "teen",
+          "adult"
+        ]
+      },
+      "fulfill": {
+        "event": "done:bookshelf.study"
+      },
+      "points": 30,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_study_latin",
+      "kind": "wish",
+      "textKey": "wish.wish_study_latin",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "clergy"
+        ]
+      },
+      "fulfill": {
+        "event": "done:bookshelf.study"
+      },
+      "points": 30,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_play_lute",
+      "kind": "wish",
+      "textKey": "wish.wish_play_lute",
+      "icon": "lute",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "creative",
+          "romantic"
+        ],
+        "likesAny": [
+          "music_lute"
+        ]
+      },
+      "fulfill": {
+        "event": "done:lute.play"
+      },
+      "points": 30,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_admire_tapestry",
+      "kind": "wish",
+      "textKey": "wish.wish_admire_tapestry",
+      "icon": "yarn",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "creative"
+        ]
+      },
+      "fulfill": {
+        "event": "done:tapestry.admire"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_tend_plants",
+      "kind": "wish",
+      "textKey": "wish.wish_tend_plants",
+      "icon": "plant",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "nature_lover"
+        ]
+      },
+      "fulfill": {
+        "event": "done:plant.tend"
+      },
+      "points": 20,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_spin_yarn",
+      "kind": "wish",
+      "textKey": "wish.wish_spin_yarn",
+      "icon": "yarn",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "diligent"
+        ],
+        "virtuesAny": [
+          "diligence"
+        ]
+      },
+      "fulfill": {
+        "event": "done:wheel.spin"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_chop_wood",
+      "kind": "wish",
+      "textKey": "wish.wish_chop_wood",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "active",
+          "diligent"
+        ],
+        "stages": [
+          "teen",
+          "adult"
+        ]
+      },
+      "fulfill": {
+        "event": "done:block.chop_wood"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_draw_water",
+      "kind": "wish",
+      "textKey": "wish.wish_draw_water",
+      "icon": "water",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "diligent"
+        ],
+        "stages": [
+          "child",
+          "teen",
+          "adult"
+        ]
+      },
+      "fulfill": {
+        "event": "done:well.draw_water"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_light_candle",
+      "kind": "wish",
+      "textKey": "wish.wish_light_candle",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "coward"
+        ],
+        "minHour": 18
+      },
+      "fulfill": {
+        "event": "done:candle.light"
+      },
+      "points": 15,
+      "expire": {
+        "value": 360,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_snuff_candle",
+      "kind": "wish",
+      "textKey": "wish.wish_snuff_candle",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "virtuesAny": [
+          "greed",
+          "temperance"
+        ],
+        "minHour": 20
+      },
+      "fulfill": {
+        "event": "done:candle.snuff"
+      },
+      "points": 10,
+      "expire": {
+        "value": 360,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_chat_window",
+      "kind": "wish",
+      "textKey": "wish.wish_chat_window",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "sociable",
+          "gossip"
+        ]
+      },
+      "fulfill": {
+        "event": "done:window.chat"
+      },
+      "points": 20,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_gaze_window",
+      "kind": "wish",
+      "textKey": "wish.wish_gaze_window",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "melancholic",
+          "romantic",
+          "introvert"
+        ]
+      },
+      "fulfill": {
+        "event": "done:window.gaze"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_stretch",
+      "kind": "wish",
+      "textKey": "wish.wish_stretch",
+      "icon": "comfort",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "active"
+        ]
+      },
+      "fulfill": {
+        "event": "done:rug.stretch"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_tidy_woodpile",
+      "kind": "wish",
+      "textKey": "wish.wish_tidy_woodpile",
+      "icon": "logs",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "neat"
+        ]
+      },
+      "fulfill": {
+        "event": "done:woodpile.tidy"
+      },
+      "points": 20,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_go_market",
+      "kind": "wish",
+      "textKey": "wish.wish_go_market",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "merchant",
+          "freeman",
+          "artisan"
+        ]
+      },
+      "fulfill": {
+        "event": "done:lot_exit.market"
+      },
+      "points": 25,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_sweep_floor",
+      "kind": "wish",
+      "textKey": "wish.wish_sweep_floor",
+      "icon": "hygiene",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "neat"
+        ]
+      },
+      "fulfill": {
+        "event": "done:floor.sweep"
+      },
+      "points": 20,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_wipe_table",
+      "kind": "wish",
+      "textKey": "wish.wish_wipe_table",
+      "icon": "hygiene",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "neat",
+          "diligent"
+        ]
+      },
+      "fulfill": {
+        "event": "done:table.wipe"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_drink_ale",
+      "kind": "wish",
+      "textKey": "wish.wish_drink_ale",
+      "icon": "water",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "drinker"
+        ],
+        "stages": [
+          "adult",
+          "elder"
+        ]
+      },
+      "fulfill": {
+        "event": "done:cupboard.drink_ale"
+      },
+      "points": 20,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_take_walk",
+      "kind": "wish",
+      "textKey": "wish.wish_take_walk",
+      "icon": "goto",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "active",
+          "nature_lover"
+        ]
+      },
+      "fulfill": {
+        "event": "done:yard.walk"
+      },
+      "points": 20,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_pick_herbs",
+      "kind": "wish",
+      "textKey": "wish.wish_pick_herbs",
+      "icon": "plant",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "nature_lover"
+        ],
+        "aspirationsAny": [
+          "healer"
+        ]
+      },
+      "fulfill": {
+        "event": "done:yard.pick_herbs"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_mend_chair",
+      "kind": "wish",
+      "textKey": "wish.wish_mend_chair",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "handy"
+        ]
+      },
+      "fulfill": {
+        "event": "done:chair.mend"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_whittle",
+      "kind": "wish",
+      "textKey": "wish.wish_whittle",
+      "icon": "logs",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "creative",
+          "handy"
+        ]
+      },
+      "fulfill": {
+        "event": "done:table.whittle"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_pray",
+      "kind": "wish",
+      "textKey": "wish.wish_pray",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "emotionsAny": [
+          "pious",
+          "sad",
+          "tense"
+        ]
+      },
+      "fulfill": {
+        "event": "done:bench.pray"
+      },
+      "points": 20,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_pray_for_dead",
+      "kind": "wish",
+      "textKey": "wish.wish_pray_for_dead",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "emotionsAny": [
+          "sad"
+        ],
+        "stages": [
+          "teen",
+          "adult",
+          "elder"
+        ]
+      },
+      "fulfill": {
+        "event": "done:bench.pray"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_count_coins",
+      "kind": "wish",
+      "textKey": "wish.wish_count_coins",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "ambitious"
+        ],
+        "virtuesAny": [
+          "greed"
+        ]
+      },
+      "fulfill": {
+        "event": "done:stock.count"
+      },
+      "points": 20,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_empty_chamber_pot",
+      "kind": "wish",
+      "textKey": "wish.wish_empty_chamber_pot",
+      "icon": "bladder",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "neat"
+        ]
+      },
+      "fulfill": {
+        "event": "done:chamber_pot.empty"
+      },
+      "points": 10,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_sit_rest",
+      "kind": "wish",
+      "textKey": "wish.wish_sit_rest",
+      "icon": "comfort",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "elder"
+        ]
+      },
+      "fulfill": {
+        "event": "done:seat.sit"
+      },
+      "points": 10,
+      "expire": {
+        "value": 240,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_chat",
+      "kind": "wish",
+      "textKey": "wish.wish_chat",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "sociable",
+          "gossip"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.chat"
+      },
+      "points": 20,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_deep_talk",
+      "kind": "wish",
+      "textKey": "wish.wish_deep_talk",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "romantic",
+          "kind",
+          "family_oriented"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.deep_talk"
+      },
+      "points": 30,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_tell_joke",
+      "kind": "wish",
+      "textKey": "wish.wish_tell_joke",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "cheerful",
+          "sociable"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.joke"
+      },
+      "points": 20,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_comfort_someone",
+      "kind": "wish",
+      "textKey": "wish.wish_comfort_someone",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "kind"
+        ],
+        "virtuesAny": [
+          "kindness"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.comfort"
+      },
+      "points": 30,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_hug",
+      "kind": "wish",
+      "textKey": "wish.wish_hug",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "family_oriented",
+          "kind"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.hug"
+      },
+      "points": 20,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_hug_parent",
+      "kind": "wish",
+      "textKey": "wish.wish_hug_parent",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.hug"
+      },
+      "points": 15,
+      "expire": {
+        "value": 360,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_tease",
+      "kind": "wish",
+      "textKey": "wish.wish_tease",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "mean"
+        ],
+        "virtuesAny": [
+          "envy"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.tease"
+      },
+      "points": 20,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_gossip",
+      "kind": "wish",
+      "textKey": "wish.wish_gossip",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "gossip"
+        ],
+        "virtuesAny": [
+          "envy"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.gossip"
+      },
+      "points": 20,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_argue",
+      "kind": "wish",
+      "textKey": "wish.wish_argue",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "hot_tempered"
+        ],
+        "virtuesAny": [
+          "wrath"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.argue"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_flirt",
+      "kind": "wish",
+      "textKey": "wish.wish_flirt",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "flirt",
+          "romantic"
+        ],
+        "stages": [
+          "teen",
+          "adult"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.flirt"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_brag",
+      "kind": "wish",
+      "textKey": "wish.wish_brag",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "ambitious"
+        ],
+        "virtuesAny": [
+          "pride"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.brag"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_apologize",
+      "kind": "wish",
+      "textKey": "wish.wish_apologize",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "emotionsAny": [
+          "ashamed",
+          "sad"
+        ],
+        "virtuesAny": [
+          "patience",
+          "humility"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.apologize"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_joke_with_friend",
+      "kind": "wish",
+      "textKey": "wish.wish_joke_with_friend",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.joke"
+      },
+      "points": 15,
+      "expire": {
+        "value": 360,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_clean_house",
+      "kind": "wish",
+      "textKey": "wish.wish_clean_house",
+      "icon": "hygiene",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "neat"
+        ]
+      },
+      "fulfill": {
+        "event": "tag:clean"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_do_charity",
+      "kind": "wish",
+      "textKey": "wish.wish_do_charity",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "kind",
+          "just"
+        ],
+        "virtuesAny": [
+          "charity"
+        ]
+      },
+      "fulfill": {
+        "event": "tag:charity"
+      },
+      "points": 35,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_make_something",
+      "kind": "wish",
+      "textKey": "wish.wish_make_something",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "handy"
+        ]
+      },
+      "fulfill": {
+        "event": "tag:craft"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_be_creative",
+      "kind": "wish",
+      "textKey": "wish.wish_be_creative",
+      "icon": "yarn",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "creative"
+        ]
+      },
+      "fulfill": {
+        "event": "tag:creative"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_exercise",
+      "kind": "wish",
+      "textKey": "wish.wish_exercise",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "active"
+        ]
+      },
+      "fulfill": {
+        "event": "tag:exercise"
+      },
+      "points": 20,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_feast",
+      "kind": "wish",
+      "textKey": "wish.wish_feast",
+      "icon": "stew",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "gourmet",
+          "drinker"
+        ],
+        "virtuesAny": [
+          "gluttony"
+        ]
+      },
+      "fulfill": {
+        "event": "tag:feast"
+      },
+      "points": 30,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_keep_fast",
+      "kind": "wish",
+      "textKey": "wish.wish_keep_fast",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "virtuesAny": [
+          "temperance"
+        ],
+        "emotionsAny": [
+          "pious"
+        ]
+      },
+      "fulfill": {
+        "event": "tag:fast"
+      },
+      "points": 30,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_family_time",
+      "kind": "wish",
+      "textKey": "wish.wish_family_time",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "family_oriented"
+        ]
+      },
+      "fulfill": {
+        "event": "tag:family"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_be_alone",
+      "kind": "wish",
+      "textKey": "wish.wish_be_alone",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "introvert",
+          "melancholic"
+        ]
+      },
+      "fulfill": {
+        "event": "tag:solitary"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_kind_deed",
+      "kind": "wish",
+      "textKey": "wish.wish_kind_deed",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "kind"
+        ],
+        "virtuesAny": [
+          "kindness"
+        ]
+      },
+      "fulfill": {
+        "event": "tag:kind"
+      },
+      "points": 25,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_hear_music",
+      "kind": "wish",
+      "textKey": "wish.wish_hear_music",
+      "icon": "lute",
+      "weight": 1,
+      "when": {
+        "likesAny": [
+          "music_lute",
+          "music_bagpipe",
+          "music_folk_song"
+        ]
+      },
+      "fulfill": {
+        "event": "tag:music"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_eat_full",
+      "kind": "wish",
+      "textKey": "wish.wish_eat_full",
+      "icon": "need.hunger",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "serf"
+        ],
+        "virtuesAny": [
+          "gluttony"
+        ]
+      },
+      "fulfill": {
+        "event": "need_high:hunger"
+      },
+      "points": 20,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_sleep_well",
+      "kind": "wish",
+      "textKey": "wish.wish_sleep_well",
+      "icon": "sleep",
+      "weight": 1,
+      "when": {
+        "emotionsAny": [
+          "tense"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:slept_well"
+      },
+      "points": 20,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_cozy_evening",
+      "kind": "wish",
+      "textKey": "wish.wish_cozy_evening",
+      "icon": "fire",
+      "weight": 1,
+      "when": {
+        "minHour": 17
+      },
+      "fulfill": {
+        "event": "moodlet:cozy_hearth"
+      },
+      "points": 20,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_feel_grace",
+      "kind": "wish",
+      "textKey": "wish.wish_feel_grace",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "clergy"
+        ],
+        "emotionsAny": [
+          "pious"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:grace_felt"
+      },
+      "points": 35,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_be_happy",
+      "kind": "wish",
+      "textKey": "wish.wish_be_happy",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "melancholic"
+        ]
+      },
+      "fulfill": {
+        "event": "emotion:happy"
+      },
+      "points": 30,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_get_inspired",
+      "kind": "wish",
+      "textKey": "wish.wish_get_inspired",
+      "icon": "yarn",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "creative"
+        ]
+      },
+      "fulfill": {
+        "event": "emotion:inspired"
+      },
+      "points": 30,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_see_first_snow",
+      "kind": "wish",
+      "textKey": "wish.wish_see_first_snow",
+      "icon": "ui.temp",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child"
+        ],
+        "seasons": [
+          "winter"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:first_snow"
+      },
+      "points": 20,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_buy_new_clothes",
+      "kind": "wish",
+      "textKey": "wish.wish_buy_new_clothes",
+      "icon": "clothes",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "flirt",
+          "ambitious"
+        ],
+        "virtuesAny": [
+          "pride"
+        ]
+      },
+      "fulfill": {
+        "event": "event:bought_clothes"
+      },
+      "points": 35,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_christmas_mass",
+      "kind": "wish",
+      "textKey": "wish.wish_christmas_mass",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "seasons": [
+          "winter"
+        ]
+      },
+      "fulfill": {
+        "event": "event:attended_christmas_mass"
+      },
+      "points": 40,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_attend_mass",
+      "kind": "wish",
+      "textKey": "wish.wish_attend_mass",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "emotionsAny": [
+          "pious"
+        ]
+      },
+      "fulfill": {
+        "event": "event:attended_mass"
+      },
+      "points": 25,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_confess",
+      "kind": "wish",
+      "textKey": "wish.wish_confess",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "emotionsAny": [
+          "ashamed"
+        ]
+      },
+      "fulfill": {
+        "event": "event:confessed"
+      },
+      "points": 30,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_chat_smith_daughter",
+      "kind": "wish",
+      "textKey": "wish.wish_chat_smith_daughter",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "teen",
+          "adult"
+        ],
+        "traitsAny": [
+          "romantic",
+          "flirt"
+        ]
+      },
+      "fulfill": {
+        "event": "event:chatted_smith_daughter"
+      },
+      "points": 30,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_teach_child_lute",
+      "kind": "wish",
+      "textKey": "wish.wish_teach_child_lute",
+      "icon": "lute",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "adult",
+          "elder"
+        ],
+        "traitsAny": [
+          "creative",
+          "family_oriented"
+        ]
+      },
+      "fulfill": {
+        "event": "event:taught_child_lute"
+      },
+      "points": 40,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_get_married",
+      "kind": "wish",
+      "textKey": "wish.wish_get_married",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "adult"
+        ],
+        "traitsAny": [
+          "romantic",
+          "family_oriented"
+        ]
+      },
+      "fulfill": {
+        "event": "event:married"
+      },
+      "points": 60,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_have_child",
+      "kind": "wish",
+      "textKey": "wish.wish_have_child",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "adult"
+        ],
+        "traitsAny": [
+          "family_oriented"
+        ]
+      },
+      "fulfill": {
+        "event": "event:child_born"
+      },
+      "points": 60,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_first_kiss",
+      "kind": "wish",
+      "textKey": "wish.wish_first_kiss",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "teen"
+        ],
+        "traitsAny": [
+          "romantic"
+        ]
+      },
+      "fulfill": {
+        "event": "event:first_kiss"
+      },
+      "points": 40,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_promotion",
+      "kind": "wish",
+      "textKey": "wish.wish_promotion",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "ambitious"
+        ]
+      },
+      "fulfill": {
+        "event": "event:promoted"
+      },
+      "points": 50,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_visit_inn",
+      "kind": "wish",
+      "textKey": "wish.wish_visit_inn",
+      "icon": "water",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "drinker",
+          "sociable"
+        ],
+        "stages": [
+          "adult",
+          "elder"
+        ]
+      },
+      "fulfill": {
+        "event": "event:visited_inn"
+      },
+      "points": 25,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_festival_dance",
+      "kind": "wish",
+      "textKey": "wish.wish_festival_dance",
+      "icon": "lute",
+      "weight": 1,
+      "when": {
+        "likesAny": [
+          "activity_dance"
+        ],
+        "traitsAny": [
+          "cheerful",
+          "sociable"
+        ]
+      },
+      "fulfill": {
+        "event": "event:danced_at_festival"
+      },
+      "points": 30,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_pilgrimage",
+      "kind": "wish",
+      "textKey": "wish.wish_pilgrimage",
+      "icon": "goto",
+      "weight": 1,
+      "when": {
+        "emotionsAny": [
+          "pious"
+        ],
+        "stages": [
+          "adult",
+          "elder"
+        ]
+      },
+      "fulfill": {
+        "event": "event:pilgrimage_done"
+      },
+      "points": 60,
+      "expire": {
+        "value": 10080,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_buy_field",
+      "kind": "wish",
+      "textKey": "wish.wish_buy_field",
+      "icon": "plant",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "serf",
+          "freeman"
+        ],
+        "traitsAny": [
+          "ambitious",
+          "diligent"
+        ]
+      },
+      "fulfill": {
+        "event": "event:bought_field"
+      },
+      "points": 50,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_learn_letters",
+      "kind": "wish",
+      "textKey": "wish.wish_learn_letters",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "bookworm"
+        ],
+        "estates": [
+          "serf",
+          "freeman"
+        ]
+      },
+      "fulfill": {
+        "event": "event:learned_letters"
+      },
+      "points": 50,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_win_dice",
+      "kind": "wish",
+      "textKey": "wish.wish_win_dice",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "drinker",
+          "cunning"
+        ]
+      },
+      "fulfill": {
+        "event": "event:won_dice"
+      },
+      "points": 20,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_go_hunting",
+      "kind": "wish",
+      "textKey": "wish.wish_go_hunting",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "active",
+          "brave"
+        ],
+        "likesAny": [
+          "activity_hunting"
+        ]
+      },
+      "fulfill": {
+        "event": "event:went_hunting"
+      },
+      "points": 30,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_go_fishing",
+      "kind": "wish",
+      "textKey": "wish.wish_go_fishing",
+      "icon": "water",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "nature_lover",
+          "calm"
+        ],
+        "likesAny": [
+          "activity_fishing"
+        ]
+      },
+      "fulfill": {
+        "event": "event:went_fishing"
+      },
+      "points": 25,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_pet_dog",
+      "kind": "wish",
+      "textKey": "wish.wish_pet_dog",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child"
+        ],
+        "likesAny": [
+          "animal_dog"
+        ]
+      },
+      "fulfill": {
+        "event": "event:petted_dog"
+      },
+      "points": 15,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_visit_grave",
+      "kind": "wish",
+      "textKey": "wish.wish_visit_grave",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "emotionsAny": [
+          "sad"
+        ]
+      },
+      "fulfill": {
+        "event": "event:visited_grave"
+      },
+      "points": 25,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_buy_furniture",
+      "kind": "wish",
+      "textKey": "wish.wish_buy_furniture",
+      "icon": "comfort",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "freeman",
+          "artisan",
+          "merchant"
+        ]
+      },
+      "fulfill": {
+        "event": "event:bought_furniture"
+      },
+      "points": 35,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_repay_debt",
+      "kind": "wish",
+      "textKey": "wish.wish_repay_debt",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "virtuesAny": [
+          "charity",
+          "diligence"
+        ],
+        "traitsAny": [
+          "just"
+        ]
+      },
+      "fulfill": {
+        "event": "event:debt_repaid"
+      },
+      "points": 50,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_sew_clothes",
+      "kind": "wish",
+      "textKey": "wish.wish_sew_clothes",
+      "icon": "yarn",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "creative",
+          "handy"
+        ],
+        "likesAny": [
+          "activity_sewing"
+        ]
+      },
+      "fulfill": {
+        "event": "event:sewed_clothes"
+      },
+      "points": 35,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_bring_harvest",
+      "kind": "wish",
+      "textKey": "wish.wish_bring_harvest",
+      "icon": "plant",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "serf",
+          "freeman"
+        ],
+        "seasons": [
+          "autumn"
+        ]
+      },
+      "fulfill": {
+        "event": "event:harvest_in"
+      },
+      "points": 40,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_enter_tourney",
+      "kind": "wish",
+      "textKey": "wish.wish_enter_tourney",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "knight",
+          "noble"
+        ],
+        "traitsAny": [
+          "brave",
+          "ambitious"
+        ]
+      },
+      "fulfill": {
+        "event": "event:tourney_entered"
+      },
+      "points": 50,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_host_feast",
+      "kind": "wish",
+      "textKey": "wish.wish_host_feast",
+      "icon": "stew",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "noble",
+          "knight",
+          "merchant"
+        ]
+      },
+      "fulfill": {
+        "event": "event:hosted_feast"
+      },
+      "points": 45,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_hear_sermon",
+      "kind": "wish",
+      "textKey": "wish.wish_hear_sermon",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "clergy"
+        ],
+        "traitsAny": [
+          "humble"
+        ]
+      },
+      "fulfill": {
+        "event": "event:heard_sermon"
+      },
+      "points": 25,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_play_with_friend",
+      "kind": "wish",
+      "textKey": "wish.wish_play_with_friend",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child"
+        ]
+      },
+      "fulfill": {
+        "event": "event:played_with_friend"
+      },
+      "points": 15,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_climb_tree",
+      "kind": "wish",
+      "textKey": "wish.wish_climb_tree",
+      "icon": "plant",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child"
+        ],
+        "traitsAny": [
+          "brave",
+          "active"
+        ]
+      },
+      "fulfill": {
+        "event": "event:climbed_tree"
+      },
+      "points": 15,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_play_chess",
+      "kind": "wish",
+      "textKey": "wish.wish_play_chess",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "likesAny": [
+          "activity_chess"
+        ],
+        "estates": [
+          "merchant",
+          "knight",
+          "noble",
+          "clergy"
+        ]
+      },
+      "fulfill": {
+        "event": "event:played_chess"
+      },
+      "points": 25,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_hear_story",
+      "kind": "wish",
+      "textKey": "wish.wish_hear_story",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child",
+          "teen"
+        ],
+        "likesAny": [
+          "activity_storytelling"
+        ]
+      },
+      "fulfill": {
+        "event": "event:heard_story"
+      },
+      "points": 15,
+      "expire": {
+        "value": 720,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "fear_dark_alone",
+      "kind": "fear",
+      "textKey": "wish.fear_dark_alone",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "coward"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:alone_in_dark"
+      },
+      "resolve": {
+        "event": "done:candle.light"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_starving",
+      "kind": "fear",
+      "textKey": "wish.fear_starving",
+      "icon": "need.hunger",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "serf",
+          "freeman"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:need_hunger_crit"
+      },
+      "resolve": {
+        "event": "done:table.eat_stew"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_freezing",
+      "kind": "fear",
+      "textKey": "wish.fear_freezing",
+      "icon": "need.warmth",
+      "weight": 1,
+      "when": {
+        "seasons": [
+          "winter"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:need_warmth_crit"
+      },
+      "resolve": {
+        "event": "done:hearth.light_fire"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_no_firewood",
+      "kind": "fear",
+      "textKey": "wish.fear_no_firewood",
+      "icon": "logs",
+      "weight": 1,
+      "when": {
+        "seasons": [
+          "autumn",
+          "winter"
+        ]
+      },
+      "realize": {
+        "event": "stock_low:firewood"
+      },
+      "resolve": {
+        "event": "done:block.chop_wood"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_empty_larder",
+      "kind": "fear",
+      "textKey": "wish.fear_empty_larder",
+      "icon": "item.ingredients",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "family_oriented",
+          "diligent"
+        ]
+      },
+      "realize": {
+        "event": "stock_low:ingredients"
+      },
+      "resolve": {
+        "event": "done:lot_exit.market"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_public_shame",
+      "kind": "fear",
+      "textKey": "wish.fear_public_shame",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "introvert",
+          "ambitious"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:public_shame"
+      },
+      "resolve": {
+        "event": "done:chamber_pot.use"
+      },
+      "moodlet": "fear_realized",
+      "points": 5
+    },
+    {
+      "id": "fear_being_gossiped",
+      "kind": "fear",
+      "textKey": "wish.fear_being_gossiped",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "suspicious",
+          "ambitious"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:heard_gossip"
+      },
+      "resolve": {
+        "event": "social:social.deep_talk"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_quarrel",
+      "kind": "fear",
+      "textKey": "wish.fear_quarrel",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "calm",
+          "coward",
+          "kind"
+        ]
+      },
+      "realize": {
+        "event": "social:social.argue"
+      },
+      "resolve": {
+        "event": "social:social.apologize"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_loneliness",
+      "kind": "fear",
+      "textKey": "wish.fear_loneliness",
+      "icon": "need.social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "sociable"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:need_social_crit"
+      },
+      "resolve": {
+        "event": "social:social.deep_talk"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_being_teased",
+      "kind": "fear",
+      "textKey": "wish.fear_being_teased",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "introvert"
+        ],
+        "stages": [
+          "child",
+          "teen"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:teased"
+      },
+      "resolve": {
+        "event": "social:social.chat"
+      },
+      "moodlet": "fear_realized",
+      "points": 5
+    },
+    {
+      "id": "fear_stench",
+      "kind": "fear",
+      "textKey": "wish.fear_stench",
+      "icon": "hygiene",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "neat",
+          "flirt"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:need_hygiene_crit"
+      },
+      "resolve": {
+        "event": "done:washtub.bathe"
+      },
+      "moodlet": "fear_realized",
+      "points": 5
+    },
+    {
+      "id": "fear_dirty_house",
+      "kind": "fear",
+      "textKey": "wish.fear_dirty_house",
+      "icon": "hygiene",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "neat"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:dirty_room_neat"
+      },
+      "resolve": {
+        "event": "done:floor.sweep"
+      },
+      "moodlet": "fear_realized",
+      "points": 5
+    },
+    {
+      "id": "fear_bad_food",
+      "kind": "fear",
+      "textKey": "wish.fear_bad_food",
+      "icon": "stew",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "gourmet"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:bad_food_gourmet"
+      },
+      "resolve": {
+        "event": "done:counter.bake_bread"
+      },
+      "moodlet": "fear_realized",
+      "points": 5
+    },
+    {
+      "id": "fear_sleepless",
+      "kind": "fear",
+      "textKey": "wish.fear_sleepless",
+      "icon": "sleep",
+      "weight": 1,
+      "when": {
+        "emotionsAny": [
+          "tense"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:slept_badly"
+      },
+      "resolve": {
+        "event": "done:bed.sleep"
+      },
+      "moodlet": "fear_realized",
+      "points": 5
+    },
+    {
+      "id": "fear_breaking_down",
+      "kind": "fear",
+      "textKey": "wish.fear_breaking_down",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "emotionsAny": [
+          "tense",
+          "sad"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:stress_limit"
+      },
+      "resolve": {
+        "event": "done:bench.pray"
+      },
+      "moodlet": "fear_realized",
+      "points": 15
+    },
+    {
+      "id": "fear_crowds",
+      "kind": "fear",
+      "textKey": "wish.fear_crowds",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "introvert"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:crowded_introvert"
+      },
+      "resolve": {
+        "event": "done:window.gaze"
+      },
+      "moodlet": "fear_realized",
+      "points": 5
+    },
+    {
+      "id": "fear_plague",
+      "kind": "fear",
+      "textKey": "wish.fear_plague",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "coward",
+          "suspicious"
+        ]
+      },
+      "realize": {
+        "event": "event:caught_plague"
+      },
+      "resolve": {
+        "event": "event:plague_ended"
+      },
+      "moodlet": "fear_realized",
+      "points": 15
+    },
+    {
+      "id": "fear_debt_demand",
+      "kind": "fear",
+      "textKey": "wish.fear_debt_demand",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "serf",
+          "freeman",
+          "artisan",
+          "merchant"
+        ]
+      },
+      "realize": {
+        "event": "event:debt_demanded"
+      },
+      "resolve": {
+        "event": "event:debt_repaid"
+      },
+      "moodlet": "fear_realized",
+      "points": 15
+    },
+    {
+      "id": "fear_spouse_affair",
+      "kind": "fear",
+      "textKey": "wish.fear_spouse_affair",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "adult"
+        ],
+        "traitsAny": [
+          "suspicious",
+          "romantic"
+        ]
+      },
+      "realize": {
+        "event": "event:spouse_affair_found"
+      },
+      "resolve": {
+        "event": "social:social.deep_talk"
+      },
+      "moodlet": "fear_realized",
+      "points": 15
+    },
+    {
+      "id": "fear_house_fire",
+      "kind": "fear",
+      "textKey": "wish.fear_house_fire",
+      "icon": "fire",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "coward",
+          "family_oriented"
+        ]
+      },
+      "realize": {
+        "event": "event:house_fire"
+      },
+      "resolve": {
+        "event": "done:hearth.extinguish"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_child_sick",
+      "kind": "fear",
+      "textKey": "wish.fear_child_sick",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "family_oriented"
+        ],
+        "stages": [
+          "adult",
+          "elder"
+        ]
+      },
+      "realize": {
+        "event": "event:child_fell_ill"
+      },
+      "resolve": {
+        "event": "event:child_recovered"
+      },
+      "moodlet": "fear_realized",
+      "points": 15
+    },
+    {
+      "id": "fear_bad_harvest",
+      "kind": "fear",
+      "textKey": "wish.fear_bad_harvest",
+      "icon": "plant",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "serf",
+          "freeman",
+          "noble"
+        ]
+      },
+      "realize": {
+        "event": "event:bad_harvest"
+      },
+      "resolve": {
+        "event": "event:harvest_in"
+      },
+      "moodlet": "fear_realized",
+      "points": 15
+    },
+    {
+      "id": "fear_ghost",
+      "kind": "fear",
+      "textKey": "wish.fear_ghost",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "coward"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:saw_ghost"
+      },
+      "resolve": {
+        "event": "done:bench.pray"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_demotion",
+      "kind": "fear",
+      "textKey": "wish.fear_demotion",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "ambitious"
+        ]
+      },
+      "realize": {
+        "event": "event:demoted"
+      },
+      "resolve": {
+        "event": "event:promoted"
+      },
+      "moodlet": "fear_realized",
+      "points": 15
+    },
+    {
+      "id": "fear_tax_unpaid",
+      "kind": "fear",
+      "textKey": "wish.fear_tax_unpaid",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "serf",
+          "freeman"
+        ]
+      },
+      "realize": {
+        "event": "event:tax_unpaid"
+      },
+      "resolve": {
+        "event": "event:tax_paid"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_duel",
+      "kind": "fear",
+      "textKey": "wish.fear_duel",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "coward"
+        ],
+        "estates": [
+          "knight",
+          "noble"
+        ]
+      },
+      "realize": {
+        "event": "event:duel_challenged"
+      },
+      "resolve": {
+        "event": "event:duel_avoided"
+      },
+      "moodlet": "fear_realized",
+      "points": 15
+    },
+    {
+      "id": "fear_losing_baby",
+      "kind": "fear",
+      "textKey": "wish.fear_losing_baby",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "adult"
+        ],
+        "traitsAny": [
+          "family_oriented",
+          "melancholic"
+        ]
+      },
+      "realize": {
+        "event": "event:miscarriage"
+      },
+      "resolve": {
+        "event": "event:child_born"
+      },
+      "moodlet": "fear_realized",
+      "points": 15
+    },
+    {
+      "id": "fear_scheme_exposed",
+      "kind": "fear",
+      "textKey": "wish.fear_scheme_exposed",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "cunning"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:caught_lying"
+      },
+      "resolve": {
+        "event": "event:scheme_succeeded"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_excommunication",
+      "kind": "fear",
+      "textKey": "wish.fear_excommunication",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "clergy"
+        ],
+        "emotionsAny": [
+          "ashamed"
+        ]
+      },
+      "realize": {
+        "event": "event:excommunicated"
+      },
+      "resolve": {
+        "event": "event:confessed"
+      },
+      "moodlet": "fear_realized",
+      "points": 15
+    },
+    {
+      "id": "fear_dying_alone",
+      "kind": "fear",
+      "textKey": "wish.fear_dying_alone",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "elder"
+        ],
+        "traitsAny": [
+          "melancholic",
+          "family_oriented"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:need_social_crit"
+      },
+      "resolve": {
+        "event": "social:social.hug"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_theft",
+      "kind": "fear",
+      "textKey": "wish.fear_theft",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "suspicious"
+        ],
+        "virtuesAny": [
+          "greed"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:theft_victim"
+      },
+      "resolve": {
+        "event": "done:stock.count"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    }
+  ]
+}

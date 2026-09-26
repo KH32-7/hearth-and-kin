@@ -1,0 +1,123 @@
+{
+  "$comment": "M0/M1 기준 수치. 시간 단위 표기: absolute(게임 분/시간), season(계절 비율), lifespan(수명 비례). GDD 29-0. 불 연료(360분)와 요강 한도는 interactions.json 효과에 있음",
+  "time": {
+    "minutesPerTick": 1,
+    "speeds": {
+      "0": 0,
+      "1": 1,
+      "2": 3,
+      "3": 10
+    },
+    "autoAccelMinutesPerSecond": 30,
+    "startMinuteOfDay": 420,
+    "dayMinutes": 1440
+  },
+  "movement": {
+    "walkTilesPerMinute": 3.0,
+    "stuckMinutes": 30,
+    "pathFailExcludeMinutes": 60,
+    "pathFailLimit": 3
+  },
+  "autonomy": {
+    "topK": 5,
+    "distanceRefTiles": 12,
+    "repeatPenalty": 0.5,
+    "repeatWindow": 3,
+    "minScore": 0.02,
+    "idleWanderMinutes": 10,
+    "solvableRecheckMinutes": 10,
+    "wakeExcludeMinutes": 60,
+    "searchRadiusTiles": 32,
+    "$searchRadius": "자율이 보는 반경 (칸, M6 마을). 작은 부지(물건 400개 미만)는 전부",
+    "socialRadiusTiles": 24
+  },
+  "queue": {
+    "maxLength": 8,
+    "waitMinutes": 20,
+    "waitAutonomousMinutes": 8,
+    "$wait": "자리(화로 앞 등)를 누가 쓰고 있으면 줄 서서 기다리는 최대 분 (absolute)"
+  },
+  "temperature": {
+    "scale": "season",
+    "seasons": {
+      "spring": {
+        "dayC": 14,
+        "nightC": 5
+      },
+      "summer": {
+        "dayC": 26,
+        "nightC": 15
+      },
+      "autumn": {
+        "dayC": 15,
+        "nightC": 6
+      },
+      "winter": {
+        "dayC": 2,
+        "nightC": -6
+      }
+    },
+    "coldestHour": 5,
+    "warmestHour": 15,
+    "wallInsulationC": {
+      "default": 4
+    },
+    "hearthHeatC": 10,
+    "hearthRefRoomTiles": 16,
+    "openDoorVentC": -4,
+    "roomUpdateMinutes": 30,
+    "roomApproachRate": 0.5
+  },
+  "startStock": {
+    "ingredients": 12,
+    "bread": 4,
+    "flour": 6,
+    "firewood": 6,
+    "water": 6,
+    "yarn": 0,
+    "ale": 2,
+    "herbs": 0,
+    "preserves": 0,
+    "wool": 6
+  },
+  "sleep": {
+    "decayMultiplier": {
+      "hunger": 0.5,
+      "energy": 0,
+      "hygiene": 0.5,
+      "bladder": 0.5,
+      "fun": 0,
+      "social": 0,
+      "warmth": 1,
+      "comfort": 0
+    },
+    "bedEnergyPerHour": {
+      "bed_straw": 9,
+      "bed_double": 12.5,
+      "floor": 6
+    },
+    "wakeIf": {
+      "bladder": 15,
+      "hunger": 8
+    }
+  },
+  "interrupt": {
+    "bladder": 12,
+    "hunger": 6,
+    "energy": 4
+  },
+  "collapse": {
+    "bladderAccidentHygiene": 0
+  },
+  "$interrupt": "자율 행동 도중 이 값 아래로 떨어지면 중단하고 급한 욕구로 (잠은 sleep.wakeIf)",
+  "roomDirt": {
+    "$comment": "방 더러움 0~100: 사람이 깨어 머물면 분당 perPersonMinute 씩, dirtyAt 이상이면 청소 광고와 깔끔함 무드렛",
+    "perPersonMinute": 0.022,
+    "dirtyAt": 60
+  },
+  "boredom": {
+    "$comment": "지루함 (GDD 11-1): 오늘 n번 한 놀이는 광고값과 즐거움 회복 × 1/(1+perRepeat·n). moodletAt 번째부터 bored_repeat 무드렛",
+    "perRepeat": 0.4,
+    "moodletAt": 3
+  }
+}

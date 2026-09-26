@@ -1,0 +1,5313 @@
+{
+  "$comment": "사람 대상 사회 상호작용 (GDD 14-3, 계약 artifacts/contracts-m3.md 1절). category: basic|friendly|romance|mean|status|trade|special. base = 성공 기본 확률(%), 14-3 공식에 더해짐. success/failure = 관계 3축 변화 + 무드렛 + 관계 표식(flagsAdd/flagsRemove) + 사건(events, 실제 효과는 M4 돈 / M7 임신 / M9 결투·혼례·처벌). ads 가 없으면 플레이어 전용. removeMoodlets/targetRemoveMoodlets 는 성공했을 때만 적용하는 것으로 작성함. 로맨스 분류는 엔진이 성인끼리만 허용. requires 확장: relNone/adult/actorEstateAny (엔진 지원), targetEstateAny = 상대 신분 목록(축복 청하기, 죄 털어놓기, 충성 맹세: 엔진 지원 필요). 검사: npx tsx tools/check-social.ts",
+  "interactions": {
+    "social.greet": {
+      "nameKey": "ia.social_greet",
+      "icon": "bubble.speech",
+      "category": "basic",
+      "tags": [
+        "social"
+      ],
+      "minutes": 3,
+      "needs": {
+        "social": 1.5
+      },
+      "targetNeeds": {
+        "social": 1.5
+      },
+      "ads": {
+        "social": 30
+      },
+      "base": 90,
+      "requires": {
+        "met": false
+      },
+      "traitMods": {
+        "sociable": 10,
+        "introvert": -8
+      },
+      "targetTraitMods": {
+        "suspicious": -10,
+        "sociable": 5
+      },
+      "topics": [
+        "weather"
+      ],
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "warm_greeting"
+        ],
+        "targetMoodlets": [
+          "warm_greeting"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "snubbed"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.introduce": {
+      "nameKey": "ia.social_introduce",
+      "icon": "bubble.speech",
+      "category": "basic",
+      "tags": [
+        "social"
+      ],
+      "minutes": 8,
+      "needs": {
+        "social": 1.2
+      },
+      "targetNeeds": {
+        "social": 1.2
+      },
+      "base": 82,
+      "requires": {
+        "met": false
+      },
+      "traitMods": {
+        "sociable": 8,
+        "introvert": -10,
+        "humble": 5
+      },
+      "targetTraitMods": {
+        "suspicious": -12
+      },
+      "topics": [
+        "family",
+        "work"
+      ],
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 3,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "pleasant_chat"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -3,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.nod": {
+      "nameKey": "ia.social_nod",
+      "icon": "bubble.speech",
+      "category": "basic",
+      "tags": [
+        "social",
+        "humble"
+      ],
+      "minutes": 2,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "ads": {
+        "social": 10
+      },
+      "base": 95,
+      "requires": {
+        "met": true
+      },
+      "estateRule": "deference",
+      "success": {
+        "friendship": 1,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [],
+        "targetMoodlets": [
+          "warm_greeting"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "snubbed"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.ask_after": {
+      "nameKey": "ia.social_ask_after",
+      "icon": "bubble.speech",
+      "category": "basic",
+      "tags": [
+        "social",
+        "kind"
+      ],
+      "minutes": 8,
+      "needs": {
+        "social": 1.2
+      },
+      "targetNeeds": {
+        "social": 1.2
+      },
+      "ads": {
+        "social": 22
+      },
+      "base": 88,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "kind": 8,
+        "family_oriented": 5
+      },
+      "topics": [
+        "family"
+      ],
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "pleasant_chat"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.talk_weather": {
+      "nameKey": "ia.social_talk_weather",
+      "icon": "bubble.speech",
+      "category": "basic",
+      "tags": [
+        "social"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 1
+      },
+      "ads": {
+        "social": 20
+      },
+      "base": 90,
+      "requires": {
+        "met": true
+      },
+      "topics": [
+        "weather"
+      ],
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "pleasant_chat"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "awkward_moment"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.talk_work": {
+      "nameKey": "ia.social_talk_work",
+      "icon": "bubble.speech",
+      "category": "basic",
+      "tags": [
+        "social"
+      ],
+      "minutes": 15,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 1
+      },
+      "ads": {
+        "social": 16
+      },
+      "base": 80,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "diligent": 10,
+        "ambitious": 5,
+        "lazy": -8
+      },
+      "targetTraitMods": {
+        "lazy": -10
+      },
+      "topics": [
+        "work"
+      ],
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "pleasant_chat"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "bragged_at"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.talk_news": {
+      "nameKey": "ia.social_talk_news",
+      "icon": "bubble.speech",
+      "category": "basic",
+      "tags": [
+        "social"
+      ],
+      "minutes": 12,
+      "needs": {
+        "social": 1,
+        "fun": 0.3
+      },
+      "targetNeeds": {
+        "social": 1,
+        "fun": 0.3
+      },
+      "ads": {
+        "social": 16,
+        "fun": 4
+      },
+      "base": 85,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "gossip": 10
+      },
+      "targetTraitMods": {
+        "gossip": 10,
+        "introvert": -8
+      },
+      "topics": [
+        "gossip",
+        "war",
+        "plague"
+      ],
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "juicy_gossip"
+        ],
+        "targetMoodlets": [
+          "pleasant_chat"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.talk_faith": {
+      "nameKey": "ia.social_talk_faith",
+      "icon": "emo.pious",
+      "category": "basic",
+      "tags": [
+        "social",
+        "pray"
+      ],
+      "minutes": 15,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 1
+      },
+      "ads": {
+        "social": 6
+      },
+      "adsWhenActorEmotion": {
+        "pious": {
+          "social": 22
+        }
+      },
+      "base": 75,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "humble": 5,
+        "cynical": -15
+      },
+      "targetTraitMods": {
+        "cynical": -20,
+        "humble": 5
+      },
+      "topics": [
+        "faith"
+      ],
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "prayer_calm"
+        ],
+        "targetMoodlets": [
+          "pleasant_chat"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -3,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "preached_at"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.talk_harvest": {
+      "nameKey": "ia.social_talk_harvest",
+      "icon": "plant",
+      "category": "basic",
+      "tags": [
+        "social",
+        "nature"
+      ],
+      "minutes": 12,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 1
+      },
+      "base": 85,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "nature_lover": 10,
+        "diligent": 5
+      },
+      "targetTraitMods": {
+        "nature_lover": 10
+      },
+      "topics": [
+        "food",
+        "work",
+        "weather"
+      ],
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "pleasant_chat"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "awkward_moment"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.farewell": {
+      "nameKey": "ia.social_farewell",
+      "icon": "bubble.speech",
+      "category": "basic",
+      "tags": [
+        "social"
+      ],
+      "minutes": 2,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 95,
+      "requires": {
+        "met": true
+      },
+      "success": {
+        "friendship": 1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [
+          "warm_greeting"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "snubbed"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.chat": {
+      "nameKey": "ia.social_chat",
+      "icon": "social",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "story"
+      ],
+      "minutes": 20,
+      "needs": {
+        "social": 1.2,
+        "fun": 0.2
+      },
+      "targetNeeds": {
+        "social": 1.2,
+        "fun": 0.2
+      },
+      "ads": {
+        "social": 40,
+        "fun": 5
+      },
+      "base": 80,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "sociable": 10,
+        "introvert": -5,
+        "gossip": 5
+      },
+      "targetTraitMods": {
+        "introvert": -5
+      },
+      "topics": [
+        "weather",
+        "food",
+        "gossip",
+        "family"
+      ],
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "pleasant_chat"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.deep_talk": {
+      "nameKey": "ia.social_deep_talk",
+      "icon": "social",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "family",
+        "story"
+      ],
+      "minutes": 30,
+      "needs": {
+        "social": 1.5
+      },
+      "targetNeeds": {
+        "social": 1.5
+      },
+      "ads": {
+        "social": 32
+      },
+      "base": 65,
+      "requires": {
+        "met": true,
+        "friendshipGte": 20
+      },
+      "traitMods": {
+        "romantic": 5,
+        "introvert": 5,
+        "cynical": -5
+      },
+      "targetTraitMods": {
+        "suspicious": -10,
+        "kind": 5
+      },
+      "topics": [
+        "family",
+        "love",
+        "faith"
+      ],
+      "success": {
+        "friendship": 6,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "heartfelt_talk"
+        ],
+        "targetMoodlets": [
+          "heartfelt_talk"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.joke": {
+      "nameKey": "ia.social_joke",
+      "icon": "need.fun",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "story"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 0.8,
+        "fun": 1
+      },
+      "targetNeeds": {
+        "social": 0.8,
+        "fun": 1
+      },
+      "ads": {
+        "social": 20,
+        "fun": 20
+      },
+      "base": 65,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "cheerful": 10,
+        "creative": 5,
+        "melancholic": -10
+      },
+      "targetTraitMods": {
+        "cheerful": 10,
+        "cynical": -10
+      },
+      "topics": [
+        "gossip",
+        "food"
+      ],
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "good_joke"
+        ],
+        "targetMoodlets": [
+          "good_joke"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "joke_fell_flat"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.compliment": {
+      "nameKey": "ia.social_compliment",
+      "icon": "emo.happy",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "kind"
+      ],
+      "minutes": 6,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "ads": {
+        "social": 18
+      },
+      "base": 70,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "kind": 10,
+        "sociable": 5,
+        "mean": -15
+      },
+      "targetTraitMods": {
+        "suspicious": -15,
+        "humble": -5
+      },
+      "topics": [
+        "work"
+      ],
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "praised"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.hug": {
+      "nameKey": "ia.social_hug",
+      "icon": "social",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "kind",
+        "family",
+        "romance"
+      ],
+      "minutes": 3,
+      "needs": {
+        "social": 3,
+        "comfort": 1
+      },
+      "targetNeeds": {
+        "social": 3,
+        "comfort": 1
+      },
+      "ads": {
+        "social": 24,
+        "comfort": 6
+      },
+      "base": 75,
+      "requires": {
+        "met": true,
+        "friendshipGte": 25
+      },
+      "traitMods": {
+        "kind": 5,
+        "family_oriented": 5,
+        "introvert": -5
+      },
+      "targetTraitMods": {
+        "introvert": -10,
+        "cynical": -5
+      },
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "hug"
+        ],
+        "targetMoodlets": [
+          "hug"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -3,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "awkward_moment"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.listen_troubles": {
+      "nameKey": "ia.social_listen_troubles",
+      "icon": "social",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "kind"
+      ],
+      "minutes": 25,
+      "needs": {
+        "social": 1.2
+      },
+      "targetNeeds": {
+        "social": 1.5
+      },
+      "ads": {
+        "social": 16
+      },
+      "base": 75,
+      "requires": {
+        "met": true,
+        "friendshipGte": 10
+      },
+      "traitMods": {
+        "kind": 10,
+        "calm": 5,
+        "hot_tempered": -5
+      },
+      "targetTraitMods": {
+        "suspicious": -10
+      },
+      "topics": [
+        "family",
+        "work",
+        "love"
+      ],
+      "success": {
+        "friendship": 5,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "did_good"
+        ],
+        "targetMoodlets": [
+          "was_comforted"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "snubbed"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.give_advice": {
+      "nameKey": "ia.social_give_advice",
+      "icon": "book",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "kind"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 1
+      },
+      "ads": {
+        "social": 10
+      },
+      "base": 55,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "just": 5,
+        "bookworm": 5,
+        "calm": 5
+      },
+      "targetTraitMods": {
+        "ambitious": -5,
+        "suspicious": -5,
+        "humble": 10
+      },
+      "topics": [
+        "work",
+        "family"
+      ],
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 4,
+        "moodlets": [
+          "did_good"
+        ],
+        "targetMoodlets": [
+          "good_advice"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "preached_at"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.reminisce": {
+      "nameKey": "ia.social_reminisce",
+      "icon": "book",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "family"
+      ],
+      "minutes": 20,
+      "needs": {
+        "social": 1.2,
+        "fun": 0.4
+      },
+      "targetNeeds": {
+        "social": 1.2,
+        "fun": 0.4
+      },
+      "ads": {
+        "social": 18
+      },
+      "base": 80,
+      "requires": {
+        "met": true,
+        "friendshipGte": 30
+      },
+      "traitMods": {
+        "family_oriented": 10,
+        "romantic": 5
+      },
+      "topics": [
+        "family"
+      ],
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "reminisced_together"
+        ],
+        "targetMoodlets": [
+          "reminisced_together"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:shared_memory"
+        ]
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "painful_memory"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.talk_tastes": {
+      "nameKey": "ia.social_talk_tastes",
+      "icon": "social",
+      "category": "friendly",
+      "tags": [
+        "social"
+      ],
+      "minutes": 12,
+      "needs": {
+        "social": 1,
+        "fun": 0.4
+      },
+      "targetNeeds": {
+        "social": 1,
+        "fun": 0.4
+      },
+      "ads": {
+        "social": 14,
+        "fun": 6
+      },
+      "base": 75,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "gourmet": 5,
+        "creative": 5
+      },
+      "topics": [
+        "food"
+      ],
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "pleasant_chat"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "awkward_moment"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.give_gift": {
+      "nameKey": "ia.social_give_gift",
+      "icon": "item.preserves",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "kind",
+        "charity"
+      ],
+      "minutes": 5,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 1
+      },
+      "base": 80,
+      "requires": {
+        "met": true,
+        "stock": {
+          "preserves": 1
+        }
+      },
+      "traitMods": {
+        "kind": 5
+      },
+      "targetTraitMods": {
+        "suspicious": -10,
+        "gourmet": 10
+      },
+      "success": {
+        "friendship": 8,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "did_good"
+        ],
+        "targetMoodlets": [
+          "gift_received"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "gift_spurned"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.share_bread": {
+      "nameKey": "ia.social_share_bread",
+      "icon": "item.bread",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "kind",
+        "charity"
+      ],
+      "minutes": 4,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 90,
+      "requires": {
+        "met": true,
+        "stock": {
+          "bread": 1
+        }
+      },
+      "traitMods": {
+        "kind": 5
+      },
+      "targetTraitMods": {
+        "suspicious": -10
+      },
+      "topics": [
+        "food"
+      ],
+      "success": {
+        "friendship": 5,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "did_good"
+        ],
+        "targetMoodlets": [
+          "gift_received"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "gift_spurned"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.sing_for": {
+      "nameKey": "ia.social_sing_for",
+      "icon": "lute",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "music",
+        "creative",
+        "sing"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 0.8,
+        "fun": 1
+      },
+      "targetNeeds": {
+        "social": 0.6,
+        "fun": 1.2
+      },
+      "base": 60,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "creative": 10,
+        "cheerful": 5,
+        "introvert": -10
+      },
+      "targetTraitMods": {
+        "cynical": -10
+      },
+      "topics": [
+        "love",
+        "war"
+      ],
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "played_music"
+        ],
+        "targetMoodlets": [
+          "moving_song"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "off_key"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.pray_together": {
+      "nameKey": "ia.social_pray_together",
+      "icon": "emo.pious",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "pray"
+      ],
+      "minutes": 20,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "ads": {
+        "social": 4
+      },
+      "adsWhenActorEmotion": {
+        "pious": {
+          "social": 20
+        }
+      },
+      "base": 85,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "humble": 5,
+        "cynical": -20
+      },
+      "targetTraitMods": {
+        "cynical": -25
+      },
+      "topics": [
+        "faith"
+      ],
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "prayer_calm"
+        ],
+        "targetMoodlets": [
+          "prayer_calm"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "preached_at"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.encourage": {
+      "nameKey": "ia.social_encourage",
+      "icon": "emo.energized",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "kind"
+      ],
+      "minutes": 6,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 1
+      },
+      "ads": {
+        "social": 12
+      },
+      "base": 75,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "cheerful": 10,
+        "kind": 5,
+        "cynical": -10
+      },
+      "targetTraitMods": {
+        "melancholic": -5
+      },
+      "topics": [
+        "work"
+      ],
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "encouraged"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "preached_at"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.share_ale": {
+      "nameKey": "ia.social_share_ale",
+      "icon": "item.ale",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "drink"
+      ],
+      "minutes": 20,
+      "needs": {
+        "social": 1.2,
+        "fun": 0.6
+      },
+      "targetNeeds": {
+        "social": 1.2,
+        "fun": 0.6
+      },
+      "base": 80,
+      "requires": {
+        "met": true,
+        "stock": {
+          "ale": 1
+        }
+      },
+      "traitMods": {
+        "drinker": 10,
+        "sociable": 5
+      },
+      "targetTraitMods": {
+        "drinker": 15
+      },
+      "topics": [
+        "gossip",
+        "work",
+        "war"
+      ],
+      "success": {
+        "friendship": 5,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "ale_merry"
+        ],
+        "targetMoodlets": [
+          "ale_merry"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "snubbed"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.tell_story": {
+      "nameKey": "ia.social_tell_story",
+      "icon": "book",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "story"
+      ],
+      "minutes": 20,
+      "needs": {
+        "social": 1,
+        "fun": 0.6
+      },
+      "targetNeeds": {
+        "social": 0.8,
+        "fun": 1
+      },
+      "ads": {
+        "social": 10,
+        "fun": 10
+      },
+      "base": 70,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "creative": 10,
+        "bookworm": 5
+      },
+      "targetTraitMods": {
+        "cynical": -5
+      },
+      "topics": [
+        "war",
+        "family",
+        "faith"
+      ],
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "good_story"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "bored_repeat"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.dance": {
+      "nameKey": "ia.social_dance",
+      "icon": "lute",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "music",
+        "exercise",
+        "dance"
+      ],
+      "minutes": 15,
+      "needs": {
+        "social": 1.2,
+        "fun": 1.5
+      },
+      "targetNeeds": {
+        "social": 1.2,
+        "fun": 1.5
+      },
+      "base": 70,
+      "requires": {
+        "met": true,
+        "friendshipGte": 10
+      },
+      "traitMods": {
+        "active": 10,
+        "cheerful": 5,
+        "introvert": -10
+      },
+      "targetTraitMods": {
+        "introvert": -10
+      },
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "danced"
+        ],
+        "targetMoodlets": [
+          "danced"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "awkward_moment"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.teach": {
+      "nameKey": "ia.social_teach",
+      "icon": "book",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "study"
+      ],
+      "minutes": 25,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 70,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "calm": 5,
+        "bookworm": 5,
+        "hot_tempered": -10
+      },
+      "targetTraitMods": {
+        "diligent": 10,
+        "lazy": -10
+      },
+      "topics": [
+        "work"
+      ],
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 4,
+        "moodlets": [
+          "did_good"
+        ],
+        "targetMoodlets": [
+          "learned_skill"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "preached_at"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.thank": {
+      "nameKey": "ia.social_thank",
+      "icon": "emo.happy",
+      "category": "friendly",
+      "tags": [
+        "social",
+        "kind",
+        "humble"
+      ],
+      "minutes": 3,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "ads": {
+        "social": 10
+      },
+      "base": 92,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "humble": 5,
+        "kind": 5
+      },
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "thanked"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "snubbed"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.glance": {
+      "nameKey": "ia.social_glance",
+      "icon": "eye",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance",
+        "flirt"
+      ],
+      "minutes": 2,
+      "needs": {
+        "social": 0.6,
+        "fun": 0.4
+      },
+      "targetNeeds": {
+        "social": 0.6,
+        "fun": 0.4
+      },
+      "ads": {
+        "social": 10,
+        "fun": 4
+      },
+      "base": 60,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "flirt": 10,
+        "romantic": 5,
+        "introvert": -5
+      },
+      "targetTraitMods": {
+        "cynical": -10
+      },
+      "success": {
+        "friendship": 1,
+        "romance": 3,
+        "respect": 0,
+        "moodlets": [
+          "flirted"
+        ],
+        "targetMoodlets": [
+          "flirted"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": 0,
+        "romance": -1,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.flirt": {
+      "nameKey": "ia.social_flirt",
+      "icon": "emo.excited",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance",
+        "flirt"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 1.2,
+        "fun": 0.6
+      },
+      "targetNeeds": {
+        "social": 1,
+        "fun": 0.4
+      },
+      "ads": {
+        "social": 14,
+        "fun": 10
+      },
+      "base": 50,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "flirt": 15,
+        "romantic": 5,
+        "sociable": 5,
+        "introvert": -5
+      },
+      "targetTraitMods": {
+        "cynical": -10,
+        "romantic": 5
+      },
+      "topics": [
+        "love"
+      ],
+      "success": {
+        "friendship": 2,
+        "romance": 5,
+        "respect": 0,
+        "moodlets": [
+          "flirted"
+        ],
+        "targetMoodlets": [
+          "flirted"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": -2,
+        "respect": -1,
+        "moodlets": [
+          "rejected"
+        ],
+        "targetMoodlets": [
+          "awkward_moment"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.give_flowers": {
+      "nameKey": "ia.social_give_flowers",
+      "icon": "plant",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance",
+        "kind",
+        "nature"
+      ],
+      "minutes": 4,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 1
+      },
+      "base": 60,
+      "requires": {
+        "met": true,
+        "romanceGte": 10
+      },
+      "traitMods": {
+        "romantic": 10,
+        "nature_lover": 5
+      },
+      "targetTraitMods": {
+        "cynical": -10,
+        "nature_lover": 10
+      },
+      "topics": [
+        "love"
+      ],
+      "success": {
+        "friendship": 2,
+        "romance": 6,
+        "respect": 0,
+        "moodlets": [
+          "flirted"
+        ],
+        "targetMoodlets": [
+          "gift_received"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": -2,
+        "respect": 0,
+        "moodlets": [
+          "gift_spurned"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.hold_hands": {
+      "nameKey": "ia.social_hold_hands",
+      "icon": "emo.excited",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 1.2,
+        "comfort": 0.5
+      },
+      "targetNeeds": {
+        "social": 1.2,
+        "comfort": 0.5
+      },
+      "ads": {
+        "social": 14,
+        "comfort": 6
+      },
+      "base": 60,
+      "requires": {
+        "met": true,
+        "romanceGte": 30
+      },
+      "traitMods": {
+        "romantic": 10,
+        "introvert": -5
+      },
+      "targetTraitMods": {
+        "cynical": -10
+      },
+      "success": {
+        "friendship": 1,
+        "romance": 5,
+        "respect": 0,
+        "moodlets": [
+          "held_hands"
+        ],
+        "targetMoodlets": [
+          "held_hands"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": -3,
+        "respect": 0,
+        "moodlets": [
+          "rejected"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.confess": {
+      "nameKey": "ia.social_confess",
+      "icon": "emo.excited",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 1.2
+      },
+      "targetNeeds": {
+        "social": 1.2
+      },
+      "base": 35,
+      "requires": {
+        "met": true,
+        "romanceGte": 40,
+        "relNone": [
+          "lover",
+          "engaged",
+          "spouse"
+        ]
+      },
+      "traitMods": {
+        "romantic": 10,
+        "brave": 5,
+        "coward": -10
+      },
+      "targetTraitMods": {
+        "cynical": -10,
+        "suspicious": -5
+      },
+      "topics": [
+        "love"
+      ],
+      "success": {
+        "friendship": 5,
+        "romance": 10,
+        "respect": 0,
+        "moodlets": [
+          "love_returned"
+        ],
+        "targetMoodlets": [
+          "love_returned"
+        ],
+        "flagsAdd": [
+          "lover"
+        ],
+        "events": [
+          "event:confessed"
+        ]
+      },
+      "failure": {
+        "friendship": -5,
+        "romance": -10,
+        "respect": -1,
+        "moodlets": [
+          "heartbroken"
+        ],
+        "targetMoodlets": [
+          "awkward_moment"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:confession_refused"
+        ]
+      }
+    },
+    "social.kiss": {
+      "nameKey": "ia.social_kiss",
+      "icon": "emo.excited",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance"
+      ],
+      "minutes": 3,
+      "needs": {
+        "social": 1.5,
+        "comfort": 0.8
+      },
+      "targetNeeds": {
+        "social": 1.5,
+        "comfort": 0.8
+      },
+      "ads": {
+        "social": 18,
+        "comfort": 6
+      },
+      "base": 70,
+      "requires": {
+        "met": true,
+        "relAny": [
+          "lover",
+          "engaged",
+          "spouse"
+        ]
+      },
+      "traitMods": {
+        "romantic": 10,
+        "flirt": 5
+      },
+      "targetTraitMods": {
+        "cynical": -10
+      },
+      "success": {
+        "friendship": 1,
+        "romance": 6,
+        "respect": 0,
+        "moodlets": [
+          "kissed"
+        ],
+        "targetMoodlets": [
+          "kissed"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:first_kiss"
+        ]
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": -3,
+        "respect": 0,
+        "moodlets": [
+          "rejected"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.serenade": {
+      "nameKey": "ia.social_serenade",
+      "icon": "lute",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance",
+        "music",
+        "creative",
+        "sing"
+      ],
+      "minutes": 15,
+      "needs": {
+        "social": 1,
+        "fun": 0.8
+      },
+      "targetNeeds": {
+        "social": 1,
+        "fun": 0.8
+      },
+      "base": 45,
+      "requires": {
+        "met": true,
+        "romanceGte": 20
+      },
+      "traitMods": {
+        "creative": 10,
+        "romantic": 10,
+        "introvert": -10
+      },
+      "targetTraitMods": {
+        "romantic": 10,
+        "cynical": -15
+      },
+      "topics": [
+        "love"
+      ],
+      "success": {
+        "friendship": 2,
+        "romance": 8,
+        "respect": 1,
+        "moodlets": [
+          "played_music"
+        ],
+        "targetMoodlets": [
+          "serenaded"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": -2,
+        "respect": -2,
+        "moodlets": [
+          "off_key"
+        ],
+        "targetMoodlets": [
+          "awkward_moment"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.love_letter": {
+      "nameKey": "ia.social_love_letter",
+      "icon": "book",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance",
+        "creative"
+      ],
+      "minutes": 20,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 55,
+      "requires": {
+        "met": true,
+        "romanceGte": 20
+      },
+      "traitMods": {
+        "romantic": 10,
+        "bookworm": 5,
+        "creative": 5
+      },
+      "targetTraitMods": {
+        "romantic": 10,
+        "cynical": -10
+      },
+      "topics": [
+        "love"
+      ],
+      "success": {
+        "friendship": 2,
+        "romance": 7,
+        "respect": 0,
+        "moodlets": [
+          "flirted"
+        ],
+        "targetMoodlets": [
+          "love_letter"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": -2,
+        "respect": 0,
+        "moodlets": [
+          "rejected"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.propose": {
+      "nameKey": "ia.social_propose",
+      "icon": "ui.crest",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance",
+        "family"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 1.2
+      },
+      "targetNeeds": {
+        "social": 1.2
+      },
+      "base": 25,
+      "requires": {
+        "met": true,
+        "relAny": [
+          "lover"
+        ]
+      },
+      "traitMods": {
+        "romantic": 10,
+        "family_oriented": 5,
+        "flirt": -5
+      },
+      "targetTraitMods": {
+        "family_oriented": 10,
+        "flirt": -10
+      },
+      "topics": [
+        "love",
+        "family"
+      ],
+      "success": {
+        "friendship": 5,
+        "romance": 10,
+        "respect": 2,
+        "moodlets": [
+          "engaged"
+        ],
+        "targetMoodlets": [
+          "engaged"
+        ],
+        "flagsAdd": [
+          "engaged"
+        ],
+        "flagsRemove": [
+          "lover"
+        ],
+        "events": [
+          "event:proposal_accepted"
+        ]
+      },
+      "failure": {
+        "friendship": -5,
+        "romance": -8,
+        "respect": -2,
+        "moodlets": [
+          "heartbroken"
+        ],
+        "targetMoodlets": [
+          "awkward_moment"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:proposal_refused"
+        ]
+      }
+    },
+    "social.propose_bed": {
+      "nameKey": "ia.social_propose_bed",
+      "icon": "sleep",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance",
+        "flirt"
+      ],
+      "minutes": 5,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 1
+      },
+      "base": 55,
+      "requires": {
+        "met": true,
+        "relAny": [
+          "lover",
+          "engaged",
+          "spouse"
+        ]
+      },
+      "traitMods": {
+        "flirt": 10,
+        "romantic": 5
+      },
+      "targetTraitMods": {
+        "cynical": -5
+      },
+      "success": {
+        "friendship": 2,
+        "romance": 6,
+        "respect": 0,
+        "moodlets": [
+          "night_together"
+        ],
+        "targetMoodlets": [
+          "night_together"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:slept_together"
+        ]
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": -3,
+        "respect": 0,
+        "moodlets": [
+          "rejected"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.whisper_sweet": {
+      "nameKey": "ia.social_whisper_sweet",
+      "icon": "bubble.speech",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance",
+        "kind"
+      ],
+      "minutes": 5,
+      "needs": {
+        "social": 1.2
+      },
+      "targetNeeds": {
+        "social": 1.2
+      },
+      "base": 70,
+      "requires": {
+        "met": true,
+        "romanceGte": 30
+      },
+      "traitMods": {
+        "romantic": 10,
+        "cynical": -10
+      },
+      "targetTraitMods": {
+        "cynical": -10
+      },
+      "topics": [
+        "love"
+      ],
+      "success": {
+        "friendship": 2,
+        "romance": 4,
+        "respect": 0,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "flirted"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": -1,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.cuddle": {
+      "nameKey": "ia.social_cuddle",
+      "icon": "comfort",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance",
+        "rest"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 1.2,
+        "comfort": 1
+      },
+      "targetNeeds": {
+        "social": 1.2,
+        "comfort": 1
+      },
+      "ads": {
+        "social": 16,
+        "comfort": 10
+      },
+      "base": 80,
+      "requires": {
+        "met": true,
+        "relAny": [
+          "lover",
+          "engaged",
+          "spouse"
+        ]
+      },
+      "traitMods": {
+        "romantic": 5
+      },
+      "targetTraitMods": {
+        "introvert": -5
+      },
+      "success": {
+        "friendship": 2,
+        "romance": 4,
+        "respect": 0,
+        "moodlets": [
+          "hug"
+        ],
+        "targetMoodlets": [
+          "hug"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": -2,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.ask_walk": {
+      "nameKey": "ia.social_ask_walk",
+      "icon": "goto",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance",
+        "nature"
+      ],
+      "minutes": 20,
+      "needs": {
+        "social": 1,
+        "fun": 0.5
+      },
+      "targetNeeds": {
+        "social": 1,
+        "fun": 0.5
+      },
+      "base": 55,
+      "requires": {
+        "met": true,
+        "romanceGte": 15
+      },
+      "traitMods": {
+        "romantic": 5,
+        "nature_lover": 5,
+        "active": 5
+      },
+      "targetTraitMods": {
+        "nature_lover": 10,
+        "lazy": -10
+      },
+      "topics": [
+        "love",
+        "weather"
+      ],
+      "success": {
+        "friendship": 3,
+        "romance": 5,
+        "respect": 0,
+        "moodlets": [
+          "long_walk"
+        ],
+        "targetMoodlets": [
+          "long_walk"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": -2,
+        "respect": 0,
+        "moodlets": [
+          "rejected"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.break_up": {
+      "nameKey": "ia.social_break_up",
+      "icon": "emo.sad",
+      "category": "romance",
+      "tags": [
+        "social",
+        "romance"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 0.5
+      },
+      "targetNeeds": {
+        "social": 0.5
+      },
+      "base": 60,
+      "requires": {
+        "met": true,
+        "relAny": [
+          "lover",
+          "engaged"
+        ]
+      },
+      "traitMods": {
+        "calm": 10,
+        "kind": 5,
+        "hot_tempered": -10
+      },
+      "targetTraitMods": {
+        "hot_tempered": -15,
+        "calm": 10
+      },
+      "success": {
+        "friendship": -10,
+        "romance": -40,
+        "respect": 0,
+        "moodlets": [
+          "ended_romance"
+        ],
+        "targetMoodlets": [
+          "heartbroken"
+        ],
+        "flagsAdd": [],
+        "flagsRemove": [
+          "lover",
+          "engaged"
+        ],
+        "events": [
+          "event:broke_up"
+        ]
+      },
+      "failure": {
+        "friendship": -25,
+        "romance": -40,
+        "respect": -3,
+        "moodlets": [
+          "ended_romance",
+          "argued"
+        ],
+        "targetMoodlets": [
+          "heartbroken",
+          "argued"
+        ],
+        "flagsAdd": [],
+        "flagsRemove": [
+          "lover",
+          "engaged"
+        ],
+        "events": [
+          "event:broke_up",
+          "event:bitter_breakup"
+        ]
+      }
+    },
+    "social.tease": {
+      "nameKey": "ia.social_tease",
+      "icon": "emo.angry",
+      "category": "mean",
+      "tags": [
+        "social",
+        "mean"
+      ],
+      "minutes": 8,
+      "needs": {
+        "social": 0.6,
+        "fun": 1.2
+      },
+      "targetNeeds": {
+        "social": 0.4
+      },
+      "ads": {
+        "fun": 14,
+        "social": 8
+      },
+      "base": 65,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "mean": 10,
+        "cheerful": 5,
+        "kind": -10
+      },
+      "targetTraitMods": {
+        "hot_tempered": -10,
+        "calm": 10
+      },
+      "estateRule": "rude",
+      "success": {
+        "friendship": -3,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "enjoyed_misery"
+        ],
+        "targetMoodlets": [
+          "teased"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -4,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "mocked"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.insult": {
+      "nameKey": "ia.social_insult",
+      "icon": "emo.angry",
+      "category": "mean",
+      "tags": [
+        "social",
+        "mean",
+        "argue"
+      ],
+      "minutes": 5,
+      "needs": {
+        "social": 0.3
+      },
+      "targetNeeds": {
+        "social": 0.2
+      },
+      "ads": {
+        "social": 2
+      },
+      "adsWhenActorEmotion": {
+        "angry": {
+          "social": 18
+        }
+      },
+      "base": 60,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "mean": 10,
+        "hot_tempered": 10,
+        "kind": -20
+      },
+      "targetTraitMods": {
+        "calm": -10,
+        "hot_tempered": 5
+      },
+      "estateRule": "rude",
+      "success": {
+        "friendship": -10,
+        "romance": 0,
+        "respect": -5,
+        "moodlets": [],
+        "targetMoodlets": [
+          "insulted"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -6,
+        "romance": 0,
+        "respect": -4,
+        "moodlets": [
+          "mocked"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:insult_backfired"
+        ]
+      }
+    },
+    "social.argue": {
+      "nameKey": "ia.social_argue",
+      "icon": "emo.angry",
+      "category": "mean",
+      "tags": [
+        "argue",
+        "mean"
+      ],
+      "minutes": 12,
+      "needs": {
+        "social": 0.3
+      },
+      "targetNeeds": {
+        "social": 0.2
+      },
+      "ads": {
+        "social": 4
+      },
+      "adsWhenActorEmotion": {
+        "angry": {
+          "social": 30
+        }
+      },
+      "base": 55,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "hot_tempered": 10,
+        "just": 5,
+        "calm": -10
+      },
+      "targetTraitMods": {
+        "calm": -10,
+        "hot_tempered": 10
+      },
+      "topics": [
+        "work",
+        "family",
+        "gossip"
+      ],
+      "estateRule": "rude",
+      "success": {
+        "friendship": -8,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "argued"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -10,
+        "romance": 0,
+        "respect": -3,
+        "moodlets": [
+          "argued"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:fight_broke_out"
+        ]
+      }
+    },
+    "social.gossip": {
+      "nameKey": "ia.social_gossip",
+      "icon": "social",
+      "category": "mean",
+      "tags": [
+        "social",
+        "gossip",
+        "mean",
+        "story"
+      ],
+      "minutes": 15,
+      "needs": {
+        "social": 1.1,
+        "fun": 0.6
+      },
+      "targetNeeds": {
+        "social": 1,
+        "fun": 0.3
+      },
+      "ads": {
+        "social": 16,
+        "fun": 10
+      },
+      "base": 70,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "gossip": 15,
+        "mean": 5,
+        "just": -15
+      },
+      "targetTraitMods": {
+        "gossip": 20,
+        "just": -15,
+        "kind": -10
+      },
+      "topics": [
+        "gossip"
+      ],
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "juicy_gossip"
+        ],
+        "targetMoodlets": [
+          "juicy_gossip"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:rumor_spread"
+        ]
+      },
+      "failure": {
+        "friendship": -3,
+        "romance": 0,
+        "respect": -4,
+        "moodlets": [
+          "scolded"
+        ],
+        "targetMoodlets": [
+          "saw_injustice"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.mock": {
+      "nameKey": "ia.social_mock",
+      "icon": "emo.angry",
+      "category": "mean",
+      "tags": [
+        "social",
+        "mean"
+      ],
+      "minutes": 3,
+      "needs": {
+        "social": 0.4,
+        "fun": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.2
+      },
+      "base": 65,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "mean": 15,
+        "cynical": 5,
+        "kind": -20
+      },
+      "targetTraitMods": {
+        "calm": 10
+      },
+      "estateRule": "rude",
+      "success": {
+        "friendship": -6,
+        "romance": 0,
+        "respect": -3,
+        "moodlets": [
+          "enjoyed_misery"
+        ],
+        "targetMoodlets": [
+          "mocked"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -4,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "mocked"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.slap": {
+      "nameKey": "ia.social_slap",
+      "icon": "emo.angry",
+      "category": "mean",
+      "tags": [
+        "mean",
+        "argue"
+      ],
+      "minutes": 1,
+      "needs": {
+        "social": 0.2
+      },
+      "targetNeeds": {
+        "social": 0.1
+      },
+      "base": 60,
+      "requires": {
+        "met": true,
+        "actorEmotionAny": [
+          "angry"
+        ]
+      },
+      "traitMods": {
+        "hot_tempered": 10,
+        "calm": -20
+      },
+      "targetTraitMods": {
+        "brave": -5
+      },
+      "estateRule": "rude",
+      "success": {
+        "friendship": -15,
+        "romance": -5,
+        "respect": -5,
+        "moodlets": [
+          "argued"
+        ],
+        "targetMoodlets": [
+          "slapped"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:slapped"
+        ]
+      },
+      "failure": {
+        "friendship": -12,
+        "romance": -5,
+        "respect": -3,
+        "moodlets": [
+          "slapped"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:fight_broke_out"
+        ]
+      }
+    },
+    "social.punch": {
+      "nameKey": "ia.social_punch",
+      "icon": "axe",
+      "category": "mean",
+      "tags": [
+        "mean",
+        "argue",
+        "exercise"
+      ],
+      "minutes": 2,
+      "needs": {
+        "social": 0.2
+      },
+      "targetNeeds": {
+        "social": 0.1
+      },
+      "base": 50,
+      "requires": {
+        "met": true,
+        "actorEmotionAny": [
+          "angry"
+        ]
+      },
+      "traitMods": {
+        "hot_tempered": 10,
+        "brave": 10,
+        "active": 5,
+        "coward": -25
+      },
+      "targetTraitMods": {
+        "brave": -10,
+        "coward": 15,
+        "active": -5
+      },
+      "estateRule": "rude",
+      "success": {
+        "friendship": -20,
+        "romance": -10,
+        "respect": -5,
+        "moodlets": [
+          "brawl"
+        ],
+        "targetMoodlets": [
+          "brawl",
+          "wounded"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:fistfight"
+        ]
+      },
+      "failure": {
+        "friendship": -20,
+        "romance": -10,
+        "respect": -5,
+        "moodlets": [
+          "brawl",
+          "wounded"
+        ],
+        "targetMoodlets": [
+          "brawl"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:fistfight"
+        ]
+      }
+    },
+    "social.challenge_duel": {
+      "nameKey": "ia.social_challenge_duel",
+      "icon": "axe",
+      "category": "mean",
+      "tags": [
+        "mean",
+        "argue"
+      ],
+      "minutes": 5,
+      "needs": {
+        "social": 0.3
+      },
+      "targetNeeds": {
+        "social": 0.2
+      },
+      "base": 50,
+      "requires": {
+        "met": true,
+        "friendshipLte": -30
+      },
+      "traitMods": {
+        "brave": 20,
+        "hot_tempered": 10,
+        "coward": -30
+      },
+      "targetTraitMods": {
+        "brave": 20,
+        "coward": -30
+      },
+      "estateRule": "rude",
+      "success": {
+        "friendship": -10,
+        "romance": 0,
+        "respect": 3,
+        "moodlets": [
+          "duel_pending"
+        ],
+        "targetMoodlets": [
+          "duel_pending"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:duel_accepted"
+        ]
+      },
+      "failure": {
+        "friendship": -10,
+        "romance": 0,
+        "respect": -5,
+        "moodlets": [
+          "argued"
+        ],
+        "targetMoodlets": [
+          "public_shame"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:duel_refused"
+        ]
+      }
+    },
+    "social.curse": {
+      "nameKey": "ia.social_curse",
+      "icon": "eye",
+      "category": "mean",
+      "tags": [
+        "mean",
+        "argue"
+      ],
+      "minutes": 3,
+      "needs": {
+        "social": 0.2
+      },
+      "targetNeeds": {
+        "social": 0.1
+      },
+      "base": 50,
+      "requires": {
+        "met": true,
+        "friendshipLte": -10
+      },
+      "traitMods": {
+        "mean": 10,
+        "hot_tempered": 5
+      },
+      "targetTraitMods": {
+        "cynical": -30,
+        "suspicious": 10,
+        "coward": 10
+      },
+      "topics": [
+        "faith",
+        "plague"
+      ],
+      "estateRule": "rude",
+      "success": {
+        "friendship": -12,
+        "romance": 0,
+        "respect": -4,
+        "moodlets": [],
+        "targetMoodlets": [
+          "cursed"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:cursed_someone"
+        ]
+      },
+      "failure": {
+        "friendship": -6,
+        "romance": 0,
+        "respect": -4,
+        "moodlets": [
+          "mocked"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "event:cursed_someone"
+        ]
+      }
+    },
+    "social.threaten": {
+      "nameKey": "ia.social_threaten",
+      "icon": "emo.angry",
+      "category": "mean",
+      "tags": [
+        "mean"
+      ],
+      "minutes": 4,
+      "needs": {
+        "social": 0.3
+      },
+      "targetNeeds": {
+        "social": 0.1
+      },
+      "base": 55,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "hot_tempered": 10,
+        "brave": 10,
+        "coward": -20
+      },
+      "targetTraitMods": {
+        "brave": -20,
+        "coward": 20
+      },
+      "estateRule": "rude",
+      "success": {
+        "friendship": -10,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "schemed"
+        ],
+        "targetMoodlets": [
+          "threatened"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -6,
+        "romance": 0,
+        "respect": -6,
+        "moodlets": [
+          "mocked"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.trick": {
+      "nameKey": "ia.social_trick",
+      "icon": "eye",
+      "category": "mean",
+      "tags": [
+        "social",
+        "lie",
+        "mean"
+      ],
+      "minutes": 8,
+      "needs": {
+        "fun": 1.2,
+        "social": 0.4
+      },
+      "targetNeeds": {
+        "social": 0.2
+      },
+      "ads": {
+        "fun": 16,
+        "social": 4
+      },
+      "base": 60,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "cunning": 15,
+        "mean": 5,
+        "just": -15
+      },
+      "targetTraitMods": {
+        "suspicious": -20,
+        "cunning": -10
+      },
+      "estateRule": "rude",
+      "success": {
+        "friendship": -4,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "schemed"
+        ],
+        "targetMoodlets": [
+          "teased"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -6,
+        "romance": 0,
+        "respect": -3,
+        "moodlets": [
+          "caught_lying"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.shove": {
+      "nameKey": "ia.social_shove",
+      "icon": "emo.angry",
+      "category": "mean",
+      "tags": [
+        "mean",
+        "argue"
+      ],
+      "minutes": 1,
+      "needs": {
+        "social": 0.2
+      },
+      "targetNeeds": {
+        "social": 0.1
+      },
+      "base": 65,
+      "requires": {
+        "met": true,
+        "actorEmotionAny": [
+          "angry"
+        ]
+      },
+      "traitMods": {
+        "hot_tempered": 10,
+        "active": 5,
+        "calm": -15
+      },
+      "targetTraitMods": {
+        "active": -5
+      },
+      "estateRule": "rude",
+      "success": {
+        "friendship": -8,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "argued"
+        ],
+        "targetMoodlets": [
+          "insulted"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -10,
+        "romance": 0,
+        "respect": -3,
+        "moodlets": [
+          "argued"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:fight_broke_out"
+        ]
+      }
+    },
+    "social.spread_rumor": {
+      "nameKey": "ia.social_spread_rumor",
+      "icon": "eye",
+      "category": "mean",
+      "tags": [
+        "social",
+        "gossip",
+        "lie",
+        "mean"
+      ],
+      "minutes": 12,
+      "needs": {
+        "social": 0.8,
+        "fun": 0.6
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 55,
+      "requires": {
+        "met": true,
+        "actorTraitsAny": [
+          "cunning",
+          "mean",
+          "gossip"
+        ]
+      },
+      "traitMods": {
+        "cunning": 15,
+        "gossip": 10,
+        "just": -30
+      },
+      "targetTraitMods": {
+        "gossip": 15,
+        "suspicious": -15,
+        "just": -20
+      },
+      "topics": [
+        "gossip"
+      ],
+      "success": {
+        "friendship": 1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "schemed"
+        ],
+        "targetMoodlets": [
+          "juicy_gossip"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:false_rumor"
+        ]
+      },
+      "failure": {
+        "friendship": -4,
+        "romance": 0,
+        "respect": -5,
+        "moodlets": [
+          "caught_lying"
+        ],
+        "targetMoodlets": [
+          "saw_injustice"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:false_rumor_exposed"
+        ]
+      }
+    },
+    "social.look_down": {
+      "nameKey": "ia.social_look_down",
+      "icon": "ui.crest",
+      "category": "mean",
+      "tags": [
+        "social",
+        "mean",
+        "brag"
+      ],
+      "minutes": 4,
+      "needs": {
+        "social": 0.4
+      },
+      "targetNeeds": {
+        "social": 0.2
+      },
+      "base": 70,
+      "requires": {
+        "met": true,
+        "actorEstateAbove": true
+      },
+      "traitMods": {
+        "mean": 10,
+        "ambitious": 5,
+        "humble": -30
+      },
+      "targetTraitMods": {
+        "humble": 15,
+        "hot_tempered": -10
+      },
+      "estateRule": "rude",
+      "success": {
+        "friendship": -8,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "pride_boast"
+        ],
+        "targetMoodlets": [
+          "insulted"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:arrogance_rumor"
+        ]
+      },
+      "failure": {
+        "friendship": -6,
+        "romance": 0,
+        "respect": -5,
+        "moodlets": [
+          "mocked"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:arrogance_rumor"
+        ]
+      }
+    },
+    "social.bow": {
+      "nameKey": "ia.social_bow",
+      "icon": "ui.crest",
+      "category": "status",
+      "tags": [
+        "social",
+        "humble"
+      ],
+      "minutes": 2,
+      "needs": {
+        "social": 0.6
+      },
+      "targetNeeds": {
+        "social": 0.6
+      },
+      "ads": {
+        "social": 6
+      },
+      "base": 95,
+      "requires": {
+        "met": true,
+        "actorEstateBelow": true
+      },
+      "traitMods": {
+        "humble": 5,
+        "ambitious": -5
+      },
+      "estateRule": "deference",
+      "success": {
+        "friendship": 1,
+        "romance": 0,
+        "respect": 4,
+        "moodlets": [
+          "humble_chat"
+        ],
+        "targetMoodlets": [
+          "shown_deference"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": 0,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "snubbed"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.kneel": {
+      "nameKey": "ia.social_kneel",
+      "icon": "ui.crest",
+      "category": "status",
+      "tags": [
+        "social",
+        "humble"
+      ],
+      "minutes": 3,
+      "needs": {
+        "social": 0.6
+      },
+      "targetNeeds": {
+        "social": 0.6
+      },
+      "base": 90,
+      "requires": {
+        "met": true,
+        "actorEstateBelow": true
+      },
+      "traitMods": {
+        "humble": 10,
+        "ambitious": -10
+      },
+      "targetTraitMods": {
+        "kind": 5,
+        "mean": -10
+      },
+      "estateRule": "deference",
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 6,
+        "moodlets": [
+          "humble_chat"
+        ],
+        "targetMoodlets": [
+          "shown_deference"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "snubbed"
+        ],
+        "targetMoodlets": [
+          "enjoyed_misery"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.petition": {
+      "nameKey": "ia.social_petition",
+      "icon": "book",
+      "category": "status",
+      "tags": [
+        "social",
+        "humble"
+      ],
+      "minutes": 20,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 45,
+      "requires": {
+        "met": true,
+        "actorEstateBelow": true
+      },
+      "traitMods": {
+        "humble": 5,
+        "sociable": 5
+      },
+      "targetTraitMods": {
+        "kind": 15,
+        "just": 10,
+        "mean": -15
+      },
+      "topics": [
+        "work",
+        "family",
+        "plague"
+      ],
+      "estateRule": "deference",
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "petition_granted"
+        ],
+        "targetMoodlets": [
+          "did_good"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:petition_granted"
+        ]
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": -3,
+        "moodlets": [
+          "petition_denied"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "event:petition_denied"
+        ]
+      }
+    },
+    "social.command": {
+      "nameKey": "ia.social_command",
+      "icon": "ui.crest",
+      "category": "status",
+      "tags": [
+        "social",
+        "duty"
+      ],
+      "minutes": 3,
+      "needs": {
+        "social": 0.4
+      },
+      "targetNeeds": {
+        "social": 0.2
+      },
+      "base": 75,
+      "requires": {
+        "met": true,
+        "actorEstateAbove": true
+      },
+      "traitMods": {
+        "ambitious": 5,
+        "humble": -5
+      },
+      "targetTraitMods": {
+        "diligent": 10,
+        "lazy": -10,
+        "hot_tempered": -10
+      },
+      "topics": [
+        "work"
+      ],
+      "success": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [],
+        "targetMoodlets": [
+          "ordered_about"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:order_obeyed"
+        ]
+      },
+      "failure": {
+        "friendship": -3,
+        "romance": 0,
+        "respect": -6,
+        "moodlets": [
+          "defied"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "event:order_defied"
+        ]
+      }
+    },
+    "social.bestow": {
+      "nameKey": "ia.social_bestow",
+      "icon": "item.bread",
+      "category": "status",
+      "tags": [
+        "social",
+        "charity",
+        "kind"
+      ],
+      "minutes": 4,
+      "needs": {
+        "social": 0.6
+      },
+      "targetNeeds": {
+        "social": 0.6
+      },
+      "base": 90,
+      "requires": {
+        "met": true,
+        "actorEstateAbove": true,
+        "stock": {
+          "bread": 2
+        }
+      },
+      "traitMods": {
+        "kind": 5
+      },
+      "targetTraitMods": {
+        "suspicious": -10,
+        "ambitious": -5
+      },
+      "success": {
+        "friendship": 6,
+        "romance": 0,
+        "respect": 6,
+        "moodlets": [
+          "did_good"
+        ],
+        "targetMoodlets": [
+          "bestowed_favor"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:bestowed_gift"
+        ]
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "gift_spurned"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.rebuke": {
+      "nameKey": "ia.social_rebuke",
+      "icon": "emo.angry",
+      "category": "status",
+      "tags": [
+        "social",
+        "duty"
+      ],
+      "minutes": 6,
+      "needs": {
+        "social": 0.4
+      },
+      "targetNeeds": {
+        "social": 0.2
+      },
+      "base": 70,
+      "requires": {
+        "met": true,
+        "actorEstateAbove": true
+      },
+      "traitMods": {
+        "just": 10,
+        "calm": 5,
+        "hot_tempered": -5
+      },
+      "targetTraitMods": {
+        "humble": 10,
+        "hot_tempered": -15
+      },
+      "success": {
+        "friendship": -4,
+        "romance": 0,
+        "respect": 3,
+        "moodlets": [],
+        "targetMoodlets": [
+          "scolded"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -3,
+        "romance": 0,
+        "respect": -4,
+        "moodlets": [
+          "defied"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.ask_blessing": {
+      "nameKey": "ia.social_ask_blessing",
+      "icon": "emo.pious",
+      "category": "status",
+      "tags": [
+        "social",
+        "pray",
+        "humble"
+      ],
+      "minutes": 5,
+      "needs": {
+        "social": 0.6
+      },
+      "targetNeeds": {
+        "social": 0.6
+      },
+      "base": 90,
+      "requires": {
+        "met": true,
+        "targetEstateAny": [
+          "clergy"
+        ]
+      },
+      "traitMods": {
+        "humble": 5,
+        "cynical": -10
+      },
+      "topics": [
+        "faith"
+      ],
+      "estateRule": "deference",
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 3,
+        "moodlets": [
+          "blessed"
+        ],
+        "targetMoodlets": [
+          "did_good"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:blessed"
+        ]
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "request_refused"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.ask_protection": {
+      "nameKey": "ia.social_ask_protection",
+      "icon": "ui.crest",
+      "category": "status",
+      "tags": [
+        "social",
+        "humble"
+      ],
+      "minutes": 12,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 45,
+      "requires": {
+        "met": true,
+        "actorEstateBelow": true
+      },
+      "traitMods": {
+        "humble": 5
+      },
+      "targetTraitMods": {
+        "kind": 10,
+        "just": 10,
+        "mean": -10
+      },
+      "topics": [
+        "war",
+        "plague"
+      ],
+      "estateRule": "deference",
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "under_protection"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "event:protection_granted"
+        ]
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "request_refused"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.flatter": {
+      "nameKey": "ia.social_flatter",
+      "icon": "emo.happy",
+      "category": "status",
+      "tags": [
+        "social",
+        "lie"
+      ],
+      "minutes": 6,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 55,
+      "requires": {
+        "met": true,
+        "actorEstateBelow": true
+      },
+      "traitMods": {
+        "cunning": 15,
+        "sociable": 5,
+        "just": -15
+      },
+      "targetTraitMods": {
+        "suspicious": -20,
+        "cynical": -10,
+        "humble": -10
+      },
+      "estateRule": "deference",
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "schemed"
+        ],
+        "targetMoodlets": [
+          "praised"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -3,
+        "romance": 0,
+        "respect": -5,
+        "moodlets": [
+          "scolded"
+        ],
+        "targetMoodlets": [
+          "saw_injustice"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.swear_fealty": {
+      "nameKey": "ia.social_swear_fealty",
+      "icon": "ui.crest",
+      "category": "status",
+      "tags": [
+        "social",
+        "humble",
+        "duty"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 85,
+      "requires": {
+        "met": true,
+        "actorEstateBelow": true,
+        "targetEstateAny": [
+          "knight",
+          "noble"
+        ]
+      },
+      "traitMods": {
+        "brave": 5,
+        "just": 5,
+        "cunning": -5
+      },
+      "targetTraitMods": {
+        "suspicious": -10
+      },
+      "topics": [
+        "war"
+      ],
+      "estateRule": "deference",
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 8,
+        "moodlets": [
+          "proud_memory"
+        ],
+        "targetMoodlets": [
+          "shown_deference"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:oath_sworn"
+        ]
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "request_refused"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.haggle": {
+      "nameKey": "ia.social_haggle",
+      "icon": "ui.coin",
+      "category": "trade",
+      "tags": [
+        "social",
+        "guard",
+        "reckon"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 50,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "cunning": 15,
+        "sociable": 5,
+        "humble": -5
+      },
+      "targetTraitMods": {
+        "cunning": -10,
+        "kind": 5
+      },
+      "topics": [
+        "food",
+        "work"
+      ],
+      "success": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "good_bargain"
+        ],
+        "targetMoodlets": [
+          "bad_bargain"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:haggle_won"
+        ]
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "bad_bargain"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "event:haggle_lost"
+        ]
+      }
+    },
+    "social.ask_loan": {
+      "nameKey": "ia.social_ask_loan",
+      "icon": "ui.coin",
+      "category": "trade",
+      "tags": [
+        "social",
+        "humble"
+      ],
+      "minutes": 8,
+      "needs": {
+        "social": 0.6
+      },
+      "targetNeeds": {
+        "social": 0.6
+      },
+      "base": 40,
+      "requires": {
+        "met": true,
+        "friendshipGte": 10
+      },
+      "traitMods": {
+        "humble": 5,
+        "sociable": 5
+      },
+      "targetTraitMods": {
+        "kind": 15,
+        "suspicious": -15
+      },
+      "topics": [
+        "work",
+        "family"
+      ],
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "loan_granted"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "event:loan_granted"
+        ]
+      },
+      "failure": {
+        "friendship": -3,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "request_refused"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "event:loan_refused"
+        ]
+      }
+    },
+    "social.demand_debt": {
+      "nameKey": "ia.social_demand_debt",
+      "icon": "ui.coin",
+      "category": "trade",
+      "tags": [
+        "social",
+        "guard"
+      ],
+      "minutes": 6,
+      "needs": {
+        "social": 0.4
+      },
+      "targetNeeds": {
+        "social": 0.2
+      },
+      "base": 55,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "hot_tempered": 5,
+        "brave": 5,
+        "coward": -10
+      },
+      "targetTraitMods": {
+        "just": 10,
+        "cunning": -10
+      },
+      "topics": [
+        "work"
+      ],
+      "success": {
+        "friendship": -5,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [],
+        "targetMoodlets": [
+          "debt_pressed"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:debt_repaid"
+        ]
+      },
+      "failure": {
+        "friendship": -8,
+        "romance": 0,
+        "respect": -3,
+        "moodlets": [
+          "argued"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:debt_refused"
+        ]
+      }
+    },
+    "social.bribe": {
+      "nameKey": "ia.social_bribe",
+      "icon": "ui.coin",
+      "category": "trade",
+      "tags": [
+        "social",
+        "lie"
+      ],
+      "minutes": 5,
+      "needs": {
+        "social": 0.4
+      },
+      "targetNeeds": {
+        "social": 0.4
+      },
+      "base": 50,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "cunning": 15,
+        "just": -30
+      },
+      "targetTraitMods": {
+        "just": -40,
+        "cunning": 10,
+        "suspicious": -5
+      },
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": -2,
+        "moodlets": [
+          "schemed"
+        ],
+        "targetMoodlets": [
+          "guilty_conscience"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:bribe_taken"
+        ]
+      },
+      "failure": {
+        "friendship": -5,
+        "romance": 0,
+        "respect": -10,
+        "moodlets": [
+          "bribe_spurned"
+        ],
+        "targetMoodlets": [
+          "saw_injustice"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:bribe_exposed"
+        ]
+      }
+    },
+    "social.propose_partnership": {
+      "nameKey": "ia.social_propose_partnership",
+      "icon": "ui.coin",
+      "category": "trade",
+      "tags": [
+        "social",
+        "labor"
+      ],
+      "minutes": 20,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 1
+      },
+      "base": 40,
+      "requires": {
+        "met": true,
+        "respectGte": 10
+      },
+      "traitMods": {
+        "ambitious": 10,
+        "sociable": 5
+      },
+      "targetTraitMods": {
+        "ambitious": 10,
+        "suspicious": -15,
+        "lazy": -10
+      },
+      "topics": [
+        "work"
+      ],
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 3,
+        "moodlets": [
+          "partnership"
+        ],
+        "targetMoodlets": [
+          "partnership"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:partnership"
+        ]
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "request_refused"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.take_apprentice": {
+      "nameKey": "ia.social_take_apprentice",
+      "icon": "axe",
+      "category": "trade",
+      "tags": [
+        "social",
+        "craft",
+        "study"
+      ],
+      "minutes": 15,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 60,
+      "requires": {
+        "met": true,
+        "actorEstateAny": [
+          "artisan"
+        ]
+      },
+      "traitMods": {
+        "kind": 5,
+        "handy": 5
+      },
+      "targetTraitMods": {
+        "diligent": 15,
+        "ambitious": 10,
+        "lazy": -15
+      },
+      "topics": [
+        "work"
+      ],
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 6,
+        "moodlets": [
+          "took_apprentice"
+        ],
+        "targetMoodlets": [
+          "apprenticed"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:apprentice_taken"
+        ]
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "request_refused"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.comfort": {
+      "nameKey": "ia.social_comfort",
+      "icon": "social",
+      "category": "special",
+      "tags": [
+        "social",
+        "kind",
+        "family"
+      ],
+      "minutes": 15,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 1.2
+      },
+      "ads": {
+        "social": 18
+      },
+      "base": 70,
+      "requires": {
+        "met": true,
+        "targetEmotionAny": [
+          "sad",
+          "tense",
+          "ashamed",
+          "angry"
+        ]
+      },
+      "traitMods": {
+        "kind": 10,
+        "calm": 5,
+        "mean": -20
+      },
+      "targetTraitMods": {
+        "hot_tempered": -10
+      },
+      "success": {
+        "friendship": 5,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "did_good"
+        ],
+        "targetMoodlets": [
+          "was_comforted"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "snubbed"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.apologize": {
+      "nameKey": "ia.social_apologize",
+      "icon": "emo.pious",
+      "category": "special",
+      "tags": [
+        "social",
+        "humble",
+        "kind"
+      ],
+      "minutes": 8,
+      "needs": {
+        "social": 1
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "ads": {
+        "social": 22
+      },
+      "base": 60,
+      "requires": {
+        "met": true,
+        "actorMoodletAny": [
+          "argued"
+        ]
+      },
+      "traitMods": {
+        "humble": 10,
+        "kind": 5,
+        "ambitious": -5
+      },
+      "targetTraitMods": {
+        "hot_tempered": -10,
+        "kind": 10,
+        "calm": 5
+      },
+      "success": {
+        "friendship": 6,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "apology_accepted"
+        ],
+        "targetMoodlets": [
+          "humble_chat"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "apology_refused"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      },
+      "removeMoodlets": [
+        "argued"
+      ],
+      "targetRemoveMoodlets": [
+        "argued"
+      ]
+    },
+    "social.brag": {
+      "nameKey": "ia.social_brag",
+      "icon": "emo.excited",
+      "category": "special",
+      "tags": [
+        "social",
+        "brag",
+        "story"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 0.8,
+        "fun": 0.5
+      },
+      "targetNeeds": {
+        "social": 0.3
+      },
+      "ads": {
+        "social": 20,
+        "fun": 14
+      },
+      "base": 50,
+      "requires": {
+        "met": true
+      },
+      "traitMods": {
+        "ambitious": 10,
+        "sociable": 5,
+        "humble": -20
+      },
+      "targetTraitMods": {
+        "cynical": -10,
+        "humble": 5
+      },
+      "topics": [
+        "work",
+        "war"
+      ],
+      "success": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "pride_boast"
+        ],
+        "targetMoodlets": [
+          "bragged_at"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -3,
+        "romance": 0,
+        "respect": -3,
+        "moodlets": [
+          "mocked"
+        ],
+        "targetMoodlets": [
+          "bragged_at"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.preach": {
+      "nameKey": "ia.social_preach",
+      "icon": "book",
+      "category": "special",
+      "tags": [
+        "social",
+        "pray",
+        "duty"
+      ],
+      "minutes": 20,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.6
+      },
+      "base": 60,
+      "requires": {
+        "met": true,
+        "actorEstateAny": [
+          "clergy"
+        ]
+      },
+      "traitMods": {
+        "calm": 5,
+        "bookworm": 5,
+        "just": 5
+      },
+      "targetTraitMods": {
+        "cynical": -20,
+        "humble": 10
+      },
+      "topics": [
+        "faith"
+      ],
+      "success": {
+        "friendship": 1,
+        "romance": 0,
+        "respect": 4,
+        "moodlets": [
+          "prayer_calm"
+        ],
+        "targetMoodlets": [
+          "sermon_moved"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": -3,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "preached_at"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.prescribe": {
+      "nameKey": "ia.social_prescribe",
+      "icon": "item.herbs",
+      "category": "special",
+      "tags": [
+        "social",
+        "kind",
+        "nature",
+        "herbal",
+        "heal"
+      ],
+      "minutes": 12,
+      "needs": {
+        "social": 0.6
+      },
+      "targetNeeds": {
+        "social": 0.6
+      },
+      "base": 65,
+      "requires": {
+        "met": true,
+        "stock": {
+          "herbs": 1
+        }
+      },
+      "traitMods": {
+        "nature_lover": 10,
+        "bookworm": 5
+      },
+      "targetTraitMods": {
+        "suspicious": -10
+      },
+      "topics": [
+        "plague"
+      ],
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 3,
+        "moodlets": [
+          "did_good"
+        ],
+        "targetMoodlets": [
+          "herbal_relief"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -3,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "useless_remedy"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.tell_fortune": {
+      "nameKey": "ia.social_tell_fortune",
+      "icon": "eye",
+      "category": "special",
+      "tags": [
+        "social",
+        "lie"
+      ],
+      "minutes": 12,
+      "needs": {
+        "social": 0.8,
+        "fun": 0.6
+      },
+      "targetNeeds": {
+        "social": 0.8,
+        "fun": 0.6
+      },
+      "base": 55,
+      "requires": {
+        "met": true,
+        "actorTraitsAny": [
+          "cunning",
+          "creative",
+          "romantic"
+        ]
+      },
+      "traitMods": {
+        "cunning": 10,
+        "creative": 5
+      },
+      "targetTraitMods": {
+        "cynical": -25,
+        "romantic": 10,
+        "suspicious": 5
+      },
+      "topics": [
+        "love",
+        "plague",
+        "family"
+      ],
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "schemed"
+        ],
+        "targetMoodlets": [
+          "good_omen"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "bad_omen"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.scheme": {
+      "nameKey": "ia.social_scheme",
+      "icon": "eye",
+      "category": "special",
+      "tags": [
+        "social",
+        "lie"
+      ],
+      "minutes": 20,
+      "needs": {
+        "social": 0.8,
+        "fun": 0.4
+      },
+      "targetNeeds": {
+        "social": 0.8,
+        "fun": 0.4
+      },
+      "base": 45,
+      "requires": {
+        "met": true,
+        "friendshipGte": 20,
+        "actorTraitsAny": [
+          "cunning",
+          "ambitious"
+        ]
+      },
+      "traitMods": {
+        "cunning": 15,
+        "ambitious": 5
+      },
+      "targetTraitMods": {
+        "just": -30,
+        "cunning": 10,
+        "kind": -10
+      },
+      "topics": [
+        "gossip",
+        "work"
+      ],
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "schemed"
+        ],
+        "targetMoodlets": [
+          "schemed"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:conspiracy_formed"
+        ]
+      },
+      "failure": {
+        "friendship": -6,
+        "romance": 0,
+        "respect": -5,
+        "moodlets": [
+          "caught_lying"
+        ],
+        "targetMoodlets": [
+          "saw_injustice"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:conspiracy_exposed"
+        ]
+      }
+    },
+    "social.seduce": {
+      "nameKey": "ia.social_seduce",
+      "icon": "emo.excited",
+      "category": "special",
+      "tags": [
+        "social",
+        "flirt",
+        "romance"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 1,
+        "fun": 0.6
+      },
+      "targetNeeds": {
+        "social": 1,
+        "fun": 0.6
+      },
+      "base": 45,
+      "requires": {
+        "met": true,
+        "adult": true,
+        "romanceGte": 20,
+        "actorTraitsAny": [
+          "flirt"
+        ],
+        "relNone": [
+          "spouse"
+        ]
+      },
+      "traitMods": {
+        "flirt": 10
+      },
+      "targetTraitMods": {
+        "cynical": -10,
+        "flirt": 10,
+        "family_oriented": -10
+      },
+      "topics": [
+        "love"
+      ],
+      "success": {
+        "friendship": 1,
+        "romance": 8,
+        "respect": 0,
+        "moodlets": [
+          "flirted"
+        ],
+        "targetMoodlets": [
+          "flirted"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:seduced"
+        ]
+      },
+      "failure": {
+        "friendship": -3,
+        "romance": -4,
+        "respect": -3,
+        "moodlets": [
+          "rejected"
+        ],
+        "targetMoodlets": [
+          "awkward_moment"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.reconcile": {
+      "nameKey": "ia.social_reconcile",
+      "icon": "emo.pious",
+      "category": "special",
+      "tags": [
+        "social",
+        "humble",
+        "kind"
+      ],
+      "minutes": 15,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 35,
+      "requires": {
+        "met": true,
+        "relAny": [
+          "rival",
+          "enemy"
+        ]
+      },
+      "traitMods": {
+        "humble": 10,
+        "kind": 10,
+        "hot_tempered": -10
+      },
+      "targetTraitMods": {
+        "kind": 10,
+        "hot_tempered": -15,
+        "mean": -10
+      },
+      "success": {
+        "friendship": 15,
+        "romance": 0,
+        "respect": 3,
+        "moodlets": [
+          "apology_accepted"
+        ],
+        "targetMoodlets": [
+          "humble_chat"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "event:reconciled"
+        ]
+      },
+      "failure": {
+        "friendship": -3,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "apology_refused"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "removeMoodlets": [
+        "argued"
+      ],
+      "targetRemoveMoodlets": [
+        "argued"
+      ]
+    },
+    "social.calm_down": {
+      "nameKey": "ia.social_calm_down",
+      "icon": "emo.neutral",
+      "category": "special",
+      "tags": [
+        "social",
+        "kind"
+      ],
+      "minutes": 8,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 50,
+      "requires": {
+        "met": true,
+        "targetEmotionAny": [
+          "angry"
+        ]
+      },
+      "traitMods": {
+        "calm": 20,
+        "kind": 5,
+        "hot_tempered": -20
+      },
+      "targetTraitMods": {
+        "hot_tempered": -15,
+        "calm": 10
+      },
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "did_good"
+        ],
+        "targetMoodlets": [
+          "was_comforted"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -3,
+        "romance": 0,
+        "respect": -1,
+        "moodlets": [
+          "argued"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "targetRemoveMoodlets": [
+        "short_fuse"
+      ]
+    },
+    "social.cheer_up": {
+      "nameKey": "ia.social_cheer_up",
+      "icon": "emo.happy",
+      "category": "special",
+      "tags": [
+        "social",
+        "kind"
+      ],
+      "minutes": 10,
+      "needs": {
+        "social": 1,
+        "fun": 0.5
+      },
+      "targetNeeds": {
+        "social": 1,
+        "fun": 0.8
+      },
+      "base": 65,
+      "requires": {
+        "met": true,
+        "targetEmotionAny": [
+          "sad"
+        ],
+        "actorTraitsAny": [
+          "cheerful",
+          "sociable",
+          "kind"
+        ]
+      },
+      "traitMods": {
+        "cheerful": 10
+      },
+      "targetTraitMods": {
+        "melancholic": -10
+      },
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [
+          "pleasant_chat"
+        ],
+        "targetMoodlets": [
+          "good_spirits"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "awkward_moment"
+        ],
+        "targetMoodlets": [
+          "melancholy_mood"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.confide_sin": {
+      "nameKey": "ia.social_confide_sin",
+      "icon": "candle",
+      "category": "special",
+      "tags": [
+        "social",
+        "pray",
+        "humble"
+      ],
+      "minutes": 15,
+      "needs": {
+        "social": 0.8
+      },
+      "targetNeeds": {
+        "social": 0.8
+      },
+      "base": 85,
+      "requires": {
+        "met": true,
+        "targetEstateAny": [
+          "clergy"
+        ],
+        "actorMoodletAny": [
+          "guilty_conscience"
+        ]
+      },
+      "traitMods": {
+        "humble": 10,
+        "cynical": -10
+      },
+      "targetTraitMods": {
+        "kind": 10,
+        "mean": -15
+      },
+      "topics": [
+        "faith"
+      ],
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 2,
+        "moodlets": [
+          "confessed"
+        ],
+        "targetMoodlets": [
+          "did_good"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": -3,
+        "moodlets": [
+          "scolded"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      },
+      "removeMoodlets": [
+        "guilty_conscience"
+      ]
+    },
+    "social.speak_truth": {
+      "nameKey": "ia.social_speak_truth",
+      "icon": "emo.angry",
+      "category": "special",
+      "tags": [
+        "social",
+        "duty"
+      ],
+      "minutes": 8,
+      "needs": {
+        "social": 0.6
+      },
+      "targetNeeds": {
+        "social": 0.3
+      },
+      "base": 45,
+      "requires": {
+        "met": true,
+        "actorTraitsAny": [
+          "just"
+        ]
+      },
+      "traitMods": {
+        "brave": 10,
+        "calm": 5,
+        "coward": -15
+      },
+      "targetTraitMods": {
+        "humble": 10,
+        "just": 10,
+        "hot_tempered": -15
+      },
+      "topics": [
+        "gossip",
+        "work",
+        "faith"
+      ],
+      "success": {
+        "friendship": -2,
+        "romance": 0,
+        "respect": 5,
+        "moodlets": [
+          "did_good"
+        ],
+        "targetMoodlets": [
+          "guilty_conscience"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -5,
+        "romance": 0,
+        "respect": -3,
+        "moodlets": [
+          "argued"
+        ],
+        "targetMoodlets": [
+          "argued"
+        ],
+        "flagsAdd": [],
+        "events": []
+      }
+    },
+    "social.share_worry": {
+      "nameKey": "ia.social_share_worry",
+      "icon": "emo.tense",
+      "category": "special",
+      "tags": [
+        "social",
+        "family"
+      ],
+      "minutes": 20,
+      "needs": {
+        "social": 1.5
+      },
+      "targetNeeds": {
+        "social": 1
+      },
+      "ads": {
+        "social": 12
+      },
+      "base": 75,
+      "requires": {
+        "met": true,
+        "friendshipGte": 20,
+        "actorEmotionAny": [
+          "sad",
+          "tense"
+        ]
+      },
+      "traitMods": {
+        "introvert": -5
+      },
+      "targetTraitMods": {
+        "kind": 10,
+        "mean": -15
+      },
+      "topics": [
+        "family",
+        "work",
+        "plague"
+      ],
+      "success": {
+        "friendship": 4,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "was_comforted"
+        ],
+        "targetMoodlets": [
+          "heartfelt_talk"
+        ],
+        "flagsAdd": [],
+        "events": []
+      },
+      "failure": {
+        "friendship": -1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "lonely_heart"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": []
+      }
+    }
+  }
+}

@@ -1,0 +1,1235 @@
+{
+ "$comment": "GDD 00장 5절 전체 기능 목록 → 테스트 id(파일::테스트 이름 앞부분) → 마지막 통과. npm run check:features 가 커버리지와 테스트 존재를 검사 (BRIEF 6장: 출시 때 100%)",
+ "features": {
+  "char.lpc_compose": {
+   "area": "캐릭터",
+   "name": "LPC 레이어 합성, 신분별 복식",
+   "doc": "10",
+   "milestone": "M0",
+   "tests": [
+    "tests/unit/lpc-plan.test.ts::produces a sheet with walk frames for every estate, sex and stage",
+    "tests/e2e/m0-render.spec.ts::합성 인물 10명 무작위 스크린샷"
+   ],
+   "lastPass": null
+  },
+  "char.stages_art": {
+   "area": "캐릭터",
+   "name": "생애 단계 몸(아이/노인/임산부)",
+   "doc": "10",
+   "milestone": "M0",
+   "tests": [
+    "tests/unit/lpc-plan.test.ts::maps stages to LPC body types",
+    "tests/unit/lpc-plan.test.ts::gives elders an elderly head and wrinkles"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "char.creator": {
+   "area": "캐릭터",
+   "name": "캐릭터 만들기 화면(레이어, 색, 체형, 얼굴, 목소리, 걸음걸이)",
+   "doc": "10",
+   "milestone": "M7",
+   "tests": [],
+   "lastPass": null
+  },
+  "char.life_stages": {
+   "area": "캐릭터",
+   "name": "생애 7단계, 노화, 생일",
+   "doc": "10",
+   "milestone": "M7",
+   "tests": [],
+   "lastPass": null
+  },
+  "char.inherit_looks": {
+   "area": "캐릭터",
+   "name": "외형 유전 (3대 격세)",
+   "doc": "10",
+   "milestone": "M7",
+   "tests": [],
+   "lastPass": null
+  },
+  "inner.needs8": {
+   "area": "내면",
+   "name": "욕구 8개 감소/회복",
+   "doc": "11",
+   "milestone": "M1",
+   "tests": [
+    "tests/unit/sim.test.ts::깨어 있으면 1시간에 배고픔 6 감소",
+    "tests/unit/sim.test.ts::긴급도는 욕구가 낮을수록 큼"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "inner.moodlets": {
+   "area": "내면",
+   "name": "무드렛",
+   "doc": "11",
+   "milestone": "M2",
+   "tests": [
+    "tests/unit/inner.test.ts::욕구가 낮아지면 욕구 무드렛이 붙고 채워지면 떨어"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "inner.emotions10": {
+   "area": "내면",
+   "name": "감정 10개 + 무난, 단계, 억제",
+   "doc": "11",
+   "milestone": "M2",
+   "tests": [
+    "tests/unit/emotion.test.ts::단계: 2~2.9 기본, 3~5.9 강함, 6 이상 극단",
+    "tests/unit/emotion.test.ts::억제: 세기 3 부정 무드렛이 있으면 긍정 합 절반"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "inner.thoughts": {
+   "area": "내면",
+   "name": "속마음",
+   "doc": "11",
+   "milestone": "M2",
+   "tests": [
+    "tests/unit/inner.test.ts::인물은 소원과 걱정을 가지고, 속마음을 말함",
+    "tests/unit/inner.test.ts::같은 속마음 문장은 같은 날 두 번 나오지 않음"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "inner.memory": {
+   "area": "내면",
+   "name": "기억",
+   "doc": "11",
+   "milestone": "M2",
+   "tests": [
+    "tests/unit/inner.test.ts::세기 2 이상 사건 무드렛은 기억이 됨"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "inner.room_score": {
+   "area": "내면",
+   "name": "방 점수 무드렛 (신분 보정)",
+   "doc": "11",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::방 도구: 벽으로 닫힌 바닥이 방으로 인식되고"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "inner.temperature": {
+   "area": "내면",
+   "name": "실내 기온과 온기",
+   "doc": "11",
+   "milestone": "M1",
+   "tests": [
+    "tests/unit/sim.test.ts::화로에 불이 붙으면 방 기온이 오름"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "persona.traits30": {
+   "area": "성격",
+   "name": "특성 30개",
+   "doc": "12",
+   "milestone": "M2",
+   "tests": [
+    "tests/unit/inner.test.ts::쾌활함은 행복 무드렛이 더 오래 감"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "persona.virtue_sin": {
+   "area": "성격",
+   "name": "7덕 7죄, 업보, 스트레스",
+   "doc": "12",
+   "milestone": "M2",
+   "tests": [
+    "tests/unit/inner.test.ts::성격에 맞지 않는 행동은 스트레스",
+    "tests/unit/inner.test.ts::스트레스 100 → 무너짐 선택 대기"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "persona.aspirations": {
+   "area": "성격",
+   "name": "인생 목표 14 + 아동 4, 단계",
+   "doc": "12",
+   "milestone": "M2",
+   "tests": [
+    "tests/unit/inner.test.ts::아동은 아동 목표, 귀족은 성인+귀족 목표 후보",
+    "tests/unit/inner.test.ts::모든 인생 목표의 1단계가 지금 생기는 카운터로 도"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "persona.wishes": {
+   "area": "성격",
+   "name": "소원/걱정",
+   "doc": "12",
+   "milestone": "M2",
+   "tests": [
+    "tests/unit/inner.test.ts::뽑히는 소원/걱정은 모두 지금 생길 수 있는 사건으"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "persona.happiness_points": {
+   "area": "성격",
+   "name": "행복 포인트와 보상 특성",
+   "doc": "12",
+   "milestone": "M2",
+   "tests": [
+    "tests/unit/inner.test.ts::행복(강함 이상) 상태가 이어지면 행복 포인트가 쌓",
+    "tests/unit/inner.test.ts::보상 구매는 상점 보상만"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "act.pie_menu": {
+   "area": "행동",
+   "name": "원형 메뉴 (회색 + 이유)",
+   "doc": "13",
+   "milestone": "M1",
+   "tests": [
+    "tests/unit/sim.test.ts::조건이 안 맞으면 메뉴에 회색 + 이유",
+    "tests/e2e/m1-cook.spec.ts::실제 클릭"
+   ],
+   "lastPass": null
+  },
+  "act.queue": {
+   "area": "행동",
+   "name": "대기열",
+   "doc": "13",
+   "milestone": "M1",
+   "tests": [
+    "tests/e2e/m1-cook.spec.ts::실제 클릭"
+   ],
+   "lastPass": null
+  },
+  "act.multitask": {
+   "area": "행동",
+   "name": "멀티태스킹 (먹으며 이야기)",
+   "doc": "13",
+   "milestone": "M3",
+   "tests": [
+    "tests/unit/m3-people.test.ts::둘이 같이 앉아 먹으면 이야기하고"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "act.autonomy": {
+   "area": "행동",
+   "name": "유틸리티 AI 자율 행동",
+   "doc": "13",
+   "milestone": "M1",
+   "tests": [
+    "tests/unit/sim.test.ts::방치/stuck/관통 0"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "act.pathfinding": {
+   "area": "행동",
+   "name": "길찾기 (벽/문/대각선, 층 이동)",
+   "doc": "13",
+   "milestone": "M1",
+   "tests": [
+    "tests/unit/sim.test.ts::A*는 벽을 통과하지 않고 문으로 드나듦",
+    "tests/unit/sim.test.ts::대각선으로 벽 모서리를 깎지 않음",
+    "tests/unit/m5-build.test.ts::2층: 받침 있는 칸에만 바닥"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "act.slots": {
+   "area": "행동",
+   "name": "슬롯 예약, 회전",
+   "doc": "13",
+   "milestone": "M1",
+   "tests": [
+    "tests/unit/sim.test.ts::시계 방향 회전: 칸과 방향이 함께 돔"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "act.town_travel": {
+   "area": "행동",
+   "name": "마을 이동",
+   "doc": "13",
+   "milestone": "M6",
+   "tests": [],
+   "lastPass": null
+  },
+  "social.relations3": {
+   "area": "사회",
+   "name": "관계 3축, 이름, 감소",
+   "doc": "14",
+   "milestone": "M3",
+   "tests": [
+    "tests/unit/relations.test.ts::우정 −100~100, 로맨스 0~100, 존중 방향별",
+    "tests/unit/relations.test.ts::관계 이름"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "social.interactions80": {
+   "area": "사회",
+   "name": "사회 상호작용 80개 이상, 성공 판정",
+   "doc": "14",
+   "milestone": "M3",
+   "tests": [
+    "tests/unit/relations.test.ts::분포: 시드 RNG 로 굴린 성공 비율이 확률과 맞음",
+    "tests/e2e/m3-people.spec.ts::M3 사람들"
+   ],
+   "lastPass": null
+  },
+  "social.first_impression": {
+   "area": "사회",
+   "name": "첫인상, 초대/방문",
+   "doc": "14",
+   "milestone": "M3",
+   "tests": [
+    "tests/unit/m3-people.test.ts::초대 → 길 끝에서 들어옴 → 첫인상"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "social.courtship": {
+   "area": "사회",
+   "name": "구애와 혼인, 중매, 지참금",
+   "doc": "14",
+   "milestone": "M9",
+   "tests": [],
+   "lastPass": null
+  },
+  "social.affair": {
+   "area": "사회",
+   "name": "불륜",
+   "doc": "14",
+   "milestone": "M9",
+   "tests": [],
+   "lastPass": null
+  },
+  "social.divorce": {
+   "area": "사회",
+   "name": "이혼/혼인 무효",
+   "doc": "14",
+   "milestone": "M9",
+   "tests": [],
+   "lastPass": null
+  },
+  "social.grudge": {
+   "area": "사회",
+   "name": "원한, 결투",
+   "doc": "14",
+   "milestone": "M9",
+   "tests": [],
+   "lastPass": null
+  },
+  "social.rumor": {
+   "area": "사회",
+   "name": "소문 네트워크",
+   "doc": "14",
+   "milestone": "M9",
+   "tests": [],
+   "lastPass": null
+  },
+  "family.pregnancy": {
+   "area": "가족",
+   "name": "임신 3단계, 유산/사산/조산",
+   "doc": "15",
+   "milestone": "M7",
+   "tests": [],
+   "lastPass": null
+  },
+  "family.birth": {
+   "area": "가족",
+   "name": "출산(산파)",
+   "doc": "15",
+   "milestone": "M7",
+   "tests": [],
+   "lastPass": null
+  },
+  "family.infant_care": {
+   "area": "가족",
+   "name": "아기/유아 돌봄, 유아 기술",
+   "doc": "15",
+   "milestone": "M7",
+   "tests": [],
+   "lastPass": null
+  },
+  "family.education": {
+   "area": "가족",
+   "name": "교육과 도제",
+   "doc": "15",
+   "milestone": "M7",
+   "tests": [],
+   "lastPass": null
+  },
+  "family.adoption": {
+   "area": "가족",
+   "name": "입양/양자",
+   "doc": "15",
+   "milestone": "M7",
+   "tests": [],
+   "lastPass": null
+  },
+  "family.inheritance": {
+   "area": "가족",
+   "name": "상속",
+   "doc": "15",
+   "milestone": "M7",
+   "tests": [],
+   "lastPass": null
+  },
+  "family.household_rule": {
+   "area": "가족",
+   "name": "가문 ⊃ 가정 인원 규칙",
+   "doc": "15",
+   "milestone": "M7",
+   "tests": [],
+   "lastPass": null
+  },
+  "house.crest": {
+   "area": "가문",
+   "name": "성과 문장 편집기, 가훈",
+   "doc": "16",
+   "milestone": "M8",
+   "tests": [],
+   "lastPass": null
+  },
+  "house.heirloom": {
+   "area": "가문",
+   "name": "가보",
+   "doc": "16",
+   "milestone": "M8",
+   "tests": [],
+   "lastPass": null
+  },
+  "house.renown": {
+   "area": "가문",
+   "name": "가문 명성",
+   "doc": "16",
+   "milestone": "M8",
+   "tests": [],
+   "lastPass": null
+  },
+  "house.estates7": {
+   "area": "가문",
+   "name": "신분 7단계, 원하는 신분에서 시작 (7×3 프리셋)",
+   "doc": "16",
+   "milestone": "M8",
+   "tests": [],
+   "lastPass": null
+  },
+  "house.mobility": {
+   "area": "가문",
+   "name": "상승/하락 경로, 사치 금지법",
+   "doc": "16",
+   "milestone": "M8",
+   "tests": [],
+   "lastPass": null
+  },
+  "house.fief": {
+   "area": "가문",
+   "name": "영지 경영, 하인",
+   "doc": "16",
+   "milestone": "M8",
+   "tests": [],
+   "lastPass": null
+  },
+  "house.clan_relations": {
+   "area": "가문",
+   "name": "가문 간 관계",
+   "doc": "16",
+   "milestone": "M8",
+   "tests": [],
+   "lastPass": null
+  },
+  "work.careers": {
+   "area": "일과 돈",
+   "name": "직업 16 (래빗홀 + 현장형) + NPC 역할 10, 등급",
+   "doc": "17",
+   "milestone": "M4",
+   "tests": [
+    "tests/unit/m4-work.test.ts::출근 시각에 부지 출구로 나가 사라졌다가 퇴근하면",
+    "tests/e2e/m4-work.spec.ts::M4 대장장이"
+   ],
+   "lastPass": null
+  },
+  "work.skills25": {
+   "area": "일과 돈",
+   "name": "스킬 25",
+   "doc": "17",
+   "milestone": "M4",
+   "tests": [
+    "tests/unit/m4-work.test.ts::레벨 n → n+1 경험치"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "work.home_production": {
+   "area": "일과 돈",
+   "name": "가내 생산 (레시피 80)",
+   "doc": "17",
+   "milestone": "M4",
+   "tests": [
+    "tests/e2e/m4-work.spec.ts::M4 농사"
+   ],
+   "lastPass": null
+  },
+  "work.market_ledger": {
+   "area": "일과 돈",
+   "name": "시장 거래와 마을 재화 장부",
+   "doc": "17",
+   "milestone": "M4",
+   "tests": [
+    "tests/unit/m4-work.test.ts::장보기는 돈을 내고 재고가 늘고"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "work.storage_spoil": {
+   "area": "일과 돈",
+   "name": "식료품 재고와 부패 (지하 저장고 절반)",
+   "doc": "17",
+   "milestone": "M4",
+   "tests": [
+    "tests/unit/m4-work.test.ts::빵은 3일 지나면 상해서 버려짐",
+    "tests/unit/m5-build.test.ts::지하 저장고"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "work.money3": {
+   "area": "일과 돈",
+   "name": "화폐 3단위(내부 파딩), 가계부",
+   "doc": "17",
+   "milestone": "M4",
+   "tests": [
+    "tests/e2e/m4-ui.spec.ts::M4 살림"
+   ],
+   "lastPass": null
+  },
+  "work.tax_debt": {
+   "area": "일과 돈",
+   "name": "세금/십일조/빚",
+   "doc": "17",
+   "milestone": "M4",
+   "tests": [
+    "tests/unit/m4-work.test.ts::하루 끝에 십일조 10%",
+    "tests/unit/m4-work.test.ts::10. 대출 한도까지 부분 대출"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "work.relief": {
+   "area": "일과 돈",
+   "name": "구휼 (교회, 영주 곳간, 친척)",
+   "doc": "17",
+   "milestone": "M4",
+   "tests": [],
+   "lastPass": null
+  },
+  "work.shop": {
+   "area": "일과 돈",
+   "name": "가게 운영",
+   "doc": "17",
+   "milestone": "M4",
+   "tests": [
+    "tests/unit/m4-work.test.ts::가게를 열면 손님(이웃)이 와서 흥정하고"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "work.journey": {
+   "area": "일과 돈",
+   "name": "여정형 직업 (교역)",
+   "doc": "17",
+   "milestone": "M4",
+   "tests": [
+    "tests/unit/m4-work.test.ts::며칠 떠났다가 돌아와 교역 수익"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "town.map": {
+   "area": "마을",
+   "name": "끊김 없는 마을 지도 200×150, 청크",
+   "doc": "18",
+   "milestone": "M6",
+   "tests": [],
+   "lastPass": null
+  },
+  "town.places12": {
+   "area": "마을",
+   "name": "공공 장소 12종",
+   "doc": "18",
+   "milestone": "M6",
+   "tests": [],
+   "lastPass": null
+  },
+  "town.npc_schedule": {
+   "area": "마을",
+   "name": "NPC 120 일과표, 세밀도 3단계",
+   "doc": "18",
+   "milestone": "M6",
+   "tests": [],
+   "lastPass": null
+  },
+  "town.story": {
+   "area": "마을",
+   "name": "스토리 진행",
+   "doc": "18",
+   "milestone": "M6",
+   "tests": [],
+   "lastPass": null
+  },
+  "town.riding": {
+   "area": "마을",
+   "name": "말 타기",
+   "doc": "18",
+   "milestone": "M6",
+   "tests": [],
+   "lastPass": null
+  },
+  "town.moving": {
+   "area": "마을",
+   "name": "이사",
+   "doc": "18",
+   "milestone": "M6",
+   "tests": [],
+   "lastPass": null
+  },
+  "season.calendar": {
+   "area": "계절",
+   "name": "4계절 (7일마다)",
+   "doc": "19",
+   "milestone": "M4",
+   "tests": [
+    "tests/unit/m4-work.test.ts::계절이 7일마다 바뀜"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "season.weather8": {
+   "area": "계절",
+   "name": "날씨 8종",
+   "doc": "19",
+   "milestone": "M10",
+   "tests": [],
+   "lastPass": null
+  },
+  "season.festivals8": {
+   "area": "계절",
+   "name": "축제 8개, 대회",
+   "doc": "19",
+   "milestone": "M10",
+   "tests": [],
+   "lastPass": null
+  },
+  "season.seasonal_acts": {
+   "area": "계절",
+   "name": "계절 활동",
+   "doc": "19",
+   "milestone": "M10",
+   "tests": [],
+   "lastPass": null
+  },
+  "life.disease12": {
+   "area": "생사",
+   "name": "질병 12종과 전염, 역병",
+   "doc": "20",
+   "milestone": "M11",
+   "tests": [],
+   "lastPass": null
+  },
+  "life.states5": {
+   "area": "생사",
+   "name": "상태 5종",
+   "doc": "20",
+   "milestone": "M11",
+   "tests": [],
+   "lastPass": null
+  },
+  "life.injury": {
+   "area": "생사",
+   "name": "부상과 영구 부상/보조구",
+   "doc": "20",
+   "milestone": "M11",
+   "tests": [],
+   "lastPass": null
+  },
+  "life.treatment": {
+   "area": "생사",
+   "name": "치료",
+   "doc": "20",
+   "milestone": "M11",
+   "tests": [],
+   "lastPass": null
+  },
+  "life.death": {
+   "area": "생사",
+   "name": "사망 원인과 사망 설정 행렬",
+   "doc": "20",
+   "milestone": "M11",
+   "tests": [],
+   "lastPass": null
+  },
+  "life.funeral": {
+   "area": "생사",
+   "name": "장례, 묘비",
+   "doc": "20",
+   "milestone": "M11",
+   "tests": [],
+   "lastPass": null
+  },
+  "life.ghost": {
+   "area": "생사",
+   "name": "유령, 업보",
+   "doc": "20",
+   "milestone": "M11",
+   "tests": [],
+   "lastPass": null
+  },
+  "faith.sacraments": {
+   "area": "신앙",
+   "name": "성사, 교회 출석",
+   "doc": "21",
+   "milestone": "M10",
+   "tests": [],
+   "lastPass": null
+  },
+  "faith.confession": {
+   "area": "신앙",
+   "name": "고해/보속",
+   "doc": "21",
+   "milestone": "M10",
+   "tests": [],
+   "lastPass": null
+  },
+  "faith.saints": {
+   "area": "신앙",
+   "name": "성인 축일",
+   "doc": "21",
+   "milestone": "M10",
+   "tests": [],
+   "lastPass": null
+  },
+  "faith.omens": {
+   "area": "신앙",
+   "name": "징조와 미신",
+   "doc": "21",
+   "milestone": "M10",
+   "tests": [],
+   "lastPass": null
+  },
+  "faith.heresy": {
+   "area": "신앙",
+   "name": "이단/마녀 의혹",
+   "doc": "21",
+   "milestone": "M10",
+   "tests": [],
+   "lastPass": null
+  },
+  "animal.pets": {
+   "area": "동물",
+   "name": "개/고양이 성격과 욕구, 훈련",
+   "doc": "22",
+   "milestone": "M12",
+   "tests": [],
+   "lastPass": null
+  },
+  "animal.horse": {
+   "area": "동물",
+   "name": "말, 말 타기",
+   "doc": "22",
+   "milestone": "M12",
+   "tests": [],
+   "lastPass": null
+  },
+  "animal.livestock": {
+   "area": "동물",
+   "name": "닭/염소/소/돼지/양, 산출",
+   "doc": "22",
+   "milestone": "M12",
+   "tests": [],
+   "lastPass": null
+  },
+  "animal.wild": {
+   "area": "동물",
+   "name": "야생 동물",
+   "doc": "22",
+   "milestone": "M12",
+   "tests": [],
+   "lastPass": null
+  },
+  "build.walls": {
+   "area": "건축",
+   "name": "벽 (끌기, 방 도구, 재질 9, 단열)",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::방 도구",
+    "tests/e2e/m5-build.spec.ts::M5 건축"
+   ],
+   "lastPass": null
+  },
+  "build.floors": {
+   "area": "건축",
+   "name": "바닥 (칠하기, 방 채우기)",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::2층: 받침 있는 칸에만 바닥",
+    "tests/e2e/m5-build.spec.ts::M5 건축"
+   ],
+   "lastPass": null
+  },
+  "build.roof": {
+   "area": "건축",
+   "name": "자동 지붕 (재질 4), 실외에서 보이고 안에서 투명",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/e2e/m5-build.spec.ts::M5 건축",
+    "tests/unit/m5-build.test.ts::방 도구"
+   ],
+   "lastPass": null
+  },
+  "build.doors_windows": {
+   "area": "건축",
+   "name": "문 8/창 4, 잠금",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::신분 제한",
+    "tests/e2e/m5-build.spec.ts::M5 건축"
+   ],
+   "lastPass": null
+  },
+  "build.stairs_levels": {
+   "area": "건축",
+   "name": "계단, 2층, 층 전환",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::2층: 받침 있는 칸에만 바닥",
+    "tests/unit/m5-build.test.ts::계단참"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "build.cellar": {
+   "area": "건축",
+   "name": "기초와 지하 저장고",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::지하 저장고"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "build.chimney": {
+   "area": "건축",
+   "name": "굴뚝 자동, 연기",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::굴뚝"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "build.fence_terrain": {
+   "area": "건축",
+   "name": "울타리/담, 지형 칠하기, 나무 심기",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::길 막힘 경고",
+    "tests/e2e/m5-build.spec.ts::M5 건축"
+   ],
+   "lastPass": null
+  },
+  "build.lot_sizes": {
+   "area": "건축",
+   "name": "부지 크기 4종 (부지/집 사기는 M6 이사, M8 시작 프리셋)",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::등급 6단계"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "build.rooms": {
+   "area": "건축",
+   "name": "방 인식, 이름, 방 점수",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::방 도구",
+    "tests/unit/m5-build.test.ts::벽 없는 2층 발판"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "build.buy_catalog": {
+   "area": "건축",
+   "name": "구매 300종+, 배치/회전/색 변경",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::구매/옮기기/팔기",
+    "tests/e2e/m5-build.spec.ts::M5 건축"
+   ],
+   "lastPass": null
+  },
+  "build.undo": {
+   "area": "건축",
+   "name": "실행 취소/다시",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::실행 취소/다시 하기",
+    "tests/unit/m5-build.test.ts::다시 하기: 산 물건은 같은 uid"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "build.path_warning": {
+   "area": "건축",
+   "name": "길 막는 배치 경고",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::길 막힘 경고",
+    "tests/e2e/m5-build.spec.ts::M5 건축"
+   ],
+   "lastPass": null
+  },
+  "build.durability": {
+   "area": "건축",
+   "name": "내구도, 고장, 고치기",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::내구도"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "build.fire": {
+   "area": "건축",
+   "name": "화재 (번짐, 끄기, 이웃, 귀가)",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::화재: 불이 나면 가족이 달려가 끄고",
+    "tests/unit/m5-build.test.ts::아무도 없는 판자벽 집 불도 결국 꺼짐"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "build.construction_time": {
+   "area": "건축",
+   "name": "공사 시간 옵션",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::켜면 벽이 공사 예정"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "build.premade_houses": {
+   "area": "건축",
+   "name": "미리 만든 집 20채+ (등급 6)",
+   "doc": "23",
+   "milestone": "M5",
+   "tests": [
+    "tests/unit/m5-build.test.ts::모든 집: 방 수가 목록과 같고",
+    "tests/unit/m5-build.test.ts::등급 6단계"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "build.cleanliness": {
+   "area": "건축",
+   "name": "청결 (먼지, 청소)",
+   "doc": "23",
+   "milestone": "M2",
+   "tests": [],
+   "lastPass": null
+  },
+  "events.cards300": {
+   "area": "사건과 연대기",
+   "name": "사건 카드 300장",
+   "doc": "24",
+   "milestone": "M14",
+   "tests": [],
+   "lastPass": null
+  },
+  "events.chronicle": {
+   "area": "사건과 연대기",
+   "name": "연대기 (필사본 삽화)",
+   "doc": "24",
+   "milestone": "M14",
+   "tests": [],
+   "lastPass": null
+  },
+  "events.titles": {
+   "area": "사건과 연대기",
+   "name": "칭호, 묘비명",
+   "doc": "24",
+   "milestone": "M14",
+   "tests": [],
+   "lastPass": null
+  },
+  "events.heir": {
+   "area": "사건과 연대기",
+   "name": "후계자",
+   "doc": "24",
+   "milestone": "M14",
+   "tests": [],
+   "lastPass": null
+  },
+  "ai.dialogue": {
+   "area": "AI 대화",
+   "name": "Claude API 대화/속마음/편지/연대기, 키 없으면 규칙 기반",
+   "doc": "25",
+   "milestone": "M15",
+   "tests": [],
+   "lastPass": null
+  },
+  "online.gallery": {
+   "area": "온라인",
+   "name": "공유 갤러리, 내려받기, 좋아요, 신고",
+   "doc": "26",
+   "milestone": "M16",
+   "tests": [],
+   "lastPass": null
+  },
+  "ui.live_hud": {
+   "area": "인터페이스",
+   "name": "하루 화면 HUD (초상, 욕구, 시계, 알림)",
+   "doc": "27",
+   "milestone": "M1",
+   "tests": [
+    "tests/e2e/m2-inner.spec.ts::M2 내면"
+   ],
+   "lastPass": null
+  },
+  "ui.build_screen": {
+   "area": "인터페이스",
+   "name": "건축/구매 화면",
+   "doc": "27",
+   "milestone": "M5",
+   "tests": [
+    "tests/e2e/m5-build.spec.ts::M5 건축"
+   ],
+   "lastPass": null
+  },
+  "ui.settings": {
+   "area": "인터페이스",
+   "name": "설정",
+   "doc": "27",
+   "milestone": "M17",
+   "tests": [],
+   "lastPass": null
+  },
+  "ui.tutorial": {
+   "area": "인터페이스",
+   "name": "튜토리얼",
+   "doc": "27",
+   "milestone": "M17",
+   "tests": [],
+   "lastPass": null
+  },
+  "ui.chronicle_screen": {
+   "area": "인터페이스",
+   "name": "연대기 화면",
+   "doc": "27",
+   "milestone": "M17",
+   "tests": [],
+   "lastPass": null
+  },
+  "ui.combat_screen": {
+   "area": "인터페이스",
+   "name": "전투 전술 화면",
+   "doc": "27",
+   "milestone": "M17",
+   "tests": [],
+   "lastPass": null
+  },
+  "ui.accessibility": {
+   "area": "인터페이스",
+   "name": "접근성, 반응형 5종",
+   "doc": "27",
+   "milestone": "M17",
+   "tests": [],
+   "lastPass": null
+  },
+  "art.pixel_unify": {
+   "area": "아트/오디오",
+   "name": "픽셀 에셋 통일 (흐림 0, 화풍 맞춤)",
+   "doc": "28",
+   "milestone": "M0",
+   "tests": [
+    "tests/e2e/m0-render.spec.ts::흐림 0"
+   ],
+   "lastPass": null
+  },
+  "art.lighting": {
+   "area": "아트/오디오",
+   "name": "시간대 조명",
+   "doc": "28",
+   "milestone": "M0",
+   "tests": [],
+   "lastPass": null
+  },
+  "art.ysort": {
+   "area": "아트/오디오",
+   "name": "앞뒤 정렬",
+   "doc": "28",
+   "milestone": "M0",
+   "tests": [
+    "tests/e2e/m0-render.spec.ts::y-sort 오류 0"
+   ],
+   "lastPass": null
+  },
+  "art.weather_fx": {
+   "area": "아트/오디오",
+   "name": "날씨 효과",
+   "doc": "28",
+   "milestone": "M10",
+   "tests": [],
+   "lastPass": null
+  },
+  "art.music": {
+   "area": "아트/오디오",
+   "name": "음악 상황별",
+   "doc": "28",
+   "milestone": "M17",
+   "tests": [],
+   "lastPass": null
+  },
+  "art.sfx": {
+   "area": "아트/오디오",
+   "name": "효과음",
+   "doc": "28",
+   "milestone": "M17",
+   "tests": [],
+   "lastPass": null
+  },
+  "balance.headless": {
+   "area": "밸런스",
+   "name": "수치표와 헤드리스 검증 (경제 56일, 특성)",
+   "doc": "29",
+   "milestone": "M4",
+   "tests": [],
+   "lastPass": null
+  },
+  "farm.plots": {
+   "area": "농사",
+   "name": "텃밭/밭/과수, 작업 8종, 작물 15, 성장 5단계",
+   "doc": "31",
+   "milestone": "M4",
+   "tests": [
+    "tests/unit/m4-farm.test.ts::봄에는 밀을 못 심고",
+    "tests/e2e/m4-work.spec.ts::M4 농사"
+   ],
+   "lastPass": null
+  },
+  "farm.fertility": {
+   "area": "농사",
+   "name": "지력과 삼포제",
+   "doc": "31",
+   "milestone": "M4",
+   "tests": [
+    "tests/unit/m4-farm.test.ts::지력: 같은 곡물을 연달아 심으면"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "farm.disasters": {
+   "area": "농사",
+   "name": "재해",
+   "doc": "31",
+   "milestone": "M4",
+   "tests": [
+    "tests/unit/m4-farm.test.ts::허수아비는 까마귀 피해 확률을 줄임"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "combat.brawl_duel": {
+   "area": "전투",
+   "name": "주먹다짐, 대련, 결투",
+   "doc": "32",
+   "milestone": "M13",
+   "tests": [],
+   "lastPass": null
+  },
+  "combat.joust": {
+   "area": "전투",
+   "name": "마상시합",
+   "doc": "32",
+   "milestone": "M13",
+   "tests": [],
+   "lastPass": null
+  },
+  "combat.hunt_bandit": {
+   "area": "전투",
+   "name": "사냥, 산적",
+   "doc": "32",
+   "milestone": "M13",
+   "tests": [],
+   "lastPass": null
+  },
+  "combat.war": {
+   "area": "전투",
+   "name": "전쟁 원정",
+   "doc": "32",
+   "milestone": "M13",
+   "tests": [],
+   "lastPass": null
+  },
+  "combat.tactics": {
+   "area": "전투",
+   "name": "라운드제 전술, 장비, 부상",
+   "doc": "32",
+   "milestone": "M13",
+   "tests": [],
+   "lastPass": null
+  },
+  "magic.arcana": {
+   "area": "마법과 괴물",
+   "name": "비술 스킬과 주문 20",
+   "doc": "33",
+   "milestone": "M13",
+   "tests": [],
+   "lastPass": null
+  },
+  "magic.alchemy": {
+   "area": "마법과 괴물",
+   "name": "연금술 물약 12",
+   "doc": "33",
+   "milestone": "M13",
+   "tests": [],
+   "lastPass": null
+  },
+  "magic.witch_blood": {
+   "area": "마법과 괴물",
+   "name": "마녀의 피",
+   "doc": "33",
+   "milestone": "M13",
+   "tests": [],
+   "lastPass": null
+  },
+  "magic.creatures": {
+   "area": "마법과 괴물",
+   "name": "요정/집요정/고블린/트롤/큰늑대/거미/늑대인간",
+   "doc": "33",
+   "milestone": "M13",
+   "tests": [],
+   "lastPass": null
+  },
+  "core.determinism": {
+   "area": "기반",
+   "name": "시드 + 입력 로그 = 같은 해시",
+   "doc": "BRIEF",
+   "milestone": "M1",
+   "tests": [
+    "tests/unit/sim.test.ts::같은 시드 + 같은 입력 로그 = 같은 해시",
+    "tests/unit/m5-build.test.ts::입력 로그 재생"
+   ],
+   "lastPass": "2026-09-26"
+  },
+  "core.perf": {
+   "area": "기반",
+   "name": "프레임 예산 (40명 + 물건 300)",
+   "doc": "BRIEF",
+   "milestone": "M4",
+   "tests": [
+    "tests/e2e/perf.spec.ts::성능 예산"
+   ],
+   "lastPass": null
+  },
+  "core.tiled": {
+   "area": "기반",
+   "name": "Tiled 부지 형식",
+   "doc": "BRIEF",
+   "milestone": "M0",
+   "tests": [
+    "tests/unit/tiled.test.ts::부지 → .tmj → 부지 왕복이 같음"
+   ],
+   "lastPass": "2026-09-26"
+  }
+ }
+}

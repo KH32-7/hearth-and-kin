@@ -1,0 +1,797 @@
+{
+  "$comment": "성격 특성 30 (GDD 12-1). effects 문법: artifacts/contracts-m2.md 5절. metric = M2 통과 조건 대표 지표 (29-1: 기준 인물 대비 최소 배수, 시드 50, 95% 구간). kind: tagMinutes(태그 행동 분/일) | emotionMinutes(감정 분/일) | outdoorNight(밤 20~6시 바깥 분/일). direction down = 기준/특성 비율",
+  "slots": {
+    "child": 1,
+    "teen": 2,
+    "adult": 3,
+    "elder": 3
+  },
+  "conflicts": [
+    [
+      "cheerful",
+      "melancholic"
+    ],
+    [
+      "hot_tempered",
+      "calm"
+    ],
+    [
+      "coward",
+      "brave"
+    ],
+    [
+      "romantic",
+      "cynical"
+    ],
+    [
+      "neat",
+      "lazy"
+    ],
+    [
+      "lazy",
+      "diligent"
+    ],
+    [
+      "sociable",
+      "introvert"
+    ],
+    [
+      "kind",
+      "mean"
+    ],
+    [
+      "ambitious",
+      "humble"
+    ],
+    [
+      "just",
+      "cunning"
+    ]
+  ],
+  "crossConflicts": [
+    [
+      "flirt",
+      "chastity"
+    ]
+  ],
+  "traits": {
+    "cheerful": {
+      "category": "emotional",
+      "nameKey": "trait.cheerful",
+      "descKey": "trait.cheerful.desc",
+      "icon": "emo.happy",
+      "effects": {
+        "moodletDuration": {
+          "happy": 1.5,
+          "sad": 0.7
+        },
+        "idleMoodlet": {
+          "moodlet": "good_spirits",
+          "chancePerHour": 0.3
+        }
+      },
+      "metric": {
+        "kind": "moodletMinutes",
+        "emotions": [
+          "happy"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "melancholic": {
+      "category": "emotional",
+      "nameKey": "trait.melancholic",
+      "descKey": "trait.melancholic.desc",
+      "icon": "emo.sad",
+      "effects": {
+        "moodletDuration": {
+          "sad": 1.6,
+          "happy": 0.8
+        },
+        "idleMoodlet": {
+          "moodlet": "melancholy_mood",
+          "chancePerHour": 0.15
+        },
+        "adTag": {
+          "solitary": 1.5
+        }
+      },
+      "metric": {
+        "kind": "moodletMinutes",
+        "emotions": [
+          "sad"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "hot_tempered": {
+      "category": "emotional",
+      "nameKey": "trait.hot_tempered",
+      "descKey": "trait.hot_tempered.desc",
+      "icon": "emo.angry",
+      "effects": {
+        "moodletStrength": {
+          "angry": 1
+        },
+        "adTag": {
+          "argue": 4
+        },
+        "idleMoodlet": {
+          "moodlet": "short_fuse",
+          "chancePerHour": 0.1
+        }
+      },
+      "metric": {
+        "kind": "moodletMinutes",
+        "emotions": [
+          "angry"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "calm": {
+      "category": "emotional",
+      "nameKey": "trait.calm",
+      "descKey": "trait.calm.desc",
+      "icon": "emo.neutral",
+      "effects": {
+        "moodletDuration": {
+          "tense": 0.4,
+          "angry": 0.4
+        },
+        "adTag": {
+          "argue": 0.3
+        },
+        "stressOnTag": [
+          {
+            "tag": "argue",
+            "delta": 6
+          }
+        ]
+      },
+      "metric": {
+        "kind": "moodletMinutes",
+        "emotions": [
+          "angry",
+          "tense"
+        ],
+        "direction": "down",
+        "minMult": 1.5
+      }
+    },
+    "coward": {
+      "category": "emotional",
+      "nameKey": "trait.coward",
+      "descKey": "trait.coward.desc",
+      "icon": "emo.tense",
+      "effects": {
+        "adTag": {
+          "night_out": 0.02
+        },
+        "moodletOnWhile": [
+          {
+            "while": "dark_night_outdoor",
+            "moodlet": "alone_in_dark"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "outdoorNight",
+        "direction": "down",
+        "minMult": 1.5
+      }
+    },
+    "brave": {
+      "category": "emotional",
+      "nameKey": "trait.brave",
+      "descKey": "trait.brave.desc",
+      "icon": "emo.energized",
+      "effects": {
+        "adTag": {
+          "night_out": 4
+        },
+        "moodletDuration": {
+          "tense": 0.4
+        }
+      },
+      "metric": {
+        "kind": "moodletMinutes",
+        "emotions": [
+          "tense"
+        ],
+        "direction": "down",
+        "minMult": 1.5
+      }
+    },
+    "romantic": {
+      "category": "emotional",
+      "nameKey": "trait.romantic",
+      "descKey": "trait.romantic.desc",
+      "icon": "emo.excited",
+      "effects": {
+        "adTag": {
+          "romance": 3
+        },
+        "moodletOnWhile": [
+          {
+            "while": "single",
+            "moodlet": "lonely_heart"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "romance"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "cynical": {
+      "category": "emotional",
+      "nameKey": "trait.cynical",
+      "descKey": "trait.cynical.desc",
+      "icon": "emo.neutral",
+      "effects": {
+        "adTag": {
+          "romance": 0.25
+        }
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "romance"
+        ],
+        "direction": "down",
+        "minMult": 1.5
+      }
+    },
+    "neat": {
+      "category": "lifestyle",
+      "nameKey": "trait.neat",
+      "descKey": "trait.neat.desc",
+      "icon": "hygiene",
+      "effects": {
+        "adTag": {
+          "clean": 4
+        },
+        "moodletOnTag": [
+          {
+            "tag": "clean",
+            "moodlet": "satisfied_tidy"
+          }
+        ],
+        "moodletOnWhile": [
+          {
+            "while": "room_dirty",
+            "moodlet": "dirty_room_neat"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "clean"
+        ],
+        "direction": "up",
+        "minMult": 1.5,
+        "versus": {
+          "trait": "lazy",
+          "minMult": 3
+        }
+      }
+    },
+    "lazy": {
+      "category": "lifestyle",
+      "nameKey": "trait.lazy",
+      "descKey": "trait.lazy.desc",
+      "icon": "sleep",
+      "effects": {
+        "needDecay": {
+          "energy": 0.8
+        },
+        "adTag": {
+          "rest": 2,
+          "lounge": 6,
+          "labor": 0.5,
+          "clean": 0.3
+        },
+        "moodletOnTag": [
+          {
+            "tag": "rest",
+            "moodlet": "lazy_bliss"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "lounge"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "diligent": {
+      "category": "lifestyle",
+      "nameKey": "trait.diligent",
+      "descKey": "trait.diligent.desc",
+      "icon": "axe",
+      "effects": {
+        "adTag": {
+          "labor": 2,
+          "rest": 0.5
+        },
+        "stressOnTag": [
+          {
+            "tag": "rest",
+            "delta": 2
+          }
+        ],
+        "moodletOnTag": [
+          {
+            "tag": "rest",
+            "moodlet": "restless_idle"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "labor"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "gourmet": {
+      "category": "lifestyle",
+      "nameKey": "trait.gourmet",
+      "descKey": "trait.gourmet.desc",
+      "icon": "stew",
+      "effects": {
+        "adTag": {
+          "cook": 9
+        },
+        "moodletOnTag": [
+          {
+            "tag": "eat_plain",
+            "moodlet": "bad_food_gourmet"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "cook"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "drinker": {
+      "category": "lifestyle",
+      "nameKey": "trait.drinker",
+      "descKey": "trait.drinker.desc",
+      "icon": "water",
+      "effects": {
+        "adTag": {
+          "drink": 4
+        },
+        "moodletOnTag": [
+          {
+            "tag": "drink",
+            "moodlet": "ale_merry"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "drink"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "active": {
+      "category": "lifestyle",
+      "nameKey": "trait.active",
+      "descKey": "trait.active.desc",
+      "icon": "comfort",
+      "effects": {
+        "adTag": {
+          "exercise": 3
+        },
+        "dailyTagMoodlet": {
+          "tag": "exercise",
+          "moodlet": "no_exercise"
+        }
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "exercise"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "bookworm": {
+      "category": "lifestyle",
+      "nameKey": "trait.bookworm",
+      "descKey": "trait.bookworm.desc",
+      "icon": "book",
+      "effects": {
+        "adTag": {
+          "read": 2.5
+        }
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "read"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "handy": {
+      "category": "lifestyle",
+      "nameKey": "trait.handy",
+      "descKey": "trait.handy.desc",
+      "icon": "axe",
+      "effects": {
+        "adTag": {
+          "repair": 8,
+          "craft": 1.5
+        }
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "repair",
+          "craft"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "nature_lover": {
+      "category": "lifestyle",
+      "nameKey": "trait.nature_lover",
+      "descKey": "trait.nature_lover.desc",
+      "icon": "plant",
+      "effects": {
+        "adTag": {
+          "nature": 5
+        },
+        "moodletOnTag": [
+          {
+            "tag": "nature",
+            "moodlet": "fresh_air"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "nature"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "creative": {
+      "category": "lifestyle",
+      "nameKey": "trait.creative",
+      "descKey": "trait.creative.desc",
+      "icon": "lute",
+      "effects": {
+        "adTag": {
+          "creative": 2.5
+        },
+        "moodletOnTag": [
+          {
+            "tag": "creative",
+            "moodlet": "struck_inspiration"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "creative"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "sociable": {
+      "category": "social",
+      "nameKey": "trait.sociable",
+      "descKey": "trait.sociable.desc",
+      "icon": "social",
+      "effects": {
+        "needDecay": {
+          "social": 1.5
+        },
+        "adTag": {
+          "social": 1.6
+        }
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "social"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "introvert": {
+      "category": "social",
+      "nameKey": "trait.introvert",
+      "descKey": "trait.introvert.desc",
+      "icon": "book",
+      "effects": {
+        "needDecay": {
+          "social": 0.6
+        },
+        "adTag": {
+          "social": 0.35,
+          "solitary": 1.6
+        },
+        "moodletOnWhile": [
+          {
+            "while": "crowded",
+            "moodlet": "crowded_introvert"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "social"
+        ],
+        "direction": "down",
+        "minMult": 1.5
+      }
+    },
+    "kind": {
+      "category": "social",
+      "nameKey": "trait.kind",
+      "descKey": "trait.kind.desc",
+      "icon": "social",
+      "effects": {
+        "adTag": {
+          "kind": 3.5,
+          "mean": 0.2
+        },
+        "stressOnTag": [
+          {
+            "tag": "mean",
+            "delta": 12
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "kind"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "mean": {
+      "category": "social",
+      "nameKey": "trait.mean",
+      "descKey": "trait.mean.desc",
+      "icon": "emo.angry",
+      "effects": {
+        "adTag": {
+          "mean": 4,
+          "kind": 0.4
+        }
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "mean"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "ambitious": {
+      "category": "social",
+      "nameKey": "trait.ambitious",
+      "descKey": "trait.ambitious.desc",
+      "icon": "book",
+      "effects": {
+        "adTag": {
+          "study": 6,
+          "labor": 1.2
+        }
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "study"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "humble": {
+      "category": "social",
+      "nameKey": "trait.humble",
+      "descKey": "trait.humble.desc",
+      "icon": "emo.pious",
+      "effects": {
+        "adTag": {
+          "brag": 0.15,
+          "humble": 5
+        },
+        "stressOnTag": [
+          {
+            "tag": "brag",
+            "delta": 10
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "humble"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "gossip": {
+      "category": "social",
+      "nameKey": "trait.gossip",
+      "descKey": "trait.gossip.desc",
+      "icon": "social",
+      "effects": {
+        "adTag": {
+          "gossip": 4
+        }
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "gossip"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "suspicious": {
+      "category": "social",
+      "nameKey": "trait.suspicious",
+      "descKey": "trait.suspicious.desc",
+      "icon": "eye",
+      "effects": {
+        "adTag": {
+          "guard": 6
+        }
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "guard"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "family_oriented": {
+      "category": "social",
+      "nameKey": "trait.family_oriented",
+      "descKey": "trait.family_oriented.desc",
+      "icon": "social",
+      "effects": {
+        "adTag": {
+          "family": 3
+        },
+        "moodletOnWhile": [
+          {
+            "while": "family_near",
+            "moodlet": "family_near"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "family"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "flirt": {
+      "category": "social",
+      "nameKey": "trait.flirt",
+      "descKey": "trait.flirt.desc",
+      "icon": "emo.excited",
+      "effects": {
+        "adTag": {
+          "flirt": 4
+        }
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "flirt"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "just": {
+      "category": "social",
+      "nameKey": "trait.just",
+      "descKey": "trait.just.desc",
+      "icon": "emo.pious",
+      "effects": {
+        "adTag": {
+          "duty": 3,
+          "lie": 0.2
+        },
+        "stressOnTag": [
+          {
+            "tag": "lie",
+            "delta": 12
+          }
+        ],
+        "moodletOnTag": [
+          {
+            "tag": "duty",
+            "moodlet": "did_good"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "duty"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    },
+    "cunning": {
+      "category": "social",
+      "nameKey": "trait.cunning",
+      "descKey": "trait.cunning.desc",
+      "icon": "eye",
+      "effects": {
+        "adTag": {
+          "lie": 6
+        },
+        "moodletOnTag": [
+          {
+            "tag": "lie",
+            "moodlet": "schemed"
+          }
+        ]
+      },
+      "metric": {
+        "kind": "tagMinutes",
+        "tags": [
+          "lie"
+        ],
+        "direction": "up",
+        "minMult": 1.5
+      }
+    }
+  }
+}

@@ -1,0 +1,219 @@
+{
+  "$comment": "감정 10 + 무난 (GDD 11-3). 단계: 합 2 미만 무난, 2~2.9 기본, 3~5.9 강함, 6 이상 극단. 효과의 % 는 스킬 경험치 속도(M4)에만. expr = 단계(기본/강함/극단)별 LPC 얼굴 표정 (빈 문자열이면 기본 얼굴)",
+  "stages": {
+    "basic": 2,
+    "strong": 3,
+    "extreme": 6
+  },
+  "needSourceCap": 2,
+  "suppress": {
+    "negativeStrength": 3,
+    "positiveFactor": 0.5,
+    "positiveMaxStage": "strong"
+  },
+  "extremeRisk": {
+    "$comment": "GDD 11-3 극단 감정 위험: 부정 감정(emotions) 극단 단계가 hours 넘게 이어지면 판정 → 알림 extreme_risk + 스트레스 stress (11-4 무너짐 경로) + 사건 event:extreme_risk, event:extreme_risk_<감정>. 이어지면 같은 간격마다 다시. enabled 는 새 게임 설정 기본값 (설정에서 끔)",
+    "hours": {
+      "value": 240,
+      "scale": "absolute"
+    },
+    "enabled": true,
+    "emotions": ["sad", "angry", "tense", "ashamed"],
+    "stress": 15
+  },
+  "happinessPoints": {
+    "$comment": "GDD 12-5 행복/환희 상태가 이어지면 행복 포인트. perHourByStage = [무난, 기본, 강함, 극단] 시간당 포인트 (분 단위로 쌓아 정수로 지급)",
+    "emotions": ["happy"],
+    "perHourByStage": [0, 0, 1, 2]
+  },
+  "recomputeMinutes": 5,
+  "emotions": {
+    "happy": {
+      "positive": true,
+      "nameKeys": [
+        "emotion.happy.basic",
+        "emotion.happy.strong",
+        "emotion.happy.extreme"
+      ],
+      "icon": "emo.happy",
+      "color": "#e9b949",
+      "walkMult": 1.05,
+      "idleAnim": "emote",
+      "expr": [
+        "happy",
+        "happy",
+        "happy2"
+      ]
+    },
+    "energized": {
+      "positive": true,
+      "nameKeys": [
+        "emotion.energized.basic",
+        "emotion.energized.strong",
+        "emotion.energized.extreme"
+      ],
+      "icon": "emo.energized",
+      "color": "#e98a3b",
+      "walkMult": 1.15,
+      "idleAnim": "emote",
+      "expr": [
+        "happy",
+        "happy2",
+        "happy2"
+      ]
+    },
+    "focused": {
+      "positive": true,
+      "nameKeys": [
+        "emotion.focused.basic",
+        "emotion.focused.strong",
+        "emotion.focused.extreme"
+      ],
+      "icon": "emo.focused",
+      "color": "#5b8fd6",
+      "walkMult": 1.0,
+      "idleAnim": "idle",
+      "expr": [
+        "",
+        "",
+        ""
+      ]
+    },
+    "excited": {
+      "positive": true,
+      "nameKeys": [
+        "emotion.excited.basic",
+        "emotion.excited.strong",
+        "emotion.excited.extreme"
+      ],
+      "icon": "emo.excited",
+      "color": "#e36a9a",
+      "walkMult": 1.08,
+      "idleAnim": "emote",
+      "expr": [
+        "blush",
+        "blush",
+        "blush"
+      ]
+    },
+    "inspired": {
+      "positive": true,
+      "nameKeys": [
+        "emotion.inspired.basic",
+        "emotion.inspired.strong",
+        "emotion.inspired.extreme"
+      ],
+      "icon": "emo.inspired",
+      "color": "#9b6bd6",
+      "walkMult": 1.0,
+      "idleAnim": "idle",
+      "expr": [
+        "happy",
+        "happy2",
+        "happy2"
+      ]
+    },
+    "pious": {
+      "positive": true,
+      "nameKeys": [
+        "emotion.pious.basic",
+        "emotion.pious.strong",
+        "emotion.pious.extreme"
+      ],
+      "icon": "emo.pious",
+      "color": "#e8e0c0",
+      "walkMult": 0.95,
+      "idleAnim": "idle",
+      "expr": [
+        "",
+        "",
+        "happy"
+      ]
+    },
+    "sad": {
+      "positive": false,
+      "nameKeys": [
+        "emotion.sad.basic",
+        "emotion.sad.strong",
+        "emotion.sad.extreme"
+      ],
+      "icon": "emo.sad",
+      "color": "#4f6b8f",
+      "walkMult": 0.85,
+      "idleAnim": "idle",
+      "expr": [
+        "sad",
+        "sad",
+        "sad2"
+      ]
+    },
+    "angry": {
+      "positive": false,
+      "nameKeys": [
+        "emotion.angry.basic",
+        "emotion.angry.strong",
+        "emotion.angry.extreme"
+      ],
+      "icon": "emo.angry",
+      "color": "#c0392b",
+      "walkMult": 1.1,
+      "idleAnim": "idle",
+      "expr": [
+        "angry",
+        "angry",
+        "angry2"
+      ]
+    },
+    "tense": {
+      "positive": false,
+      "nameKeys": [
+        "emotion.tense.basic",
+        "emotion.tense.strong",
+        "emotion.tense.extreme"
+      ],
+      "icon": "emo.tense",
+      "color": "#b8a13a",
+      "walkMult": 1.05,
+      "idleAnim": "idle",
+      "expr": [
+        "shock",
+        "shock",
+        "shock"
+      ]
+    },
+    "ashamed": {
+      "positive": false,
+      "nameKeys": [
+        "emotion.ashamed.basic",
+        "emotion.ashamed.strong",
+        "emotion.ashamed.extreme"
+      ],
+      "icon": "emo.ashamed",
+      "color": "#a0526d",
+      "walkMult": 0.9,
+      "idleAnim": "idle",
+      "expr": [
+        "shame",
+        "shame",
+        "blush"
+      ]
+    },
+    "neutral": {
+      "positive": true,
+      "nameKeys": [
+        "emotion.neutral",
+        "emotion.neutral",
+        "emotion.neutral"
+      ],
+      "icon": "emo.neutral",
+      "color": "#8a8a7a",
+      "walkMult": 1.0,
+      "idleAnim": "idle",
+      "expr": [
+        "",
+        "",
+        ""
+      ]
+    }
+  }
+}

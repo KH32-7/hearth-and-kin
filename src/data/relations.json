@@ -1,0 +1,284 @@
+{
+  "$comment": "관계 3축 규칙 (GDD 14-1, 14-2). 감소는 lifespan 속도 필드: 값 ÷ 수명 배수 (29-0)",
+  "decayPerDay": {
+    "friendship": 1,
+    "romance": 1.5,
+    "scale": "lifespan"
+  },
+  "familyFriendshipDecayMult": 0.5,
+  "romanticDecayMult": 0.5,
+  "names": {
+    "enemy": -60,
+    "rival": -30,
+    "friend": 30,
+    "bestFriend": 70,
+    "bestFriendMemories": 5,
+    "loverRomance": 50
+  },
+  "firstImpression": {
+    "friendship": [
+      -20,
+      20
+    ],
+    "respect": [
+      -30,
+      30
+    ],
+    "estateRespectPerStep": 6,
+    "hygienePenaltyBelow": 30,
+    "hygienePenalty": 6,
+    "traitPairs": [
+      {
+        "a": "kind",
+        "b": "mean",
+        "friendship": -8
+      },
+      {
+        "a": "sociable",
+        "b": "sociable",
+        "friendship": 6
+      },
+      {
+        "a": "sociable",
+        "b": "introvert",
+        "friendship": -4
+      },
+      {
+        "a": "neat",
+        "b": "lazy",
+        "friendship": -6
+      },
+      {
+        "a": "just",
+        "b": "cunning",
+        "friendship": -8
+      },
+      {
+        "a": "humble",
+        "b": "ambitious",
+        "friendship": -3
+      },
+      {
+        "a": "cheerful",
+        "b": "melancholic",
+        "friendship": -3
+      },
+      {
+        "a": "romantic",
+        "b": "romantic",
+        "friendship": 5
+      },
+      {
+        "a": "bookworm",
+        "b": "bookworm",
+        "friendship": 5
+      },
+      {
+        "a": "drinker",
+        "b": "drinker",
+        "friendship": 6
+      },
+      {
+        "a": "gossip",
+        "b": "gossip",
+        "friendship": 5
+      },
+      {
+        "a": "nature_lover",
+        "b": "nature_lover",
+        "friendship": 4
+      },
+      {
+        "a": "hot_tempered",
+        "b": "hot_tempered",
+        "friendship": -5
+      }
+    ]
+  },
+  "success": {
+    "moodPositiveBonus": 8,
+    "moodNegativeMalus": -10,
+    "angryMeanBonus": 10,
+    "estateStepMod": 3,
+    "sharedTopicBonus": 5,
+    "rudePunishChance": 0.35
+  },
+  "multitask": {
+    "radius": 3,
+    "socialPerMinute": 0.5,
+    "chatMoodletChancePerHour": 0.3,
+    "tags": [
+      "eat_good",
+      "eat_plain",
+      "rest",
+      "drink",
+      "craft"
+    ],
+    "friendshipPerHour": 2
+  },
+  "familyMeal": {
+    "moodlet": "family_meal",
+    "minPeople": 2,
+    "radius": 3
+  },
+  "traitTopics": {
+    "gourmet": [
+      "food"
+    ],
+    "drinker": [
+      "food",
+      "gossip"
+    ],
+    "romantic": [
+      "love"
+    ],
+    "flirt": [
+      "love",
+      "gossip"
+    ],
+    "gossip": [
+      "gossip"
+    ],
+    "family_oriented": [
+      "family"
+    ],
+    "diligent": [
+      "work"
+    ],
+    "handy": [
+      "work"
+    ],
+    "ambitious": [
+      "work",
+      "war"
+    ],
+    "brave": [
+      "war"
+    ],
+    "coward": [
+      "plague",
+      "war"
+    ],
+    "nature_lover": [
+      "weather"
+    ],
+    "active": [
+      "weather",
+      "war"
+    ],
+    "bookworm": [
+      "faith",
+      "plague"
+    ],
+    "just": [
+      "faith"
+    ],
+    "humble": [
+      "faith",
+      "family"
+    ],
+    "melancholic": [
+      "plague",
+      "faith"
+    ],
+    "cynical": [
+      "gossip",
+      "war"
+    ],
+    "suspicious": [
+      "gossip",
+      "plague"
+    ],
+    "creative": [
+      "love"
+    ],
+    "kind": [
+      "family"
+    ],
+    "sociable": [
+      "gossip",
+      "weather"
+    ],
+    "cheerful": [
+      "weather",
+      "food"
+    ],
+    "calm": [
+      "weather"
+    ],
+    "hot_tempered": [
+      "war"
+    ],
+    "cunning": [
+      "gossip",
+      "work"
+    ],
+    "neat": [
+      "work"
+    ],
+    "lazy": [
+      "food"
+    ],
+    "introvert": [
+      "faith"
+    ],
+    "mean": [
+      "gossip"
+    ]
+  },
+  "visit": {
+    "$comment": "이웃 방문 (초대 → 길 끝에서 걸어 들어옴 → 어울림 → 돌아감). 분은 absolute",
+    "arriveAfterMinutes": [
+      20,
+      60
+    ],
+    "stayMinutes": [
+      150,
+      240
+    ],
+    "scale": "absolute",
+    "leaveIfNeedBelow": 15,
+    "$allow": "손님이 남의 집에서 스스로 하는 물건 상호작용 (그 밖은 안 함: 잠, 목욕, 요리, 집안일, 옷 갈아입기, 장보기 등). 사람 대상 사회 상호작용은 모두 가능",
+    "allowInteractions": [
+      "hearth.warm_up",
+      "table.eat_stew",
+      "barrel.wash_hands",
+      "washbasin.wash_face",
+      "chamber_pot.use",
+      "outhouse.use",
+      "seat.sit",
+      "bookshelf.read",
+      "lute.play",
+      "tapestry.admire",
+      "window.chat",
+      "window.gaze",
+      "cupboard.drink_ale",
+      "yard.walk",
+      "bench.pray",
+      "well.stargaze",
+      "rug.stretch"
+    ]
+  },
+  "engine": {
+    "$comment": "엔진이 붙이는 무드렛 기준 (GDD 11-1, contracts-m2 5절). 분은 absolute",
+    "scale": "absolute",
+    "sleptBadlyBelow": 45,
+    "floorBeds": [
+      "rug",
+      "bedroll",
+      "straw_pallet"
+    ],
+    "ateAloneChance": 0.3,
+    "stockLow": {
+      "default": 1,
+      "bread": 1,
+      "ingredients": 2,
+      "firewood": 2,
+      "water": 2
+    },
+    "smokeRoomMaxCells": 16,
+    "smokeMinutes": 120
+  },
+  "partnerRomanceAdMult": 2.5,
+  "$partnerRomanceAdMult": "연인/약혼/배우자 사이 로맨스 상호작용 자율 광고 배수 (부부가 서로 다정한 모습을 보이게)"
+}

@@ -1,0 +1,10 @@
+import { Simulation } from '../../src/sim/sim';
+import { loadSimData } from '../data-node';
+const s = new Simulation(loadSimData(), 1);
+s.addPerson('p1');
+const h = s.world.objects.find((o) => o.defId === 'hearth')!;
+Object.assign(h.state, { lit: true, fuelMin: 300, servings: 4 });
+s.world.stock.bread = 0;
+s.persons[0].setNeed('hunger', 5);
+for (let i = 0; i < 240; i++) s.tick();
+console.log(JSON.stringify(s.stats.shortEndsBy), s.persons[0].need('hunger').toFixed(1), s.persons[0].traits.join(','));

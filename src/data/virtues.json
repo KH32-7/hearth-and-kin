@@ -1,0 +1,24 @@
+{
+  "$comment": "덕 7 / 죄 7 (GDD 12-2). 행동 규범이라 업보(karma)와 스트레스만 움직임. 덕: keep 태그 → 업보 +, 스트레스 −; break 태그 → 스트레스 +. 죄: follow 태그 → 스트레스 −, 업보 −. 자율에서는 스트레스 40 이상일 때 해소 태그 광고값 × reliefAdMult (13-4)",
+  "noneChance": 0.2,
+  "reliefStressAt": 40,
+  "reliefAdMult": 2.5,
+  "virtues": {
+    "chastity": { "nameKey": "virtue.chastity", "descKey": "virtue.chastity.desc", "sin": "lust", "keep": [], "break": ["flirt"], "keepKarma": 1, "keepStress": -1, "breakStress": 10 },
+    "temperance": { "nameKey": "virtue.temperance", "descKey": "virtue.temperance.desc", "sin": "gluttony", "keep": ["fast"], "break": ["drink", "feast"], "keepKarma": 1, "keepStress": -2, "breakStress": 6 },
+    "charity": { "nameKey": "virtue.charity", "descKey": "virtue.charity.desc", "sin": "greed", "keep": ["charity", "duty"], "break": ["guard"], "keepKarma": 2, "keepStress": -2, "breakStress": 3 },
+    "diligence": { "nameKey": "virtue.diligence", "descKey": "virtue.diligence.desc", "sin": "sloth", "keep": ["labor"], "break": ["rest"], "keepKarma": 1, "keepStress": -2, "breakStress": 4 },
+    "patience": { "nameKey": "virtue.patience", "descKey": "virtue.patience.desc", "sin": "wrath", "keep": ["humble"], "break": ["argue"], "keepKarma": 1, "keepStress": -2, "breakStress": 8 },
+    "kindness": { "nameKey": "virtue.kindness", "descKey": "virtue.kindness.desc", "sin": "envy", "keep": ["kind"], "break": ["mean", "gossip"], "keepKarma": 2, "keepStress": -2, "breakStress": 10 },
+    "humility": { "nameKey": "virtue.humility", "descKey": "virtue.humility.desc", "sin": "pride", "keep": ["humble", "pray"], "break": ["brag"], "keepKarma": 1, "keepStress": -2, "breakStress": 8 }
+  },
+  "sins": {
+    "lust": { "nameKey": "sin.lust", "descKey": "sin.lust.desc", "virtue": "chastity", "follow": ["flirt", "romance"], "followKarma": -2, "followStress": -4 },
+    "gluttony": { "nameKey": "sin.gluttony", "descKey": "sin.gluttony.desc", "virtue": "temperance", "follow": ["drink", "feast", "eat_good"], "followKarma": -1, "followStress": -4 },
+    "greed": { "nameKey": "sin.greed", "descKey": "sin.greed.desc", "virtue": "charity", "follow": ["guard"], "followKarma": -1, "followStress": -4 },
+    "sloth": { "nameKey": "sin.sloth", "descKey": "sin.sloth.desc", "virtue": "diligence", "follow": ["rest"], "followKarma": -1, "followStress": -4 },
+    "wrath": { "nameKey": "sin.wrath", "descKey": "sin.wrath.desc", "virtue": "patience", "follow": ["argue", "mean"], "followKarma": -2, "followStress": -6 },
+    "envy": { "nameKey": "sin.envy", "descKey": "sin.envy.desc", "virtue": "kindness", "follow": ["gossip", "mean"], "followKarma": -2, "followStress": -4 },
+    "pride": { "nameKey": "sin.pride", "descKey": "sin.pride.desc", "virtue": "humility", "follow": ["brag"], "followKarma": -1, "followStress": -4 }
+  }
+}

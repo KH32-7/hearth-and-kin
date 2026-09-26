@@ -1,0 +1,16 @@
+{
+  "$comment": "시간대 색 보정 (GDD 28-1 조명). minute = 하루 중 분, rgb = 곱해지는 색. 사이는 선형 보간. darkness = 광원 세기 (0 낮 ~ 1 밤)",
+  "keys": [
+    { "minute": 0,    "rgb": [0.42, 0.45, 0.66], "darkness": 1.0 },
+    { "minute": 300,  "rgb": [0.46, 0.48, 0.68], "darkness": 0.95 },
+    { "minute": 360,  "rgb": [0.86, 0.70, 0.62], "darkness": 0.55 },
+    { "minute": 450,  "rgb": [1.0, 0.94, 0.86],  "darkness": 0.15 },
+    { "minute": 720,  "rgb": [1.0, 1.0, 1.0],    "darkness": 0.0 },
+    { "minute": 1020, "rgb": [1.0, 0.95, 0.88],  "darkness": 0.1 },
+    { "minute": 1110, "rgb": [0.98, 0.74, 0.58], "darkness": 0.45 },
+    { "minute": 1200, "rgb": [0.56, 0.54, 0.74], "darkness": 0.85 },
+    { "minute": 1440, "rgb": [0.42, 0.45, 0.66], "darkness": 1.0 }
+  ],
+  "indoorBoost": 0.06,
+  "glowRadius": { "hearth": 4, "candlestick": 2.5, "default": 2 }
+}

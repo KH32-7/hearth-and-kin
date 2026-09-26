@@ -1,0 +1,15 @@
+{
+  "object.oven": "빵 화덕",
+  "object.brew_vat": "양조통",
+  "object.loom": "베틀",
+  "object.workbench": "목공대",
+  "object.forge": "대장간 화로",
+  "object.anvil": "모루",
+  "object.churn": "버터 교반기",
+  "object.salting_tub": "소금 절임통",
+  "object.smokehouse": "훈제 걸이",
+  "object.press": "과즙 압착기",
+  "object.field_plot": "밭",
+  "object.garden_plot": "텃밭",
+  "object.orchard_tree": "과일나무"
+}

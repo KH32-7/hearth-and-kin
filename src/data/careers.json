@@ -1,0 +1,4405 @@
+{
+  "$comment": "GDD 17-2 직업 16 + NPC 역할 10 (계약 artifacts/contracts-m4.md 4절). 돈은 파딩 정수. 기간은 {value, scale}. 사건 카드 effects: performance, money(파딩), moodlets, relationship{target, friendship}, skillXp, items(재고), karma/church/fame(평판, 24-1), tradeMult(여정 수익 배수), ordersLate(오늘 주문 지연 건수). check{skill, level} 이 있으면 성공 시 effects, 실패 시 failEffects. 검사: npx tsx tools/check-work-content.ts (새 무드렛 4개는 리드가 moodlets_m3.json 으로 옮김)",
+  "rules": {
+    "$comment": "17-2, 17-7, 13-9. 래빗홀 일당 = economy.income.wageBase × 4파딩 × wageRankMult^(등급-1). 성과는 등급 안에서 누적, promoteAt × 수명 배수 에 닿으면 승급 사건 (다음 등급은 × nextRankMult). 임금 성과 보정 = economy.income.performance (min~max) 를 성과/승급선 비율로 선형 보간",
+    "attitudes": {
+      "hard": {
+        "nameKey": "career.attitude.hard",
+        "performance": 6,
+        "xpMult": 1.2,
+        "needMult": {
+          "energy": 1.25,
+          "fun": 1
+        }
+      },
+      "normal": {
+        "nameKey": "career.attitude.normal",
+        "performance": 3,
+        "xpMult": 1,
+        "needMult": {}
+      },
+      "slack": {
+        "nameKey": "career.attitude.slack",
+        "performance": -2,
+        "xpMult": 0.5,
+        "needMult": {
+          "energy": 0.7,
+          "fun": 0
+        }
+      }
+    },
+    "performance": {
+      "skillPerLevel": 0.4,
+      "dailyTaskDone": 3,
+      "mood": {
+        "happy": 1,
+        "focused": 2,
+        "energized": 1,
+        "inspired": 1,
+        "sad": -1,
+        "angry": -1,
+        "tense": -1,
+        "ashamed": -1
+      },
+      "promoteScale": "lifespan",
+      "nextRankMult": 1.5,
+      "warnAt": -25,
+      "fireAt": -50,
+      "wageMod": "economy.income.performance"
+    },
+    "rabbitholeNeeds": {
+      "hunger": 0.5,
+      "energy": 1,
+      "hygiene": 1,
+      "bladder": 0,
+      "fun": 0.5,
+      "social": 0.3,
+      "warmth": 0,
+      "comfort": 0.5
+    },
+    "onsite": {
+      "$comment": "주문: 하루 perDay 건을 시드 RNG 로 뽑음. 품목은 pool 가중치, 수량은 qty 범위. 사례금 = 품목 기준가(items.json base) × 수량 × feeMult 범위 안 무작위 × (1 + 품질 단계 × qualityStep). 원료는 가게가 장부 가격으로 삼 (17-7 매출 − 원료비). 등급 share = 사례금 중 본인 몫 (도제 0, 직인 절반, 장인 전부). 용역(services)은 fee 범위 파딩 × 등급 feeMult",
+      "deadline": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "qualityStep": 0.1,
+      "performance": {
+        "orderDone": 3,
+        "orderLate": -3,
+        "orderMissed": -5,
+        "qualityStep": 1,
+        "customerHappy": 1,
+        "customerAngry": -2
+      }
+    },
+    "guildPath": {
+      "$comment": "16-2, 17-2. 도제 10일(급여 없음, 숙식, 경험치 +50%) → 직인 최소 8일 → 걸작 + 길드 가입비 → 장인(신분 artisan) → 길드장(길드 선거 사건)",
+      "apprentice": {
+        "days": {
+          "value": 10,
+          "scale": "lifespan"
+        },
+        "wage": 0,
+        "xpBonus": 0.5
+      },
+      "journeyman": {
+        "minDays": {
+          "value": 8,
+          "scale": "lifespan"
+        }
+      },
+      "master": {
+        "masterpiece": true,
+        "guildFee": {
+          "value": 288,
+          "scale": "lifespan"
+        },
+        "estate": "artisan"
+      }
+    },
+    "events": {
+      "chancePerShift": 0.2,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "rating": "all",
+      "check": {
+        "base": 0.5,
+        "perLevel": 0.1,
+        "min": 0.1,
+        "max": 0.95
+      },
+      "relationshipTargets": [
+        "boss",
+        "coworker",
+        "customer",
+        "lord",
+        "guild",
+        "parish"
+      ]
+    }
+  },
+  "careers": {
+    "field_hand": {
+      "nameKey": "career.field_hand",
+      "descKey": "career.field_hand.desc",
+      "icon": "plant",
+      "type": "rabbithole",
+      "estates": [
+        "serf",
+        "freeman"
+      ],
+      "literacy": false,
+      "skills": [
+        "fitness",
+        "farming"
+      ],
+      "workplace": "lot_exit",
+      "place": "lord_fields",
+      "hours": [
+        6,
+        14
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.field_hand.r1",
+          "wage": 16
+        },
+        {
+          "nameKey": "career.field_hand.r2",
+          "wage": 24
+        },
+        {
+          "nameKey": "career.field_hand.r3",
+          "wage": 36
+        }
+      ],
+      "promoteAt": 100,
+      "rabbitholeNeeds": {
+        "energy": 1.2,
+        "hygiene": 2
+      },
+      "events": [
+        {
+          "id": "fh_short_count",
+          "textKey": "career.ev.fh_short_count",
+          "options": [
+            {
+              "id": "quiet",
+              "textKey": "career.ev.fh_short_count.quiet",
+              "effects": {
+                "performance": 2,
+                "relationship": {
+                  "target": "boss",
+                  "friendship": 3
+                }
+              }
+            },
+            {
+              "id": "let_go",
+              "textKey": "career.ev.fh_short_count.let_go",
+              "effects": {
+                "moodlets": [
+                  "ordered_about"
+                ]
+              }
+            },
+            {
+              "id": "argue",
+              "textKey": "career.ev.fh_short_count.argue",
+              "effects": {
+                "performance": -4,
+                "money": 8,
+                "relationship": {
+                  "target": "boss",
+                  "friendship": -10
+                },
+                "moodlets": [
+                  "argued"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "fh_hare",
+          "textKey": "career.ev.fh_hare",
+          "options": [
+            {
+              "id": "pocket",
+              "textKey": "career.ev.fh_hare.pocket",
+              "effects": {
+                "items": {
+                  "ingredients": 1
+                },
+                "moodlets": [
+                  "schemed"
+                ],
+                "karma": -1
+              },
+              "check": {
+                "skill": "fitness",
+                "level": 3
+              },
+              "failEffects": {
+                "performance": -6,
+                "money": -8,
+                "moodlets": [
+                  "scolded"
+                ]
+              }
+            },
+            {
+              "id": "report",
+              "textKey": "career.ev.fh_hare.report",
+              "effects": {
+                "performance": 3,
+                "relationship": {
+                  "target": "boss",
+                  "friendship": 2
+                }
+              }
+            },
+            {
+              "id": "shoo",
+              "textKey": "career.ev.fh_hare.shoo",
+              "effects": {
+                "moodlets": [
+                  "good_spirits"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "fh_storm_rows",
+          "textKey": "career.ev.fh_storm_rows",
+          "options": [
+            {
+              "id": "push",
+              "textKey": "career.ev.fh_storm_rows.push",
+              "effects": {
+                "performance": 6,
+                "moodlets": [
+                  "overworked",
+                  "soaked"
+                ],
+                "skillXp": {
+                  "fitness": 30
+                }
+              }
+            },
+            {
+              "id": "pretend",
+              "textKey": "career.ev.fh_storm_rows.pretend",
+              "effects": {
+                "performance": -1
+              }
+            },
+            {
+              "id": "leave",
+              "textKey": "career.ev.fh_storm_rows.leave",
+              "effects": {
+                "performance": -8,
+                "relationship": {
+                  "target": "boss",
+                  "friendship": -5
+                },
+                "moodlets": [
+                  "lazy_bliss"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "farming",
+        "key": "career.field_hand.task"
+      }
+    },
+    "mill_hand": {
+      "nameKey": "career.mill_hand",
+      "descKey": "career.mill_hand.desc",
+      "icon": "item.flour",
+      "type": "rabbithole",
+      "estates": [
+        "freeman"
+      ],
+      "literacy": false,
+      "skills": [
+        "fitness",
+        "reckoning"
+      ],
+      "workplace": "lot_exit",
+      "place": "mill",
+      "hours": [
+        6,
+        15
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.mill_hand.r1",
+          "wage": 20
+        },
+        {
+          "nameKey": "career.mill_hand.r2",
+          "wage": 30
+        },
+        {
+          "nameKey": "career.mill_hand.r3",
+          "wage": 45
+        }
+      ],
+      "promoteAt": 100,
+      "rabbitholeNeeds": {
+        "energy": 1.3,
+        "hygiene": 1.5
+      },
+      "events": [
+        {
+          "id": "mh_wet_sack",
+          "textKey": "career.ev.mh_wet_sack",
+          "options": [
+            {
+              "id": "show",
+              "textKey": "career.ev.mh_wet_sack.show",
+              "effects": {
+                "performance": 2
+              }
+            },
+            {
+              "id": "mix",
+              "textKey": "career.ev.mh_wet_sack.mix",
+              "effects": {
+                "performance": 1,
+                "karma": -2,
+                "moodlets": [
+                  "guilty_conscience"
+                ]
+              }
+            },
+            {
+              "id": "tell",
+              "textKey": "career.ev.mh_wet_sack.tell",
+              "effects": {
+                "performance": -1,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 5
+                },
+                "moodlets": [
+                  "thanked"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "mh_toll_skim",
+          "textKey": "career.ev.mh_toll_skim",
+          "options": [
+            {
+              "id": "ignore",
+              "textKey": "career.ev.mh_toll_skim.ignore",
+              "effects": {
+                "moodlets": [
+                  "guilty_conscience"
+                ]
+              }
+            },
+            {
+              "id": "report",
+              "textKey": "career.ev.mh_toll_skim.report",
+              "effects": {
+                "performance": 4,
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": -10
+                },
+                "moodlets": [
+                  "did_good"
+                ]
+              }
+            },
+            {
+              "id": "share",
+              "textKey": "career.ev.mh_toll_skim.share",
+              "effects": {
+                "money": 6,
+                "karma": -3,
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": 5
+                },
+                "moodlets": [
+                  "schemed"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "mh_stone_jam",
+          "textKey": "career.ev.mh_stone_jam",
+          "options": [
+            {
+              "id": "sluice",
+              "textKey": "career.ev.mh_stone_jam.sluice",
+              "effects": {
+                "performance": 2,
+                "skillXp": {
+                  "fitness": 10
+                }
+              }
+            },
+            {
+              "id": "reach",
+              "textKey": "career.ev.mh_stone_jam.reach",
+              "effects": {
+                "performance": 5,
+                "moodlets": [
+                  "work_done"
+                ]
+              },
+              "check": {
+                "skill": "fitness",
+                "level": 4
+              },
+              "failEffects": {
+                "performance": -2,
+                "moodlets": [
+                  "wounded"
+                ]
+              }
+            },
+            {
+              "id": "call",
+              "textKey": "career.ev.mh_stone_jam.call",
+              "effects": {
+                "performance": -1
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "reckoning",
+        "key": "career.mill_hand.task"
+      }
+    },
+    "guard": {
+      "nameKey": "career.guard",
+      "descKey": "career.guard.desc",
+      "icon": "topic.war",
+      "type": "rabbithole",
+      "estates": [
+        "freeman"
+      ],
+      "literacy": false,
+      "skills": [
+        "martial",
+        "fitness"
+      ],
+      "workplace": "lot_exit",
+      "place": "castle",
+      "hours": [
+        8,
+        16
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.guard.r1",
+          "wage": 24
+        },
+        {
+          "nameKey": "career.guard.r2",
+          "wage": 36
+        },
+        {
+          "nameKey": "career.guard.r3",
+          "wage": 54
+        }
+      ],
+      "promoteAt": 100,
+      "patrol": true,
+      "rabbitholeNeeds": {
+        "energy": 1,
+        "hygiene": 1,
+        "social": 0.5
+      },
+      "events": [
+        {
+          "id": "gd_drunk_gate",
+          "textKey": "career.ev.gd_drunk_gate",
+          "options": [
+            {
+              "id": "calm",
+              "textKey": "career.ev.gd_drunk_gate.calm",
+              "effects": {
+                "performance": 1,
+                "moodlets": [
+                  "did_good"
+                ]
+              }
+            },
+            {
+              "id": "lock",
+              "textKey": "career.ev.gd_drunk_gate.lock",
+              "effects": {
+                "performance": 3,
+                "karma": -1
+              }
+            },
+            {
+              "id": "join",
+              "textKey": "career.ev.gd_drunk_gate.join",
+              "effects": {
+                "performance": -5,
+                "moodlets": [
+                  "good_joke",
+                  "ale_merry"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "gd_cart_coin",
+          "textKey": "career.ev.gd_cart_coin",
+          "options": [
+            {
+              "id": "take",
+              "textKey": "career.ev.gd_cart_coin.take",
+              "effects": {
+                "money": 12,
+                "karma": -3,
+                "moodlets": [
+                  "schemed"
+                ]
+              }
+            },
+            {
+              "id": "toll",
+              "textKey": "career.ev.gd_cart_coin.toll",
+              "effects": {
+                "performance": 3,
+                "moodlets": [
+                  "did_good"
+                ]
+              }
+            },
+            {
+              "id": "search",
+              "textKey": "career.ev.gd_cart_coin.search",
+              "effects": {
+                "performance": 4,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -5
+                },
+                "skillXp": {
+                  "martial": 10
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "gd_wolf_howl",
+          "textKey": "career.ev.gd_wolf_howl",
+          "options": [
+            {
+              "id": "lead",
+              "textKey": "career.ev.gd_wolf_howl.lead",
+              "effects": {
+                "performance": 6,
+                "moodlets": [
+                  "praised"
+                ]
+              },
+              "check": {
+                "skill": "martial",
+                "level": 3
+              },
+              "failEffects": {
+                "performance": 1,
+                "moodlets": [
+                  "wounded"
+                ]
+              }
+            },
+            {
+              "id": "detour",
+              "textKey": "career.ev.gd_wolf_howl.detour",
+              "effects": {
+                "performance": -1,
+                "moodlets": [
+                  "wolves_howl"
+                ]
+              }
+            },
+            {
+              "id": "send",
+              "textKey": "career.ev.gd_wolf_howl.send",
+              "effects": {
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": -6
+                },
+                "moodlets": [
+                  "guilty_conscience"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "martial",
+        "key": "career.guard.task"
+      }
+    },
+    "clerk": {
+      "nameKey": "career.clerk",
+      "descKey": "career.clerk.desc",
+      "icon": "book",
+      "type": "rabbithole",
+      "estates": [
+        "freeman",
+        "artisan",
+        "merchant",
+        "clergy"
+      ],
+      "literacy": true,
+      "skills": [
+        "reading",
+        "reckoning",
+        "latin"
+      ],
+      "workplace": "lot_exit",
+      "place": "castle",
+      "hours": [
+        8,
+        15
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.clerk.r1",
+          "wage": 32
+        },
+        {
+          "nameKey": "career.clerk.r2",
+          "wage": 48
+        },
+        {
+          "nameKey": "career.clerk.r3",
+          "wage": 72
+        }
+      ],
+      "promoteAt": 100,
+      "rabbitholeNeeds": {
+        "energy": 0.8,
+        "hygiene": 0.5
+      },
+      "events": [
+        {
+          "id": "cl_ink_blot",
+          "textKey": "career.ev.cl_ink_blot",
+          "options": [
+            {
+              "id": "scrape",
+              "textKey": "career.ev.cl_ink_blot.scrape",
+              "effects": {
+                "performance": 3
+              },
+              "check": {
+                "skill": "reading",
+                "level": 4
+              },
+              "failEffects": {
+                "performance": -6,
+                "moodlets": [
+                  "scolded"
+                ]
+              }
+            },
+            {
+              "id": "redo",
+              "textKey": "career.ev.cl_ink_blot.redo",
+              "effects": {
+                "performance": 1,
+                "moodlets": [
+                  "overworked"
+                ],
+                "skillXp": {
+                  "reading": 20
+                }
+              }
+            },
+            {
+              "id": "send",
+              "textKey": "career.ev.cl_ink_blot.send",
+              "effects": {
+                "performance": -3
+              }
+            }
+          ]
+        },
+        {
+          "id": "cl_steward_ledger",
+          "textKey": "career.ev.cl_steward_ledger",
+          "options": [
+            {
+              "id": "ask",
+              "textKey": "career.ev.cl_steward_ledger.ask",
+              "effects": {
+                "performance": 2,
+                "relationship": {
+                  "target": "boss",
+                  "friendship": -3
+                },
+                "skillXp": {
+                  "reckoning": 15
+                }
+              }
+            },
+            {
+              "id": "lord",
+              "textKey": "career.ev.cl_steward_ledger.lord",
+              "effects": {
+                "performance": 8,
+                "relationship": {
+                  "target": "boss",
+                  "friendship": -15
+                },
+                "moodlets": [
+                  "did_good"
+                ]
+              }
+            },
+            {
+              "id": "bury",
+              "textKey": "career.ev.cl_steward_ledger.bury",
+              "effects": {
+                "money": 24,
+                "karma": -3,
+                "moodlets": [
+                  "guilty_conscience"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "cl_latin_letter",
+          "textKey": "career.ev.cl_latin_letter",
+          "options": [
+            {
+              "id": "abbey",
+              "textKey": "career.ev.cl_latin_letter.abbey",
+              "effects": {
+                "performance": 1,
+                "skillXp": {
+                  "latin": 25
+                }
+              }
+            },
+            {
+              "id": "guess",
+              "textKey": "career.ev.cl_latin_letter.guess",
+              "effects": {
+                "performance": 4,
+                "moodlets": [
+                  "pride_boast"
+                ]
+              },
+              "check": {
+                "skill": "latin",
+                "level": 3
+              },
+              "failEffects": {
+                "performance": -5,
+                "moodlets": [
+                  "caught_lying"
+                ]
+              }
+            },
+            {
+              "id": "admit",
+              "textKey": "career.ev.cl_latin_letter.admit",
+              "effects": {
+                "performance": -2,
+                "moodlets": [
+                  "humble_chat"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "reckoning",
+        "key": "career.clerk.task"
+      }
+    },
+    "monk": {
+      "nameKey": "career.monk",
+      "descKey": "career.monk.desc",
+      "nameKeyF": "career.monk.f",
+      "icon": "topic.faith",
+      "type": "rabbithole",
+      "estates": [
+        "clergy"
+      ],
+      "literacy": true,
+      "skills": [
+        "faith",
+        "latin"
+      ],
+      "workplace": "lot_exit",
+      "place": "monastery",
+      "hours": [
+        5,
+        17
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.monk.r1",
+          "wage": 12,
+          "board": true
+        },
+        {
+          "nameKey": "career.monk.r2",
+          "wage": 18,
+          "board": true,
+          "nameKeyF": "career.monk.r2.f"
+        },
+        {
+          "nameKey": "career.monk.r3",
+          "wage": 27,
+          "board": true,
+          "nameKeyF": "career.monk.r3.f"
+        }
+      ],
+      "promoteAt": 100,
+      "rabbitholeNeeds": {
+        "energy": 0.9,
+        "hygiene": 0.7,
+        "fun": 0.3
+      },
+      "events": [
+        {
+          "id": "mk_night_office",
+          "textKey": "career.ev.mk_night_office",
+          "options": [
+            {
+              "id": "wake",
+              "textKey": "career.ev.mk_night_office.wake",
+              "effects": {
+                "performance": 2,
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": -3
+                }
+              }
+            },
+            {
+              "id": "doze",
+              "textKey": "career.ev.mk_night_office.doze",
+              "effects": {
+                "performance": -3,
+                "moodlets": [
+                  "lazy_bliss"
+                ]
+              }
+            },
+            {
+              "id": "kneel",
+              "textKey": "career.ev.mk_night_office.kneel",
+              "effects": {
+                "performance": 3,
+                "moodlets": [
+                  "prayer_calm"
+                ],
+                "skillXp": {
+                  "faith": 15
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "mk_copy_error",
+          "textKey": "career.ev.mk_copy_error",
+          "options": [
+            {
+              "id": "confess",
+              "textKey": "career.ev.mk_copy_error.confess",
+              "effects": {
+                "performance": -1,
+                "moodlets": [
+                  "confessed"
+                ]
+              }
+            },
+            {
+              "id": "margin",
+              "textKey": "career.ev.mk_copy_error.margin",
+              "effects": {
+                "performance": 2,
+                "skillXp": {
+                  "latin": 10
+                }
+              },
+              "check": {
+                "skill": "reading",
+                "level": 3
+              },
+              "failEffects": {
+                "performance": -4,
+                "moodlets": [
+                  "scolded"
+                ]
+              }
+            },
+            {
+              "id": "hide",
+              "textKey": "career.ev.mk_copy_error.hide",
+              "effects": {
+                "moodlets": [
+                  "guilty_conscience"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "mk_beggar_bread",
+          "textKey": "career.ev.mk_beggar_bread",
+          "options": [
+            {
+              "id": "own",
+              "textKey": "career.ev.mk_beggar_bread.own",
+              "effects": {
+                "karma": 2,
+                "moodlets": [
+                  "did_good",
+                  "fast_kept"
+                ]
+              }
+            },
+            {
+              "id": "kitchen",
+              "textKey": "career.ev.mk_beggar_bread.kitchen",
+              "effects": {
+                "performance": 1,
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": -2
+                },
+                "moodlets": [
+                  "thanked"
+                ]
+              }
+            },
+            {
+              "id": "tomorrow",
+              "textKey": "career.ev.mk_beggar_bread.tomorrow",
+              "effects": {
+                "moodlets": [
+                  "guilty_conscience"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "faith",
+        "key": "career.monk.task"
+      }
+    },
+    "trader": {
+      "nameKey": "career.trader",
+      "descKey": "career.trader.desc",
+      "icon": "ui.coin",
+      "type": "journey",
+      "estates": [
+        "merchant"
+      ],
+      "literacy": false,
+      "skills": [
+        "reckoning",
+        "storytelling"
+      ],
+      "workplace": "lot_exit",
+      "place": "road",
+      "hours": [
+        7,
+        19
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.trader.r1",
+          "rankBonus": 0
+        },
+        {
+          "nameKey": "career.trader.r2",
+          "rankBonus": 0.05
+        },
+        {
+          "nameKey": "career.trader.r3",
+          "rankBonus": 0.1
+        }
+      ],
+      "promoteAt": 100,
+      "journey": {
+        "days": [
+          3,
+          5
+        ],
+        "daysScale": "absolute",
+        "prepDays": {
+          "value": 2,
+          "scale": "absolute"
+        },
+        "minInvest": 60,
+        "formula": "economy.income.trade",
+        "perfPerTrip": {
+          "profit": 6,
+          "loss": -4
+        }
+      },
+      "events": [
+        {
+          "id": "tr_bridge_toll",
+          "textKey": "career.ev.tr_bridge_toll",
+          "options": [
+            {
+              "id": "pay",
+              "textKey": "career.ev.tr_bridge_toll.pay",
+              "effects": {
+                "money": -16
+              }
+            },
+            {
+              "id": "haggle",
+              "textKey": "career.ev.tr_bridge_toll.haggle",
+              "effects": {
+                "money": -6,
+                "moodlets": [
+                  "good_bargain"
+                ],
+                "skillXp": {
+                  "storytelling": 10
+                }
+              },
+              "check": {
+                "skill": "storytelling",
+                "level": 3
+              },
+              "failEffects": {
+                "money": -20,
+                "moodlets": [
+                  "bad_bargain"
+                ]
+              }
+            },
+            {
+              "id": "ford",
+              "textKey": "career.ev.tr_bridge_toll.ford",
+              "effects": {
+                "tradeMult": 0.95,
+                "moodlets": [
+                  "soaked"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "tr_rival_rumor",
+          "textKey": "career.ev.tr_rival_rumor",
+          "options": [
+            {
+              "id": "display",
+              "textKey": "career.ev.tr_rival_rumor.display",
+              "effects": {
+                "tradeMult": 1.1,
+                "moodlets": [
+                  "pride_boast"
+                ]
+              },
+              "check": {
+                "skill": "storytelling",
+                "level": 4
+              },
+              "failEffects": {
+                "tradeMult": 0.9,
+                "moodlets": [
+                  "mocked"
+                ]
+              }
+            },
+            {
+              "id": "cut",
+              "textKey": "career.ev.tr_rival_rumor.cut",
+              "effects": {
+                "tradeMult": 0.9
+              }
+            },
+            {
+              "id": "answer",
+              "textKey": "career.ev.tr_rival_rumor.answer",
+              "effects": {
+                "tradeMult": 1.05,
+                "karma": -2,
+                "moodlets": [
+                  "schemed"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "tr_pilgrim",
+          "textKey": "career.ev.tr_pilgrim",
+          "options": [
+            {
+              "id": "ride",
+              "textKey": "career.ev.tr_pilgrim.ride",
+              "effects": {
+                "tradeMult": 0.97,
+                "karma": 2,
+                "moodlets": [
+                  "did_good"
+                ]
+              }
+            },
+            {
+              "id": "bread",
+              "textKey": "career.ev.tr_pilgrim.bread",
+              "effects": {
+                "money": -3,
+                "moodlets": [
+                  "thanked"
+                ]
+              }
+            },
+            {
+              "id": "pass",
+              "textKey": "career.ev.tr_pilgrim.pass",
+              "effects": {
+                "moodlets": [
+                  "guilty_conscience"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "reckoning",
+        "key": "career.trader.task"
+      }
+    },
+    "blacksmith": {
+      "nameKey": "career.blacksmith",
+      "descKey": "career.blacksmith.desc",
+      "icon": "fire",
+      "type": "onsite",
+      "estates": [
+        "freeman",
+        "artisan"
+      ],
+      "literacy": false,
+      "skills": [
+        "smithing",
+        "fitness"
+      ],
+      "workplace": "forge",
+      "stations": [
+        "forge",
+        "anvil"
+      ],
+      "place": "workshop_row",
+      "hours": [
+        6,
+        16
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.blacksmith.r1",
+          "share": 0,
+          "board": true,
+          "xpBonus": 0.5,
+          "advance": "time",
+          "minDays": {
+            "value": 10,
+            "scale": "lifespan"
+          }
+        },
+        {
+          "nameKey": "career.blacksmith.r2",
+          "share": 0.5,
+          "advance": "masterpiece",
+          "minDays": {
+            "value": 8,
+            "scale": "lifespan"
+          }
+        },
+        {
+          "nameKey": "career.blacksmith.r3",
+          "share": 1,
+          "advance": "election"
+        },
+        {
+          "nameKey": "career.blacksmith.r4",
+          "share": 1,
+          "guildDuesShare": 0.25
+        }
+      ],
+      "promoteAt": 100,
+      "orders": {
+        "perDay": [
+          3,
+          6
+        ],
+        "feeMult": [
+          1.1,
+          1.4
+        ],
+        "pool": [
+          {
+            "item": "horseshoes",
+            "qty": [
+              1,
+              2
+            ],
+            "weight": 4
+          },
+          {
+            "item": "nails",
+            "qty": [
+              12,
+              40
+            ],
+            "weight": 4
+          },
+          {
+            "item": "hinge",
+            "qty": [
+              2,
+              6
+            ],
+            "weight": 3
+          },
+          {
+            "item": "knife",
+            "qty": [
+              1,
+              2
+            ],
+            "weight": 3
+          },
+          {
+            "item": "sickle",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "item": "hoe",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "item": "shears",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 1
+          },
+          {
+            "item": "pot",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 1
+          },
+          {
+            "item": "scythe",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 1,
+            "minRank": 1
+          },
+          {
+            "item": "plowshare",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 1,
+            "minRank": 1
+          }
+        ]
+      },
+      "services": {
+        "perDay": [
+          0,
+          2
+        ],
+        "pool": [
+          {
+            "id": "mend_tools",
+            "recipe": "mend_tools",
+            "nameKey": "career.svc.mend_tools",
+            "skill": "smithing",
+            "minutes": 30,
+            "fee": [
+              4,
+              12
+            ],
+            "places": [
+              "workshop_row"
+            ]
+          }
+        ]
+      },
+      "events": [
+        {
+          "id": "bs_lord_horse",
+          "textKey": "career.ev.bs_lord_horse",
+          "options": [
+            {
+              "id": "now",
+              "textKey": "career.ev.bs_lord_horse.now",
+              "effects": {
+                "performance": 4,
+                "relationship": {
+                  "target": "lord",
+                  "friendship": 5
+                },
+                "moodlets": [
+                  "overworked"
+                ],
+                "ordersLate": 1
+              }
+            },
+            {
+              "id": "premium",
+              "textKey": "career.ev.bs_lord_horse.premium",
+              "effects": {
+                "money": 24,
+                "relationship": {
+                  "target": "lord",
+                  "friendship": -6
+                },
+                "karma": -1
+              }
+            },
+            {
+              "id": "queue",
+              "textKey": "career.ev.bs_lord_horse.queue",
+              "effects": {
+                "performance": -2,
+                "relationship": {
+                  "target": "lord",
+                  "friendship": -10
+                },
+                "moodlets": [
+                  "pride_boast"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "bs_cracked_sickle",
+          "textKey": "career.ev.bs_cracked_sickle",
+          "options": [
+            {
+              "id": "reforge",
+              "textKey": "career.ev.bs_cracked_sickle.reforge",
+              "effects": {
+                "money": -12,
+                "performance": 2,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 6
+                }
+              }
+            },
+            {
+              "id": "blame",
+              "textKey": "career.ev.bs_cracked_sickle.blame",
+              "effects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 1
+                },
+                "skillXp": {
+                  "storytelling": 10
+                }
+              },
+              "check": {
+                "skill": "storytelling",
+                "level": 3
+              },
+              "failEffects": {
+                "performance": -3,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -8
+                },
+                "moodlets": [
+                  "argued"
+                ]
+              }
+            },
+            {
+              "id": "refund",
+              "textKey": "career.ev.bs_cracked_sickle.refund",
+              "effects": {
+                "money": -8,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "bs_apprentice_burn",
+          "textKey": "career.ev.bs_apprentice_burn",
+          "options": [
+            {
+              "id": "water",
+              "textKey": "career.ev.bs_apprentice_burn.water",
+              "effects": {
+                "performance": -1,
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": 6
+                }
+              }
+            },
+            {
+              "id": "scold",
+              "textKey": "career.ev.bs_apprentice_burn.scold",
+              "effects": {
+                "performance": 1,
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": -6
+                },
+                "moodlets": [
+                  "short_fuse"
+                ]
+              }
+            },
+            {
+              "id": "healer",
+              "textKey": "career.ev.bs_apprentice_burn.healer",
+              "effects": {
+                "money": -8,
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": 8
+                },
+                "ordersLate": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "bs_guild_weigh",
+          "textKey": "career.ev.bs_guild_weigh",
+          "options": [
+            {
+              "id": "scale",
+              "textKey": "career.ev.bs_guild_weigh.scale",
+              "effects": {
+                "performance": 5,
+                "moodlets": [
+                  "guild_nod"
+                ]
+              },
+              "check": {
+                "skill": "smithing",
+                "level": 4
+              },
+              "failEffects": {
+                "performance": -5,
+                "money": -12,
+                "moodlets": [
+                  "public_shame"
+                ]
+              }
+            },
+            {
+              "id": "ale",
+              "textKey": "career.ev.bs_guild_weigh.ale",
+              "effects": {
+                "money": -3,
+                "karma": -1,
+                "relationship": {
+                  "target": "guild",
+                  "friendship": 4
+                }
+              }
+            },
+            {
+              "id": "blame",
+              "textKey": "career.ev.bs_guild_weigh.blame",
+              "effects": {
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": -8
+                },
+                "moodlets": [
+                  "guilty_conscience"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "bs_night_chisel",
+          "textKey": "career.ev.bs_night_chisel",
+          "options": [
+            {
+              "id": "make",
+              "textKey": "career.ev.bs_night_chisel.make",
+              "effects": {
+                "money": 40,
+                "karma": -4,
+                "moodlets": [
+                  "schemed"
+                ]
+              }
+            },
+            {
+              "id": "refuse",
+              "textKey": "career.ev.bs_night_chisel.refuse",
+              "effects": {
+                "karma": 1
+              }
+            },
+            {
+              "id": "watch",
+              "textKey": "career.ev.bs_night_chisel.watch",
+              "effects": {
+                "karma": 2,
+                "relationship": {
+                  "target": "lord",
+                  "friendship": 3
+                },
+                "moodlets": [
+                  "threatened"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "bs_good_iron",
+          "textKey": "career.ev.bs_good_iron",
+          "options": [
+            {
+              "id": "blade",
+              "textKey": "career.ev.bs_good_iron.blade",
+              "effects": {
+                "performance": -2,
+                "moodlets": [
+                  "struck_inspiration"
+                ],
+                "skillXp": {
+                  "smithing": 40
+                },
+                "ordersLate": 1
+              }
+            },
+            {
+              "id": "orders",
+              "textKey": "career.ev.bs_good_iron.orders",
+              "effects": {
+                "performance": 3,
+                "moodlets": [
+                  "absorbed_work"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "smithing",
+        "key": "career.blacksmith.task"
+      }
+    },
+    "baker": {
+      "nameKey": "career.baker",
+      "descKey": "career.baker.desc",
+      "icon": "bread",
+      "type": "onsite",
+      "estates": [
+        "freeman",
+        "artisan"
+      ],
+      "literacy": false,
+      "skills": [
+        "baking"
+      ],
+      "workplace": "oven",
+      "stations": [
+        "oven",
+        "prep_counter"
+      ],
+      "place": "workshop_row",
+      "hours": [
+        3,
+        11
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.baker.r1",
+          "share": 0,
+          "board": true,
+          "xpBonus": 0.5,
+          "advance": "time",
+          "minDays": {
+            "value": 10,
+            "scale": "lifespan"
+          }
+        },
+        {
+          "nameKey": "career.baker.r2",
+          "share": 0.5,
+          "advance": "masterpiece",
+          "minDays": {
+            "value": 8,
+            "scale": "lifespan"
+          }
+        },
+        {
+          "nameKey": "career.baker.r3",
+          "share": 1,
+          "advance": "election"
+        },
+        {
+          "nameKey": "career.baker.r4",
+          "share": 1,
+          "guildDuesShare": 0.25
+        }
+      ],
+      "promoteAt": 100,
+      "orders": {
+        "perDay": [
+          3,
+          6
+        ],
+        "feeMult": [
+          1.1,
+          1.4
+        ],
+        "pool": [
+          {
+            "item": "bread",
+            "qty": [
+              8,
+              24
+            ],
+            "weight": 5
+          },
+          {
+            "item": "dark_bread",
+            "qty": [
+              8,
+              24
+            ],
+            "weight": 4
+          },
+          {
+            "item": "honey_cake",
+            "qty": [
+              2,
+              6
+            ],
+            "weight": 2
+          },
+          {
+            "item": "meat_pie",
+            "qty": [
+              3,
+              8
+            ],
+            "weight": 2
+          }
+        ]
+      },
+      "events": [
+        {
+          "id": "bk_black_bottoms",
+          "textKey": "career.ev.bk_black_bottoms",
+          "options": [
+            {
+              "id": "cheap",
+              "textKey": "career.ev.bk_black_bottoms.cheap",
+              "effects": {
+                "money": -6,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 2
+                }
+              }
+            },
+            {
+              "id": "scrape",
+              "textKey": "career.ev.bk_black_bottoms.scrape",
+              "effects": {
+                "karma": -1,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -3
+                }
+              }
+            },
+            {
+              "id": "rebake",
+              "textKey": "career.ev.bk_black_bottoms.rebake",
+              "effects": {
+                "performance": -2,
+                "moodlets": [
+                  "overworked",
+                  "burnt_fingers"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "bk_assize",
+          "textKey": "career.ev.bk_assize",
+          "options": [
+            {
+              "id": "add",
+              "textKey": "career.ev.bk_assize.add",
+              "effects": {
+                "money": -8,
+                "performance": 2
+              }
+            },
+            {
+              "id": "keep",
+              "textKey": "career.ev.bk_assize.keep",
+              "effects": {
+                "money": 4,
+                "moodlets": [
+                  "schemed"
+                ]
+              },
+              "check": {
+                "skill": "reckoning",
+                "level": 2
+              },
+              "failEffects": {
+                "money": -16,
+                "performance": -5,
+                "moodlets": [
+                  "public_shame"
+                ]
+              }
+            },
+            {
+              "id": "family",
+              "textKey": "career.ev.bk_assize.family",
+              "effects": {
+                "money": -4,
+                "performance": 1,
+                "items": {
+                  "bread": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "bk_widow_credit",
+          "textKey": "career.ev.bk_widow_credit",
+          "options": [
+            {
+              "id": "give",
+              "textKey": "career.ev.bk_widow_credit.give",
+              "effects": {
+                "money": -12,
+                "karma": 2,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 8
+                }
+              }
+            },
+            {
+              "id": "half",
+              "textKey": "career.ev.bk_widow_credit.half",
+              "effects": {
+                "money": -6,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 3
+                }
+              }
+            },
+            {
+              "id": "refuse",
+              "textKey": "career.ev.bk_widow_credit.refuse",
+              "effects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -6
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "baking",
+        "key": "career.baker.task"
+      }
+    },
+    "brewer": {
+      "nameKey": "career.brewer",
+      "descKey": "career.brewer.desc",
+      "icon": "item.ale",
+      "type": "onsite",
+      "estates": [
+        "freeman",
+        "artisan"
+      ],
+      "literacy": false,
+      "skills": [
+        "brewing"
+      ],
+      "workplace": "brew_vat",
+      "stations": [
+        "brew_vat",
+        "press"
+      ],
+      "place": "workshop_row",
+      "hours": [
+        7,
+        15
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.brewer.r1",
+          "share": 0,
+          "board": true,
+          "xpBonus": 0.5,
+          "advance": "time",
+          "minDays": {
+            "value": 10,
+            "scale": "lifespan"
+          }
+        },
+        {
+          "nameKey": "career.brewer.r2",
+          "share": 0.5,
+          "advance": "masterpiece",
+          "minDays": {
+            "value": 8,
+            "scale": "lifespan"
+          }
+        },
+        {
+          "nameKey": "career.brewer.r3",
+          "share": 1,
+          "advance": "election"
+        },
+        {
+          "nameKey": "career.brewer.r4",
+          "share": 1,
+          "guildDuesShare": 0.25
+        }
+      ],
+      "promoteAt": 100,
+      "orders": {
+        "perDay": [
+          3,
+          6
+        ],
+        "feeMult": [
+          1.1,
+          1.4
+        ],
+        "pool": [
+          {
+            "item": "ale",
+            "qty": [
+              8,
+              24
+            ],
+            "weight": 5
+          },
+          {
+            "item": "beer",
+            "qty": [
+              6,
+              16
+            ],
+            "weight": 3
+          },
+          {
+            "item": "cider",
+            "qty": [
+              6,
+              16
+            ],
+            "weight": 3
+          },
+          {
+            "item": "mead",
+            "qty": [
+              2,
+              6
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "events": [
+        {
+          "id": "bw_sour_vat",
+          "textKey": "career.ev.bw_sour_vat",
+          "options": [
+            {
+              "id": "dump",
+              "textKey": "career.ev.bw_sour_vat.dump",
+              "effects": {
+                "money": -24,
+                "performance": 1,
+                "moodlets": [
+                  "unpleasant_chore"
+                ]
+              }
+            },
+            {
+              "id": "honey",
+              "textKey": "career.ev.bw_sour_vat.honey",
+              "effects": {
+                "money": 8,
+                "moodlets": [
+                  "made_something"
+                ]
+              },
+              "check": {
+                "skill": "brewing",
+                "level": 4
+              },
+              "failEffects": {
+                "performance": -4,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -8
+                }
+              }
+            },
+            {
+              "id": "inn",
+              "textKey": "career.ev.bw_sour_vat.inn",
+              "effects": {
+                "money": -10
+              }
+            }
+          ]
+        },
+        {
+          "id": "bw_taster",
+          "textKey": "career.ev.bw_taster",
+          "options": [
+            {
+              "id": "best",
+              "textKey": "career.ev.bw_taster.best",
+              "effects": {
+                "performance": 3,
+                "moodlets": [
+                  "praised"
+                ]
+              }
+            },
+            {
+              "id": "today",
+              "textKey": "career.ev.bw_taster.today",
+              "effects": {
+                "performance": 5,
+                "moodlets": [
+                  "praised"
+                ]
+              },
+              "check": {
+                "skill": "brewing",
+                "level": 3
+              },
+              "failEffects": {
+                "money": -8,
+                "moodlets": [
+                  "scolded"
+                ]
+              }
+            },
+            {
+              "id": "more",
+              "textKey": "career.ev.bw_taster.more",
+              "effects": {
+                "money": -3,
+                "karma": -1,
+                "relationship": {
+                  "target": "guild",
+                  "friendship": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "bw_church_ale",
+          "textKey": "career.ev.bw_church_ale",
+          "options": [
+            {
+              "id": "cheap",
+              "textKey": "career.ev.bw_church_ale.cheap",
+              "effects": {
+                "money": -12,
+                "karma": 1,
+                "relationship": {
+                  "target": "parish",
+                  "friendship": 6
+                }
+              }
+            },
+            {
+              "id": "full",
+              "textKey": "career.ev.bw_church_ale.full",
+              "effects": {
+                "relationship": {
+                  "target": "parish",
+                  "friendship": -4
+                }
+              }
+            },
+            {
+              "id": "gift",
+              "textKey": "career.ev.bw_church_ale.gift",
+              "effects": {
+                "money": -24,
+                "karma": 2,
+                "church": 2,
+                "relationship": {
+                  "target": "parish",
+                  "friendship": 10
+                },
+                "moodlets": [
+                  "blessed"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "brewing",
+        "key": "career.brewer.task"
+      }
+    },
+    "tailor": {
+      "nameKey": "career.tailor",
+      "descKey": "career.tailor.desc",
+      "icon": "yarn",
+      "type": "onsite",
+      "estates": [
+        "freeman",
+        "artisan"
+      ],
+      "literacy": false,
+      "skills": [
+        "needlework"
+      ],
+      "workplace": "loom",
+      "stations": [
+        "loom",
+        "spinning_wheel"
+      ],
+      "place": "workshop_row",
+      "hours": [
+        7,
+        16
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.tailor.r1",
+          "share": 0,
+          "board": true,
+          "xpBonus": 0.5,
+          "advance": "time",
+          "minDays": {
+            "value": 10,
+            "scale": "lifespan"
+          }
+        },
+        {
+          "nameKey": "career.tailor.r2",
+          "share": 0.5,
+          "advance": "masterpiece",
+          "minDays": {
+            "value": 8,
+            "scale": "lifespan"
+          }
+        },
+        {
+          "nameKey": "career.tailor.r3",
+          "share": 1,
+          "advance": "election"
+        },
+        {
+          "nameKey": "career.tailor.r4",
+          "share": 1,
+          "guildDuesShare": 0.25
+        }
+      ],
+      "promoteAt": 100,
+      "orders": {
+        "perDay": [
+          3,
+          6
+        ],
+        "feeMult": [
+          1.1,
+          1.4
+        ],
+        "pool": [
+          {
+            "item": "cloth",
+            "qty": [
+              1,
+              3
+            ],
+            "weight": 5
+          },
+          {
+            "item": "linen_shirt",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 3
+          },
+          {
+            "item": "hood",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 3
+          },
+          {
+            "item": "tunic",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 1
+          },
+          {
+            "item": "cloak",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 0.5,
+            "minRank": 1
+          }
+        ]
+      },
+      "services": {
+        "perDay": [
+          1,
+          3
+        ],
+        "pool": [
+          {
+            "id": "mend_clothes",
+            "recipe": "mend_clothes",
+            "nameKey": "career.svc.mend_clothes",
+            "skill": "needlework",
+            "minutes": 30,
+            "fee": [
+              3,
+              8
+            ],
+            "places": [
+              "workshop_row"
+            ]
+          }
+        ]
+      },
+      "events": [
+        {
+          "id": "tl_moth_bolt",
+          "textKey": "career.ev.tl_moth_bolt",
+          "options": [
+            {
+              "id": "cut",
+              "textKey": "career.ev.tl_moth_bolt.cut",
+              "effects": {
+                "money": -8
+              }
+            },
+            {
+              "id": "darn",
+              "textKey": "career.ev.tl_moth_bolt.darn",
+              "effects": {
+                "performance": 1,
+                "skillXp": {
+                  "needlework": 10
+                }
+              },
+              "check": {
+                "skill": "needlework",
+                "level": 4
+              },
+              "failEffects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -6
+                },
+                "karma": -1
+              }
+            },
+            {
+              "id": "rags",
+              "textKey": "career.ev.tl_moth_bolt.rags",
+              "effects": {
+                "money": -4,
+                "skillXp": {
+                  "needlework": 15
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "tl_crimson",
+          "textKey": "career.ev.tl_crimson",
+          "options": [
+            {
+              "id": "make",
+              "textKey": "career.ev.tl_crimson.make",
+              "effects": {
+                "money": 24,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 5
+                },
+                "karma": -1
+              }
+            },
+            {
+              "id": "suggest",
+              "textKey": "career.ev.tl_crimson.suggest",
+              "effects": {
+                "performance": 1,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -2
+                }
+              }
+            },
+            {
+              "id": "refuse",
+              "textKey": "career.ev.tl_crimson.refuse",
+              "effects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "tl_wedding_rush",
+          "textKey": "career.ev.tl_wedding_rush",
+          "options": [
+            {
+              "id": "night",
+              "textKey": "career.ev.tl_wedding_rush.night",
+              "effects": {
+                "performance": 4,
+                "money": 16,
+                "moodlets": [
+                  "overworked",
+                  "slept_badly"
+                ]
+              }
+            },
+            {
+              "id": "split",
+              "textKey": "career.ev.tl_wedding_rush.split",
+              "effects": {
+                "performance": 2,
+                "money": 8,
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": 2
+                }
+              }
+            },
+            {
+              "id": "no",
+              "textKey": "career.ev.tl_wedding_rush.no",
+              "effects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -5
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "needlework",
+        "key": "career.tailor.task"
+      }
+    },
+    "carpenter": {
+      "nameKey": "career.carpenter",
+      "descKey": "career.carpenter.desc",
+      "icon": "logs",
+      "type": "onsite",
+      "estates": [
+        "freeman",
+        "artisan"
+      ],
+      "literacy": false,
+      "skills": [
+        "carpentry"
+      ],
+      "workplace": "workbench",
+      "stations": [
+        "workbench"
+      ],
+      "place": "workshop_row",
+      "hours": [
+        7,
+        16
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.carpenter.r1",
+          "share": 0,
+          "board": true,
+          "xpBonus": 0.5,
+          "advance": "time",
+          "minDays": {
+            "value": 10,
+            "scale": "lifespan"
+          }
+        },
+        {
+          "nameKey": "career.carpenter.r2",
+          "share": 0.5,
+          "advance": "masterpiece",
+          "minDays": {
+            "value": 8,
+            "scale": "lifespan"
+          }
+        },
+        {
+          "nameKey": "career.carpenter.r3",
+          "share": 1,
+          "advance": "election"
+        },
+        {
+          "nameKey": "career.carpenter.r4",
+          "share": 1,
+          "guildDuesShare": 0.25
+        }
+      ],
+      "promoteAt": 100,
+      "orders": {
+        "perDay": [
+          3,
+          6
+        ],
+        "feeMult": [
+          1.1,
+          1.4
+        ],
+        "pool": [
+          {
+            "item": "stool",
+            "qty": [
+              1,
+              3
+            ],
+            "weight": 4
+          },
+          {
+            "item": "bench_wood",
+            "qty": [
+              1,
+              2
+            ],
+            "weight": 3
+          },
+          {
+            "item": "cart_wheel",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "item": "barrel",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "item": "chest",
+            "qty": [
+              1,
+              1
+            ],
+            "weight": 1,
+            "minRank": 1
+          }
+        ]
+      },
+      "services": {
+        "perDay": [
+          0,
+          1
+        ],
+        "pool": [
+          {
+            "id": "repair_call",
+            "nameKey": "career.svc.repair_call",
+            "skill": "carpentry",
+            "minutes": 120,
+            "fee": [
+              8,
+              24
+            ],
+            "places": [
+              "village"
+            ]
+          }
+        ]
+      },
+      "events": [
+        {
+          "id": "cp_warped_planks",
+          "textKey": "career.ev.cp_warped_planks",
+          "options": [
+            {
+              "id": "argue",
+              "textKey": "career.ev.cp_warped_planks.argue",
+              "effects": {
+                "money": 12,
+                "moodlets": [
+                  "good_bargain"
+                ]
+              },
+              "check": {
+                "skill": "storytelling",
+                "level": 3
+              },
+              "failEffects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -6
+                },
+                "moodlets": [
+                  "argued"
+                ]
+              }
+            },
+            {
+              "id": "use",
+              "textKey": "career.ev.cp_warped_planks.use",
+              "effects": {
+                "performance": -2,
+                "skillXp": {
+                  "carpentry": 20
+                }
+              }
+            },
+            {
+              "id": "buy",
+              "textKey": "career.ev.cp_warped_planks.buy",
+              "effects": {
+                "money": -16
+              }
+            }
+          ]
+        },
+        {
+          "id": "cp_roof_call",
+          "textKey": "career.ev.cp_roof_call",
+          "options": [
+            {
+              "id": "go",
+              "textKey": "career.ev.cp_roof_call.go",
+              "effects": {
+                "money": 8,
+                "karma": 1,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 8
+                },
+                "moodlets": [
+                  "did_good",
+                  "sore_back"
+                ],
+                "ordersLate": 1
+              }
+            },
+            {
+              "id": "finish",
+              "textKey": "career.ev.cp_roof_call.finish",
+              "effects": {
+                "performance": 2
+              }
+            },
+            {
+              "id": "apprentice",
+              "textKey": "career.ev.cp_roof_call.apprentice",
+              "effects": {
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": 2
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "carpentry",
+        "key": "career.carpenter.task"
+      }
+    },
+    "healer": {
+      "nameKey": "career.healer",
+      "descKey": "career.healer.desc",
+      "icon": "item.herbs",
+      "type": "onsite",
+      "estates": [
+        "freeman",
+        "artisan",
+        "merchant",
+        "clergy"
+      ],
+      "literacy": false,
+      "skills": [
+        "herbalism",
+        "medicine"
+      ],
+      "workplace": "prep_counter",
+      "stations": [
+        "prep_counter",
+        "hearth"
+      ],
+      "place": "clinic",
+      "hours": [
+        8,
+        16
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.healer.r1",
+          "feeMult": 1
+        },
+        {
+          "nameKey": "career.healer.r2",
+          "feeMult": 1.5
+        },
+        {
+          "nameKey": "career.healer.r3",
+          "feeMult": 2.25
+        }
+      ],
+      "promoteAt": 100,
+      "orders": {
+        "perDay": [
+          1,
+          3
+        ],
+        "feeMult": [
+          1.1,
+          1.4
+        ],
+        "pool": [
+          {
+            "item": "salve",
+            "qty": [
+              1,
+              4
+            ],
+            "weight": 3
+          },
+          {
+            "item": "tonic",
+            "qty": [
+              1,
+              3
+            ],
+            "weight": 2
+          }
+        ]
+      },
+      "services": {
+        "perDay": [
+          1,
+          3
+        ],
+        "pool": [
+          {
+            "id": "treat_patient",
+            "nameKey": "career.svc.treat_patient",
+            "skill": "medicine",
+            "minutes": 60,
+            "fee": [
+              4,
+              12
+            ],
+            "places": [
+              "clinic"
+            ]
+          },
+          {
+            "id": "house_call",
+            "nameKey": "career.svc.house_call",
+            "skill": "medicine",
+            "minutes": 120,
+            "fee": [
+              8,
+              16
+            ],
+            "places": [
+              "village"
+            ]
+          },
+          {
+            "id": "set_bone",
+            "nameKey": "career.svc.set_bone",
+            "skill": "medicine",
+            "minutes": 60,
+            "fee": [
+              8,
+              20
+            ],
+            "places": [
+              "clinic"
+            ],
+            "minRank": 1
+          }
+        ]
+      },
+      "events": [
+        {
+          "id": "hl_fever_child",
+          "textKey": "career.ev.hl_fever_child",
+          "rating": "15",
+          "options": [
+            {
+              "id": "all",
+              "textKey": "career.ev.hl_fever_child.all",
+              "effects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 10
+                },
+                "moodlets": [
+                  "thanked"
+                ],
+                "skillXp": {
+                  "medicine": 20
+                }
+              },
+              "check": {
+                "skill": "medicine",
+                "level": 3
+              },
+              "failEffects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -4
+                },
+                "moodlets": [
+                  "useless_remedy"
+                ]
+              }
+            },
+            {
+              "id": "bleed",
+              "textKey": "career.ev.hl_fever_child.bleed",
+              "effects": {
+                "money": 8,
+                "skillXp": {
+                  "medicine": 10
+                }
+              }
+            },
+            {
+              "id": "abbey",
+              "textKey": "career.ev.hl_fever_child.abbey",
+              "effects": {
+                "performance": -1,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "hl_brow_cut",
+          "textKey": "career.ev.hl_brow_cut",
+          "options": [
+            {
+              "id": "stitch",
+              "textKey": "career.ev.hl_brow_cut.stitch",
+              "effects": {
+                "money": 6,
+                "skillXp": {
+                  "medicine": 20
+                }
+              }
+            },
+            {
+              "id": "wait",
+              "textKey": "career.ev.hl_brow_cut.wait",
+              "effects": {
+                "performance": -1,
+                "moodlets": [
+                  "stench_nearby"
+                ]
+              }
+            },
+            {
+              "id": "coin",
+              "textKey": "career.ev.hl_brow_cut.coin",
+              "effects": {
+                "money": 8,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "hl_moon_whisper",
+          "textKey": "career.ev.hl_moon_whisper",
+          "options": [
+            {
+              "id": "priest",
+              "textKey": "career.ev.hl_moon_whisper.priest",
+              "effects": {
+                "money": -4,
+                "church": 2,
+                "relationship": {
+                  "target": "parish",
+                  "friendship": 5
+                }
+              }
+            },
+            {
+              "id": "ignore",
+              "textKey": "career.ev.hl_moon_whisper.ignore",
+              "effects": {
+                "moodlets": [
+                  "heard_gossip"
+                ]
+              }
+            },
+            {
+              "id": "confront",
+              "textKey": "career.ev.hl_moon_whisper.confront",
+              "effects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -5
+                },
+                "moodlets": [
+                  "argued"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "herbalism",
+        "key": "career.healer.task"
+      }
+    },
+    "minstrel": {
+      "nameKey": "career.minstrel",
+      "descKey": "career.minstrel.desc",
+      "icon": "lute",
+      "type": "onsite",
+      "estates": [
+        "serf",
+        "freeman",
+        "artisan",
+        "merchant",
+        "clergy",
+        "knight",
+        "noble"
+      ],
+      "literacy": false,
+      "skills": [
+        "music",
+        "singing",
+        "storytelling"
+      ],
+      "workplace": "stage",
+      "stations": [],
+      "place": "inn",
+      "hours": [
+        16,
+        23
+      ],
+      "days": [
+        1,
+        3,
+        4,
+        5,
+        6
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.minstrel.r1",
+          "feeMult": 1
+        },
+        {
+          "nameKey": "career.minstrel.r2",
+          "feeMult": 1.5
+        },
+        {
+          "nameKey": "career.minstrel.r3",
+          "feeMult": 2.25
+        }
+      ],
+      "promoteAt": 100,
+      "services": {
+        "perDay": [
+          2,
+          4
+        ],
+        "pool": [
+          {
+            "id": "play_market",
+            "nameKey": "career.svc.play_market",
+            "skill": "music",
+            "minutes": 60,
+            "fee": [
+              2,
+              6
+            ],
+            "places": [
+              "market"
+            ]
+          },
+          {
+            "id": "sing_inn",
+            "nameKey": "career.svc.sing_inn",
+            "skill": "singing",
+            "minutes": 90,
+            "fee": [
+              3,
+              8
+            ],
+            "places": [
+              "inn"
+            ]
+          },
+          {
+            "id": "tell_tale",
+            "nameKey": "career.svc.tell_tale",
+            "skill": "storytelling",
+            "minutes": 60,
+            "fee": [
+              2,
+              6
+            ],
+            "places": [
+              "inn",
+              "market"
+            ]
+          },
+          {
+            "id": "play_castle",
+            "nameKey": "career.svc.play_castle",
+            "skill": "music",
+            "minutes": 120,
+            "fee": [
+              8,
+              16
+            ],
+            "places": [
+              "castle"
+            ],
+            "minRank": 2
+          }
+        ]
+      },
+      "events": [
+        {
+          "id": "ms_heckler",
+          "textKey": "career.ev.ms_heckler",
+          "options": [
+            {
+              "id": "verse",
+              "textKey": "career.ev.ms_heckler.verse",
+              "effects": {
+                "money": 10,
+                "moodlets": [
+                  "crowd_cheered"
+                ]
+              },
+              "check": {
+                "skill": "storytelling",
+                "level": 4
+              },
+              "failEffects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -6
+                },
+                "moodlets": [
+                  "joke_fell_flat"
+                ]
+              }
+            },
+            {
+              "id": "next",
+              "textKey": "career.ev.ms_heckler.next",
+              "effects": {
+                "performance": 0,
+                "moodlets": [
+                  "awkward_moment"
+                ]
+              }
+            },
+            {
+              "id": "request",
+              "textKey": "career.ev.ms_heckler.request",
+              "effects": {
+                "money": 6,
+                "performance": 3,
+                "moodlets": [
+                  "played_music"
+                ]
+              },
+              "check": {
+                "skill": "music",
+                "level": 3
+              },
+              "failEffects": {
+                "moodlets": [
+                  "off_key"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "ms_lord_song",
+          "textKey": "career.ev.ms_lord_song",
+          "options": [
+            {
+              "id": "flatter",
+              "textKey": "career.ev.ms_lord_song.flatter",
+              "effects": {
+                "money": 24,
+                "karma": -1,
+                "relationship": {
+                  "target": "lord",
+                  "friendship": 5
+                }
+              }
+            },
+            {
+              "id": "plain",
+              "textKey": "career.ev.ms_lord_song.plain",
+              "effects": {
+                "performance": 4,
+                "moodlets": [
+                  "pride_boast"
+                ]
+              },
+              "check": {
+                "skill": "singing",
+                "level": 4
+              },
+              "failEffects": {
+                "relationship": {
+                  "target": "lord",
+                  "friendship": -6
+                },
+                "moodlets": [
+                  "mocked"
+                ]
+              }
+            },
+            {
+              "id": "decline",
+              "textKey": "career.ev.ms_lord_song.decline",
+              "effects": {
+                "relationship": {
+                  "target": "lord",
+                  "friendship": -5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "ms_piper",
+          "textKey": "career.ev.ms_piper",
+          "options": [
+            {
+              "id": "duet",
+              "textKey": "career.ev.ms_piper.duet",
+              "effects": {
+                "money": 6,
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": 6
+                },
+                "moodlets": [
+                  "played_music"
+                ]
+              }
+            },
+            {
+              "id": "louder",
+              "textKey": "career.ev.ms_piper.louder",
+              "effects": {
+                "money": 10,
+                "moodlets": [
+                  "won_game"
+                ]
+              },
+              "check": {
+                "skill": "music",
+                "level": 4
+              },
+              "failEffects": {
+                "moodlets": [
+                  "mocked"
+                ]
+              }
+            },
+            {
+              "id": "inn",
+              "textKey": "career.ev.ms_piper.inn",
+              "effects": {
+                "money": 3
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "music",
+        "key": "career.minstrel.task"
+      }
+    },
+    "innkeeper": {
+      "nameKey": "career.innkeeper",
+      "descKey": "career.innkeeper.desc",
+      "icon": "stew",
+      "type": "onsite",
+      "estates": [
+        "freeman",
+        "artisan",
+        "merchant"
+      ],
+      "literacy": false,
+      "skills": [
+        "cooking",
+        "brewing",
+        "storytelling"
+      ],
+      "workplace": "counter",
+      "stations": [
+        "hearth",
+        "brew_vat",
+        "counter"
+      ],
+      "place": "inn",
+      "hours": [
+        10,
+        22
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.innkeeper.r1",
+          "wage": 16
+        },
+        {
+          "nameKey": "career.innkeeper.r2",
+          "wage": 24
+        },
+        {
+          "nameKey": "career.innkeeper.r3",
+          "share": 1
+        }
+      ],
+      "promoteAt": 100,
+      "orders": {
+        "perDay": [
+          3,
+          6
+        ],
+        "feeMult": [
+          1.1,
+          1.4
+        ],
+        "pool": [
+          {
+            "item": "ale",
+            "qty": [
+              8,
+              20
+            ],
+            "weight": 5
+          },
+          {
+            "item": "beer",
+            "qty": [
+              4,
+              10
+            ],
+            "weight": 2
+          },
+          {
+            "item": "cider",
+            "qty": [
+              4,
+              10
+            ],
+            "weight": 2
+          },
+          {
+            "item": "wine",
+            "qty": [
+              1,
+              4
+            ],
+            "weight": 1
+          },
+          {
+            "item": "bread",
+            "qty": [
+              4,
+              10
+            ],
+            "weight": 2
+          },
+          {
+            "item": "meat_pie",
+            "qty": [
+              2,
+              6
+            ],
+            "weight": 3
+          }
+        ]
+      },
+      "services": {
+        "perDay": [
+          0,
+          2
+        ],
+        "pool": [
+          {
+            "id": "rent_room",
+            "nameKey": "career.svc.rent_room",
+            "skill": "storytelling",
+            "minutes": 20,
+            "fee": [
+              6,
+              12
+            ],
+            "places": [
+              "inn"
+            ]
+          }
+        ]
+      },
+      "events": [
+        {
+          "id": "ik_gold_stranger",
+          "textKey": "career.ev.ik_gold_stranger",
+          "options": [
+            {
+              "id": "room",
+              "textKey": "career.ev.ik_gold_stranger.room",
+              "effects": {
+                "money": 12
+              }
+            },
+            {
+              "id": "ask",
+              "textKey": "career.ev.ik_gold_stranger.ask",
+              "effects": {
+                "money": 12,
+                "moodlets": [
+                  "juicy_gossip"
+                ]
+              },
+              "check": {
+                "skill": "storytelling",
+                "level": 3
+              },
+              "failEffects": {
+                "money": 12,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -5
+                },
+                "moodlets": [
+                  "awkward_moment"
+                ]
+              }
+            },
+            {
+              "id": "guard",
+              "textKey": "career.ev.ik_gold_stranger.guard",
+              "effects": {
+                "relationship": {
+                  "target": "lord",
+                  "friendship": 3
+                },
+                "karma": -1
+              }
+            }
+          ]
+        },
+        {
+          "id": "ik_dice_brawl",
+          "textKey": "career.ev.ik_dice_brawl",
+          "options": [
+            {
+              "id": "club",
+              "textKey": "career.ev.ik_dice_brawl.club",
+              "effects": {
+                "performance": 4,
+                "moodlets": [
+                  "praised"
+                ]
+              },
+              "check": {
+                "skill": "martial",
+                "level": 3
+              },
+              "failEffects": {
+                "money": -8,
+                "moodlets": [
+                  "wounded",
+                  "brawl"
+                ]
+              }
+            },
+            {
+              "id": "round",
+              "textKey": "career.ev.ik_dice_brawl.round",
+              "effects": {
+                "money": -12,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 6
+                }
+              }
+            },
+            {
+              "id": "watch",
+              "textKey": "career.ev.ik_dice_brawl.watch",
+              "effects": {
+                "performance": 1,
+                "money": -8,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "ik_tab",
+          "textKey": "career.ev.ik_tab",
+          "options": [
+            {
+              "id": "collect",
+              "textKey": "career.ev.ik_tab.collect",
+              "effects": {
+                "money": 24,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -8
+                }
+              }
+            },
+            {
+              "id": "hint",
+              "textKey": "career.ev.ik_tab.hint",
+              "effects": {
+                "money": 8,
+                "moodlets": [
+                  "counted_coins"
+                ]
+              }
+            },
+            {
+              "id": "let",
+              "textKey": "career.ev.ik_tab.let",
+              "effects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 4
+                },
+                "moodlets": [
+                  "debt_pressed"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "cooking",
+        "key": "career.innkeeper.task"
+      }
+    },
+    "priest": {
+      "nameKey": "career.priest",
+      "descKey": "career.priest.desc",
+      "icon": "candle",
+      "type": "onsite",
+      "estates": [
+        "clergy"
+      ],
+      "literacy": true,
+      "skills": [
+        "faith",
+        "latin"
+      ],
+      "workplace": "altar",
+      "stations": [],
+      "place": "church",
+      "hours": [
+        6,
+        13
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.priest.r1",
+          "wage": 24
+        },
+        {
+          "nameKey": "career.priest.r2",
+          "wage": 36
+        },
+        {
+          "nameKey": "career.priest.r3",
+          "wage": 54
+        },
+        {
+          "nameKey": "career.priest.r4",
+          "wage": 81,
+          "rabbithole": true,
+          "advance": "appointment"
+        }
+      ],
+      "promoteAt": 100,
+      "services": {
+        "perDay": [
+          1,
+          3
+        ],
+        "pool": [
+          {
+            "id": "say_mass",
+            "nameKey": "career.svc.say_mass",
+            "skill": "faith",
+            "minutes": 60,
+            "fee": [
+              0,
+              4
+            ],
+            "places": [
+              "church"
+            ]
+          },
+          {
+            "id": "hear_confession",
+            "nameKey": "career.svc.hear_confession",
+            "skill": "faith",
+            "minutes": 30,
+            "fee": [
+              0,
+              0
+            ],
+            "places": [
+              "church"
+            ]
+          },
+          {
+            "id": "baptism",
+            "nameKey": "career.svc.baptism",
+            "skill": "latin",
+            "minutes": 30,
+            "fee": [
+              4,
+              8
+            ],
+            "places": [
+              "church"
+            ]
+          },
+          {
+            "id": "wedding",
+            "nameKey": "career.svc.wedding",
+            "skill": "latin",
+            "minutes": 60,
+            "fee": [
+              8,
+              16
+            ],
+            "places": [
+              "church"
+            ],
+            "minRank": 1
+          },
+          {
+            "id": "funeral",
+            "nameKey": "career.svc.funeral",
+            "skill": "faith",
+            "minutes": 60,
+            "fee": [
+              4,
+              8
+            ],
+            "places": [
+              "church"
+            ],
+            "minRank": 1
+          }
+        ]
+      },
+      "events": [
+        {
+          "id": "pr_confession",
+          "textKey": "career.ev.pr_confession",
+          "options": [
+            {
+              "id": "penance",
+              "textKey": "career.ev.pr_confession.penance",
+              "effects": {
+                "performance": 3,
+                "moodlets": [
+                  "prayer_calm"
+                ]
+              }
+            },
+            {
+              "id": "urge",
+              "textKey": "career.ev.pr_confession.urge",
+              "effects": {
+                "karma": 1,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 5
+                }
+              },
+              "check": {
+                "skill": "storytelling",
+                "level": 3
+              },
+              "failEffects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -5
+                }
+              }
+            },
+            {
+              "id": "bishop",
+              "textKey": "career.ev.pr_confession.bishop",
+              "effects": {
+                "performance": 1,
+                "skillXp": {
+                  "latin": 15
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "pr_short_tithe",
+          "textKey": "career.ev.pr_short_tithe",
+          "options": [
+            {
+              "id": "forgive",
+              "textKey": "career.ev.pr_short_tithe.forgive",
+              "effects": {
+                "performance": -1,
+                "karma": 2,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 8
+                }
+              }
+            },
+            {
+              "id": "later",
+              "textKey": "career.ev.pr_short_tithe.later",
+              "effects": {
+                "relationship": {
+                  "target": "customer",
+                  "friendship": 3
+                }
+              }
+            },
+            {
+              "id": "full",
+              "textKey": "career.ev.pr_short_tithe.full",
+              "effects": {
+                "money": 8,
+                "karma": -1,
+                "relationship": {
+                  "target": "customer",
+                  "friendship": -8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "pr_lord_nods",
+          "textKey": "career.ev.pr_lord_nods",
+          "options": [
+            {
+              "id": "louder",
+              "textKey": "career.ev.pr_lord_nods.louder",
+              "effects": {
+                "performance": 2,
+                "relationship": {
+                  "target": "lord",
+                  "friendship": -3
+                }
+              }
+            },
+            {
+              "id": "short",
+              "textKey": "career.ev.pr_lord_nods.short",
+              "effects": {
+                "relationship": {
+                  "target": "lord",
+                  "friendship": 2
+                }
+              }
+            },
+            {
+              "id": "parable",
+              "textKey": "career.ev.pr_lord_nods.parable",
+              "effects": {
+                "performance": 5,
+                "moodlets": [
+                  "pride_boast"
+                ]
+              },
+              "check": {
+                "skill": "storytelling",
+                "level": 5
+              },
+              "failEffects": {
+                "performance": -3,
+                "relationship": {
+                  "target": "lord",
+                  "friendship": -10
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "faith",
+        "key": "career.priest.task"
+      }
+    },
+    "knight": {
+      "nameKey": "career.knight",
+      "descKey": "career.knight.desc",
+      "icon": "ui.crest",
+      "type": "onsite",
+      "estates": [
+        "knight",
+        "noble"
+      ],
+      "literacy": false,
+      "skills": [
+        "martial",
+        "riding"
+      ],
+      "workplace": "training_post",
+      "stations": [],
+      "place": "castle",
+      "hours": [
+        8,
+        14
+      ],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "ranks": [
+        {
+          "nameKey": "career.knight.r1",
+          "wage": 0,
+          "board": true,
+          "advance": "appointment"
+        },
+        {
+          "nameKey": "career.knight.r2",
+          "wage": 160
+        },
+        {
+          "nameKey": "career.knight.r3",
+          "wage": 240
+        }
+      ],
+      "promoteAt": 100,
+      "services": {
+        "perDay": [
+          1,
+          2
+        ],
+        "pool": [
+          {
+            "id": "drill",
+            "nameKey": "career.svc.drill",
+            "skill": "martial",
+            "minutes": 120,
+            "fee": [
+              0,
+              0
+            ],
+            "places": [
+              "castle"
+            ]
+          },
+          {
+            "id": "ride_patrol",
+            "nameKey": "career.svc.ride_patrol",
+            "skill": "riding",
+            "minutes": 120,
+            "fee": [
+              0,
+              0
+            ],
+            "places": [
+              "village"
+            ]
+          },
+          {
+            "id": "attend_court",
+            "nameKey": "career.svc.attend_court",
+            "skill": "storytelling",
+            "minutes": 90,
+            "fee": [
+              0,
+              0
+            ],
+            "places": [
+              "castle"
+            ],
+            "minRank": 1
+          }
+        ]
+      },
+      "campaign": {
+        "days": [
+          3,
+          7
+        ],
+        "daysScale": "absolute",
+        "source": "war_call"
+      },
+      "events": [
+        {
+          "id": "kn_squire_fall",
+          "textKey": "career.ev.kn_squire_fall",
+          "options": [
+            {
+              "id": "help",
+              "textKey": "career.ev.kn_squire_fall.help",
+              "effects": {
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": 6
+                }
+              }
+            },
+            {
+              "id": "remount",
+              "textKey": "career.ev.kn_squire_fall.remount",
+              "effects": {
+                "performance": 2,
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": -6
+                },
+                "skillXp": {
+                  "riding": 10
+                }
+              }
+            },
+            {
+              "id": "healer",
+              "textKey": "career.ev.kn_squire_fall.healer",
+              "effects": {
+                "money": -8,
+                "relationship": {
+                  "target": "coworker",
+                  "friendship": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "kn_crest_jest",
+          "textKey": "career.ev.kn_crest_jest",
+          "options": [
+            {
+              "id": "duel",
+              "textKey": "career.ev.kn_crest_jest.duel",
+              "effects": {
+                "performance": 3,
+                "fame": 1,
+                "moodlets": [
+                  "duel_pending"
+                ]
+              }
+            },
+            {
+              "id": "laugh",
+              "textKey": "career.ev.kn_crest_jest.laugh",
+              "effects": {
+                "moodlets": [
+                  "insulted"
+                ]
+              }
+            },
+            {
+              "id": "retort",
+              "textKey": "career.ev.kn_crest_jest.retort",
+              "effects": {
+                "performance": 2,
+                "moodlets": [
+                  "pride_boast"
+                ]
+              },
+              "check": {
+                "skill": "storytelling",
+                "level": 4
+              },
+              "failEffects": {
+                "moodlets": [
+                  "mocked"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "kn_tax_escort",
+          "textKey": "career.ev.kn_tax_escort",
+          "options": [
+            {
+              "id": "detour",
+              "textKey": "career.ev.kn_tax_escort.detour",
+              "effects": {
+                "performance": 1
+              }
+            },
+            {
+              "id": "scout",
+              "textKey": "career.ev.kn_tax_escort.scout",
+              "effects": {
+                "performance": 5,
+                "moodlets": [
+                  "praised"
+                ]
+              },
+              "check": {
+                "skill": "martial",
+                "level": 4
+              },
+              "failEffects": {
+                "performance": 1,
+                "moodlets": [
+                  "wounded"
+                ]
+              }
+            },
+            {
+              "id": "press",
+              "textKey": "career.ev.kn_tax_escort.press",
+              "effects": {
+                "moodlets": [
+                  "threatened"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "dailyTask": {
+        "skill": "martial",
+        "key": "career.knight.task"
+      }
+    }
+  },
+  "npcRoles": {
+    "servant": {
+      "nameKey": "career.role.servant",
+      "npc_role": true,
+      "uses": [
+        "16-7"
+      ],
+      "type": "schedule",
+      "estates": [
+        "serf",
+        "freeman"
+      ],
+      "skills": [
+        "cooking",
+        "animal_care",
+        "fitness"
+      ],
+      "subroles": {
+        "maid": {
+          "nameKey": "career.role.servant.maid",
+          "skill": "cooking"
+        },
+        "cook": {
+          "nameKey": "career.role.servant.cook",
+          "skill": "cooking"
+        },
+        "nurse": {
+          "nameKey": "career.role.servant.nurse",
+          "skill": "medicine"
+        },
+        "groom": {
+          "nameKey": "career.role.servant.groom",
+          "skill": "animal_care"
+        },
+        "steward": {
+          "nameKey": "career.role.servant.steward",
+          "skill": "reckoning"
+        },
+        "guard": {
+          "nameKey": "career.role.servant.guard",
+          "skill": "martial"
+        }
+      },
+      "schedule": {
+        "hours": [
+          5,
+          21
+        ],
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "place": "employer_home"
+      },
+      "pay": {
+        "wage": 8,
+        "board": true,
+        "payEvery": {
+          "value": 7,
+          "scale": "absolute"
+        },
+        "paidBy": "employer"
+      }
+    },
+    "bailiff": {
+      "nameKey": "career.role.bailiff",
+      "npc_role": true,
+      "uses": [
+        "16-2",
+        "18-6"
+      ],
+      "type": "schedule",
+      "estates": [
+        "freeman"
+      ],
+      "skills": [
+        "martial",
+        "reckoning"
+      ],
+      "schedule": {
+        "hours": [
+          8,
+          18
+        ],
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "place": "market"
+      },
+      "pay": {
+        "wage": 24,
+        "paidBy": "lord"
+      }
+    },
+    "messenger": {
+      "nameKey": "career.role.messenger",
+      "npc_role": true,
+      "uses": [
+        "14-7",
+        "18-3"
+      ],
+      "type": "schedule",
+      "estates": [
+        "serf",
+        "freeman"
+      ],
+      "skills": [
+        "fitness",
+        "riding"
+      ],
+      "schedule": {
+        "hours": [
+          6,
+          18
+        ],
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "place": "village"
+      },
+      "pay": {
+        "perTask": 2,
+        "paidBy": "sender"
+      }
+    },
+    "matchmaker": {
+      "nameKey": "career.role.matchmaker",
+      "npc_role": true,
+      "uses": [
+        "14-4"
+      ],
+      "type": "schedule",
+      "estates": [
+        "freeman",
+        "artisan"
+      ],
+      "skills": [
+        "storytelling"
+      ],
+      "schedule": {
+        "hours": [
+          10,
+          17
+        ],
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "place": "well"
+      },
+      "pay": {
+        "dowryShare": 0.05,
+        "paidBy": "families"
+      }
+    },
+    "moneylender": {
+      "nameKey": "career.role.moneylender",
+      "npc_role": true,
+      "uses": [
+        "17-6"
+      ],
+      "type": "schedule",
+      "estates": [
+        "merchant",
+        "freeman"
+      ],
+      "skills": [
+        "reckoning"
+      ],
+      "schedule": {
+        "hours": [
+          9,
+          17
+        ],
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "place": "market"
+      },
+      "pay": {
+        "interest": "economy.loan",
+        "paidBy": "borrower"
+      }
+    },
+    "midwife": {
+      "nameKey": "career.role.midwife",
+      "npc_role": true,
+      "uses": [
+        "15-2"
+      ],
+      "type": "schedule",
+      "estates": [
+        "serf",
+        "freeman"
+      ],
+      "skills": [
+        "medicine",
+        "herbalism"
+      ],
+      "schedule": {
+        "hours": [
+          8,
+          18
+        ],
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "place": "home",
+        "onCall": true
+      },
+      "pay": {
+        "perTask": 24,
+        "paidBy": "family"
+      }
+    },
+    "herbalist": {
+      "nameKey": "career.role.herbalist",
+      "npc_role": true,
+      "uses": [
+        "21-5",
+        "33-1"
+      ],
+      "type": "schedule",
+      "estates": [
+        "serf",
+        "freeman"
+      ],
+      "skills": [
+        "herbalism",
+        "arcana"
+      ],
+      "schedule": {
+        "hours": [
+          7,
+          17
+        ],
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "place": "forest"
+      },
+      "pay": {
+        "sells": [
+          "herbs",
+          "medicinal_herbs",
+          "salve"
+        ],
+        "paidBy": "customer"
+      },
+      "suspicion": true
+    },
+    "tutor": {
+      "nameKey": "career.role.tutor",
+      "npc_role": true,
+      "uses": [
+        "15-5"
+      ],
+      "type": "schedule",
+      "estates": [
+        "freeman",
+        "clergy"
+      ],
+      "skills": [
+        "reading",
+        "latin",
+        "reckoning"
+      ],
+      "schedule": {
+        "hours": [
+          9,
+          14
+        ],
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "place": "employer_home"
+      },
+      "pay": {
+        "wage": 12,
+        "payEvery": {
+          "value": 7,
+          "scale": "absolute"
+        },
+        "paidBy": "employer"
+      }
+    },
+    "mason": {
+      "nameKey": "career.role.mason",
+      "npc_role": true,
+      "uses": [
+        "23-3"
+      ],
+      "type": "schedule",
+      "estates": [
+        "freeman",
+        "artisan"
+      ],
+      "skills": [
+        "masonry",
+        "fitness"
+      ],
+      "schedule": {
+        "hours": [
+          7,
+          16
+        ],
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "place": "construction_site"
+      },
+      "pay": {
+        "wage": 24,
+        "paidBy": "builder"
+      }
+    },
+    "leatherworker": {
+      "nameKey": "career.role.leatherworker",
+      "npc_role": true,
+      "uses": [
+        "17-8"
+      ],
+      "type": "schedule",
+      "estates": [
+        "freeman",
+        "artisan"
+      ],
+      "skills": [
+        "leatherwork"
+      ],
+      "schedule": {
+        "hours": [
+          7,
+          16
+        ],
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "place": "workshop_row"
+      },
+      "pay": {
+        "sells": [
+          "leather",
+          "shoes"
+        ],
+        "paidBy": "customer"
+      },
+      "ledgerProducer": true
+    }
+  }
+}

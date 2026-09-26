@@ -1,0 +1,4671 @@
+{
+ "$comment": "일과표 (계약 contracts-m6.md 4절, GDD 18-2). tools/world/make-people.ts 가 만듦. 시각 0~24, from > to 면 자정을 넘김. blocks = 기본 하루 (24시간 전부 덮음). weekday.<요일> = 그 요일에 겹치는 시각만 덮어씀, weekdayFull 에 있는 요일은 하루 전체를 새로 씀 (쉬는 날). 요일: careers.json days 0 = mon … 6 = sun (29-2 계절 첫날 월요일). at: home(가문 집, residence 가 있으면 그 장소) | work(템플릿 workAt) | 장소 id | 구역 id. workAt \"employer\" = member.employer 가문의 집. 여정(trader) 중에는 일과표 대신 여정 래빗홀. traitMods/virtueMods/sinMods: 일/학교(work, school, lessons) 블록은 덮지 않고, 그 밖 시각에 chance 확률로 덮어씀 (하루 1회 굴림, 시드 RNG). days/estates 가 있으면 그 요일/신분만. bells = 교회 종 (새벽, 정오, 저녁) → 일과 전환이 이 시각에 몰림. rainMods = 비 올 때 그 장소로 가는 확률 배수. plagueMods.closed = 역병 때 닫는 장소",
+ "bells": [
+  6,
+  12,
+  18
+ ],
+ "templates": {
+  "field_hand": {
+   "workAt": "lord_fields",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 5,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 5,
+     "to": 6,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 6,
+     "to": 14,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 14,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 14,
+      "to": 16,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 14,
+      "to": 16,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "mill_hand": {
+   "workAt": "mill",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 5,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 5,
+     "to": 6,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 6,
+     "to": 15,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 15,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 15,
+      "to": 17,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 15,
+      "to": 17,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "guard": {
+   "workAt": "castle",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 8,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 8,
+     "to": 16,
+     "at": "work",
+     "do": "patrol"
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "clerk": {
+   "workAt": "castle",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 8,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 8,
+     "to": 15,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 15,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 15,
+      "to": 17,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 15,
+      "to": 17,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sat": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 7,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 7,
+      "to": 12,
+      "at": "home",
+      "do": "chores"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "home",
+      "do": "chores"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sat",
+    "sun"
+   ]
+  },
+  "blacksmith": {
+   "workAt": "craft_street",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 5,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 5,
+     "to": 6,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 6,
+     "to": 16,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "brewer": {
+   "workAt": "craft_street",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 15,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 15,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 15,
+      "to": 17,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 15,
+      "to": 17,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "tailor": {
+   "workAt": "craft_street",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 16,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "carpenter": {
+   "workAt": "craft_street",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 16,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "healer": {
+   "workAt": "craft_street",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 8,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 8,
+     "to": 16,
+     "at": "work",
+     "do": "heal"
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "monk": {
+   "workAt": "monastery",
+   "blocks": [
+    {
+     "from": 20,
+     "to": 4,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 4,
+     "to": 5,
+     "at": "monastery",
+     "do": "pray"
+    },
+    {
+     "from": 5,
+     "to": 17,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "monastery",
+     "do": "pray"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "monastery",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 20,
+     "at": "monastery",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "monastery",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "trader": {
+   "workAt": "market",
+   "blocks": [
+    {
+     "from": 22,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 19,
+     "at": "work",
+     "do": "trade"
+    },
+    {
+     "from": 19,
+     "to": 20,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 20,
+     "to": 22,
+     "at": "inn",
+     "do": "chat"
+    }
+   ],
+   "weekday": {
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "baker": {
+   "workAt": "craft_street",
+   "blocks": [
+    {
+     "from": 19,
+     "to": 2,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 2,
+     "to": 3,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 3,
+     "to": 11,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 11,
+     "to": 12,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 12,
+     "to": 15,
+     "at": "home",
+     "do": "nap"
+    },
+    {
+     "from": 15,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 12,
+      "to": 14,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 12,
+      "to": 14,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "minstrel": {
+   "workAt": "inn",
+   "blocks": [
+    {
+     "from": 23,
+     "to": 9,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 9,
+     "to": 10,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 10,
+     "to": 13,
+     "at": "home",
+     "do": "practice"
+    },
+    {
+     "from": 13,
+     "to": 14,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 14,
+     "to": 16,
+     "at": "market",
+     "do": "perform"
+    },
+    {
+     "from": 16,
+     "to": 23,
+     "at": "work",
+     "do": "perform"
+    }
+   ],
+   "weekday": {
+    "mon": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 7,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 7,
+      "to": 12,
+      "at": "home",
+      "do": "chores"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "home",
+      "do": "chores"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ],
+    "wed": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 7,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 7,
+      "to": 12,
+      "at": "home",
+      "do": "chores"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "home",
+      "do": "chores"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ],
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "mon",
+    "wed"
+   ]
+  },
+  "innkeeper": {
+   "workAt": "inn",
+   "blocks": [
+    {
+     "from": 23,
+     "to": 7,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 7,
+     "to": 8,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 8,
+     "to": 10,
+     "at": "market",
+     "do": "shop"
+    },
+    {
+     "from": 10,
+     "to": 22,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 22,
+     "to": 23,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "priest": {
+   "workAt": "church",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 5,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 5,
+     "to": 6,
+     "at": "church",
+     "do": "pray"
+    },
+    {
+     "from": 6,
+     "to": 13,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 13,
+     "to": 14,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 14,
+     "to": 17,
+     "at": "well_square",
+     "do": "visit"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "church",
+     "do": "pray"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 14,
+      "to": 16,
+      "at": "market",
+      "do": "visit"
+     }
+    ],
+    "fri": [
+     {
+      "from": 14,
+      "to": 16,
+      "at": "market",
+      "do": "visit"
+     }
+    ],
+    "sun": [
+     {
+      "from": 6,
+      "to": 13,
+      "at": "work",
+      "do": "lead_mass"
+     }
+    ]
+   }
+  },
+  "knight": {
+   "workAt": "castle",
+   "blocks": [
+    {
+     "from": 22,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 8,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 8,
+     "to": 14,
+     "at": "work",
+     "do": "train"
+    },
+    {
+     "from": 14,
+     "to": 17,
+     "at": "home",
+     "do": "relax"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 22,
+     "at": "castle",
+     "do": "feast"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 14,
+      "to": 17,
+      "at": "tourney_ground",
+      "do": "train"
+     }
+    ],
+    "wed": [
+     {
+      "from": 14,
+      "to": 18,
+      "at": "forest_river",
+      "do": "hunt"
+     }
+    ],
+    "thu": [
+     {
+      "from": 14,
+      "to": 17,
+      "at": "tourney_ground",
+      "do": "train"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "servant": {
+   "workAt": "employer",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 4,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 4,
+     "to": 5,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 5,
+     "to": 21,
+     "at": "work",
+     "do": "serve"
+    }
+   ],
+   "weekday": {
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "bailiff": {
+   "workAt": "market",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 8,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 8,
+     "to": 18,
+     "at": "work",
+     "do": "patrol"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "messenger": {
+   "workAt": "well_square",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 5,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 5,
+     "to": 6,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 6,
+     "to": 9,
+     "at": "castle",
+     "do": "deliver"
+    },
+    {
+     "from": 9,
+     "to": 11,
+     "at": "craft_street",
+     "do": "deliver"
+    },
+    {
+     "from": 11,
+     "to": 13,
+     "at": "market",
+     "do": "cry_news"
+    },
+    {
+     "from": 13,
+     "to": 15,
+     "at": "well_square",
+     "do": "deliver"
+    },
+    {
+     "from": 15,
+     "to": 18,
+     "at": "work",
+     "do": "deliver"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "market",
+      "do": "cry_news"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "matchmaker": {
+   "workAt": "well_square",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 8,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 8,
+     "to": 10,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 10,
+     "to": 12,
+     "at": "work",
+     "do": "matchmake"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 15,
+     "at": "market",
+     "do": "matchmake"
+    },
+    {
+     "from": 15,
+     "to": 17,
+     "at": "work",
+     "do": "matchmake"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "inn",
+     "do": "chat"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 10,
+      "to": 12,
+      "at": "market",
+      "do": "matchmake"
+     }
+    ],
+    "fri": [
+     {
+      "from": 10,
+      "to": 12,
+      "at": "market",
+      "do": "matchmake"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "moneylender": {
+   "workAt": "market",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 9,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 9,
+     "to": 17,
+     "at": "work",
+     "do": "lend"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "midwife": {
+   "workAt": "home",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 5,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 5,
+     "to": 6,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 6,
+     "to": 8,
+     "at": "well_square",
+     "do": "fetch_water"
+    },
+    {
+     "from": 8,
+     "to": 18,
+     "at": "work",
+     "do": "on_call"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "herbalist": {
+   "workAt": "forest_river",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 5,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 5,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 17,
+     "at": "work",
+     "do": "gather"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 15,
+      "to": 17,
+      "at": "market",
+      "do": "sell"
+     }
+    ],
+    "fri": [
+     {
+      "from": 15,
+      "to": 17,
+      "at": "market",
+      "do": "sell"
+     }
+    ],
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "tutor": {
+   "workAt": "employer",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 9,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 9,
+     "to": 14,
+     "at": "work",
+     "do": "teach"
+    },
+    {
+     "from": 14,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 14,
+      "to": 16,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 14,
+      "to": 16,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sat": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 7,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 7,
+      "to": 12,
+      "at": "home",
+      "do": "chores"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "home",
+      "do": "chores"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sat",
+    "sun"
+   ]
+  },
+  "mason": {
+   "workAt": "craft_street",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 16,
+     "at": "work",
+     "do": "build"
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "leatherworker": {
+   "workAt": "craft_street",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 16,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 16,
+      "to": 18,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "lord": {
+   "workAt": "castle",
+   "blocks": [
+    {
+     "from": 22,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 8,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 8,
+     "to": 12,
+     "at": "castle",
+     "do": "court"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "castle",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 17,
+     "at": "castle",
+     "do": "administer"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "castle",
+     "do": "relax"
+    },
+    {
+     "from": 18,
+     "to": 20,
+     "at": "castle",
+     "do": "feast"
+    },
+    {
+     "from": 20,
+     "to": 22,
+     "at": "castle",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "wed": [
+     {
+      "from": 13,
+      "to": 17,
+      "at": "forest_river",
+      "do": "hunt"
+     }
+    ],
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "noble": {
+   "workAt": "castle",
+   "blocks": [
+    {
+     "from": 22,
+     "to": 7,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 7,
+     "to": 8,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 8,
+     "to": 12,
+     "at": "castle",
+     "do": "court"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "castle",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 16,
+     "at": "castle",
+     "do": "relax"
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "at": "castle",
+     "do": "visit"
+    },
+    {
+     "from": 18,
+     "to": 20,
+     "at": "castle",
+     "do": "feast"
+    },
+    {
+     "from": 20,
+     "to": 22,
+     "at": "castle",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 13,
+      "to": 15,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "wed": [
+     {
+      "from": 13,
+      "to": 17,
+      "at": "forest_river",
+      "do": "hunt"
+     }
+    ],
+    "thu": [
+     {
+      "from": 13,
+      "to": 16,
+      "at": "tourney_ground",
+      "do": "watch"
+     }
+    ],
+    "fri": [
+     {
+      "from": 13,
+      "to": 15,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "reeve": {
+   "workAt": "lord_fields",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 5,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 5,
+     "to": 6,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 6,
+     "to": 14,
+     "at": "work",
+     "do": "oversee"
+    },
+    {
+     "from": 14,
+     "to": 15,
+     "at": "castle",
+     "do": "report"
+    },
+    {
+     "from": 15,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "inn",
+     "do": "drink"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 15,
+      "to": 17,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 15,
+      "to": 17,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "miller": {
+   "workAt": "mill",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 4,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 4,
+     "to": 5,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 5,
+     "to": 16,
+     "at": "work",
+     "do": "mill"
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "inn",
+     "do": "chat"
+    }
+   ],
+   "weekday": {
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "abbot": {
+   "workAt": "monastery",
+   "blocks": [
+    {
+     "from": 20,
+     "to": 4,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 4,
+     "to": 5,
+     "at": "monastery",
+     "do": "pray"
+    },
+    {
+     "from": 5,
+     "to": 17,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "monastery",
+     "do": "pray"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "monastery",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 20,
+     "at": "monastery",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "mon": [
+     {
+      "from": 13,
+      "to": 15,
+      "at": "castle",
+      "do": "counsel"
+     }
+    ],
+    "thu": [
+     {
+      "from": 13,
+      "to": 15,
+      "at": "church",
+      "do": "visit"
+     }
+    ],
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "monastery",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "guild_master": {
+   "workAt": "craft_street",
+   "blocks": [
+    {
+     "from": 21,
+     "to": 5,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 5,
+     "to": 6,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 6,
+     "to": 12,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 16,
+     "at": "guild_hall",
+     "do": "guild_business"
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "at": "work",
+     "do": "work"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "inn",
+     "do": "chat"
+    }
+   ],
+   "weekday": {
+    "sat": [
+     {
+      "from": 13,
+      "to": 17,
+      "at": "guild_hall",
+      "do": "meeting"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "baby": {
+   "blocks": [
+    {
+     "from": 19,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "feed"
+    },
+    {
+     "from": 7,
+     "to": 10,
+     "at": "home",
+     "do": "nap"
+    },
+    {
+     "from": 10,
+     "to": 11,
+     "at": "home",
+     "do": "feed"
+    },
+    {
+     "from": 11,
+     "to": 14,
+     "at": "home",
+     "do": "nap"
+    },
+    {
+     "from": 14,
+     "to": 15,
+     "at": "home",
+     "do": "feed"
+    },
+    {
+     "from": 15,
+     "to": 18,
+     "at": "home",
+     "do": "play"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "feed"
+    }
+   ],
+   "weekday": {
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "carried"
+     }
+    ]
+   }
+  },
+  "toddler": {
+   "blocks": [
+    {
+     "from": 20,
+     "to": 7,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 7,
+     "to": 8,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 8,
+     "to": 12,
+     "at": "home",
+     "do": "play"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 15,
+     "at": "home",
+     "do": "nap"
+    },
+    {
+     "from": 15,
+     "to": 18,
+     "at": "home",
+     "do": "play"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 20,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "child": {
+   "blocks": [
+    {
+     "from": 20,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 11,
+     "at": "church",
+     "do": "school"
+    },
+    {
+     "from": 11,
+     "to": 12,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 17,
+     "at": "well_square",
+     "do": "play"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 20,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "sat": [
+     {
+      "from": 7,
+      "to": 12,
+      "at": "home",
+      "do": "chores"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "forest_river",
+      "do": "play"
+     }
+    ],
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "child_tutored": {
+   "blocks": [
+    {
+     "from": 20,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 11,
+     "at": "home",
+     "do": "lessons"
+    },
+    {
+     "from": 11,
+     "to": 12,
+     "at": "home",
+     "do": "relax"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 17,
+     "at": "home",
+     "do": "play"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 20,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 13,
+      "to": 15,
+      "at": "market",
+      "do": "tag_along"
+     }
+    ],
+    "sat": [
+     {
+      "from": 7,
+      "to": 12,
+      "at": "home",
+      "do": "play"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "tourney_ground",
+      "do": "play"
+     }
+    ],
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "teen": {
+   "blocks": [
+    {
+     "from": 21,
+     "to": 5,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 5,
+     "to": 6,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 6,
+     "to": 12,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 16,
+     "at": "monastery",
+     "do": "school"
+    },
+    {
+     "from": 16,
+     "to": 17,
+     "at": "well_square",
+     "do": "chat"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "well_square",
+     "do": "socialize"
+    }
+   ],
+   "weekday": {
+    "sat": [
+     {
+      "from": 13,
+      "to": 17,
+      "at": "forest_river",
+      "do": "play"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "elder": {
+   "blocks": [
+    {
+     "from": 20,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 8,
+     "at": "church",
+     "do": "pray"
+    },
+    {
+     "from": 8,
+     "to": 12,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 16,
+     "at": "well_square",
+     "do": "chat"
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "at": "home",
+     "do": "relax"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 20,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 8,
+      "to": 10,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 8,
+      "to": 10,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sun": [
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     }
+    ]
+   }
+  },
+  "homemaker": {
+   "blocks": [
+    {
+     "from": 21,
+     "to": 5,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 5,
+     "to": 6,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "well_square",
+     "do": "fetch_water"
+    },
+    {
+     "from": 7,
+     "to": 12,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 16,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 16,
+     "to": 17,
+     "at": "well_square",
+     "do": "chat"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "home",
+     "do": "cook"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 8,
+      "to": 11,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 8,
+      "to": 11,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sat": [
+     {
+      "from": 13,
+      "to": 15,
+      "at": "bathhouse",
+      "do": "bathe"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "default": {
+   "blocks": [
+    {
+     "from": 21,
+     "to": 5,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 5,
+     "to": 6,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "well_square",
+     "do": "fetch_water"
+    },
+    {
+     "from": 7,
+     "to": 12,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 16,
+     "at": "home",
+     "do": "chores"
+    },
+    {
+     "from": 16,
+     "to": 17,
+     "at": "well_square",
+     "do": "chat"
+    },
+    {
+     "from": 17,
+     "to": 18,
+     "at": "home",
+     "do": "cook"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "home",
+     "do": "relax"
+    }
+   ],
+   "weekday": {
+    "tue": [
+     {
+      "from": 8,
+      "to": 11,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "fri": [
+     {
+      "from": 8,
+      "to": 11,
+      "at": "market",
+      "do": "shop"
+     }
+    ],
+    "sat": [
+     {
+      "from": 13,
+      "to": 15,
+      "at": "bathhouse",
+      "do": "bathe"
+     }
+    ],
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "unemployed": {
+   "blocks": [
+    {
+     "from": 21,
+     "to": 6,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 6,
+     "to": 7,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 7,
+     "to": 10,
+     "at": "market",
+     "do": "seek_work"
+    },
+    {
+     "from": 10,
+     "to": 12,
+     "at": "craft_street",
+     "do": "seek_work"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 16,
+     "at": "lord_fields",
+     "do": "odd_job"
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "at": "well_square",
+     "do": "chat"
+    },
+    {
+     "from": 18,
+     "to": 19,
+     "at": "home",
+     "do": "meal"
+    },
+    {
+     "from": 19,
+     "to": 21,
+     "at": "inn",
+     "do": "drink"
+    }
+   ],
+   "weekday": {
+    "sun": [
+     {
+      "from": 21,
+      "to": 6,
+      "at": "home",
+      "do": "sleep"
+     },
+     {
+      "from": 6,
+      "to": 9,
+      "at": "home",
+      "do": "wake"
+     },
+     {
+      "from": 9,
+      "to": 11,
+      "at": "church",
+      "do": "mass"
+     },
+     {
+      "from": 11,
+      "to": 12,
+      "at": "church",
+      "do": "chat"
+     },
+     {
+      "from": 12,
+      "to": 13,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 13,
+      "to": 17,
+      "at": "home",
+      "do": "relax"
+     },
+     {
+      "from": 17,
+      "to": 18,
+      "at": "well_square",
+      "do": "chat"
+     },
+     {
+      "from": 18,
+      "to": 19,
+      "at": "home",
+      "do": "meal"
+     },
+     {
+      "from": 19,
+      "to": 21,
+      "at": "home",
+      "do": "relax"
+     }
+    ]
+   },
+   "weekdayFull": [
+    "sun"
+   ]
+  },
+  "lodger": {
+   "blocks": [
+    {
+     "from": 23,
+     "to": 8,
+     "at": "home",
+     "do": "sleep"
+    },
+    {
+     "from": 8,
+     "to": 9,
+     "at": "home",
+     "do": "wake"
+    },
+    {
+     "from": 9,
+     "to": 12,
+     "at": "market",
+     "do": "watch"
+    },
+    {
+     "from": 12,
+     "to": 13,
+     "at": "inn",
+     "do": "meal"
+    },
+    {
+     "from": 13,
+     "to": 17,
+     "at": "forest_river",
+     "do": "wander"
+    },
+    {
+     "from": 17,
+     "to": 23,
+     "at": "inn",
+     "do": "drink"
+    }
+   ],
+   "weekday": {
+    "wed": [
+     {
+      "from": 13,
+      "to": 17,
+      "at": "castle",
+      "do": "watch"
+     }
+    ]
+   }
+  }
+ },
+ "traitMods": [
+  {
+   "trait": "drinker",
+   "block": {
+    "from": 19,
+    "to": 22,
+    "at": "inn",
+    "do": "drink"
+   },
+   "chance": 0.5
+  },
+  {
+   "trait": "sociable",
+   "block": {
+    "from": 19,
+    "to": 21,
+    "at": "inn",
+    "do": "chat"
+   },
+   "chance": 0.3
+  },
+  {
+   "trait": "cheerful",
+   "block": {
+    "from": 19,
+    "to": 21,
+    "at": "inn",
+    "do": "chat"
+   },
+   "chance": 0.2
+  },
+  {
+   "trait": "hot_tempered",
+   "block": {
+    "from": 20,
+    "to": 22,
+    "at": "inn",
+    "do": "drink"
+   },
+   "chance": 0.15
+  },
+  {
+   "trait": "gossip",
+   "block": {
+    "from": 16,
+    "to": 18,
+    "at": "well_square",
+    "do": "gossip"
+   },
+   "chance": 0.5
+  },
+  {
+   "trait": "introvert",
+   "block": {
+    "from": 17,
+    "to": 21,
+    "at": "home",
+    "do": "relax"
+   },
+   "chance": 0.6
+  },
+  {
+   "trait": "family_oriented",
+   "block": {
+    "from": 17,
+    "to": 21,
+    "at": "home",
+    "do": "family"
+   },
+   "chance": 0.5
+  },
+  {
+   "trait": "suspicious",
+   "block": {
+    "from": 19,
+    "to": 21,
+    "at": "home",
+    "do": "guard"
+   },
+   "chance": 0.3
+  },
+  {
+   "trait": "nature_lover",
+   "block": {
+    "from": 16,
+    "to": 18,
+    "at": "forest_river",
+    "do": "walk"
+   },
+   "chance": 0.4
+  },
+  {
+   "trait": "active",
+   "block": {
+    "from": 17,
+    "to": 18,
+    "at": "forest_river",
+    "do": "exercise"
+   },
+   "chance": 0.4
+  },
+  {
+   "trait": "romantic",
+   "block": {
+    "from": 19,
+    "to": 21,
+    "at": "forest_river",
+    "do": "stroll"
+   },
+   "chance": 0.2
+  },
+  {
+   "trait": "bookworm",
+   "block": {
+    "from": 17,
+    "to": 19,
+    "at": "monastery",
+    "do": "read"
+   },
+   "chance": 0.2
+  },
+  {
+   "trait": "flirt",
+   "block": {
+    "from": 18,
+    "to": 20,
+    "at": "bathhouse",
+    "do": "bathe"
+   },
+   "chance": 0.3
+  },
+  {
+   "trait": "neat",
+   "block": {
+    "from": 17,
+    "to": 18,
+    "at": "bathhouse",
+    "do": "bathe"
+   },
+   "chance": 0.3
+  },
+  {
+   "trait": "ambitious",
+   "block": {
+    "from": 18,
+    "to": 20,
+    "at": "guild_hall",
+    "do": "network"
+   },
+   "chance": 0.3,
+   "estates": [
+    "artisan"
+   ]
+  },
+  {
+   "trait": "gourmet",
+   "block": {
+    "from": 8,
+    "to": 10,
+    "at": "market",
+    "do": "shop"
+   },
+   "chance": 0.5,
+   "days": [
+    "tue",
+    "fri"
+   ]
+  },
+  {
+   "trait": "kind",
+   "block": {
+    "from": 14,
+    "to": 16,
+    "at": "church",
+    "do": "charity"
+   },
+   "chance": 0.15
+  },
+  {
+   "trait": "lazy",
+   "block": {
+    "from": 5,
+    "to": 7,
+    "at": "home",
+    "do": "sleep"
+   },
+   "chance": 0.5
+  },
+  {
+   "trait": "diligent",
+   "block": {
+    "from": 16,
+    "to": 18,
+    "at": "work",
+    "do": "work"
+   },
+   "chance": 0.3
+  }
+ ],
+ "virtueMods": [
+  {
+   "virtue": "humility",
+   "block": {
+    "from": 6,
+    "to": 7,
+    "at": "church",
+    "do": "pray"
+   },
+   "chance": 0.5
+  },
+  {
+   "virtue": "charity",
+   "block": {
+    "from": 14,
+    "to": 15,
+    "at": "church",
+    "do": "charity"
+   },
+   "chance": 0.3
+  },
+  {
+   "virtue": "chastity",
+   "block": {
+    "from": 17,
+    "to": 18,
+    "at": "church",
+    "do": "pray"
+   },
+   "chance": 0.2
+  },
+  {
+   "virtue": "temperance",
+   "block": {
+    "from": 19,
+    "to": 21,
+    "at": "home",
+    "do": "relax"
+   },
+   "chance": 0.3
+  }
+ ],
+ "sinMods": [
+  {
+   "sin": "gluttony",
+   "block": {
+    "from": 18,
+    "to": 20,
+    "at": "inn",
+    "do": "feast"
+   },
+   "chance": 0.4
+  },
+  {
+   "sin": "lust",
+   "block": {
+    "from": 19,
+    "to": 21,
+    "at": "bathhouse",
+    "do": "bathe"
+   },
+   "chance": 0.3
+  },
+  {
+   "sin": "greed",
+   "block": {
+    "from": 16,
+    "to": 18,
+    "at": "market",
+    "do": "haggle"
+   },
+   "chance": 0.3
+  },
+  {
+   "sin": "sloth",
+   "block": {
+    "from": 5,
+    "to": 8,
+    "at": "home",
+    "do": "sleep"
+   },
+   "chance": 0.4
+  },
+  {
+   "sin": "wrath",
+   "block": {
+    "from": 20,
+    "to": 22,
+    "at": "inn",
+    "do": "drink"
+   },
+   "chance": 0.2
+  },
+  {
+   "sin": "envy",
+   "block": {
+    "from": 16,
+    "to": 18,
+    "at": "well_square",
+    "do": "gossip"
+   },
+   "chance": 0.3
+  },
+  {
+   "sin": "pride",
+   "block": {
+    "from": 17,
+    "to": 18,
+    "at": "bathhouse",
+    "do": "bathe"
+   },
+   "chance": 0.2
+  }
+ ],
+ "rainMods": {
+  "market": 0.4,
+  "well_square": 0.5,
+  "forest_river": 0.3,
+  "tourney_ground": 0.2,
+  "lord_fields": 0.8,
+  "bathhouse": 1.3,
+  "inn": 1.4,
+  "church": 1.1
+ },
+ "plagueMods": {
+  "closed": [
+   "bathhouse",
+   "inn",
+   "market",
+   "guild_hall",
+   "tourney_ground"
+  ],
+  "church": 1.5,
+  "home": 1.5
+ }
+}

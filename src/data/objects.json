@@ -1,0 +1,1212 @@
+{
+  "bed_straw": {
+    "nameKey": "object.bed_straw",
+    "footprint": {
+      "w": 1,
+      "h": 2
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "lie",
+        "dx": 0,
+        "dy": 0,
+        "facing": "down",
+        "pose": "lie"
+      },
+      {
+        "id": "front",
+        "dx": 1,
+        "dy": 1,
+        "facing": "left",
+        "pose": "stand"
+      },
+      {
+        "id": "front_l",
+        "dx": -1,
+        "dy": 1,
+        "facing": "right",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "bed",
+      "sleep",
+      "comfort",
+      "bed_straw",
+      "bedroom"
+    ],
+    "price": 4,
+    "roomScore": 1
+  },
+  "bed_double": {
+    "nameKey": "object.bed_double",
+    "footprint": {
+      "w": 2,
+      "h": 2
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "lie",
+        "dx": 0,
+        "dy": 0,
+        "facing": "down",
+        "pose": "lie"
+      },
+      {
+        "id": "lie2",
+        "dx": 1,
+        "dy": 0,
+        "facing": "down",
+        "pose": "lie"
+      },
+      {
+        "id": "front",
+        "dx": 2,
+        "dy": 1,
+        "facing": "left",
+        "pose": "stand"
+      },
+      {
+        "id": "front_l",
+        "dx": -1,
+        "dy": 1,
+        "facing": "right",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "bed",
+      "sleep",
+      "comfort",
+      "double",
+      "bedroom"
+    ],
+    "price": 20,
+    "roomScore": 3
+  },
+  "hearth": {
+    "nameKey": "object.hearth",
+    "footprint": {
+      "w": 3,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 1,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "hearth",
+      "fire",
+      "cook",
+      "warmth",
+      "light",
+      "kitchen",
+      "needs_wall_north"
+    ],
+    "price": 30,
+    "roomScore": 4
+  },
+  "prep_counter": {
+    "nameKey": "object.prep_counter",
+    "footprint": {
+      "w": 2,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      },
+      {
+        "id": "front2",
+        "dx": 1,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "counter",
+      "prep",
+      "surface",
+      "kitchen"
+    ],
+    "price": 8,
+    "roomScore": 1
+  },
+  "cupboard": {
+    "nameKey": "object.cupboard",
+    "footprint": {
+      "w": 2,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      },
+      {
+        "id": "front2",
+        "dx": 1,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "food_storage",
+      "storage",
+      "kitchen"
+    ],
+    "price": 12,
+    "roomScore": 1
+  },
+  "barrel_water": {
+    "nameKey": "object.barrel_water",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "water_source",
+      "water",
+      "kitchen"
+    ],
+    "price": 3,
+    "roomScore": 0
+  },
+  "dining_table": {
+    "nameKey": "object.dining_table",
+    "footprint": {
+      "w": 3,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 1,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "table",
+      "dining",
+      "surface",
+      "eat"
+    ],
+    "price": 10,
+    "roomScore": 2
+  },
+  "chair": {
+    "nameKey": "object.chair",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "sit",
+        "dx": 0,
+        "dy": 0,
+        "facing": "down",
+        "pose": "sit"
+      }
+    ],
+    "tags": [
+      "seat",
+      "chair",
+      "comfort",
+      "dining"
+    ],
+    "price": 3,
+    "roomScore": 1
+  },
+  "bench": {
+    "nameKey": "object.bench",
+    "footprint": {
+      "w": 3,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "sit1",
+        "dx": 0,
+        "dy": 0,
+        "facing": "down",
+        "pose": "sit"
+      },
+      {
+        "id": "sit2",
+        "dx": 1,
+        "dy": 0,
+        "facing": "down",
+        "pose": "sit"
+      },
+      {
+        "id": "sit3",
+        "dx": 2,
+        "dy": 0,
+        "facing": "down",
+        "pose": "sit"
+      }
+    ],
+    "tags": [
+      "seat",
+      "bench",
+      "comfort",
+      "dining"
+    ],
+    "price": 4,
+    "roomScore": 1
+  },
+  "stool": {
+    "nameKey": "object.stool",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "sit",
+        "dx": 0,
+        "dy": 0,
+        "facing": "down",
+        "pose": "sit"
+      }
+    ],
+    "tags": [
+      "seat",
+      "stool",
+      "comfort",
+      "dining"
+    ],
+    "price": 1,
+    "roomScore": 0
+  },
+  "chest_clothes": {
+    "nameKey": "object.chest_clothes",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "dresser",
+      "clothes",
+      "storage",
+      "bedroom"
+    ],
+    "price": 5,
+    "roomScore": 1
+  },
+  "wardrobe": {
+    "nameKey": "object.wardrobe",
+    "footprint": {
+      "w": 2,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "dresser",
+      "clothes",
+      "storage",
+      "bedroom"
+    ],
+    "price": 15,
+    "roomScore": 2
+  },
+  "bookshelf": {
+    "nameKey": "object.bookshelf",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "books",
+      "study",
+      "fun",
+      "storage"
+    ],
+    "price": 18,
+    "roomScore": 2
+  },
+  "lute": {
+    "nameKey": "object.lute",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": false,
+    "wallMounted": true,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "instrument",
+      "music",
+      "fun",
+      "decor"
+    ],
+    "price": 12,
+    "roomScore": 1
+  },
+  "washbasin": {
+    "nameKey": "object.washbasin",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "wash",
+      "hygiene",
+      "sink"
+    ],
+    "price": 3,
+    "roomScore": 0
+  },
+  "washtub": {
+    "nameKey": "object.washtub",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "bath",
+        "dx": 0,
+        "dy": 0,
+        "facing": "down",
+        "pose": "sit"
+      },
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "bath",
+      "hygiene",
+      "wash"
+    ],
+    "price": 6,
+    "roomScore": 0
+  },
+  "chamber_pot": {
+    "nameKey": "object.chamber_pot",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "seat",
+        "dx": 0,
+        "dy": 0,
+        "facing": "down",
+        "pose": "sit"
+      },
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "toilet",
+      "bladder",
+      "hygiene",
+      "bedroom"
+    ],
+    "price": 1,
+    "roomScore": -1
+  },
+  "outhouse": {
+    "nameKey": "object.outhouse",
+    "footprint": {
+      "w": 2,
+      "h": 2
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 2,
+        "facing": "up",
+        "pose": "stand"
+      },
+      {
+        "id": "seat",
+        "dx": 0,
+        "dy": 1,
+        "facing": "down",
+        "pose": "sit"
+      }
+    ],
+    "tags": [
+      "toilet",
+      "bladder",
+      "outdoor",
+      "hides_user"
+    ],
+    "price": 10,
+    "roomScore": 0
+  },
+  "woodpile": {
+    "nameKey": "object.woodpile",
+    "footprint": {
+      "w": 2,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "firewood",
+      "wood_source",
+      "outdoor"
+    ],
+    "price": 2,
+    "roomScore": 0
+  },
+  "chopping_block": {
+    "nameKey": "object.chopping_block",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "chop",
+      "work",
+      "outdoor"
+    ],
+    "price": 1,
+    "roomScore": 0
+  },
+  "rug": {
+    "nameKey": "object.rug",
+    "footprint": {
+      "w": 3,
+      "h": 2
+    },
+    "blocks": false,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "center",
+        "dx": 1,
+        "dy": 1,
+        "facing": "down",
+        "pose": "stand"
+      },
+      {
+        "id": "lie",
+        "dx": 0,
+        "dy": 0,
+        "facing": "down",
+        "pose": "lie"
+      },
+      {
+        "id": "lie2",
+        "dx": 1,
+        "dy": 0,
+        "facing": "down",
+        "pose": "lie"
+      },
+      {
+        "id": "lie3",
+        "dx": 2,
+        "dy": 0,
+        "facing": "down",
+        "pose": "lie"
+      }
+    ],
+    "tags": [
+      "rug",
+      "decor",
+      "floor_layer"
+    ],
+    "price": 6,
+    "roomScore": 2
+  },
+  "candlestick": {
+    "nameKey": "object.candlestick",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "light",
+      "candle",
+      "fire",
+      "decor"
+    ],
+    "price": 4,
+    "roomScore": 1
+  },
+  "tapestry": {
+    "nameKey": "object.tapestry",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": false,
+    "wallMounted": true,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "decor",
+      "wall_decor",
+      "warmth_small"
+    ],
+    "price": 15,
+    "roomScore": 3
+  },
+  "plant_pot": {
+    "nameKey": "object.plant_pot",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "plant",
+      "decor"
+    ],
+    "price": 2,
+    "roomScore": 1
+  },
+  "spinning_wheel": {
+    "nameKey": "object.spinning_wheel",
+    "footprint": {
+      "w": 2,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "sit",
+        "dx": 0,
+        "dy": 0,
+        "facing": "right",
+        "pose": "sit"
+      },
+      {
+        "id": "front",
+        "dx": 1,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "spin",
+      "craft",
+      "work",
+      "fun"
+    ],
+    "price": 14,
+    "roomScore": 1
+  },
+  "well": {
+    "nameKey": "object.well",
+    "footprint": {
+      "w": 2,
+      "h": 2
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 1,
+        "dy": 2,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "water_source",
+      "well",
+      "outdoor"
+    ],
+    "price": 60,
+    "roomScore": 0
+  },
+  "oven": {
+    "nameKey": "object.oven",
+    "footprint": {
+      "w": 3,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 1,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "oven",
+      "bake",
+      "work",
+      "kitchen",
+      "needs_wall_north"
+    ],
+    "price": 40,
+    "roomScore": 2
+  },
+  "brew_vat": {
+    "nameKey": "object.brew_vat",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "brew_vat",
+      "brew",
+      "work",
+      "kitchen"
+    ],
+    "price": 12,
+    "roomScore": 0
+  },
+  "loom": {
+    "nameKey": "object.loom",
+    "footprint": {
+      "w": 2,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      },
+      {
+        "id": "front2",
+        "dx": 1,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "loom",
+      "weave",
+      "craft",
+      "work"
+    ],
+    "price": 30,
+    "roomScore": 1
+  },
+  "workbench": {
+    "nameKey": "object.workbench",
+    "footprint": {
+      "w": 2,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      },
+      {
+        "id": "front2",
+        "dx": 1,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "workbench",
+      "woodwork",
+      "craft",
+      "work"
+    ],
+    "price": 20,
+    "roomScore": 1
+  },
+  "forge": {
+    "nameKey": "object.forge",
+    "footprint": {
+      "w": 2,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      },
+      {
+        "id": "front2",
+        "dx": 1,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "forge",
+      "smith",
+      "work",
+      "outdoor"
+    ],
+    "price": 60,
+    "roomScore": 0
+  },
+  "anvil": {
+    "nameKey": "object.anvil",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "anvil",
+      "smith",
+      "work",
+      "outdoor"
+    ],
+    "price": 25,
+    "roomScore": 0
+  },
+  "churn": {
+    "nameKey": "object.churn",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "churn",
+      "dairy",
+      "work",
+      "kitchen"
+    ],
+    "price": 6,
+    "roomScore": 0
+  },
+  "salting_tub": {
+    "nameKey": "object.salting_tub",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "salting_tub",
+      "preserve",
+      "work",
+      "kitchen"
+    ],
+    "price": 5,
+    "roomScore": 0
+  },
+  "smokehouse": {
+    "nameKey": "object.smokehouse",
+    "footprint": {
+      "w": 3,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 1,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "smokehouse",
+      "smoke",
+      "preserve",
+      "work",
+      "outdoor"
+    ],
+    "price": 15,
+    "roomScore": 0
+  },
+  "press": {
+    "nameKey": "object.press",
+    "footprint": {
+      "w": 2,
+      "h": 1
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      },
+      {
+        "id": "front2",
+        "dx": 1,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "press",
+      "cider",
+      "work"
+    ],
+    "price": 25,
+    "roomScore": 0
+  },
+  "field_plot": {
+    "nameKey": "object.field_plot",
+    "footprint": {
+      "w": 3,
+      "h": 2
+    },
+    "blocks": false,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 1,
+        "dy": 2,
+        "facing": "up",
+        "pose": "stand"
+      },
+      {
+        "id": "front2",
+        "dx": 1,
+        "dy": -1,
+        "facing": "down",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "field",
+      "outdoor"
+    ],
+    "price": 20,
+    "roomScore": 0
+  },
+  "garden_plot": {
+    "nameKey": "object.garden_plot",
+    "footprint": {
+      "w": 2,
+      "h": 1
+    },
+    "blocks": false,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      },
+      {
+        "id": "front2",
+        "dx": 1,
+        "dy": 1,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "field",
+      "garden",
+      "outdoor"
+    ],
+    "price": 4,
+    "roomScore": 0
+  },
+  "orchard_tree": {
+    "nameKey": "object.orchard_tree",
+    "footprint": {
+      "w": 2,
+      "h": 2
+    },
+    "blocks": true,
+    "wallMounted": false,
+    "slots": [
+      {
+        "id": "front",
+        "dx": 0,
+        "dy": 2,
+        "facing": "up",
+        "pose": "stand"
+      },
+      {
+        "id": "front2",
+        "dx": 1,
+        "dy": 2,
+        "facing": "up",
+        "pose": "stand"
+      }
+    ],
+    "tags": [
+      "orchard",
+      "outdoor"
+    ],
+    "price": 12,
+    "roomScore": 0
+  },
+  "stairs_wood": {
+    "nameKey": "object.stairs_wood",
+    "footprint": {
+      "w": 1,
+      "h": 3
+    },
+    "blocks": false,
+    "wallMounted": false,
+    "slots": [],
+    "tags": [
+      "stairs"
+    ],
+    "price": 480,
+    "roomScore": 0
+  },
+  "stairs_stone": {
+    "nameKey": "object.stairs_stone",
+    "footprint": {
+      "w": 1,
+      "h": 3
+    },
+    "blocks": false,
+    "wallMounted": false,
+    "slots": [],
+    "tags": [
+      "stairs"
+    ],
+    "price": 960,
+    "roomScore": 0
+  },
+  "cellar_hatch": {
+    "nameKey": "object.cellar_hatch",
+    "footprint": {
+      "w": 1,
+      "h": 1
+    },
+    "blocks": false,
+    "wallMounted": false,
+    "slots": [],
+    "tags": [
+      "cellar_hatch"
+    ],
+    "price": 240,
+    "roomScore": 0
+  }
+}

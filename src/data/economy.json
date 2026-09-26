@@ -1,0 +1,570 @@
+{
+  "$comment": "경제 기준 수치 (GDD 17-4 ~ 17-10, 29-1). 돈은 전부 파딩 정수 (1동화 = 4파딩). 먼저 tools/econ-model 로 맞춘 뒤 게임이 같은 값을 씀. 기간 필드는 scale 필수 (29-0)",
+  "currency": {
+    "farthingsPerPenny": 4,
+    "penniesPerShilling": 12,
+    "shillingsPerPound": 20
+  },
+  "calendar": {
+    "seasonDays": 7,
+    "scale": "season",
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "startSeason": "spring"
+  },
+  "household": {
+    "$comment": "기준 가정: 성인 2 + 아동 2 (17-4)",
+    "adults": 2,
+    "children": 2,
+    "childShare": 0.5
+  },
+  "goods": {
+    "$comment": "장부 품목. base = 기준가(파딩, unit 하나). food: true 면 탄력성 food. spoil = 부패 기간 {value, scale}. perCapita = 1인 하루 '장부' 소비량 (자급분 제외, 장부에서 사고파는 몫). 목표 재고 Q* 계산용 (17-8)",
+    "grain": {
+      "nameKey": "good.grain",
+      "unit": "ration",
+      "base": 2,
+      "food": true,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "perCapita": 0.33
+    },
+    "vegetables": {
+      "nameKey": "good.vegetables",
+      "unit": "ration",
+      "base": 1,
+      "food": true,
+      "spoil": {
+        "value": 4,
+        "scale": "season"
+      },
+      "perCapita": 0.25
+    },
+    "dairy": {
+      "nameKey": "good.dairy",
+      "unit": "ration",
+      "base": 2,
+      "food": true,
+      "spoil": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perCapita": 0.5
+    },
+    "meat": {
+      "nameKey": "good.meat",
+      "unit": "ration",
+      "base": 4,
+      "food": true,
+      "spoil": {
+        "value": 2,
+        "scale": "absolute"
+      },
+      "perCapita": 0.15
+    },
+    "ale": {
+      "nameKey": "good.ale",
+      "unit": "cup",
+      "base": 3,
+      "bundle": {
+        "n": 4,
+        "price": 12
+      },
+      "food": true,
+      "spoil": {
+        "value": 14,
+        "scale": "season"
+      },
+      "perCapita": 0.33
+    },
+    "bread": {
+      "nameKey": "good.bread",
+      "unit": "loaf",
+      "base": 3,
+      "bundle": {
+        "n": 4,
+        "price": 12
+      },
+      "food": true,
+      "spoil": {
+        "value": 3,
+        "scale": "absolute"
+      },
+      "perCapita": 0
+    },
+    "flour": {
+      "nameKey": "good.flour",
+      "unit": "ration",
+      "base": 3,
+      "food": true,
+      "spoil": {
+        "value": 42,
+        "scale": "season"
+      },
+      "perCapita": 0
+    },
+    "preserves": {
+      "nameKey": "good.preserves",
+      "unit": "ration",
+      "base": 5,
+      "food": true,
+      "spoil": {
+        "value": 14,
+        "scale": "season"
+      },
+      "perCapita": 0
+    },
+    "firewood": {
+      "nameKey": "good.firewood",
+      "unit": "bundle",
+      "base": 2,
+      "food": false,
+      "perCapita": 0.35
+    },
+    "cloth": {
+      "nameKey": "good.cloth",
+      "unit": "ell",
+      "base": 16,
+      "food": false,
+      "perCapita": 0.02
+    },
+    "iron": {
+      "nameKey": "good.iron",
+      "unit": "bar",
+      "base": 24,
+      "food": false,
+      "perCapita": 0
+    },
+    "tools": {
+      "nameKey": "good.tools",
+      "unit": "piece",
+      "base": 60,
+      "food": false,
+      "perCapita": 0.004
+    },
+    "horseshoes": {
+      "nameKey": "good.horseshoes",
+      "unit": "set",
+      "base": 32,
+      "food": false,
+      "perCapita": 0.003
+    }
+  },
+  "diet": {
+    "$comment": "신분별 식사 바구니 (성인 하루, 장부 품목 단위). 아동은 childShare 배. 기준가로 성인 6파딩(17-4 생활비 기준)부터 신분이 오르면 품질과 양이 늘어남",
+    "serf": {
+      "grain": 1.5,
+      "vegetables": 1.0,
+      "dairy": 0.5,
+      "ale": 0.33
+    },
+    "freeman": {
+      "grain": 1.5,
+      "vegetables": 1.0,
+      "dairy": 0.6,
+      "meat": 0.15,
+      "ale": 0.5
+    },
+    "artisan": {
+      "grain": 1.5,
+      "vegetables": 1.0,
+      "dairy": 0.8,
+      "meat": 0.5,
+      "ale": 1.0
+    },
+    "merchant": {
+      "grain": 1.5,
+      "vegetables": 1.2,
+      "dairy": 1.0,
+      "meat": 1.2,
+      "ale": 1.5
+    },
+    "clergy": {
+      "grain": 1.5,
+      "vegetables": 1.0,
+      "dairy": 0.6,
+      "meat": 0.2,
+      "ale": 0.6
+    },
+    "knight": {
+      "grain": 1.5,
+      "vegetables": 1.2,
+      "dairy": 1.0,
+      "meat": 1.6,
+      "ale": 2.0
+    },
+    "noble": {
+      "grain": 1.5,
+      "vegetables": 1.5,
+      "dairy": 1.5,
+      "meat": 3.0,
+      "ale": 4.0
+    }
+  },
+  "estates": {
+    "$comment": "신분별 기준 가정. target = 17-4 표 (동화/일). incomes 는 수입원 (동화/일 평균, 쉬는 날 포함). upkeep = 옷/수리/신분 유지비 (동화/일). household: 성직자는 개인 (성인 1). members 를 바꾸면 식비도 바뀜",
+    "serf": {
+      "target": {
+        "gross": 10,
+        "spend": 7,
+        "net": 3
+      },
+      "members": {
+        "adults": 2,
+        "children": 2
+      },
+      "taxed": false,
+      "fuelBundles": 0.9,
+      "incomes": {
+        "wage": {
+          "workers": 1.0,
+          "daysPerWeek": 5,
+          "daily": 4
+        },
+        "plots": 2,
+        "homecraft": 0.8
+      },
+      "upkeep": 1.0,
+      "assetsDays": 15
+    },
+    "freeman": {
+      "target": {
+        "gross": 16,
+        "spend": 10,
+        "net": 6
+      },
+      "members": {
+        "adults": 2,
+        "children": 2
+      },
+      "taxed": true,
+      "fuelBundles": 1.0,
+      "incomes": {
+        "wage": {
+          "workers": 1.5,
+          "daysPerWeek": 6,
+          "daily": 4
+        },
+        "plots": 3,
+        "homecraft": 1.6
+      },
+      "upkeep": 0.7,
+      "assetsDays": 40
+    },
+    "artisan": {
+      "target": {
+        "gross": 36,
+        "spend": 18,
+        "net": 18
+      },
+      "members": {
+        "adults": 2,
+        "children": 2
+      },
+      "taxed": true,
+      "fuelBundles": 2.0,
+      "incomes": {
+        "shop": {
+          "salesPerDay": 65,
+          "materialShare": 0.45
+        }
+      },
+      "upkeep": 1.9,
+      "assetsDays": 60
+    },
+    "merchant": {
+      "target": {
+        "gross": 80,
+        "spend": 40,
+        "net": 40
+      },
+      "members": {
+        "adults": 2,
+        "children": 2
+      },
+      "taxed": true,
+      "fuelBundles": 2.5,
+      "incomes": {
+        "trade": {
+          "capital": 900,
+          "skillReckoning": 5,
+          "skillStory": 3,
+          "rankBonus": 0.05,
+          "tripDays": 4,
+          "prepDays": 2
+        },
+        "shop": {
+          "salesPerDay": 80,
+          "materialShare": 0.6
+        }
+      },
+      "upkeep": 10.6,
+      "assetsDays": 60
+    },
+    "clergy": {
+      "target": {
+        "gross": 12,
+        "spend": 4,
+        "net": 8
+      },
+      "members": {
+        "adults": 1,
+        "children": 0
+      },
+      "taxed": false,
+      "fuelBundles": 0.5,
+      "tithed": false,
+      "incomes": {
+        "stipend": 9,
+        "sacraments": 3
+      },
+      "upkeep": 1.75,
+      "assetsDays": 10
+    },
+    "knight": {
+      "target": {
+        "gross": 100,
+        "spend": 55,
+        "net": 45
+      },
+      "members": {
+        "adults": 2,
+        "children": 2
+      },
+      "taxed": true,
+      "fuelBundles": 3.0,
+      "incomes": {
+        "tenants": 4,
+        "manors": 2,
+        "stipend": 40,
+        "prizes": 4
+      },
+      "upkeep": 22.4,
+      "assetsDays": 30
+    },
+    "noble": {
+      "target": {
+        "gross": 360,
+        "spend": 200,
+        "net": 160
+      },
+      "members": {
+        "adults": 2,
+        "children": 2
+      },
+      "taxed": false,
+      "fuelBundles": 6.0,
+      "incomes": {
+        "tenants": 12,
+        "manors": 12,
+        "fees": 40
+      },
+      "upkeep": 137,
+      "assetsDays": 20
+    },
+    "$assetsDays": "담보로 잡을 수 있는 재산 = 일 총수입 × assetsDays (집, 가게, 동산). 영지는 한사상속이라 담보가 작음. 대출 한도 = 담보 × 50% + 일 순수입 목표 × 20 (17-6)"
+  },
+  "income": {
+    "$comment": "17-7 수입 공식 상수",
+    "wageBase": {
+      "field_hand": 4,
+      "mill_hand": 5,
+      "guard": 6,
+      "clerk": 8,
+      "monk": 3
+    },
+    "wageRankMult": 1.5,
+    "performance": {
+      "min": -0.2,
+      "max": 0.3
+    },
+    "tenantPerDay": 1.5,
+    "manorPerDay": 25,
+    "trade": {
+      "baseReturn": 0.25,
+      "perReckoning": 0.02,
+      "perStory": 0.01,
+      "costPerDay": 4,
+      "lossChance": 0.12,
+      "lossRange": [
+        0.3,
+        1.0
+      ],
+      "eventMult": [
+        0.5,
+        1.5
+      ]
+    },
+    "homecraftDesc": "실잣기/달걀/품팔이 부업 (동화/일)"
+  },
+  "farming": {
+    "$comment": "밭 구획 (중) 하나의 달력 1년 산출 (31-4). 곡물 ration 단위. 계절 길이에 비례 (season). 자가 소비 뒤 남는 것만 장부로",
+    "plotYearYield": {
+      "grain": 180,
+      "vegetables": 36,
+      "scale": "season"
+    },
+    "harvestSeason": {
+      "grain": "summer",
+      "vegetables": [
+        "summer",
+        "autumn"
+      ]
+    },
+    "harvestDay": {
+      "$comment": "계절 안 며칠째(0부터)에 거둠",
+      "grain": 6,
+      "vegetables": 3
+    },
+    "seedShare": 0.15,
+    "yieldMult": {
+      "bad": 0.65,
+      "normal": 1.0,
+      "good": 1.25
+    },
+    "yearChance": {
+      "bad": 0.15,
+      "good": 0.15,
+      "$comment": "나머지는 보통"
+    },
+    "garden": {
+      "vegetablesPerDay": 0.6,
+      "seasons": [
+        "spring",
+        "summer",
+        "autumn"
+      ]
+    },
+    "villageSaleShare": 0.2,
+    "$villageSaleShare": "추수 잉여 중 마을 장부로 파는 비율. 나머지는 외지(도시) 상인에게 기준가로 팔림 = 현금 수입"
+  },
+  "tax": {
+    "$comment": "17-6. 가을 1회 (season). 재산 평가액 × 세율 × (달력 1년 일수/28). 십일조 10% (수입 발생 시)",
+    "rates": {
+      "low": 0.03,
+      "normal": 0.05,
+      "high": 0.08
+    },
+    "default": "normal",
+    "season": "autumn",
+    "wealthDays": {
+      "$comment": "재산 평가액 = 신분 일 총수입 × 이 일수 (집, 가구, 도구, 가축 추정)",
+      "serf": 0,
+      "freeman": 60,
+      "artisan": 40,
+      "merchant": 60,
+      "clergy": 0,
+      "knight": 40,
+      "noble": 0
+    },
+    "tithe": 0.1,
+    "guildDuesPerDay": 1,
+    "corveeDaysPerWeek": 1
+  },
+  "ledger": {
+    "$comment": "17-8. 가격 = 기준가 × clamp((Q*/Q)^ε, 0.5, 3.0). Q* = 인구 × 1인 소비 × 계절 일수 × 1.5",
+    "elasticity": {
+      "food": 0.5,
+      "other": 0.3
+    },
+    "clamp": [
+      0.5,
+      3.0
+    ],
+    "targetSeasons": 1.5,
+    "importAt": 1.8,
+    "exportAt": 0.7,
+    "tradeCapPerDay": {
+      "$comment": "외지 상인 하루 공급/반출 상한 (인구 1명당 ration)",
+      "food": 0.35,
+      "other": 0.02
+    },
+    "population": 120,
+    "households": {
+      "$comment": "마을 120명 구성 (가구 수). 성직자는 1인 가구",
+      "serf": 12,
+      "freeman": 9,
+      "artisan": 4,
+      "merchant": 2,
+      "clergy": 2,
+      "knight": 1,
+      "noble": 1
+    },
+    "lordGranaryShare": {
+      "$comment": "추수 때 영주 지대(현물)로 영주 곳간에 묶이는 곡물 비율. 가격 배수가 releaseAtMult 이상이면 하루 releasePerCapita × 인구만큼 장부로 풀림 (17-9 영주 곡물 배급과 같은 곳간)",
+      "grain": 0.1,
+      "releaseAtMult": 1.6,
+      "releasePerCapita": 0.2
+    }
+  },
+  "relief": {
+    "$comment": "17-9 구휼. 몰락 확률의 조절 손잡이",
+    "church": {
+      "breadPerPerson": 1,
+      "maxDays": 7,
+      "fameCostPerDay": 2
+    },
+    "kin": {
+      "minFriendship": 30,
+      "maxShare": 0.1
+    },
+    "lord": {
+      "maxDays": 14,
+      "unrestBelow": 40
+    }
+  },
+  "loans": {
+    "$comment": "17-6 대출 (absolute)",
+    "dailyInterest": {
+      "disgrace": 0.01,
+      "suspect": 0.007,
+      "plain": 0.005,
+      "respected": 0.004,
+      "renowned": 0.003,
+      "scale": "absolute"
+    },
+    "limitDays": 20,
+    "collateralShare": 0.5,
+    "termDays": [
+      14,
+      28
+    ],
+    "graceDays": 7
+  },
+  "presets": {
+    "$comment": "16-2 시작 자금 = 그 신분 S 배수. S = 일 순수입 목표 × 48 (lifespan)",
+    "savingsDays": 48,
+    "wealth": {
+      "poor": -0.5,
+      "normal": 0.3,
+      "rich": 1.5
+    }
+  },
+  "shocks": {
+    "$comment": "econ-model 몬테카를로 충격 (첫 세대 몰락 확률 추정). 무작위 봇은 전략 봇 순수입의 randomBotNetShare 만 모음 (관리 소홀)",
+    "randomBotNetShare": 0.6,
+    "illnessPerDay": 0.02,
+    "illnessDays": [
+      2,
+      5
+    ],
+    "catastrophePerLife": 0.8,
+    "catastropheCost": [
+      0.3,
+      1.6
+    ],
+    "catastropheScale": "S (한 인생 저축 목표) 배수",
+    "incomeNoise": 0.25,
+    "botNetShare": {
+      "$comment": "신분별 무작위 봇 순수입 비율 (없으면 randomBotNetShare). 귀족은 연회, 수행원, 사치로 방심하면 크게 샘 (29-1 \"귀족도 방심하면 몰락\")",
+      "noble": 0.15,
+      "knight": 0.4
+    }
+  }
+}

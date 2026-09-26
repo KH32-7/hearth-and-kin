@@ -1,0 +1,120 @@
+{
+  "$comment": "머리 위 연출 규칙 (src/render/Bubbles.ts). 아이콘 키는 src/data/ui/atlas.json",
+  "bubbles": {
+    "talk": {
+      "window.chat": [
+        "social",
+        "eye"
+      ],
+      "lute.play": [
+        "lute",
+        "need.fun"
+      ],
+      "tapestry.admire": [
+        "eye"
+      ],
+      "bookshelf.read": [
+        "book"
+      ],
+      "social.chat": [
+        "social",
+        "need.fun"
+      ],
+      "social.deep_talk": [
+        "social",
+        "emo.pious"
+      ],
+      "social.joke": [
+        "need.fun",
+        "emo.happy"
+      ],
+      "social.comfort": [
+        "emo.sad",
+        "social"
+      ],
+      "social.hug": [
+        "emo.excited"
+      ],
+      "social.tease": [
+        "emo.angry",
+        "need.fun"
+      ],
+      "social.gossip": [
+        "eye",
+        "social"
+      ],
+      "social.argue": [
+        "emo.angry",
+        "emo.tense"
+      ],
+      "social.flirt": [
+        "emo.excited",
+        "social"
+      ],
+      "social.brag": [
+        "ui.coin",
+        "emo.energized"
+      ],
+      "social.apologize": [
+        "emo.pious",
+        "social"
+      ],
+      "social.trick": [
+        "eye",
+        "need.fun"
+      ],
+      "__listen": [
+        "social"
+      ],
+      "__chat": [
+        "social",
+        "need.fun"
+      ]
+    },
+    "critical": 15,
+    "popMs": 1600,
+    "zzzLifeMs": 2400,
+    "zzzEveryMs": 900,
+    "solves": {
+      "hunger": [
+        "stew",
+        "bread"
+      ],
+      "energy": [
+        "sleep"
+      ],
+      "hygiene": [
+        "hygiene",
+        "bath",
+        "water"
+      ],
+      "bladder": [
+        "bladder",
+        "outhouse"
+      ],
+      "fun": [
+        "lute",
+        "book",
+        "eye",
+        "yarn",
+        "plant"
+      ],
+      "social": [
+        "social"
+      ],
+      "warmth": [
+        "warmth",
+        "fire"
+      ],
+      "comfort": [
+        "comfort",
+        "sleep"
+      ]
+    }
+  },
+  "character": {
+    "$comment": "사람 그리기 보정 (px)",
+    "seatInset": 4,
+    "seatCarryDrop": 6
+  }
+}

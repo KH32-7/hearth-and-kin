@@ -1,0 +1,567 @@
+{
+  "$comment": "건축/구매 수치 (GDD 23). 돈은 파딩. 벽/바닥/지붕 가격은 칸당. insulationC = 방 목표 기온에 더함 (11-1). fire = 불 번짐 배수 (0 안 탐). estate = 최소 신분",
+  "walls": {
+    "wall_daub": {
+      "nameKey": "build.wall.wall_daub",
+      "price": 4,
+      "insulationC": 3,
+      "fire": 0.6,
+      "estate": null,
+      "roomScore": 0
+    },
+    "wall_daub_white": {
+      "nameKey": "build.wall.wall_daub_white",
+      "price": 6,
+      "insulationC": 3,
+      "fire": 0.6,
+      "estate": null,
+      "roomScore": 1
+    },
+    "wall_plank": {
+      "nameKey": "build.wall.wall_plank",
+      "price": 5,
+      "insulationC": 2,
+      "fire": 1.4,
+      "estate": null,
+      "roomScore": 0
+    },
+    "wall_timber": {
+      "nameKey": "build.wall.wall_timber",
+      "price": 7,
+      "insulationC": 4,
+      "fire": 0.9,
+      "estate": null,
+      "roomScore": 1
+    },
+    "wall_timber_rose": {
+      "nameKey": "build.wall.wall_timber_rose",
+      "price": 8,
+      "insulationC": 4,
+      "fire": 0.9,
+      "estate": null,
+      "roomScore": 1
+    },
+    "wall_stone": {
+      "nameKey": "build.wall.wall_stone",
+      "price": 10,
+      "insulationC": 6,
+      "fire": 0,
+      "estate": null,
+      "roomScore": 1
+    },
+    "wall_stone_white": {
+      "nameKey": "build.wall.wall_stone_white",
+      "price": 12,
+      "insulationC": 6,
+      "fire": 0,
+      "estate": null,
+      "roomScore": 2
+    },
+    "wall_ashlar": {
+      "nameKey": "build.wall.wall_ashlar",
+      "price": 20,
+      "insulationC": 7,
+      "fire": 0,
+      "estate": "artisan",
+      "roomScore": 3
+    },
+    "wall_brick": {
+      "nameKey": "build.wall.wall_brick",
+      "price": 16,
+      "insulationC": 6,
+      "fire": 0,
+      "estate": "merchant",
+      "roomScore": 2
+    }
+  },
+  "fences": {
+    "fence_wood": {
+      "nameKey": "build.fence.fence_wood",
+      "price": 2,
+      "fire": 1.2,
+      "estate": null
+    },
+    "fence_wattle": {
+      "nameKey": "build.fence.fence_wattle",
+      "price": 1,
+      "fire": 1.4,
+      "estate": null
+    },
+    "fence_stone": {
+      "nameKey": "build.fence.fence_stone",
+      "price": 6,
+      "fire": 0,
+      "estate": null
+    },
+    "fence_hedge": {
+      "nameKey": "build.fence.fence_hedge",
+      "price": 3,
+      "fire": 0.5,
+      "estate": null
+    }
+  },
+  "doors": {
+    "door_plank": {
+      "nameKey": "build.door.door_plank",
+      "price": 48,
+      "estate": null
+    },
+    "door_ledged": {
+      "nameKey": "build.door.door_ledged",
+      "price": 60,
+      "estate": null
+    },
+    "door_studded": {
+      "nameKey": "build.door.door_studded",
+      "price": 120,
+      "estate": "artisan"
+    },
+    "door_dark": {
+      "nameKey": "build.door.door_dark",
+      "price": 96,
+      "estate": null
+    },
+    "door_half": {
+      "nameKey": "build.door.door_half",
+      "price": 72,
+      "estate": null
+    },
+    "door_arch": {
+      "nameKey": "build.door.door_arch",
+      "price": 192,
+      "estate": "merchant"
+    },
+    "door_barn": {
+      "nameKey": "build.door.door_barn",
+      "price": 84,
+      "estate": null
+    },
+    "gate_wood": {
+      "nameKey": "build.door.gate_wood",
+      "price": 24,
+      "estate": null,
+      "fenceOnly": true
+    }
+  },
+  "windows": {
+    "win_shutter": {
+      "nameKey": "build.window.win_shutter",
+      "price": 24,
+      "estate": null,
+      "roomScore": 1,
+      "insulationC": -0.5
+    },
+    "win_lattice": {
+      "nameKey": "build.window.win_lattice",
+      "price": 48,
+      "estate": null,
+      "roomScore": 2,
+      "insulationC": -0.5
+    },
+    "win_glass": {
+      "nameKey": "build.window.win_glass",
+      "price": 240,
+      "estate": "merchant",
+      "roomScore": 4,
+      "insulationC": 0
+    },
+    "win_stained": {
+      "nameKey": "build.window.win_stained",
+      "price": 480,
+      "estate": "clergy",
+      "roomScore": 6,
+      "insulationC": 0
+    }
+  },
+  "floors": {
+    "floor_dirt": {
+      "nameKey": "build.floor.floor_dirt",
+      "price": 0,
+      "roomScore": -1,
+      "fire": 0,
+      "warmthC": -1
+    },
+    "floor_straw": {
+      "nameKey": "build.floor.floor_straw",
+      "price": 1,
+      "roomScore": 0,
+      "fire": 1.6,
+      "warmthC": 0.5
+    },
+    "floor_plank_rough": {
+      "nameKey": "build.floor.floor_plank_rough",
+      "price": 2,
+      "roomScore": 0,
+      "fire": 1,
+      "warmthC": 1
+    },
+    "floor_wood": {
+      "nameKey": "build.floor.floor_wood",
+      "price": 2,
+      "roomScore": 1,
+      "fire": 1,
+      "warmthC": 1
+    },
+    "floor_wood_dark": {
+      "nameKey": "build.floor.floor_wood_dark",
+      "price": 4,
+      "roomScore": 1,
+      "fire": 1,
+      "warmthC": 1
+    },
+    "floor_stone": {
+      "nameKey": "build.floor.floor_stone",
+      "price": 3,
+      "roomScore": 1,
+      "fire": 0,
+      "warmthC": -0.5
+    },
+    "floor_flagstone": {
+      "nameKey": "build.floor.floor_flagstone",
+      "price": 4,
+      "roomScore": 1,
+      "fire": 0,
+      "warmthC": -0.5
+    },
+    "floor_tile_red": {
+      "nameKey": "build.floor.floor_tile_red",
+      "price": 6,
+      "roomScore": 2,
+      "fire": 0,
+      "warmthC": 0,
+      "estate": "artisan"
+    },
+    "floor_tile_check": {
+      "nameKey": "build.floor.floor_tile_check",
+      "price": 8,
+      "roomScore": 3,
+      "fire": 0,
+      "warmthC": 0,
+      "estate": "merchant"
+    },
+    "floor_cellar": {
+      "nameKey": "build.floor.floor_cellar",
+      "price": 1,
+      "roomScore": -1,
+      "fire": 0,
+      "warmthC": 0,
+      "cellarOnly": true
+    }
+  },
+  "terrain": {
+    "grass": {
+      "nameKey": "build.terrain.grass",
+      "price": 0
+    },
+    "dirt": {
+      "nameKey": "build.terrain.dirt",
+      "price": 0
+    },
+    "gravel": {
+      "nameKey": "build.terrain.gravel",
+      "price": 1
+    },
+    "mud": {
+      "nameKey": "build.terrain.mud",
+      "price": 0
+    },
+    "flowers": {
+      "nameKey": "build.terrain.flowers",
+      "price": 2
+    },
+    "water": {
+      "nameKey": "build.terrain.water",
+      "price": 0,
+      "walkable": false
+    },
+    "bridge": {
+      "nameKey": "build.terrain.bridge",
+      "price": 6
+    },
+    "road_stone": {
+      "nameKey": "build.terrain.road_stone",
+      "price": 3
+    },
+    "field_soil": {
+      "nameKey": "build.terrain.field_soil",
+      "price": 0
+    },
+    "sand": {
+      "nameKey": "build.terrain.sand",
+      "price": 0
+    },
+    "forest_floor": {
+      "nameKey": "build.terrain.forest_floor",
+      "price": 0
+    }
+  },
+  "roofs": {
+    "roof_thatch": {
+      "nameKey": "build.roof.roof_thatch",
+      "price": 2,
+      "insulationC": 2,
+      "fire": 3,
+      "lightningPerDay": 0.004,
+      "estate": null
+    },
+    "roof_shingle": {
+      "nameKey": "build.roof.roof_shingle",
+      "price": 3,
+      "insulationC": 1.5,
+      "fire": 1.5,
+      "lightningPerDay": 0.001,
+      "estate": null
+    },
+    "roof_slate": {
+      "nameKey": "build.roof.roof_slate",
+      "price": 7,
+      "insulationC": 1,
+      "fire": 0,
+      "lightningPerDay": 0,
+      "estate": "artisan"
+    },
+    "roof_tile": {
+      "nameKey": "build.roof.roof_tile",
+      "price": 5,
+      "insulationC": 1,
+      "fire": 0,
+      "lightningPerDay": 0,
+      "estate": null
+    }
+  },
+  "defaultRoof": "roof_thatch",
+  "upperFloorPrice": 3,
+  "cellarDigPrice": 10,
+  "$basePrices": "objects.json 기본 물건의 구매가 (파딩). 17-4 짚 침대 2은화",
+  "basePrices": {
+    "bed_straw": 96,
+    "bed_double": 360,
+    "hearth": 240,
+    "prep_counter": 60,
+    "cupboard": 96,
+    "barrel_water": 24,
+    "dining_table": 96,
+    "chair": 24,
+    "bench": 36,
+    "stool": 8,
+    "chest_clothes": 48,
+    "wardrobe": 144,
+    "bookshelf": 192,
+    "lute": 144,
+    "washbasin": 24,
+    "washtub": 60,
+    "chamber_pot": 6,
+    "outhouse": 96,
+    "woodpile": 12,
+    "chopping_block": 8,
+    "rug": 72,
+    "candlestick": 24,
+    "tapestry": 288,
+    "plant_pot": 12,
+    "spinning_wheel": 144,
+    "well": 1440,
+    "oven": 480,
+    "brew_vat": 120,
+    "loom": 360,
+    "workbench": 192,
+    "forge": 720,
+    "anvil": 288,
+    "churn": 48,
+    "salting_tub": 36,
+    "smokehouse": 180,
+    "press": 288,
+    "field_plot": 0,
+    "garden_plot": 0,
+    "orchard_tree": 96,
+    "stairs_wood": 480,
+    "stairs_stone": 960,
+    "cellar_hatch": 240
+  },
+  "baseCategories": {
+    "bed_straw": "bedroom",
+    "bed_double": "bedroom",
+    "chest_clothes": "bedroom",
+    "wardrobe": "bedroom",
+    "chamber_pot": "hygiene",
+    "hearth": "kitchen",
+    "prep_counter": "kitchen",
+    "cupboard": "kitchen",
+    "barrel_water": "kitchen",
+    "oven": "kitchen",
+    "brew_vat": "kitchen",
+    "churn": "kitchen",
+    "salting_tub": "kitchen",
+    "dining_table": "dining",
+    "chair": "dining",
+    "bench": "dining",
+    "stool": "dining",
+    "bookshelf": "living",
+    "lute": "living",
+    "rug": "decor",
+    "tapestry": "decor",
+    "plant_pot": "decor",
+    "candlestick": "light",
+    "washbasin": "hygiene",
+    "washtub": "hygiene",
+    "outhouse": "hygiene",
+    "woodpile": "outdoor",
+    "chopping_block": "outdoor",
+    "well": "outdoor",
+    "smokehouse": "work",
+    "spinning_wheel": "work",
+    "loom": "work",
+    "workbench": "work",
+    "forge": "work",
+    "anvil": "work",
+    "press": "work",
+    "field_plot": "outdoor",
+    "garden_plot": "outdoor",
+    "orchard_tree": "outdoor",
+    "stairs_wood": "build",
+    "stairs_stone": "build",
+    "cellar_hatch": "build"
+  },
+  "$baseRoomTypes": "방 이름 추정: 태그 → 방 종류 (카탈로그 roomType 이 먼저)",
+  "roomTypeTags": {
+    "bed": "bedroom",
+    "hearth": "kitchen",
+    "oven": "kitchen",
+    "food_storage": "kitchen",
+    "prep": "kitchen",
+    "dining": "dining",
+    "bath": "hygiene",
+    "toilet": "hygiene",
+    "wash": "hygiene",
+    "craft": "workshop",
+    "smith": "workshop",
+    "woodwork": "workshop",
+    "books": "living",
+    "instrument": "living",
+    "shrine": "chapel",
+    "crib": "nursery",
+    "storage": "storage"
+  },
+  "rooms": {
+    "$comment": "방 점수 (11-2) = 물건 roomScore 합 + 품질 보너스 + 창문 + 바닥/벽 재질 + 조명 - 더러움. 칸 수로 조금 나눔",
+    "sizeRef": 16,
+    "qualityBonus": [
+      -1,
+      0,
+      0.5,
+      1,
+      2
+    ],
+    "windowScore": 1,
+    "lightScore": 1,
+    "dirtPenalty": 0.08,
+    "brokenPenalty": 2,
+    "emptyPenalty": -2,
+    "tiers": [
+      {
+        "min": -999,
+        "id": "wretched",
+        "moodlet": "room_wretched"
+      },
+      {
+        "min": -3,
+        "id": "shabby",
+        "moodlet": "room_shabby"
+      },
+      {
+        "min": 2,
+        "id": "plain",
+        "moodlet": null
+      },
+      {
+        "min": 10,
+        "id": "cozy",
+        "moodlet": "room_cozy"
+      },
+      {
+        "min": 20,
+        "id": "fine",
+        "moodlet": "room_fine"
+      },
+      {
+        "min": 34,
+        "id": "lordly",
+        "moodlet": "room_lordly"
+      }
+    ],
+    "$estateShift": "신분 보정: 같은 방도 귀족은 낮게, 농노는 높게 느낌 (11-2)",
+    "estateShift": {
+      "serf": 5,
+      "freeman": 2,
+      "artisan": 0,
+      "merchant": -3,
+      "clergy": -2,
+      "knight": -6,
+      "noble": -12
+    },
+    "checkMinutes": 60
+  },
+  "wear": {
+    "$comment": "내구도 0~100 (23-4). 한 번 쓸 때마다 perUse, 100 이면 고장. 고장 나도 쓸 수 있는 종류는 brokenUsable",
+    "perUse": 1.2,
+    "perUseByKind": {
+      "bed_straw": 0.6,
+      "bed_double": 0.4,
+      "hearth": 0.5,
+      "chair": 0.8,
+      "stool": 1,
+      "washtub": 1,
+      "loom": 1.5,
+      "spinning_wheel": 1.5,
+      "forge": 1.5,
+      "anvil": 0.5
+    },
+    "brokenUsable": {
+      "bed_straw": "creaky_bed",
+      "bed_double": "creaky_bed",
+      "hearth": "smoky_room"
+    },
+    "repairMinutes": 60,
+    "repairSkill": "carpentry",
+    "repairXp": 1.5
+  },
+  "fire": {
+    "$comment": "화재 (23-5). 분당 확률은 1일 확률에서 환산. 번짐은 spreadMinutes 마다 이웃 칸에 fire 배수 × spreadChance",
+    "hearthUnattendedPerDay": 0.02,
+    "candleUnattendedPerDay": 0.01,
+    "unattendedAfterMinutes": 90,
+    "spreadMinutes": 12,
+    "spreadChance": 0.07,
+    "burnMinutes": 90,
+    "extinguishMinutes": 15,
+    "extinguishWater": 1,
+    "neighborHelpAfterMinutes": 20,
+    "neighborHelpChance": 0.6,
+    "maxFires": 40,
+    "burnObjectAfterMinutes": 30
+  },
+  "$emptyLotFund": "빈 부지에서 시작한 가족의 건축 자금 = 작은 집 값 (17-4 역산표 1금화, 23-1 부지 구입: 빈 부지 + 집 짓기). 파딩",
+  "emptyLotFund": 960,
+  "undoDepth": 60,
+  "resellRatio": 0.6,
+  "construction": {
+    "$comment": "공사 시간 옵션 (23-3, 기본 꺼짐). 켜면 배치가 '공사 예정'이 되고 목수/석공 NPC 또는 가족이 지음",
+    "defaultOn": false,
+    "workPerFarthing": 1.5,
+    "npcWorkPerHour": 60,
+    "npcHours": [
+      7,
+      18
+    ],
+    "familyWorkPerHour": 45,
+    "familySkill": "carpentry",
+    "laborShare": 0.4
+  },
+  "$craftedFurniture": "목공으로 만든 저장고 품목 → 놓을 수 있는 물건 (23-4 직접 만든 가구: 만든 사람과 품질이 붙고 가보 후보)",
+  "craftedFurniture": {
+    "stool": "stool",
+    "bench_wood": "bench",
+    "straw_bed": "bed_straw",
+    "chest": "chest_clothes",
+    "barrel": "barrel_water"
+  }
+}

@@ -1,0 +1,130 @@
+{
+ "market_stall_food": {
+  "nameKey": "object.market_stall_food", "category": "outdoor", "footprint": { "w": 4, "h": 2 }, "blocks": true, "wallMounted": false,
+  "slots": [
+   { "id": "front", "dx": 1, "dy": 2, "facing": "up", "pose": "stand" },
+   { "id": "front2", "dx": 2, "dy": 2, "facing": "up", "pose": "stand" },
+   { "id": "keeper", "dx": 1, "dy": -1, "facing": "down", "pose": "stand" }
+  ],
+  "tags": ["stall", "stall_food", "outdoor", "public"], "price": 720, "roomScore": 0, "rotations": [0]
+ },
+ "market_stall_cloth": {
+  "nameKey": "object.market_stall_cloth", "category": "outdoor", "footprint": { "w": 4, "h": 2 }, "blocks": true, "wallMounted": false,
+  "slots": [
+   { "id": "front", "dx": 1, "dy": 2, "facing": "up", "pose": "stand" },
+   { "id": "front2", "dx": 2, "dy": 2, "facing": "up", "pose": "stand" },
+   { "id": "keeper", "dx": 1, "dy": -1, "facing": "down", "pose": "stand" }
+  ],
+  "tags": ["stall", "stall_cloth", "outdoor", "public"], "price": 720, "roomScore": 0, "rotations": [0]
+ },
+ "market_stall_tools": {
+  "nameKey": "object.market_stall_tools", "category": "outdoor", "footprint": { "w": 4, "h": 2 }, "blocks": true, "wallMounted": false,
+  "slots": [
+   { "id": "front", "dx": 1, "dy": 2, "facing": "up", "pose": "stand" },
+   { "id": "front2", "dx": 2, "dy": 2, "facing": "up", "pose": "stand" },
+   { "id": "keeper", "dx": 1, "dy": -1, "facing": "down", "pose": "stand" }
+  ],
+  "tags": ["stall", "stall_tools", "outdoor", "public"], "price": 720, "roomScore": 0, "rotations": [0]
+ },
+ "market_stall_livestock": {
+  "nameKey": "object.market_stall_livestock", "category": "outdoor", "footprint": { "w": 4, "h": 2 }, "blocks": true, "wallMounted": false,
+  "slots": [
+   { "id": "front", "dx": 1, "dy": 2, "facing": "up", "pose": "stand" },
+   { "id": "front2", "dx": 2, "dy": 2, "facing": "up", "pose": "stand" },
+   { "id": "keeper", "dx": 1, "dy": -1, "facing": "down", "pose": "stand" }
+  ],
+  "tags": ["stall", "stall_livestock", "outdoor", "public"], "price": 720, "roomScore": 0, "rotations": [0]
+ },
+ "church_altar": {
+  "nameKey": "object.church_altar", "category": "religion", "footprint": { "w": 3, "h": 2 }, "blocks": true, "wallMounted": false,
+  "slots": [
+   { "id": "front", "dx": 1, "dy": 2, "facing": "up", "pose": "stand" },
+   { "id": "front2", "dx": 0, "dy": 2, "facing": "up", "pose": "stand" },
+   { "id": "front3", "dx": 2, "dy": 2, "facing": "up", "pose": "stand" }
+  ],
+  "tags": ["altar", "shrine", "religion", "public"], "price": 2400, "roomScore": 4, "rotations": [0], "roomType": "chapel"
+ },
+ "church_pew": {
+  "nameKey": "object.church_pew", "category": "religion", "footprint": { "w": 4, "h": 1 }, "blocks": true, "wallMounted": false,
+  "slots": [
+   { "id": "sit1", "dx": 0, "dy": 0, "facing": "up", "pose": "sit" },
+   { "id": "sit2", "dx": 1, "dy": 0, "facing": "up", "pose": "sit" },
+   { "id": "sit3", "dx": 2, "dy": 0, "facing": "up", "pose": "sit" },
+   { "id": "sit4", "dx": 3, "dy": 0, "facing": "up", "pose": "sit" }
+  ],
+  "tags": ["pew", "seat", "religion", "public"], "price": 240, "roomScore": 1, "rotations": [0], "roomType": "chapel"
+ },
+ "inn_counter": {
+  "nameKey": "object.inn_counter", "category": "kitchen", "footprint": { "w": 3, "h": 1 }, "blocks": true, "wallMounted": false,
+  "slots": [
+   { "id": "front", "dx": 1, "dy": 1, "facing": "up", "pose": "stand" },
+   { "id": "front2", "dx": 0, "dy": 1, "facing": "up", "pose": "stand" },
+   { "id": "front3", "dx": 2, "dy": 1, "facing": "up", "pose": "stand" },
+   { "id": "keeper", "dx": 1, "dy": -1, "facing": "down", "pose": "stand" }
+  ],
+  "tags": ["counter", "bar", "surface", "public"], "price": 480, "roomScore": 2, "rotations": [0], "roomType": "tavern"
+ },
+ "bath_tub_public": {
+  "nameKey": "object.bath_tub_public", "category": "hygiene", "footprint": { "w": 3, "h": 2 }, "blocks": true, "wallMounted": false,
+  "slots": [
+   { "id": "bath1", "dx": 0, "dy": 1, "facing": "down", "pose": "sit" },
+   { "id": "bath2", "dx": 1, "dy": 1, "facing": "down", "pose": "sit" },
+   { "id": "bath3", "dx": 2, "dy": 1, "facing": "down", "pose": "sit" }
+  ],
+  "tags": ["bath", "public", "water"], "price": 960, "roomScore": 2, "rotations": [0], "roomType": "bathhouse"
+ },
+ "notice_board_town": {
+  "nameKey": "object.notice_board_town", "category": "outdoor", "footprint": { "w": 2, "h": 1 }, "blocks": true, "wallMounted": false,
+  "slots": [
+   { "id": "front", "dx": 0, "dy": 1, "facing": "up", "pose": "stand" },
+   { "id": "front2", "dx": 1, "dy": 1, "facing": "up", "pose": "stand" }
+  ],
+  "tags": ["sign", "news", "outdoor", "public"], "price": 96, "roomScore": 0, "rotations": [0]
+ },
+ "fishing_spot": {
+  "nameKey": "object.fishing_spot", "category": "outdoor", "footprint": { "w": 1, "h": 1 }, "blocks": false, "wallMounted": false,
+  "slots": [{ "id": "fish", "dx": 0, "dy": 0, "facing": "up", "pose": "stand" }],
+  "tags": ["fishing", "water", "outdoor", "nature", "public"], "price": 0, "roomScore": 0, "rotations": [0, 2],
+  "$comment": "강가 풀/모래 칸 (막지 않음). rot 0 = 물이 북쪽 (남쪽 강가), rot 2 = 물이 남쪽 (북쪽 강가)"
+ },
+ "herb_patch_wild": {
+  "nameKey": "object.herb_patch_wild", "category": "outdoor", "footprint": { "w": 2, "h": 1 }, "blocks": false, "wallMounted": false,
+  "slots": [
+   { "id": "front", "dx": 0, "dy": 1, "facing": "up", "pose": "stand" },
+   { "id": "front2", "dx": 1, "dy": 1, "facing": "up", "pose": "stand" }
+  ],
+  "tags": ["herbs", "forage", "outdoor", "nature", "public"], "price": 0, "roomScore": 0, "rotations": [0]
+ },
+ "guild_table": {
+  "nameKey": "object.guild_table", "category": "dining", "footprint": { "w": 4, "h": 2 }, "blocks": true, "wallMounted": false,
+  "slots": [
+   { "id": "front", "dx": 1, "dy": 2, "facing": "up", "pose": "stand" },
+   { "id": "front2", "dx": 2, "dy": 2, "facing": "up", "pose": "stand" },
+   { "id": "back", "dx": 1, "dy": -1, "facing": "down", "pose": "stand" },
+   { "id": "back2", "dx": 2, "dy": -1, "facing": "down", "pose": "stand" }
+  ],
+  "tags": ["table", "guild", "surface", "public"], "price": 960, "roomScore": 3, "rotations": [0], "roomType": "hall"
+ },
+ "lord_throne": {
+  "nameKey": "object.lord_throne", "category": "living", "footprint": { "w": 2, "h": 2 }, "blocks": true, "wallMounted": false,
+  "slots": [
+   { "id": "seat", "dx": 0, "dy": 1, "facing": "down", "pose": "sit" },
+   { "id": "petitioner", "dx": 0, "dy": 3, "facing": "up", "pose": "stand" },
+   { "id": "petitioner2", "dx": 1, "dy": 3, "facing": "up", "pose": "stand" }
+  ],
+  "tags": ["throne", "seat", "lord", "public"], "price": 9600, "roomScore": 6, "rotations": [0], "estate": "noble", "roomType": "hall"
+ },
+ "mill_wheel": {
+  "nameKey": "object.mill_wheel", "category": "outdoor", "footprint": { "w": 4, "h": 1 }, "blocks": true, "wallMounted": false,
+  "slots": [], "tags": ["mill", "decor", "outdoor", "animated"], "price": 0, "roomScore": 0, "rotations": [0]
+ },
+ "tourney_lists": {
+  "nameKey": "object.tourney_lists", "category": "outdoor", "footprint": { "w": 4, "h": 1 }, "blocks": true, "wallMounted": false,
+  "slots": [], "tags": ["tourney", "festival", "outdoor"], "price": 0, "roomScore": 0, "rotations": [0]
+ },
+ "grave": {
+  "nameKey": "object.grave", "category": "religion", "footprint": { "w": 1, "h": 1 }, "blocks": true, "wallMounted": false,
+  "slots": [{ "id": "front", "dx": 0, "dy": 1, "facing": "up", "pose": "stand" }],
+  "tags": ["grave", "religion", "outdoor", "public"], "price": 72, "roomScore": 0, "rotations": [0], "variants": ["round", "slab", "tall", "worn"]
+ }
+}

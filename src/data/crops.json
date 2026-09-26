@@ -1,0 +1,610 @@
+{
+  "$comment": "GDD 31장 농사 (계약 artifacts/contracts-m4.md 5절). 밭 구획 물건에 상호작용 (칸 단위 작업 없음, 매일 물 주기 없음). 성장 = 계절 진행률 합 (겨울 winterMult 배) ≥ growSeasons 이면 익음. 수확량 = yield.perMediumPlot × 계절 일수/7 × plotSizes.yield × 지력 곡선 × 관리도 × 날씨 × 농사 스킬 × 재해 × economy.farming.yieldMult(흉년/풍년). 달력 1년 수확량(중 구획) = perMediumPlot × cropsPerYear 가 economy.farming.plotYearYield 와 맞음. 검사: npx tsx tools/check-work-content.ts",
+  "plotSizes": {
+    "small": {"work": 0.6, "yield": 0.5},
+    "medium": {"work": 1, "yield": 1},
+    "large": {"work": 1.6, "yield": 1.8},
+    "garden": {
+      "work": 0.4,
+      "yield": 0.35,
+      "$comment": "집 부지 안 텃밭 (1~4칸 물건 하나). 채소 18 × 0.35 × 한 해 두 번 = 12.6 = economy.farming.garden 채소 0.6/일 × 3계절(21일)"
+    }
+  },
+  "growth": {
+    "stages": 5,
+    "stageKeys": ["farm.stage.0", "farm.stage.1", "farm.stage.2", "farm.stage.3", "farm.stage.4"],
+    "winterMult": 0.2,
+    "weatherMult": {
+      "clear": 1,
+      "cloudy": 1,
+      "rain": 1.05,
+      "heavy_rain": 0.9,
+      "thunderstorm": 0.9,
+      "fog": 1,
+      "snow": 0,
+      "blizzard": 0
+    },
+    "sowRule": "ripen_in_harvest_seasons",
+    "$sowRule": "파종 시점부터 계산한 예상 익는 계절이 harvestSeasons 밖이면 씨를 뿌릴 수 없음 (겨울에 익는 늦은 파종 방지)",
+    "weeds": {"chancePerDay": {"value": 0.25, "scale": "absolute"}, "carePerDay": -0.05, "careMin": -0.2},
+    "ripeHold": {"value": 3, "scale": "absolute"},
+    "overripeLossPerDay": 0.1
+  },
+  "care": {"$comment": "관리도 = 1 + care 합 (김매기, 거름, 잡초 방치). 범위 0.8~1.2", "min": 0.8, "max": 1.2},
+  "skill": {
+    "yieldBase": 0.85,
+    "yieldPerLevel": 0.03,
+    "speedPerLevel": 0.03,
+    "speedMin": 0.7,
+    "forecastLevel": 4,
+    "qualityLevels": [0, 3, 6, 9]
+  },
+  "fertility": {
+    "$comment": "31-4 삼포제. 구획마다 0~100. 작물마다 fertilityCost 만큼 수확 때 깎임 (콩은 음수 = 회복). 같은 kind 를 연달아 심으면 repeatPenalty 추가. 작물 없이 빈 계절마다 fallowPerSeason 회복 (계절 진행률 비례). 공동 경지에서 순환을 어기면 이웃 마찰 사건",
+    "min": 0,
+    "max": 100,
+    "start": 60,
+    "repeatPenalty": 6,
+    "fallowPerSeason": 8,
+    "yieldCurve": [[0, 0.4], [30, 0.7], [60, 1], [100, 1.15]],
+    "rotation": {
+      "cycle": ["grain", "legume", "fallow"],
+      "commonFields": true,
+      "breachEvent": "farm_rotation_breach"
+    }
+  },
+  "crops": {
+    "wheat": {
+      "nameKey": "crop.wheat",
+      "descKey": "crop.wheat.desc",
+      "icon": "raven:a3323",
+      "kind": "grain",
+      "sow": ["autumn"],
+      "growSeasons": {"value": 2.5, "scale": "season"},
+      "harvestSeasons": ["summer"],
+      "yield": {"item": "wheat", "perMediumPlot": 180, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": false,
+      "field": true,
+      "fertilityCost": 14,
+      "seed": {"item": "wheat", "perPlot": 27},
+      "skillLevel": 0,
+      "sprite": "wheat",
+      "disasters": ["crows", "voles", "pests", "mildew", "drought", "hail", "flood", "goblins"]
+    },
+    "barley": {
+      "nameKey": "crop.barley",
+      "descKey": "crop.barley.desc",
+      "icon": "raven:a2088",
+      "kind": "grain",
+      "sow": ["spring"],
+      "growSeasons": {"value": 1.85, "scale": "season"},
+      "harvestSeasons": ["summer"],
+      "yield": {"item": "barley", "perMediumPlot": 180, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": false,
+      "field": true,
+      "fertilityCost": 12,
+      "seed": {"item": "barley", "perPlot": 27},
+      "skillLevel": 0,
+      "sprite": "barley",
+      "disasters": ["crows", "voles", "pests", "mildew", "drought", "hail", "flood", "goblins"]
+    },
+    "oats": {
+      "nameKey": "crop.oats",
+      "descKey": "crop.oats.desc",
+      "icon": "raven:a2040",
+      "kind": "grain",
+      "sow": ["spring"],
+      "growSeasons": {"value": 1.8, "scale": "season"},
+      "harvestSeasons": ["summer"],
+      "yield": {"item": "oats", "perMediumPlot": 180, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": false,
+      "field": true,
+      "fertilityCost": 10,
+      "seed": {"item": "oats", "perPlot": 27},
+      "skillLevel": 0,
+      "sprite": "oats",
+      "disasters": ["crows", "voles", "pests", "mildew", "drought", "hail", "flood", "goblins"]
+    },
+    "rye": {
+      "nameKey": "crop.rye",
+      "descKey": "crop.rye.desc",
+      "icon": "raven:a2033",
+      "kind": "grain",
+      "sow": ["autumn"],
+      "growSeasons": {"value": 2.4, "scale": "season"},
+      "harvestSeasons": ["summer"],
+      "yield": {"item": "rye", "perMediumPlot": 180, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": false,
+      "field": true,
+      "fertilityCost": 12,
+      "seed": {"item": "rye", "perPlot": 27},
+      "skillLevel": 1,
+      "sprite": "rye",
+      "disasters": ["crows", "voles", "pests", "mildew", "drought", "hail", "flood", "goblins"]
+    },
+    "beans": {
+      "nameKey": "crop.beans",
+      "descKey": "crop.beans.desc",
+      "icon": "raven:a2328",
+      "kind": "legume",
+      "sow": ["spring"],
+      "growSeasons": {"value": 1.5, "scale": "season"},
+      "harvestSeasons": ["summer"],
+      "yield": {"item": "beans", "perMediumPlot": 120, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": true,
+      "field": true,
+      "fertilityCost": -12,
+      "seed": {"item": "beans", "perPlot": 18},
+      "skillLevel": 0,
+      "sprite": "beans",
+      "disasters": ["crows", "voles", "pests", "drought", "hail", "flood", "goblins"]
+    },
+    "flax": {
+      "nameKey": "crop.flax",
+      "descKey": "crop.flax.desc",
+      "icon": "raven:a1281",
+      "kind": "fiber",
+      "sow": ["spring"],
+      "growSeasons": {"value": 1.4, "scale": "season"},
+      "harvestSeasons": ["summer"],
+      "yield": {"item": "flax", "perMediumPlot": 60, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": false,
+      "field": true,
+      "fertilityCost": 14,
+      "seed": {"item": "flax", "perPlot": 10},
+      "skillLevel": 2,
+      "sprite": "flax",
+      "disasters": ["pests", "drought", "hail", "flood"]
+    },
+    "turnip": {
+      "nameKey": "crop.turnip",
+      "descKey": "crop.turnip.desc",
+      "icon": "raven:a2081",
+      "kind": "vegetable",
+      "sow": ["spring", "summer"],
+      "growSeasons": {"value": 1.1, "scale": "season"},
+      "harvestSeasons": ["summer", "autumn"],
+      "yield": {"item": "turnip", "perMediumPlot": 18, "scale": "season"},
+      "cropsPerYear": 2,
+      "garden": true,
+      "field": true,
+      "fertilityCost": 6,
+      "seed": {"item": "turnip", "perPlot": 4},
+      "skillLevel": 0,
+      "sprite": "turnip",
+      "disasters": ["voles", "pests", "mildew", "drought", "hail", "flood"]
+    },
+    "cabbage": {
+      "nameKey": "crop.cabbage",
+      "descKey": "crop.cabbage.desc",
+      "icon": "raven:a2085",
+      "kind": "vegetable",
+      "sow": ["spring", "summer"],
+      "growSeasons": {"value": 1.3, "scale": "season"},
+      "harvestSeasons": ["summer", "autumn"],
+      "yield": {"item": "cabbage", "perMediumPlot": 18, "scale": "season"},
+      "cropsPerYear": 2,
+      "garden": true,
+      "field": true,
+      "fertilityCost": 8,
+      "seed": {"item": "cabbage", "perPlot": 4},
+      "skillLevel": 0,
+      "sprite": "cabbage",
+      "disasters": ["voles", "pests", "mildew", "drought", "hail", "flood"]
+    },
+    "onion": {
+      "nameKey": "crop.onion",
+      "descKey": "crop.onion.desc",
+      "icon": "raven:a2024",
+      "kind": "vegetable",
+      "sow": ["spring", "summer"],
+      "growSeasons": {"value": 1.4, "scale": "season"},
+      "harvestSeasons": ["summer", "autumn"],
+      "yield": {"item": "onion", "perMediumPlot": 18, "scale": "season"},
+      "cropsPerYear": 2,
+      "garden": true,
+      "field": true,
+      "fertilityCost": 6,
+      "seed": {"item": "onion", "perPlot": 4},
+      "skillLevel": 1,
+      "sprite": "onion",
+      "disasters": ["voles", "pests", "mildew", "drought", "hail", "flood"]
+    },
+    "leek": {
+      "nameKey": "crop.leek",
+      "descKey": "crop.leek.desc",
+      "icon": "raven:a2087",
+      "kind": "vegetable",
+      "sow": ["spring", "summer"],
+      "growSeasons": {"value": 1.8, "scale": "season"},
+      "harvestSeasons": ["summer", "autumn"],
+      "yield": {"item": "leek", "perMediumPlot": 36, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": true,
+      "field": true,
+      "fertilityCost": 6,
+      "seed": {"item": "leek", "perPlot": 4},
+      "skillLevel": 1,
+      "sprite": "leek",
+      "disasters": ["voles", "pests", "mildew", "drought", "hail", "flood"]
+    },
+    "herbs": {
+      "nameKey": "crop.herbs",
+      "descKey": "crop.herbs.desc",
+      "icon": "item.herbs",
+      "kind": "herb",
+      "sow": ["spring"],
+      "growSeasons": {"value": 1.2, "scale": "season"},
+      "harvestSeasons": ["summer"],
+      "yield": {"item": "herbs", "perMediumPlot": 24, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": true,
+      "field": false,
+      "fertilityCost": 3,
+      "seed": {"item": "herbs", "perPlot": 2},
+      "skillLevel": 1,
+      "sprite": "herbs",
+      "disasters": ["pests", "drought", "hail"]
+    },
+    "medicinal_herbs": {
+      "nameKey": "crop.medicinal_herbs",
+      "descKey": "crop.medicinal_herbs.desc",
+      "icon": "raven:a1265",
+      "kind": "medicinal",
+      "sow": ["spring"],
+      "growSeasons": {"value": 1.4, "scale": "season"},
+      "harvestSeasons": ["summer", "autumn"],
+      "yield": {"item": "medicinal_herbs", "perMediumPlot": 18, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": true,
+      "field": false,
+      "fertilityCost": 3,
+      "seed": {"item": "medicinal_herbs", "perPlot": 2},
+      "skillLevel": 3,
+      "sprite": "medicinal_herbs",
+      "disasters": ["pests", "drought", "hail"],
+      "skill": "herbalism"
+    },
+    "moonwort": {
+      "nameKey": "crop.moonwort",
+      "descKey": "crop.moonwort.desc",
+      "icon": "raven:a1297",
+      "kind": "special",
+      "sow": ["summer"],
+      "growSeasons": {"value": 1, "scale": "season"},
+      "harvestSeasons": ["autumn"],
+      "yield": {"item": "moonwort", "perMediumPlot": 3, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": true,
+      "field": false,
+      "fertilityCost": 0,
+      "seed": {"item": "moonwort", "perPlot": 1},
+      "skillLevel": 5,
+      "sprite": "moonwort",
+      "disasters": ["drought", "goblins"],
+      "sowWindow": {"festival": "midsummer", "hours": [21, 4]},
+      "magic": {"off": "unavailable", "suspicion": true},
+      "seedSource": ["herbalist", "wandering_mage"]
+    },
+    "grapes": {
+      "nameKey": "crop.grapes",
+      "descKey": "crop.grapes.desc",
+      "icon": "raven:a2272",
+      "kind": "orchard",
+      "sow": [],
+      "growSeasons": {"value": 2.3, "scale": "season"},
+      "harvestSeasons": ["autumn"],
+      "yield": {"item": "grapes", "perMediumPlot": 140, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": true,
+      "field": true,
+      "fertilityCost": 0,
+      "seed": null,
+      "skillLevel": 2,
+      "sprite": "grapes",
+      "disasters": ["crows", "mildew", "hail", "goblins"],
+      "perennial": {"cycleStart": "spring", "matureSeasons": {"value": 4, "scale": "season"}, "saplingPrice": 24},
+      "estates": ["freeman", "artisan", "merchant", "clergy", "knight", "noble"]
+    },
+    "apples": {
+      "nameKey": "crop.apples",
+      "descKey": "crop.apples.desc",
+      "icon": "raven:a2019",
+      "kind": "orchard",
+      "sow": [],
+      "growSeasons": {"value": 2.3, "scale": "season"},
+      "harvestSeasons": ["autumn"],
+      "yield": {"item": "apples", "perMediumPlot": 160, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": true,
+      "field": true,
+      "fertilityCost": 0,
+      "seed": null,
+      "skillLevel": 1,
+      "sprite": "apples",
+      "disasters": ["crows", "pests", "hail", "goblins"],
+      "perennial": {"cycleStart": "spring", "matureSeasons": {"value": 4, "scale": "season"}, "saplingPrice": 24},
+      "estates": ["freeman", "artisan", "merchant", "clergy", "knight", "noble"]
+    },
+    "pears": {
+      "nameKey": "crop.pears",
+      "descKey": "crop.pears.desc",
+      "icon": "raven:a2379",
+      "kind": "orchard",
+      "sow": [],
+      "growSeasons": {"value": 2.2, "scale": "season"},
+      "harvestSeasons": ["autumn"],
+      "yield": {"item": "pears", "perMediumPlot": 120, "scale": "season"},
+      "cropsPerYear": 1,
+      "garden": true,
+      "field": true,
+      "fertilityCost": 0,
+      "seed": null,
+      "skillLevel": 2,
+      "sprite": "pears",
+      "disasters": ["crows", "pests", "hail", "goblins"],
+      "perennial": {"cycleStart": "spring", "matureSeasons": {"value": 4, "scale": "season"}, "saplingPrice": 24},
+      "estates": ["freeman", "artisan", "merchant", "clergy", "knight", "noble"]
+    }
+  },
+  "tasks": {
+    "till": {
+      "nameKey": "farm.till",
+      "descKey": "farm.till.desc",
+      "minutes": {"value": 180, "scale": "absolute"},
+      "skill": "farming",
+      "tags": ["labor", "nature"],
+      "when": "before_sow",
+      "effect": {"state": "tilled"},
+      "withPlow": {"value": 60, "scale": "absolute"}
+    },
+    "sow": {
+      "nameKey": "farm.sow",
+      "descKey": "farm.sow.desc",
+      "minutes": {"value": 60, "scale": "absolute"},
+      "skill": "farming",
+      "tags": ["labor", "nature"],
+      "when": "tilled",
+      "seasons": "crop.sow",
+      "requires": {"stock": "crop.seed"},
+      "effect": {"state": "sown"}
+    },
+    "weed": {
+      "nameKey": "farm.weed",
+      "descKey": "farm.weed.desc",
+      "minutes": {"value": 60, "scale": "absolute"},
+      "skill": "farming",
+      "tags": ["labor", "nature"],
+      "when": "growing_weedy",
+      "effect": {"care": 0.1, "clearWeeds": true}
+    },
+    "water": {
+      "nameKey": "farm.water",
+      "descKey": "farm.water.desc",
+      "minutes": {"value": 60, "scale": "absolute"},
+      "skill": "farming",
+      "tags": ["labor", "nature"],
+      "when": "drought",
+      "effect": {"protect": {"value": 2, "scale": "absolute"}}
+    },
+    "fertilize": {
+      "nameKey": "farm.fertilize",
+      "descKey": "farm.fertilize.desc",
+      "minutes": {"value": 60, "scale": "absolute"},
+      "skill": "farming",
+      "tags": ["labor", "nature"],
+      "when": "before_or_after_sow",
+      "requires": {"stock": {"manure": 2}},
+      "effect": {"fertility": 10, "care": 0.05},
+      "maxPerCrop": 2
+    },
+    "scarecrow": {
+      "nameKey": "farm.scarecrow",
+      "descKey": "farm.scarecrow.desc",
+      "minutes": {"value": 30, "scale": "absolute"},
+      "skill": "farming",
+      "tags": ["labor", "nature"],
+      "when": "sown_or_growing",
+      "effect": {"scarecrow": true},
+      "once": true
+    },
+    "harvest": {
+      "nameKey": "farm.harvest",
+      "descKey": "farm.harvest.desc",
+      "minutes": {"value": 180, "scale": "absolute"},
+      "skill": "farming",
+      "tags": ["labor", "nature"],
+      "when": "ripe",
+      "effect": {"harvest": true},
+      "helpers": {"max": 4, "speedPerHelper": 0.7}
+    },
+    "glean": {
+      "nameKey": "farm.glean",
+      "descKey": "farm.glean.desc",
+      "minutes": {"value": 60, "scale": "absolute"},
+      "skill": "farming",
+      "tags": ["labor", "nature"],
+      "when": "harvested",
+      "window": {"value": 2, "scale": "absolute"},
+      "effect": {"gleanShare": 0.03, "maxShareTotal": 0.08},
+      "right": "poor",
+      "kinds": ["grain", "legume"]
+    }
+  },
+  "disasters": {
+    "crows": {
+      "nameKey": "farm.disaster.crows",
+      "noteKey": "farm.disaster.crows.note",
+      "chance": {"value": 0.04, "scale": "absolute", "per": "day"},
+      "loss": [0.05, 0.15],
+      "stages": [1, 4],
+      "seasons": ["spring", "summer", "autumn"],
+      "preventedBy": {"task": "scarecrow", "chanceMult": 0.2}
+    },
+    "voles": {
+      "nameKey": "farm.disaster.voles",
+      "noteKey": "farm.disaster.voles.note",
+      "chance": {"value": 0.02, "scale": "absolute", "per": "day"},
+      "loss": [0.05, 0.2],
+      "stages": [2, 3, 4],
+      "seasons": ["summer", "autumn", "winter"],
+      "mitigatedBy": {"task": "weed", "chanceMult": 0.6}
+    },
+    "pests": {
+      "nameKey": "farm.disaster.pests",
+      "noteKey": "farm.disaster.pests.note",
+      "chance": {"value": 0.015, "scale": "absolute", "per": "day"},
+      "loss": [0.1, 0.3],
+      "stages": [2, 3],
+      "seasons": ["summer"],
+      "mitigatedBy": {"task": "weed", "chanceMult": 0.5}
+    },
+    "mildew": {
+      "nameKey": "farm.disaster.mildew",
+      "noteKey": "farm.disaster.mildew.note",
+      "chance": {"value": 0.25, "scale": "absolute", "per": "wet_day"},
+      "loss": [0.1, 0.35],
+      "stages": [2, 3, 4],
+      "seasons": ["summer"],
+      "condition": {
+        "wetStreak": {"value": 2, "scale": "absolute"},
+        "weather": ["rain", "heavy_rain", "thunderstorm"]
+      },
+      "mitigatedBy": {"task": "weed", "chanceMult": 0.7}
+    },
+    "drought": {
+      "nameKey": "farm.disaster.drought",
+      "noteKey": "farm.disaster.drought.note",
+      "chance": {"value": 0.02, "scale": "absolute", "per": "day"},
+      "seasons": ["spring", "summer"],
+      "village": true,
+      "condition": {"dryStreak": {"value": 4, "scale": "absolute"}, "weather": ["clear", "cloudy"]},
+      "duration": {"value": 3, "scale": "absolute"},
+      "endOnRain": 0.5,
+      "lossPerDay": 0.06,
+      "lossMax": 0.4,
+      "preventedBy": {"task": "water", "chanceMult": 0}
+    },
+    "hail": {
+      "nameKey": "farm.disaster.hail",
+      "noteKey": "farm.disaster.hail.note",
+      "chance": {"value": 0.15, "scale": "absolute", "per": "storm_day"},
+      "loss": [0.2, 0.6],
+      "stages": [1, 2, 3, 4],
+      "seasons": ["spring", "summer"],
+      "village": true,
+      "condition": {"weather": ["thunderstorm"]},
+      "moodlets": ["crop_ruined"]
+    },
+    "flood": {
+      "nameKey": "farm.disaster.flood",
+      "noteKey": "farm.disaster.flood.note",
+      "chance": {"value": 0.2, "scale": "absolute", "per": "heavy_rain_day"},
+      "loss": [0.3, 0.8],
+      "seasons": ["spring", "autumn"],
+      "condition": {"plot": "riverside", "weather": ["heavy_rain"]},
+      "fertility": 5,
+      "moodlets": ["crop_ruined"]
+    },
+    "goblins": {
+      "nameKey": "farm.disaster.goblins",
+      "noteKey": "farm.disaster.goblins.note",
+      "$comment": "33-0, 33-3: 드물고 작음. 가족당 한 인생 기대 횟수 (per_life). 마법/괴물 설정 끔이면 0. 29-1 무해한 존재의 흔적(집요정, 픽시와 합쳐) 드묾 1~3회 안에서",
+      "chance": {"value": 0.5, "scale": "per_life", "per": "family"},
+      "magicSetting": {"off": 0, "rare": 1, "common": 3},
+      "loss": [0.03, 0.1],
+      "stages": [4],
+      "hours": [22, 4],
+      "mitigatedBy": {"object": "trap", "animal": "dog", "chanceMult": 0.3},
+      "caughtChance": 0.2,
+      "caughtEvent": "farm_goblin_caught"
+    }
+  },
+  "events": [
+    {
+      "id": "farm_rotation_breach",
+      "textKey": "farm.ev.farm_rotation_breach",
+      "options": [
+        {
+          "id": "plow_under",
+          "textKey": "farm.ev.farm_rotation_breach.plow_under",
+          "effects": {"cropLoss": 1, "relationship": {"target": "neighbor", "friendship": 6}}
+        },
+        {
+          "id": "pay",
+          "textKey": "farm.ev.farm_rotation_breach.pay",
+          "effects": {"money": -12, "relationship": {"target": "neighbor", "friendship": 2}}
+        },
+        {
+          "id": "ignore",
+          "textKey": "farm.ev.farm_rotation_breach.ignore",
+          "effects": {"relationship": {"target": "neighbor", "friendship": -10}, "moodlets": ["argued"]}
+        }
+      ]
+    },
+    {
+      "id": "farm_goblin_caught",
+      "textKey": "farm.ev.farm_goblin_caught",
+      "options": [
+        {
+          "id": "bargain",
+          "textKey": "farm.ev.farm_goblin_caught.bargain",
+          "effects": {"items": {"moonwort": 1}, "moodlets": ["bad_omen"]}
+        },
+        {
+          "id": "release",
+          "textKey": "farm.ev.farm_goblin_caught.release",
+          "effects": {"moodlets": ["good_omen"]}
+        },
+        {
+          "id": "priest",
+          "textKey": "farm.ev.farm_goblin_caught.priest",
+          "effects": {"church": 1, "moodlets": ["threatened"]}
+        }
+      ]
+    },
+    {
+      "id": "farm_harvest_help",
+      "textKey": "farm.ev.farm_harvest_help",
+      "options": [
+        {
+          "id": "welcome",
+          "textKey": "farm.ev.farm_harvest_help.welcome",
+          "effects": {
+            "items": {"ale": -4},
+            "relationship": {"target": "neighbor", "friendship": 8},
+            "moodlets": ["harvest_joy"]
+          }
+        },
+        {
+          "id": "thanks",
+          "textKey": "farm.ev.farm_harvest_help.thanks",
+          "effects": {"relationship": {"target": "neighbor", "friendship": -2}}
+        }
+      ]
+    },
+    {
+      "id": "farm_gleaners",
+      "textKey": "farm.ev.farm_gleaners",
+      "options": [
+        {
+          "id": "let",
+          "textKey": "farm.ev.farm_gleaners.let",
+          "effects": {"karma": 2, "moodlets": ["did_good"]}
+        },
+        {"id": "rows", "textKey": "farm.ev.farm_gleaners.rows", "effects": {"karma": 1}},
+        {
+          "id": "chase",
+          "textKey": "farm.ev.farm_gleaners.chase",
+          "effects": {"karma": -2, "relationship": {"target": "neighbor", "friendship": -4}}
+        }
+      ]
+    }
+  ]
+}
