@@ -721,6 +721,8 @@ export class Simulation {
     }
     const item: QueueItem = { id: this.nextQueueId++, interactionId, targetUid, autonomous };
     p.queue.push(item);
+    // 플레이어 명령은 다음 틱을 기다리지 않고 바로 시작 (길을 잡아 두면 틱 사이 예측 걸음으로 곧장 움직임)
+    if (!autonomous && !p.action && !p.direct && p.status === 'available' && p.queue[0] === item) this.startAction(p, item);
     return { ok: true };
   }
 
@@ -2578,8 +2580,13 @@ export class Simulation {
   socialAvailability(p: Person, t: Person, def: SocialDef, autonomous = false): Availability {
     if (this.pregnancy && !this.pregnancy.interactionAllowed(p, this.socialIdOf(def), t)) return { ok: false, reasonKey: 'reason.stage' };
     if (t === p || t.hidden || t.sleeping || t.collapse) return { ok: false, reasonKey: 'reason.target_busy' };
-    if (t.engagedWith && t.engagedWith !== p.id) return { ok: false, reasonKey: 'reason.target_busy' };
-    if (t.action && (!t.action.item.autonomous || this.data.social[t.action.item.interactionId])) return { ok: false, reasonKey: 'reason.target_busy' };
+    // 플레이어가 건 말은 늘 우선 (사용자 요청): 상대가 남과 대화 중이든 무슨 행동 중이든 멈추고 응함 (시작할 때 끊음)
+    if (!autonomous) {
+      if (t.status !== 'available' && t.status !== 'rabbithole') return { ok: false, reasonKey: 'reason.target_busy' };
+    } else {
+      if (t.engagedWith && t.engagedWith !== p.id) return { ok: false, reasonKey: 'reason.target_busy' };
+      if (t.action && (!t.action.item.autonomous || this.data.social[t.action.item.interactionId])) return { ok: false, reasonKey: 'reason.target_busy' };
+    }
     // 자율로 거는 말은 상대가 한가하거나 쉬는 중일 때만 (하던 일을 끊는 것은 플레이어 명령만)
     if (autonomous && t.action) {
       // 자율로 거는 말은 상대가 놀이 중일 때만 끼어듦 (요리·목욕·일 같은 할 일은 끊지 않음)
@@ -2606,6 +2613,18 @@ export class Simulation {
   gateOk(gate: string, p: Person, t: Person | null): boolean {
     const f = this.gates.get(gate);
     return f ? f(p, t) : false;
+  }
+
+  /** 플레이어가 건 말: 상대의 행동·대화를 끊고, 상대와 대화하던(하려던) 사람도 멈춤 */
+  private claimForPlayer(p: Person, t: Person): void {
+    if (t.action && !t.sleeping && !(this.data.social[t.action.item.interactionId] && t.action.item.targetUid === p.id)) this.abortAction(t, 'player_social');
+    for (const q of this.persons) {
+      if (q === p || q === t) continue;
+      if (q.action && this.data.social[q.action.item.interactionId] && q.action.item.targetUid === t.id) this.abortAction(q, 'player_social');
+      if (q.engagedWith === t.id) q.engagedWith = 0;
+    }
+    t.queue = t.queue.filter((q) => !q.autonomous);
+    t.engagedWith = p.id;
   }
 
   /** 소문 호스트 (14-6): 들은 사람의 존중/우정, 퍼짐 문턱의 가문 명예, 자기 가문 소문을 전해 들음 */
@@ -2807,9 +2826,8 @@ export class Simulation {
     if (!item.autonomous) {
       p.recentObjects.length = 0;
       // 플레이어가 건 말: 상대는 하던 자율 행동을 멈추고 그 자리에서 기다림 (심즈처럼, 돌아다녀서 놓치지 않게)
-      if (t.action?.item.autonomous && !t.sleeping) this.abortAction(t, 'social_wait');
-      t.queue = t.queue.filter((q) => !q.autonomous);
-      if (!t.engagedWith) t.engagedWith = p.id;
+      // 상대는 하던 일(남과의 대화 포함)을 멈추고 그 자리에서 기다림. 상대에게 말을 걸던 다른 사람도 멈춤
+      this.claimForPlayer(p, t);
     }
     this.inner?.onActionStart(p, item.interactionId);
     this.routeToPerson(p, t);
