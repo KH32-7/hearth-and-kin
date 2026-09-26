@@ -317,6 +317,7 @@ function flushDirect(): void {
   }
 }
 
+let lastMotion = 0;
 function loop(): void {
   const now = performance.now();
   const dt = Math.min(250, now - last);
@@ -339,6 +340,21 @@ function loop(): void {
       paused = true;
       acc = 0;
       post({ type: 'error', message: `tick ${sim.stats.ticks}: ${err instanceof Error ? `${err.message}\n${err.stack}` : String(err)}` });
+    }
+    // 틱 사이: 걷는 사람의 예측 위치를 가볍게 초당 30번 (1배속에서 1초에 한 번 뛰던 걸음을 실시간으로)
+    if (mps > 0 && now - lastMotion >= SNAP_MS) {
+      lastMotion = now;
+      const ids: number[] = [];
+      const xy: number[] = [];
+      const frac = Math.max(0, Math.min(1, acc));
+      for (const p of sim.persons) {
+        if (p.lod !== 'full') continue;
+        const q = sim.predictWalk(p, frac);
+        if (!q) continue;
+        ids.push(p.id);
+        xy.push(q[0], q[1]);
+      }
+      if (ids.length) post({ type: 'motion', tick: sim.stats.ticks, at: now, ids, xy });
     }
     // 스냅샷은 초당 30번까지 (사이 틱의 이동 경로는 trail 에 쌓여 렌더러가 보간). 메인 스레드 역직렬화/HUD 부담을 줄임
     if (ticked > 0) pendingSnap = true;

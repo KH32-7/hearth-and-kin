@@ -224,6 +224,8 @@ export type ToWorker =
 
 export type FromWorker =
   | { type: 'snapshot'; snap: Snapshot }
+  /** 틱 사이 걷는 사람의 예측 위치 (초당 30번, 그리기 전용): ids[i] 의 자리 = xy[2i], xy[2i+1] (칸 좌표) */
+  | { type: 'motion'; tick: number; at: number; ids: number[]; xy: number[] }
   | { type: 'reply'; reqId: number; result: unknown }
   | { type: 'menu'; reqId: number; entries: MenuEntry[] }
   | { type: 'error'; message: string };

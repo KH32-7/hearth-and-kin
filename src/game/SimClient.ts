@@ -30,6 +30,11 @@ export class SimClient {
       this.snap = m.snap;
       this.snapAt = performance.now();
       for (const l of this.listeners) l(m.snap);
+    } else if (m.type === 'motion') {
+      // 워커 시각 → 메인 시각 (가장 짧은 전달 지연 기준): 도착이 들쑥날쑥해도 간격은 워커가 찍은 대로
+      const off = performance.now() - m.at;
+      this.motionOffset = this.motionOffset === null ? off : Math.min(off, this.motionOffset + 0.5);
+      for (const l of this.motionListeners) l(m.ids, m.xy, m.at + this.motionOffset);
     } else if (m.type === 'reply') {
       this.pending.get(m.reqId)?.resolve(m.result);
       this.pending.delete(m.reqId);
@@ -40,6 +45,13 @@ export class SimClient {
       this.errors.push(m.message);
       console.error('sim error', m.message);
     }
+  }
+
+  private motionOffset: number | null = null;
+  private motionListeners: ((ids: number[], xy: number[], tick: number) => void)[] = [];
+  /** 틱 사이 예측 위치 (걷는 사람만) */
+  onMotion(fn: (ids: number[], xy: number[], tick: number) => void): void {
+    this.motionListeners.push(fn);
   }
 
   onSnapshot(fn: (s: Snapshot) => void): void {

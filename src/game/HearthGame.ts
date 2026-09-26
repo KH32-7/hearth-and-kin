@@ -328,6 +328,7 @@ export class HearthGame {
     if (fund > 0 && !this.lot.walls.some(Boolean)) await this.client.intent({ kind: 'grant', amount: fund, reason: 'lot_fund' });
     this.onSnapshot(snap);
     this.client.onSnapshot((s) => this.onSnapshot(s));
+    this.client.onMotion((ids, xy) => this.chars.motion(ids, xy, performance.now()));
     this.bindInput();
     this.installHooks();
     this.ready = true;

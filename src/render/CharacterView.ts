@@ -70,6 +70,10 @@ class CharacterNode {
   /** 스냅샷 간격 (ms, 이동 평균) */
   interval = 0;
   lastMs = -1;
+  /** 틱 사이 예측 위치 (워커 motion, 세계 px): 있으면 여기로 실시간으로 따라감 */
+  pred: { x: number; y: number; at: number } | null = null;
+  /** 예측 위치 열쇠 그림 (시각, 자리): 조금 늦춘 시각으로 두 열쇠 사이를 보간 → 고른 속도 */
+  keys: { t: number; x: number; y: number }[] = [];
   /** 현재 그려진 발 위치 (세계 px) */
   fx = 0;
   fy = 0;
@@ -172,6 +176,15 @@ export class CharacterView {
         continue;
       }
       n.motion = null;
+      // 틱 사이 예측 위치를 받는 중이면 경로를 쌓지 않고 틱 결과 자리를 새 예측으로 (앞질러 간 자리로 되돌아가지 않게)
+      if (n.pred && nowMs - n.pred.at < 300) {
+        n.path = [];
+        if (Math.hypot(pr.x - n.fx, pr.y - n.fy) > T * 40) {
+          n.fx = pr.x;
+          n.fy = pr.y;
+        }
+        continue;
+      }
       if (!advanced) continue;
       // 새로 걸은 경로 (trail + 지금 위치)를 경로 끝에 이어 붙임
       let lx = n.path.length ? n.path[n.path.length - 2] : n.fx;
@@ -215,6 +228,22 @@ export class CharacterView {
     }
   }
 
+  /** 틱 사이 걷는 사람의 예측 위치 (칸 좌표) */
+  motion(ids: number[], xy: number[], nowMs: number): void {
+    for (let i = 0; i < ids.length; i++) {
+      const n = this.nodes.get(ids[i]);
+      if (!n || n.snap?.direct) continue;
+      const pr = this.world.project(xy[i * 2], xy[i * 2 + 1]);
+      if (!n.pred || !n.keys.length) {
+        n.path = [];
+        n.keys = [{ t: nowMs - 34, x: n.fx, y: n.fy }];
+      }
+      n.keys.push({ t: nowMs, x: pr.x, y: pr.y });
+      if (n.keys.length > 8) n.keys.shift();
+      n.pred = { x: pr.x, y: pr.y, at: performance.now() };
+    }
+  }
+
   /** 매 프레임: 위치 보간, 프레임 선택, 정렬 */
   update(nowMs: number): void {
     // 품 안 아기는 안은 사람을 먼저 그린 뒤에 (같은 프레임 위치에 붙임)
@@ -231,6 +260,38 @@ export class CharacterView {
     let moving = false;
     const dt = n.lastMs < 0 ? 16 : Math.min(100, Math.max(0, nowMs - n.lastMs));
     n.lastMs = nowMs;
+    // 예측 위치를 실시간으로: 조금 늦춘 시각(50ms)에서 열쇠 두 개 사이를 보간 (고른 속도, 멈칫 없음)
+    if (!n.motion && n.pred && nowMs - n.pred.at < 300 && n.keys.length) {
+      const rt = nowMs - 50;
+      const K = n.keys;
+      let x = K[K.length - 1].x;
+      let y = K[K.length - 1].y;
+      let tx = 0;
+      let ty = 0;
+      if (rt <= K[0].t) {
+        x = K[0].x;
+        y = K[0].y;
+      } else {
+        for (let i = 0; i + 1 < K.length; i++) {
+          if (rt > K[i + 1].t) continue;
+          const f = (rt - K[i].t) / Math.max(1, K[i + 1].t - K[i].t);
+          x = K[i].x + (K[i + 1].x - K[i].x) * f;
+          y = K[i].y + (K[i + 1].y - K[i].y) * f;
+          tx = K[i + 1].x - K[i].x;
+          ty = K[i + 1].y - K[i].y;
+          break;
+        }
+      }
+      const d = Math.hypot(x - n.fx, y - n.fy);
+      n.fx = x;
+      n.fy = y;
+      if (Math.hypot(tx, ty) > 0.05) p.facing = Math.abs(tx) > Math.abs(ty) ? (tx > 0 ? 'right' : 'left') : ty > 0 ? 'down' : 'up';
+      return d > 0.01;
+    }
+    if (n.pred && nowMs - n.pred.at >= 300) {
+      n.pred = null;
+      n.keys = [];
+    }
     if (!n.motion && n.path.length) {
       // 경로를 일정한 속도로: 남은 거리가 스냅샷 한 번 몫보다 많으면 조금 빠르게, 적으면 조금 느리게 (멈췄다 뛰는 걸음 없음)
       let left = Math.hypot(n.path[0] - n.fx, n.path[1] - n.fy);

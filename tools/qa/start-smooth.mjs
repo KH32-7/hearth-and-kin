@@ -14,7 +14,7 @@ const res = await page.evaluate(async () => {
       for (const [id, n] of hk.chars.nodes) {
         const a = track.get(id) ?? [];
         const p = snap?.persons.find((q) => q.id === id);
-        a.push([performance.now() - t0, n.fx, n.fy, p ? p.x : -1, p ? p.y : -1, p?.lod ?? '', snap?.speed ?? 0]);
+        a.push([performance.now() - t0, n.fx, n.fy, p ? p.x : -1, p ? p.y : -1, (n.pred ? 'P' : '') + (n.path.length ? 'Q' + n.path.length : '') + (n.motion ? 'M' : '') + (p?.anim ?? ''), snap?.speed ?? 0]);
         track.set(id, a);
       }
       if (performance.now() - t0 < 10000) requestAnimationFrame(step); else done(null);
@@ -29,7 +29,7 @@ const res = await page.evaluate(async () => {
       const d = Math.hypot(a[i][1] - a[i - 1][1], a[i][2] - a[i - 1][2]);
       if (d > 0.01 && dt > 0) speeds.push(d / dt);
       const sd = Math.hypot(a[i][3] - a[i - 1][3], a[i][4] - a[i - 1][4]);
-      if (d > 24) jumps.push({ id, t: Math.round(a[i][0]), d: Math.round(d), sim: [a[i][3].toFixed(1), a[i][4].toFixed(1)], simJump: sd.toFixed(2), spd: a[i][6] });
+      if (d > 24) jumps.push({ id, t: Math.round(a[i][0]), d: Math.round(d), mode: a[i - 1][5] + '>' + a[i][5], from: [a[i-1][1].toFixed(0), a[i-1][2].toFixed(0)], to: [a[i][1].toFixed(0), a[i][2].toFixed(0)], sim: [a[i][3].toFixed(1), a[i][4].toFixed(1)], simJump: sd.toFixed(2), spd: a[i][6] });
     }
   }
   speeds.sort((x, y) => x - y);

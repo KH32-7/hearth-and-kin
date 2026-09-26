@@ -4163,6 +4163,43 @@ export class Simulation {
   }
 
   /** 걷기 속도 배수: 유아(기기/걸음마), 노년 (10-2) */
+  /**
+   * 걷는 사람의 예측 위치 (그리기 전용, 상태를 바꾸지 않음): 다음 틱까지 frac(0~1) 만큼 걸었을 때 자리.
+   * 워커가 틱 사이 프레임마다 보내 1배속(틱 1초)에서도 실시간으로 부드럽게 걷게 함. 층을 바꾸는 칸 앞에서 멈춤
+   */
+  predictWalk(p: Person, frac: number): [number, number] | null {
+    const a = p.action;
+    if (!a || a.phase !== 'walk' || p.direct || p.hidden || a.pathPos >= a.path.length) return null;
+    let speed = this.data.balance.movement.walkTilesPerMinute;
+    if (this.inner && p.emotionStage >= 1) speed *= this.inner.walkMult(p);
+    if (p.riding) speed *= this.data.story?.travel?.horseSpeedMult ?? 1;
+    speed *= this.moveMult(p);
+    let budget = speed * Math.max(0, Math.min(1, frac));
+    const g = this.world.grid;
+    let x = p.x;
+    let y = p.y;
+    const slab = g.slabOf(g.idx(Math.floor(x), Math.floor(y)));
+    for (let i = a.pathPos; budget > 0 && i < a.path.length; i++) {
+      const cell = a.path[i];
+      if (g.slabOf(cell) !== slab) break;
+      const cx = (cell % g.w) + 0.5;
+      const cy = Math.floor(cell / g.w) + 0.5;
+      const dx = cx - x;
+      const dy = cy - y;
+      const d = Math.hypot(dx, dy);
+      if (d <= budget) {
+        x = cx;
+        y = cy;
+        budget -= d;
+      } else {
+        x += (dx / d) * budget;
+        y += (dy / d) * budget;
+        budget = 0;
+      }
+    }
+    return [x, y];
+  }
+
   private moveMult(p: Person): number {
     let m = this.childcare ? this.childcare.speedMult(p) : 1;
     if (this.genetics) m *= this.genetics.gaits[p.gait]?.walk ?? 1;
