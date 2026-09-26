@@ -16,6 +16,8 @@ export interface FireHost {
   readonly persons: Person[];
   notice(p: Person, kind: string, args?: Record<string, string | number>): void;
   moodlet(p: Person, id: string): void;
+  /** 가보 물건이 불에 닿음 (16-5: 손상, 없어지지 않음). 가보면 true */
+  heirloomFire?(uid: number): boolean;
   /** 끄러 달려감 (자율 행동을 끊고 맨 앞) */
   rush(p: Person, fireUid: number): void;
   /** 이웃 하나가 도우러 옴 */
@@ -270,7 +272,7 @@ export class Fire {
     const w = this.host.world;
     const d = this.host.data.objects[o.defId];
     const fam = this.host.persons.find((p) => p.household === 1);
-    if (d?.tags.includes('heirloom')) {
+    if (this.host.heirloomFire?.(o.uid) || d?.tags.includes('heirloom')) {
       // 가보는 타 없어지지 않고 손상 (16-5)
       o.state.damaged = true;
       if (fam) this.host.notice(fam, 'heirloom_damaged', { object: d.nameKey });

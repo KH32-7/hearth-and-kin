@@ -792,6 +792,16 @@ export class Inner {
     return true;
   }
 
+  /** 특정 소원 주기 (가훈 소원 16-1 등). 이미 있거나, 없는 소원이거나, 아기·유아면 false */
+  giveWish(p: Person, id: string): boolean {
+    if (p.lifeStage === 'baby' || p.lifeStage === 'toddler' || p.wishes.some((w) => w.id === id)) return false;
+    const w = this.wishPool.wish.find((x) => x.id === id) ?? this.wishPool.fear.find((x) => x.id === id);
+    if (!w) return false;
+    const now = this.host.world.minute;
+    p.wishes.push({ id: w.id, kind: w.kind, since: now, expiresAt: now + (w.expire?.value ?? 720), locked: false });
+    return true;
+  }
+
   refreshWishes(p: Person): void {
     const now = this.host.world.minute;
     // 아기·유아는 소원/걱정이 없음 (말로 바라는 나이가 아님)

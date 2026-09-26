@@ -24,6 +24,8 @@ export interface JudgeHost {
   birth(mother: Person, father: Person | null): Person | null;
   /** 가구 이사 (혼인한 배우자, 분가, 이주) */
   moveTo(p: Person, household: number, lot: string | null): void;
+  /** 혼인 뒤 (16-2 신분 두 층, 16-6 가문 동맹): stay = 집에 남는 쪽, incoming = 들어온 쪽 */
+  onMarried?(stay: Person, incoming: Person): void;
   newHousehold(): number;
   emptyLot(size: string): string | null;
   immigrate(n: number): Person[];
@@ -301,6 +303,7 @@ export class LifeJudge {
       this.stats.splits++;
       this.host.news('new_house', { a: h.name, b: w.name }, [h, w]);
     } else this.host.moveTo(from, to.household, to.homeLot);
+    this.host.onMarried?.(to, from);
   }
 
   // ------------------------------------------------------------------ 이주 (18-3 안전판)

@@ -32,6 +32,7 @@ import { express, geneticsFrom, inherit, randomGenome, type GeneticsData } from 
 import { namesFrom, pickName, type NamesData } from './family/names';
 import { memberRuntime, validateFamily, type FamilySpec } from './family/creation';
 import { Cards } from './story/cards';
+import { HouseLink } from './houseLink';
 import { Rumors } from './town/rumors';
 import type { LifeStage } from './people/person';
 import { NEED_INDEX, Person } from './people/person';
@@ -118,6 +119,8 @@ export type SimIntent =
   | { kind: 'putDownBaby'; babyId: number }
   /** 사건 카드 선택 (24-1): 대기 중인 카드 순번, 선택지 번호 */
   | { kind: 'cardChoice'; seq: number; option: number }
+  /** 가문과 신분 (M8, houseLink.ts intent): applyPreset, payEmancipation, knight, designateHeirloom, writeWill, setMotto, setHeraldry, hireServant … */
+  | { kind: 'house'; op: string; args?: Record<string, unknown> }
   /** 캐릭터 만들기 (10-1): 만들기 사양으로 조작 가문을 새로 꾸림 (검증 실패면 거부). 기존 조작 가문 식구는 떠남 */
   | { kind: 'createFamily'; spec: FamilySpec }
   /** 진통 선택 (15-2): 산파 부르기 / 가족이 받기 / 혼자 */
@@ -333,6 +336,8 @@ export class Simulation {
     for (const p of this.persons) if (p.infant && (p.household === 1 || !this.town)) this.showInfant(p);
     this.rumors = this.town && data.story ? new Rumors(new Rng((seed * 977 + 3) >>> 0), data.story.rumor, this.town, this.rumorHost()) : null;
     if (this.rumors) this.registerRumorGates();
+    // 가문과 신분 (M8): 가문 레지스트리·명성·신분 두 층·사치 금지법·영지·상속·가보·하인
+    this.house = HouseLink.create(this);
     for (const h of data.town?.people?.households ?? []) for (const m of h.members) this.namePool[m.sex].push(m.name);
     this.fire = data.build
       ? new Fire({
@@ -345,6 +350,7 @@ export class Simulation {
           callNeighbor: () => this.callNeighborForFire(),
           callHome: (p) => this.callHomeForFire(p),
           abortUsingHook: (uid) => this.abortUsing(uid),
+          heirloomFire: (uid) => !!this.house?.house.heirlooms.onFire(uid),
         }, seed)
       : null;
     this.stats = {
@@ -501,6 +507,10 @@ export class Simulation {
         void _k;
         this.deathRules.apply(rest as SetDeathRulesIntent);
         return { ok: true };
+      }
+      case 'house': {
+        const r = this.house?.intent(intent.op, intent.args ?? {});
+        return r ?? { ok: false, reason: 'no_house' };
       }
       case 'cardChoice': {
         const r = this.cards?.choose(intent.seq, intent.option);
@@ -1727,6 +1737,7 @@ export class Simulation {
         for (const [lot, h] of this.town!.lotHousehold) if (h === hh) this.town!.lotHousehold.delete(lot);
       },
       coarse: (p) => this.coarseStage(p),
+      onMarried: (stay, incoming) => this.house?.onMarried(stay, incoming),
       deathAllowed: (p, cause) => this.deathAllowed(cause === 'cold_hunger' ? 'cold' : cause, p),
       agingOff: (p) => p.agingOff || this.settings.agingOffHouseholds.has(p.household),
       ...(this.lifecycle ? { ageDaily: (p: Person) => this.lifecycle!.dailyAge(p) } : {}),
@@ -1815,6 +1826,8 @@ export class Simulation {
         if (holder.carry === 'baby') holder.carry = null;
       }
     }
+    // 가계도·상속·하인 (16장): 목록에서 빼기 전 (가장이면 장례·유언·새 가장·가보)
+    this.house?.onDeath(p, cause);
     const i = this.persons.indexOf(p);
     if (i >= 0) this.persons.splice(i, 1);
     // 부모를 모두 잃은 아이는 대부모 → 친척 → 교회 (15-7)
@@ -1864,6 +1877,7 @@ export class Simulation {
     if (this.lifecycle) mother.lactatingUntil = this.world.day() + Math.ceil(this.lifecycle.stageDays('baby')) + 1;
     if (this.childcare && (baby.household === 1 || !this.town)) this.showInfant(baby);
     this.childcare?.afterBirth(baby.household);
+    this.house?.onBirth(baby, mother, father);
     return baby;
   }
 
@@ -2426,9 +2440,12 @@ export class Simulation {
     }
     if (t.visitor?.leaving) return { ok: false, reasonKey: 'reason.target_busy' };
     if (p.visitor?.leaving && def !== this.data.social['social.farewell']) return { ok: false, reasonKey: 'reason.target_busy' };
+    // 기본 요구조건(나이·가족·관계)이 먼저: 메뉴 숨김 규칙이 이것을 봄. 그다음 이름 붙은 조건
+    const base = checkSocialRequires(this.rel, p, t, def, this.world.stock);
+    if (!base.ok) return base;
     const gate = (def.requires as { gate?: string }).gate;
     if (gate && !this.gateOk(gate, p, t)) return { ok: false, reasonKey: `reason.${gate}` };
-    return checkSocialRequires(this.rel, p, t, def, this.world.stock);
+    return base;
   }
 
   /**
@@ -3132,7 +3149,7 @@ export class Simulation {
     // 여러 스킬에 걸리면 나눠 받음 (한 행동으로 스킬 여럿을 한꺼번에 올리지 않게)
     const share = 1 / list.length;
     for (const id of list) {
-      const up = sk.gain(p, id, share, emo, extraPct, 1, xpMult);
+      const up = sk.gain(p, id, share, emo, extraPct, 1, xpMult * (this.house ? this.house.skillXpMult(p, id) : 1));
       if (up !== null) {
         this.notice(p, 'skill_up', { skill: `skill.${id}`, level: up });
         this.inner?.event(p, `skill:${id}:${up}`);
@@ -3795,6 +3812,7 @@ export class Simulation {
       this.judge.daily();
       this.rumors?.daily(day, this.persons);
     }
+    if (day > 0) this.house?.daily(day);
     const w = this.world;
     if (day > 0) {
       this.careerEndOfDay(day - 1);
@@ -3835,6 +3853,8 @@ export class Simulation {
     }
     e.endOfDay(day - 1, {
       notice: (h, kind, args) => {
+        if (kind === 'tax_paid') this.house?.onTaxPaid(Number(args?.n ?? 0));
+        if (kind === 'bankrupt') this.house?.onBankrupt(h);
         const q = this.persons.find((x) => x.household === h);
         if (q) this.notice(q, kind, args);
       },
@@ -3984,6 +4004,7 @@ export class Simulation {
     const cc = this.childcare;
     if (lc && hour === lc.d.birthday.hour) lc.morning();
     this.cards?.hourly();
+    this.house?.hourly();
     if (this.pregnancy) {
       this.pregnancy.tick();
       // 입덧 (15-1 초기): 아침에 깨면
@@ -4400,12 +4421,18 @@ export class Simulation {
 
   /** 가문 명성 (16-4, M8 명예 체계 전에는 가구별 누적) */
   readonly fame = new Map<number, number>();
-  private addFame(household: number, delta: number, reason: string): void {
+  private addFame(household: number, delta: number, reason: string, by: Person | null = null): void {
+    if (this.house) {
+      this.house.fame(household, delta, reason, by);
+      return;
+    }
     this.fame.set(household, (this.fame.get(household) ?? 0) + delta);
     const head = this.persons.find((q) => q.household === household);
     if (head && household === 1) this.notice(head, delta >= 0 ? 'fame_up' : 'fame_down', { n: Math.abs(delta), reason: `fame.reason.${reason}` });
   }
 
+  /** 가문과 신분 연결 (M8, houseLink.ts) */
+  house: HouseLink | null = null;
   /** 사건 카드 (24-1 최소 엔진, story/cards.ts): 카드 데이터가 없으면 알림 + 기록만 */
   cards: Cards | null = null;
   readonly cardLog: { day: number; personId: number; cardId: string; vars: Record<string, string | number> }[] = [];
@@ -4440,9 +4467,10 @@ export class Simulation {
       flags: (q) => {
         const f = new Set(this.familyFlags(q));
         for (const x of this.householdFlags.get(q.household) ?? []) f.add(x);
+        if (this.house) for (const x of this.house.flags(q)) f.add(x);
         return f;
       },
-      fame: (q) => 300 + (this.fame.get(q.household) ?? 0),
+      fame: (q) => (this.house ? this.house.fameOf(q.household) : 300 + (this.fame.get(q.household) ?? 0)),
       money: (q) => this.econ?.account(q.household)?.money ?? 0,
       savingsS: S,
       skillLevel: (q, sk) => this.skills?.level(q, sk) ?? 0,
@@ -4454,6 +4482,11 @@ export class Simulation {
         else this.econ!.spend(a, -amount, reason);
       },
       reputation: (q, d, reason) => {
+        if (this.house) {
+          this.house.house.honor.applyFor(q, d, reason);
+          if (d.fame && q.household === 1) this.notice(q, d.fame >= 0 ? 'fame_up' : 'fame_down', { n: Math.abs(d.fame), reason: `fame.reason.${reason}` });
+          return;
+        }
         if (d.fame) this.addFame(q.household, d.fame, reason);
         if (d.church) q.churchRep = Math.max(-100, Math.min(100, q.churchRep + d.church));
         if (d.karma) q.karma = Math.max(-100, Math.min(100, q.karma + d.karma));
@@ -4486,6 +4519,7 @@ export class Simulation {
 
   /** 가보 사건 훅 (16-5): M8 가보 모듈 연결 전에는 기록만 */
   heirloomEvent(p: Person, what: 'damage' | 'lose' | 'recover'): void {
+    if (this.house && this.house.house.heirlooms.cardOutcome(p, what) > 0) return;
     this.chronicleLog.push({ day: this.world.day(), trigger: `heirloom_${what}`, subjects: [p.id] });
   }
 
@@ -4623,6 +4657,7 @@ export class Simulation {
       if (p.direct) parts.push(`d${p.direct.dx},${p.direct.dy}`);
     }
     this.rumors?.hashParts(parts);
+    this.house?.hashParts(parts);
     this.rel.hashParts(parts);
     this.econ?.hashParts(parts);
     let h = 0x811c9dc5;

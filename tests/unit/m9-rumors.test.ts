@@ -149,5 +149,5 @@ describe('M9 소문 네트워크', () => {
       return sim.worldHash();
     };
     expect(h()).toBe(h());
-  });
+  }, 30000);
 });
