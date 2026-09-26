@@ -25,6 +25,10 @@ export type BuildOp =
   | { op: 'buy'; defId: string; x: number; y: number; rot?: number; variant?: string }
   | { op: 'move'; uid: number; x: number; y: number; rot?: number }
   | { op: 'sell'; uid: number }
+  /** 놓인 가구 색 · 나무 바꾸기 (카탈로그 variants 중 하나, 값의 recolorRatio) */
+  | { op: 'recolor'; uid: number; variant: string | null }
+  /** 벽 칠하기: 누른 벽 칸에서 곧게 이어진 같은 벽(all = 붙어 있는 같은 벽 전부)을 다른 벽 재질로 */
+  | { op: 'paintWall'; x: number; y: number; style: string; all?: boolean }
   | { op: 'digCellar'; x0: number; y0: number; x1: number; y1: number }
   | { op: 'nameRoom'; x: number; y: number; name: string }
   /** 직접 만든 가구 놓기 (저장고 품목 하나를 씀, 값 없음) */
@@ -94,7 +98,7 @@ export interface PendingWork {
 }
 
 /** 공사 시간이 걸리는 편집 (물건 사고팔기, 이름, 잠금, 지형 칠하기는 바로) */
-const TIMED = new Set(['wall', 'room', 'floor', 'fillFloor', 'opening', 'roof', 'digCellar', 'eraseWall']);
+const TIMED = new Set(['wall', 'room', 'floor', 'fillFloor', 'opening', 'roof', 'digCellar', 'eraseWall', 'paintWall']);
 
 const HOLE_TAG = 'stairs';
 /** 건축 편집 대상이 아닌 가상 물건 */
@@ -368,10 +372,15 @@ export class Builder {
   private restore(s: Snapshot): void {
     const w = this.host.world;
     const lot = this.lot;
-    lot.ground.splice(0, lot.ground.length, ...s.lot.ground);
-    lot.floor.splice(0, lot.floor.length, ...s.lot.floor);
-    lot.walls.splice(0, lot.walls.length, ...s.lot.walls);
-    lot.openings.splice(0, lot.openings.length, ...s.lot.openings);
+    // 칸마다 복사 (마을 판은 수십만 칸이라 splice(...펼침)은 호출 스택을 넘김)
+    const copy = <T,>(dst: T[], src: T[]) => {
+      dst.length = src.length;
+      for (let i = 0; i < src.length; i++) dst[i] = src[i];
+    };
+    copy(lot.ground, s.lot.ground);
+    copy(lot.floor, s.lot.floor);
+    copy(lot.walls, s.lot.walls);
+    copy(lot.openings, s.lot.openings);
     lot.roof = s.lot.roof;
     lot.roomNames = s.lot.roomNames;
     const keep = new Map(s.objects.map((o) => [o.uid, o]));
@@ -388,6 +397,11 @@ export class Builder {
         o.y = k.y;
         if (k.rot) o.rot = k.rot;
         else delete o.rot;
+      }
+      // 색 바꾸기 되돌림
+      if (k && (k.variant ?? '') !== (o.variant ?? '')) {
+        if (k.variant) o.variant = k.variant;
+        else delete o.variant;
       }
     }
     for (const o of s.objects) if (!w.byUid.has(o.uid)) w.restoreObject({ ...o, state: { ...o.state } });
@@ -499,6 +513,18 @@ export class Builder {
         w.removeObject(o.uid);
         return { ok: true, cost: -Math.round(price * this.b.resellRatio * cond), warnings: [] };
       }
+      case 'recolor': {
+        const o = this.host.world.byUid.get(op.uid);
+        if (!o || VIRTUAL.has(o.defId)) return fail('no_object');
+        const d = this.host.data.objects[o.defId];
+        if (op.variant !== null && !(d?.variants ?? []).includes(op.variant)) return fail('variant');
+        if ((o.variant ?? null) === op.variant) return fail('same');
+        if (op.variant) o.variant = op.variant;
+        else delete o.variant;
+        return { ok: true, cost: Math.round((d?.price ?? 0) * (this.b.recolorRatio ?? 0.2)), warnings: [] };
+      }
+      case 'paintWall':
+        return this.paintWall(op, fail);
       case 'digCellar': {
         const r = this.rect(op.x0, op.y0, op.x1, op.y1);
         if (!r || this.level(r.ya) !== -1) return fail('out_of_lot');
@@ -619,6 +645,51 @@ export class Builder {
       if (x >= o.x && x < o.x + fp.w && y >= o.y && y < o.y + fp.h) return true;
     }
     return false;
+  }
+
+  /** 벽 칠하기 대상 칸: 곧게 이어진 같은 벽 (가로 이웃이 같은 벽이면 가로줄, 아니면 세로줄), all 이면 붙은 같은 벽 전부 */
+  wallRun(x: number, y: number, all = false): number[] {
+    const i0 = this.idx(x, y);
+    const style = this.lot.walls[i0];
+    if (!style) return [];
+    const W = this.lot.w;
+    const same = (xx: number, yy: number) => xx >= 0 && xx < W && this.level(yy) === this.level(y) && this.lot.walls[this.idx(xx, yy)] === style;
+    if (all) {
+      const seen = new Set<number>([i0]);
+      const q = [[x, y]];
+      while (q.length) {
+        const [cx, cy] = q.pop()!;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = cx + dx;
+          const ny = cy + dy;
+          if (!same(nx, ny)) continue;
+          const k = this.idx(nx, ny);
+          if (seen.has(k)) continue;
+          seen.add(k);
+          q.push([nx, ny]);
+        }
+      }
+      return [...seen];
+    }
+    const horiz = same(x - 1, y) || same(x + 1, y);
+    const [dx, dy] = horiz ? [1, 0] : [0, 1];
+    const out = [i0];
+    for (const s of [1, -1]) for (let k = 1; same(x + dx * k * s, y + dy * k * s); k++) out.push(this.idx(x + dx * k * s, y + dy * k * s));
+    return out;
+  }
+
+  private paintWall(op: { x: number; y: number; style: string; all?: boolean }, fail: (r: string) => BuildResult): BuildResult {
+    if (!this.inLot(op.x, op.y)) return fail('out_of_lot');
+    const part = this.b.walls[op.style];
+    if (!part) return fail('unknown');
+    if (!this.estateOk(part.estate)) return fail('estate');
+    const cur = this.lot.walls[this.idx(op.x, op.y)];
+    if (!cur) return fail('no_wall');
+    if (this.isFence(cur)) return fail('fence');
+    if (cur === op.style) return fail('same');
+    const cells = this.wallRun(op.x, op.y, op.all);
+    for (const i of cells) this.lot.walls[i] = op.style;
+    return { ok: true, cost: part.price * cells.length, cells: cells.length, warnings: [] };
   }
 
   private eraseWalls(op: { x0: number; y0: number; x1: number; y1: number }, fail: (r: string) => BuildResult): BuildResult {

@@ -543,6 +543,8 @@
   "emptyLotFund": 960,
   "undoDepth": 60,
   "resellRatio": 0.6,
+  "$recolorRatio": "놓인 가구 색·나무 바꾸기 (건축 모드 물건 고르기): 물건 값 × 이 배수",
+  "recolorRatio": 0.2,
   "construction": {
     "$comment": "공사 시간 옵션 (23-3, 기본 꺼짐). 켜면 배치가 '공사 예정'이 되고 목수/석공 NPC 또는 가족이 지음",
     "defaultOn": false,

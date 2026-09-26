@@ -26,7 +26,7 @@
   "build.tool.roof": "지붕",
   "build.tool.cellar": "지하",
   "build.tool.name": "방 이름",
-  "build.tool.hand": "옮기기",
+  "build.tool.hand": "고르기",
   "build.hint.wall": "끌어서 곧게 벽을 세웁니다",
   "build.hint.room": "끌어서 네모난 방을 한 번에 짓습니다",
   "build.hint.erase": "끌어서 벽을 헙니다. 문이나 창을 누르면 그것만 뗍니다",
@@ -39,7 +39,7 @@
   "build.hint.roof": "지붕 재질을 고르면 바로 바뀝니다",
   "build.hint.cellar": "집 밑을 끌어서 파고, 1층에 들창을 놓으면 저장고가 됩니다",
   "build.hint.name": "방을 눌러 이름을 붙입니다",
-  "build.hint.hand": "물건을 눌러 들고 옮깁니다. Delete 는 팔기",
+  "build.hint.hand": "놓인 물건이나 벽을 눌러 고릅니다. 옮기기 · 돌리기 · 색 바꾸기 · 팔기",
   "build.name.placeholder": "방 이름",
   "build.undo": "되돌리기 (Ctrl+Z)",
   "build.redo": "다시 하기 (Ctrl+Y)",
@@ -70,7 +70,7 @@
   "build.err.unsupported": "아래층이 받쳐 주지 않습니다",
   "build.err.fence_ground_only": "울타리는 땅에만 두릅니다",
   "build.err.supports_upper": "위층을 받치는 벽이라 헐 수 없습니다",
-  "build.err.no_wall": "벽이 없습니다",
+  "build.err.no_wall": "벽이 없습니다.",
   "build.err.room_small": "방이 너무 작습니다",
   "build.err.not_room": "벽으로 닫힌 방이 아닙니다",
   "build.err.same": "이미 그렇습니다",
@@ -180,5 +180,10 @@
   "build.err.no_stock": "저장고에 없습니다",
   "build.lock.all": "문: 누구나 드나듦",
   "build.lock.family": "문: 식구만 드나듦",
-  "build.lock.estate": "문: 신분이 같거나 높은 사람만"
+  "build.lock.estate": "문: 신분이 같거나 높은 사람만",
+  "build.sel.move": "옮기기",
+  "build.sel.rotate": "돌리기",
+  "build.sel.sell": "팔기",
+  "build.sel.erase": "허물기",
+  "build.err.fence": "울타리는 칠할 수 없습니다."
 }

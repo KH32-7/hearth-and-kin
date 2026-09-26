@@ -211,6 +211,8 @@ export interface BuildData {
   };
   undoDepth: number;
   resellRatio: number;
+  /** 놓인 가구 색 바꾸기 값 (물건 값 배수) */
+  recolorRatio?: number;
   craftedFurniture?: Record<string, string>;
   emptyLotFund?: number;
   construction: { defaultOn: boolean; workPerFarthing: number; npcWorkPerHour: number; npcHours: [number, number]; familyWorkPerHour: number; familySkill: string; laborShare: number };

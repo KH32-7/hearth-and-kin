@@ -43,6 +43,31 @@ export interface CatalogItem {
   crafted?: { item: string; n: number };
 }
 
+/** 이미 놓인 물건 · 벽을 고름 (심즈식: 고르면 오른쪽 판에 옮기기 · 돌리기 · 색 · 팔기) */
+export interface PlacedSel {
+  kind: 'object' | 'wall';
+  /** 물건 정의 id 또는 벽 재질 id */
+  id: string;
+  nameKey: string;
+  variant?: string | null;
+  variants?: string[];
+  /** 팔면 받는 값 (벽은 이 줄을 허물 때) */
+  sell: number;
+  /** 색 바꾸기 값 */
+  recolor?: number;
+  /** 벽 재질 목록 (벽 칠하기) */
+  styles?: PartEntry[];
+  /** 벽 칸 수 */
+  cells?: number;
+}
+export interface PlacedActs {
+  move?(): void;
+  rotate?(): void;
+  sell(): void;
+  recolor?(variant: string | null): void;
+  paint?(style: string, all: boolean): void;
+}
+
 export interface BuildPanelHandlers {
   setMode(m: GameMode): void;
   setTool(tool: BuildTool): void;
@@ -130,7 +155,7 @@ export class BuildPanel {
   private roofBtn: HTMLButtonElement;
   private roofMode: 'auto' | 'on' | 'off' = 'auto';
   mode: GameMode = 'live';
-  tool: BuildTool = 'wall';
+  tool: BuildTool = 'hand';
   private part = new Map<BuildTool, string>();
   private category: string = 'bedroom';
   private selectedObject: string | null = null;
@@ -272,7 +297,8 @@ export class BuildPanel {
     this.consBox.type = 'checkbox';
     this.consBox.addEventListener('change', () => this.h.setConstruction(this.consBox.checked));
     el('i', 'toggle', cons);
-    cons.append(iconEl('cute.wrench', 2), iconEl('cute.moon', 2));
+    // 아이콘(스패너·달)만으로는 뜻을 몰라 글자로 (사용자 요청 2026-09-27)
+    el('span', 'cons-lb', cons).textContent = t('build.construction');
     this.consEl = cons;
     this.info = el('div', 'build-info', this.root);
     this.info.dataset.testid = 'build-info';
@@ -331,6 +357,70 @@ export class BuildPanel {
         b.addEventListener('click', () => this.h.pickObject(o.id, v));
       }
     }
+    d.insertBefore(this.consEl, null);
+  }
+
+  /** 놓인 물건 · 벽을 골랐을 때 오른쪽 판 (null = 원래대로) */
+  showPlaced(s: PlacedSel | null, a?: PlacedActs): void {
+    const d = this.detail;
+    for (const c of [...d.children]) if (c !== this.consEl) c.remove();
+    d.classList.toggle('placed', !!s);
+    if (!s || !a) {
+      if (this.mode === 'build') this.renderPicker();
+      else if (this.selectedObject) this.renderBuy();
+      return;
+    }
+    const top = el('div', 'det-top', d);
+    const pic = el('div', 'det-pic', top);
+    const th = fit(this.h.thumb(s.kind === 'wall' ? 'walls' : 'object', s.id, s.variant ?? undefined), 84, 100);
+    if (th) pic.appendChild(th);
+    const tx = el('div', 'det-tx', top);
+    el('b', 'det-name', tx).textContent = t(s.nameKey);
+    const pr = el('div', 'det-price sel-sell', tx);
+    pr.append(iconEl('cute.coin', 1), document.createTextNode(`+${formatPrice(s.sell)}`));
+    if (s.cells) {
+      const n = el('div', 'det-price', tx);
+      n.textContent = `${s.cells}`;
+      n.prepend(iconEl('rv.map', 1));
+    }
+    if (s.kind === 'object' && s.variants?.length && a.recolor) {
+      const vs = el('div', 'variants det-var sel-var', d);
+      for (const v of s.variants.slice(0, 8)) {
+        const b = el('button', `variant ${v === s.variant ? 'on' : ''}`.trim(), vs);
+        b.type = 'button';
+        b.dataset.variant = v;
+        b.title = `${t(`variant.${v}`)} · ${formatPrice(s.recolor ?? 0)}`;
+        b.style.setProperty('--v', VARIANT_COLORS[v] ?? '#888');
+        b.addEventListener('click', () => a.recolor!(v));
+      }
+    }
+    if (s.kind === 'wall' && s.styles?.length && a.paint) {
+      const ws = el('div', 'sel-walls', d);
+      for (const p of s.styles) {
+        const b = el('button', `sel-wall ${p.id === s.id ? 'on' : ''} ${p.locked ? 'locked' : ''}`.trim(), ws);
+        b.type = 'button';
+        b.dataset.style = p.id;
+        b.disabled = p.locked;
+        b.title = `${t(p.nameKey)} · ${formatPrice(p.price * (s.cells ?? 1))}`;
+        const w = fit(this.h.thumb('walls', p.id), 22, 30);
+        if (w) b.appendChild(w);
+        // Shift 를 누르고 고르면 붙어 있는 같은 벽 전부
+        b.addEventListener('click', (e) => a.paint!(p.id, e.shiftKey));
+      }
+    }
+    const acts = el('div', 'sel-acts', d);
+    const act = (icon: string, key: string, fn: (() => void) | undefined) => {
+      if (!fn) return;
+      const b = el('button', 'sel-act', acts);
+      b.type = 'button';
+      b.dataset.act = key;
+      b.appendChild(iconEl(icon, 2));
+      el('span', '', b).textContent = t(`build.sel.${key}`);
+      b.addEventListener('click', fn);
+    };
+    act('cute.cursor', 'move', a.move);
+    act('cute.reroll', 'rotate', a.rotate);
+    act('cute.coin', s.kind === 'wall' ? 'erase' : 'sell', a.sell);
     d.insertBefore(this.consEl, null);
   }
 

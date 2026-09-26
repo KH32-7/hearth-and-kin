@@ -46,7 +46,8 @@ async function buy(page: Page, cat: string, id: string, x: number, y: number): P
 }
 
 async function level(page: Page, lv: number): Promise<void> {
-  await game(page, `g.setViewLevel(${lv}); return true;`);
+  // 위층은 화면 위로 그려져 위 가운데 도구 띠에 가리지 않게 카메라도 그만큼 올림
+  await game(page, `g.setViewLevel(${lv}); g.centerOn(12 * 32, 10 * 32 - ${Math.max(0, lv)} * 96); return true;`);
   await page.waitForTimeout(100);
 }
 

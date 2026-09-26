@@ -43,7 +43,7 @@ interface Deps {
 export class BuildController {
   readonly panel: BuildPanel;
   mode: GameMode = 'live';
-  private tool: BuildTool = 'wall';
+  private tool: BuildTool = 'hand';
   private group = staticGroup();
   private cellMeshes: THREE.Mesh[] = [];
   private ghost: { mesh: THREE.Mesh; mat: THREE.ShaderMaterial; defId: string; variant?: string } | null = null;
@@ -62,6 +62,8 @@ export class BuildController {
   private badMat: THREE.MeshBasicMaterial;
   private warnMat: THREE.MeshBasicMaterial;
   private wallGhostMats: THREE.ShaderMaterial[] = [];
+  /** 고른 놓인 물건 / 벽 (심즈식 고르기: 오른쪽 판에 옮기기 · 돌리기 · 색 · 팔기) */
+  private sel: { kind: 'object'; uid: number; sig: string } | { kind: 'wall'; x: number; y: number; sig: string } | null = null;
 
   constructor(private d: Deps) {
     this.group.renderOrder = GHOST_ORDER;
@@ -97,6 +99,7 @@ export class BuildController {
 
   setMode(m: GameMode): void {
     if (m === this.mode) return;
+    this.clearSel();
     const was = this.mode;
     this.mode = m;
     this.panel.setMode(m);
@@ -121,6 +124,7 @@ export class BuildController {
   }
 
   setTool(tool: BuildTool): void {
+    this.clearSel();
     this.tool = tool;
     this.panel.setTool(tool);
     this.cancelHeld();
@@ -163,6 +167,7 @@ export class BuildController {
   }
 
   private cancelHeld(): void {
+    if (this.held?.moveUid) this.d.world.setHighlightMany([]);
     this.held = null;
     if (this.ghost) {
       this.group.remove(this.ghost.mesh);
@@ -396,6 +401,7 @@ export class BuildController {
     }
     if (e.key === 'Escape') {
       if (this.held) this.cancelHeld();
+      else if (this.sel) this.clearSel();
       else this.setMode('live');
       return true;
     }
@@ -405,6 +411,10 @@ export class BuildController {
       return true;
     }
     if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (this.sel && !this.held) {
+        (this.d.app.querySelector('.sel-act[data-act="sell"], .sel-act[data-act="erase"]') as HTMLButtonElement | null)?.click();
+        return true;
+      }
       if (this.held?.moveUid) {
         const uid = this.held.moveUid;
         this.cancelHeld();
@@ -509,14 +519,136 @@ export class BuildController {
     return null;
   }
 
-  /** 구매 모드/손: 누른 물건을 집음 */
+  /** 구매 모드/손: 누른 물건을 고름 (이미 고른 물건을 다시 누르면 집어서 옮김). 손 도구로 벽을 누르면 그 벽을 고름 */
   private pickUpAt(wx: number, wy: number): void {
     const uid = this.d.world.pick(wx, wy) ?? this.objectAtHover();
-    if (uid === null) return;
+    const o = uid === null ? null : this.d.client.snap?.objects.find((q) => q.uid === uid);
+    if (o && o.defId !== 'lot_exit' && o.defId !== 'window_opening') {
+      if (this.sel?.kind === 'object' && this.sel.uid === o.uid) return this.moveSelected();
+      return this.selectObject(o.uid);
+    }
+    const cell = this.d.world.screenToCell(wx, wy);
+    const lot = this.d.world.currentLot;
+    if (cell && this.mode === 'build' && lot.walls[cell.y * lot.w + cell.x] && !this.isFenceStyle(lot.walls[cell.y * lot.w + cell.x]!)) return this.selectWall(cell.x, cell.y);
+    this.clearSel();
+  }
+
+  private isFenceStyle(style: string): boolean {
+    return !!(this.d.build.fences as Record<string, unknown>)[style];
+  }
+
+  clearSel(): void {
+    if (!this.sel) return;
+    this.sel = null;
+    this.d.world.setHighlightMany([]);
+    this.panel.showPlaced(null);
+    this.refreshPreview();
+  }
+
+  private selectObject(uid: number): void {
     const o = this.d.client.snap?.objects.find((q) => q.uid === uid);
-    if (!o || o.defId === 'lot_exit' || o.defId === 'window_opening') return;
+    if (!o) return this.clearSel();
+    const def = this.d.defs[o.defId] as { nameKey?: string; price?: number; variants?: string[] } | undefined;
+    const cond = 1 - Math.min(100, Number((o as { state?: Record<string, unknown> }).state?.wear ?? 0)) / 200;
+    const price = def?.price ?? 0;
+    this.sel = { kind: 'object', uid, sig: `${o.x},${o.y},${o.rot ?? 0},${o.variant ?? ''}` };
+    this.d.world.setHighlightMany([uid]);
+    this.panel.showPlaced(
+      { kind: 'object', id: o.defId, nameKey: def?.nameKey ?? o.defId, variant: o.variant ?? null, variants: def?.variants ?? [], sell: Math.round(price * (this.d.build.resellRatio ?? 0.6) * cond), recolor: Math.round(price * ((this.d.build as { recolorRatio?: number }).recolorRatio ?? 0.2)) },
+      {
+        move: () => this.moveSelected(),
+        rotate: () => void this.send({ op: 'move', uid, x: o.x, y: o.y, rot: ((o.rot ?? 0) + 1) % 4 }),
+        sell: () => {
+          this.clearSel();
+          void this.send({ op: 'sell', uid });
+        },
+        recolor: (v) => void this.send({ op: 'recolor', uid, variant: v }),
+      },
+    );
+    this.refreshPreview();
+  }
+
+  /** 고른 물건을 집어 옮기기 (전과 같은 들기) */
+  private moveSelected(): void {
+    if (this.sel?.kind !== 'object') return;
+    const uid = this.sel.uid;
+    const o = this.d.client.snap?.objects.find((q) => q.uid === uid);
+    this.sel = null;
+    this.panel.showPlaced(null);
+    if (!o) return;
     this.hold(o.defId, o.variant, uid, o.rot ?? 0);
+    this.d.world.setHighlightMany([uid]);
     this.panel.flash(t('build.picked', { name: t(this.d.defs[o.defId]?.nameKey ?? o.defId) }));
+  }
+
+  /** 벽 칠하기 대상 칸 (sim builder.wallRun 과 같은 규칙: 곧게 이어진 같은 벽, all = 붙은 같은 벽 전부) */
+  private wallRun(x: number, y: number, all = false): Array<[number, number]> {
+    const lot = this.d.world.currentLot;
+    const style = lot.walls[y * lot.w + x];
+    if (!style) return [];
+    const lv = this.d.world.levelOfRow(y);
+    const same = (xx: number, yy: number) => xx >= 0 && xx < lot.w && yy >= 0 && yy * lot.w + xx < lot.walls.length && this.d.world.levelOfRow(yy) === lv && lot.walls[yy * lot.w + xx] === style;
+    if (all) {
+      const seen = new Set<number>([y * lot.w + x]);
+      const q: Array<[number, number]> = [[x, y]];
+      const out: Array<[number, number]> = [[x, y]];
+      while (q.length) {
+        const [cx, cy] = q.pop()!;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = cx + dx;
+          const ny = cy + dy;
+          if (!same(nx, ny) || seen.has(ny * lot.w + nx)) continue;
+          seen.add(ny * lot.w + nx);
+          q.push([nx, ny]);
+          out.push([nx, ny]);
+        }
+      }
+      return out;
+    }
+    const horiz = same(x - 1, y) || same(x + 1, y);
+    const [dx, dy] = horiz ? [1, 0] : [0, 1];
+    const out: Array<[number, number]> = [[x, y]];
+    for (const s of [1, -1]) for (let k = 1; same(x + dx * k * s, y + dy * k * s); k++) out.push([x + dx * k * s, y + dy * k * s]);
+    return out;
+  }
+
+  private selectWall(x: number, y: number): void {
+    const lot = this.d.world.currentLot;
+    const style = lot.walls[y * lot.w + x];
+    if (!style) return this.clearSel();
+    const run = this.wallRun(x, y);
+    const part = (this.d.build.walls as Record<string, { nameKey: string; price: number }>)[style];
+    this.d.world.setHighlightMany([]);
+    this.sel = { kind: 'wall', x, y, sig: `${style}:${run.length}` };
+    this.panel.showPlaced(
+      { kind: 'wall', id: style, nameKey: part?.nameKey ?? style, sell: Math.round((part?.price ?? 0) * 0.5) * run.length, styles: this.parts('wall'), cells: run.length },
+      {
+        sell: () => {
+          const xs = run.map((c) => c[0]);
+          const ys = run.map((c) => c[1]);
+          this.clearSel();
+          void this.send({ op: 'eraseWall', x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) });
+        },
+        paint: (st, all) => void this.send({ op: 'paintWall', x, y, style: st, all }),
+      },
+    );
+    this.refreshPreview();
+  }
+
+  /** 스냅샷마다: 고른 것이 바뀌었으면(색 · 자리 · 팔림) 판을 다시 */
+  private syncSel(): void {
+    const s = this.sel;
+    if (!s) return;
+    if (s.kind === 'object') {
+      const o = this.d.client.snap?.objects.find((q) => q.uid === s.uid);
+      if (!o) return this.clearSel();
+      if (`${o.x},${o.y},${o.rot ?? 0},${o.variant ?? ''}` !== s.sig) this.selectObject(s.uid);
+    } else {
+      const lot = this.d.world.currentLot;
+      const style = lot.walls[s.y * lot.w + s.x];
+      if (!style) return this.clearSel();
+      if (`${style}:${this.wallRun(s.x, s.y).length}` !== s.sig) this.selectWall(s.x, s.y);
+    }
   }
 
   private nameRoom(cell: { x: number; y: number }): void {
@@ -631,6 +763,8 @@ export class BuildController {
 
   private refreshPreview(): void {
     this.clearCells();
+    // 고른 벽 줄 표시
+    if (this.sel?.kind === 'wall' && !this.held) for (const [x, y] of this.wallRun(this.sel.x, this.sel.y)) this.markCell(x, y, false, true);
     const h = this.hover;
     if (!h || !this.active) {
       if (this.ghost) this.ghost.mesh.visible = false;
@@ -754,6 +888,7 @@ export class BuildController {
 
   update(s: Snapshot): void {
     if (s.rooms) this.rooms = s.rooms;
+    this.syncSel();
     const b = s.build;
     if (b) {
       if (JSON.stringify(b.warnings) !== JSON.stringify(this.warnings)) {

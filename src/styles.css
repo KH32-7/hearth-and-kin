@@ -1099,3 +1099,19 @@ button.nb-cell:hover { transform: translateY(-1px); }
 .ng-house-meta { display: flex; align-items: center; gap: 4px; font-size: 13px; opacity: .8; }
 .ng-house-meta span { margin-right: 8px; }
 .ng-house-box { position: absolute; left: 0; top: 0; border: 2px dashed rgba(255,214,90,.9); border-radius: 4px; box-shadow: 0 0 12px rgba(255,214,90,.35); pointer-events: none; }
+
+/* 건축: 놓인 물건 · 벽 고르기 (오른쪽 판) */
+.dock-detail.placed .sel-sell { color: #b9f0a0; display: flex; align-items: center; gap: 4px; }
+.sel-var { margin-top: 6px; }
+.sel-var .variant.on { box-shadow: 0 0 0 2px var(--gold), 0 0 0 4px rgba(20,12,6,.55); }
+.sel-walls { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; max-width: 280px; }
+.sel-wall { width: 30px; height: 38px; display: grid; place-items: center; border-radius: 8px; background: rgba(251,236,210,.12); }
+.sel-wall:hover:not(:disabled) { background: rgba(255,211,106,.28); }
+.sel-wall.on { box-shadow: inset 0 0 0 2px var(--gold); }
+.sel-wall:disabled { opacity: .35; }
+.sel-acts { display: flex; gap: 8px; margin-top: 8px; }
+.sel-act { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 8px; border-radius: 10px; font-size: 12px; background: rgba(251,236,210,.1); }
+.sel-act:hover { background: rgba(255,211,106,.28); }
+.sel-act:active { transform: translateY(1px); }
+.cons-lb { font-size: 14px; margin-left: 6px; white-space: nowrap; }
+.dock-detail.placed .cons { display: none; }
