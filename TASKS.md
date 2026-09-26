@@ -214,7 +214,7 @@
 - [ ] 06c 수치 재정의 (README 한낮 기준) 후 artifacts/palette 표 갱신
 - [x] 그림자 통일: 건물·나무·물건 같은 해 투영, 옆으로 눕고 부드러운 가장자리, 나무 접지 그늘
 - [x] Pages 빌드 (`vite build --base=/hearth-and-kin/`, dist/) 준비. 푸시는 자동 권한 검사가 막아 사용자가 직접 올림
-- [ ] 새 지도(부지 64)로 sim:town 104일: 청년 혼인 69% (기준 70%) → baseDaily 0.12→0.13 재검사 중 (artifacts/town/run-v4.txt)
+- [ ] 새 지도(부지 64)로 sim:town 104일: 청년 혼인 68~69% (기준 70%). baseDaily 0.13 으로 올려도 그대로 → 확률이 아니라 새 지도의 집 수(부지 69→64)·빈 집 부족이 원인으로 보임. 되돌림(0.12), 집 수/신혼 부지 규칙 조사 필요 (artifacts/town/run-v3.txt, run-v4.txt)
 - [ ] 50시드 전체 재검사 (새 지도)
 
 ## M4 ~ M17
