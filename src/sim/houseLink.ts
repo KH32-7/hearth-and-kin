@@ -254,6 +254,7 @@ export class HouseLink {
         this.earnF(to, amount * 4, reason);
         return true;
       },
+      accuse: (from, target) => (s as unknown as { society: { accuse(a: Person, b: Person): void } | null }).society?.accuse(from, target),
       title: (p) => (p.estate === 'knight' ? 'title.sir' : p.estate === 'noble' && this.headOf(p.household) === p ? 'title.lord' : null),
       skillCategory: (sk) => ((s.data.skills as { skills?: Record<string, { category?: string }> } | null)?.skills?.[sk]?.category ?? null),
       houseValue: (hh) => {

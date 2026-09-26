@@ -140,11 +140,39 @@ function snapshot(): Snapshot {
     relations: relationsSnap(s),
     pendingVisits: s.pendingVisits.map((v) => v.neighborId),
     econ: econSnap(s),
+    house: houseSnap(s),
     away: [...s.away.entries()].map(([nb, p]) => ({ id: p.id, name: p.name, neighborId: nb, estate: p.estate })),
   };
 }
 
-/** 마을 요약 (M6): 인구, 세밀도별 수, 소식, 가문 이름 */
+/** 가문·사회 요약 (M8·M9): 수첩 가문/기록/영지 쪽 */
+let treeCache: { day: number; head: number; tree: import('./protocol').HouseSnap['tree'] } | null = null;
+function houseSnap(s: Simulation): import('./protocol').HouseSnap | null {
+  const L = s.house;
+  if (!L) return null;
+  const sum = L.summary(1) as { clan: import('./protocol').HouseSnap['clan']; estate: string; fief: import('./protocol').HouseSnap['fief']; treasury: number; servants: import('./protocol').HouseSnap['servants']; heirlooms: import('./protocol').HouseSnap['heirlooms']; lostHeirlooms: number[] };
+  const est = L.estates;
+  const acct = s.econ?.account(1);
+  const head = L.headOf(1);
+  const day = s.world.day();
+  if (!treeCache || treeCache.day !== day || treeCache.head !== (head?.id ?? 0)) {
+    const nodes = head ? L.house.clans.familyTree(head.id) : [];
+    treeCache = { day, head: head?.id ?? 0, tree: nodes.map((n) => ({ id: n.id, name: n.name, sex: n.sex, generation: n.generation, alive: n.alive, estate: n.estate, title: n.title, cause: n.cause, spouse: n.spouse, mother: n.mother, father: n.father, bastard: n.bastard })) };
+  }
+  const C = s.society?.courtship;
+  return {
+    ...sum,
+    emancipation: sum.estate === 'serf' ? { fee: est.emancipationFee(), money: acct?.money ?? 0 } : null,
+    morale: L.house.honor.morale,
+    lordFavor: s.lordFavor.get(1) ?? 0,
+    tree: treeCache.tree,
+    rumors: (s.rumors?.knownToHousehold(1) ?? []).slice(-12).map((r) => ({ id: r.id, kind: r.kind, args: r.args, known: r.knownBy.size, good: r.good, strength: Math.round(r.strength * 100) / 100 })),
+    letters: (s.society?.letters?.householdInbox(1) ?? []).slice(-16).map((l) => ({ id: l.id, kind: l.kind, fromName: l.fromName, to: l.to, read: !!(l as { read?: boolean }).read, sentDay: l.sentDay })),
+    betrothed: (C?.state.betrothals ?? []).filter((b) => s.persons.some((q) => q.household === 1 && (q.id === b.a || q.id === b.b))).map((b) => ({ a: b.a, b: b.b, weddingDay: b.weddingDay, path: b.path })),
+  };
+}
+
+/** 마을 요약 (M6): 인구, 세밀도, 소식, 가문 이름 */
 function townPart(s: Simulation): NonNullable<Snapshot['town']> {
   const counts = { full: 0, simple: 0, summary: 0 };
   for (const p of s.persons) counts[p.lod]++;

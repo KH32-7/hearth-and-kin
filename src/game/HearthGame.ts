@@ -240,6 +240,7 @@ export class HearthGame {
       focusPerson: (id) => this.focus(id),
       emotionColor: (e) => emotionColor(e),
       dialogLog: () => this.dialog.log,
+      intent: (i) => this.client.intent(i),
     });
     Object.assign(this.notebook, { inner: this.hud.inner, relations: this.hud.relations, work: this.hud.work, ledger: this.ledger });
     this.dialog = new DialogBox(this.app);

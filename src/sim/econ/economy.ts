@@ -88,6 +88,17 @@ export class Economy {
   readonly trade: Record<string, number> = {};
   /** 파산 가정 수 (누적) */
   bankrupt = 0;
+  /**
+   * 영주 정책과 역병 (M9, society/policy.ts · plagueLite.ts): 세율, 품목 가격 배수(고기·공산품), 장인 수입,
+   * 장터 거래량(역병 격리), 외부 교역 차단. 없으면 기본 규칙
+   */
+  policy: {
+    taxRate(rates: Record<string, number>): number;
+    priceMult(good: string): number;
+    artisanIncomeMult(): number;
+    tradeBlocked(): boolean;
+  } | null = null;
+  plagueTrade: (() => { mult: number; blocked: boolean }) | null = null;
 
   constructor(readonly d: EconomyData, private rng: Rng) {
     const L = d.ledger;
@@ -122,7 +133,7 @@ export class Economy {
     const season = d.calendar.seasons[Math.floor(day / SD) % 4];
     if (season !== d.tax.season || day % SD !== 0 || !d.estates[a.estate].taxed) return 0;
     const x = d.estates[a.estate];
-    return Math.round(x.target.gross * (d.tax.wealthDays[a.estate] ?? 0) * 4 * d.tax.rates[d.tax.default] * ((SD * 4) / 28));
+    return Math.round(x.target.gross * (d.tax.wealthDays[a.estate] ?? 0) * 4 * (this.policy ? this.policy.taxRate(d.tax.rates) : d.tax.rates[d.tax.default]) * ((SD * 4) / 28));
   }
 
   /** 한 인생 저축 목표 S (동화) = 일 순수입 목표 × savingsDays */
@@ -154,13 +165,14 @@ export class Economy {
   goodPrice(good: string): number {
     const g = this.d.goods[good];
     if (!g) return 0;
-    return unitPrice(g.base, this.goods[good]?.mult ?? 1, g.bundle);
+    return unitPrice(g.base * (this.policy?.priceMult(good) ?? 1), this.goods[good]?.mult ?? 1, g.bundle);
   }
 
   /** 저장고 품목 가격: 품목 기준가 × 연결된 장부 품목의 배수 (items.json ledger) */
   itemPrice(item: { base: number; ledger?: string | null; bundle?: { n: number; price: number } }): number {
     const m = item.ledger ? (this.goods[item.ledger]?.mult ?? 1) : 1;
-    return unitPrice(item.base, m, item.bundle);
+    const pm = this.policy && item.ledger ? this.policy.priceMult(item.ledger) : 1;
+    return unitPrice(item.base * pm, m, item.bundle);
   }
 
   private updatePrices(): void {
@@ -276,7 +288,9 @@ export class Economy {
       const food = d.goods[g].food;
       const cap = (food ? L.tradeCapPerDay.food : L.tradeCapPerDay.other) * L.population;
       this.trade[g] = 0;
-      if (st.mult >= L.importAt) {
+      if (this.policy?.tradeBlocked() && this.plagueTrade?.().blocked) {
+        // 도시 봉쇄 (18-4 역병 대응): 외부 교역 없음
+      } else if (st.mult >= L.importAt) {
         st.q += cap;
         this.trade[g] = cap;
       } else if (st.mult <= L.exportAt) {
@@ -301,7 +315,7 @@ export class Economy {
       if (season === d.tax.season && inSeason === 0 && d.estates[a.estate].taxed) {
         const x = d.estates[a.estate];
         const wealth = x.target.gross * (d.tax.wealthDays[a.estate] ?? 0) * 4;
-        const tax = Math.round(wealth * d.tax.rates[d.tax.default] * (YEAR / 28));
+        const tax = Math.round(wealth * (this.policy ? this.policy.taxRate(d.tax.rates) : d.tax.rates[d.tax.default]) * (YEAR / 28));
         this.spend(a, tax, 'tax');
         hooks.notice?.(a.household, 'tax_paid', { n: tax });
       }
@@ -397,12 +411,14 @@ export class Economy {
       let cash = 0;
       if (inc.wage) cash += inc.wage.workers * inc.wage.daily * (inc.wage.daysPerWeek / 7);
       if (inc.homecraft) cash += inc.homecraft;
-      if (inc.shop) cash += inc.shop.salesPerDay * (1 - inc.shop.materialShare);
+      // 장터 규칙(길드 독점 → 장인 수입), 역병 격리·봉쇄(장터 거래량)
+      const pt = this.plagueTrade?.() ?? { mult: 1, blocked: false };
+      if (inc.shop) cash += inc.shop.salesPerDay * (1 - inc.shop.materialShare) * (h.estate === 'artisan' ? this.policy?.artisanIncomeMult() ?? 1 : 1) * pt.mult;
       if (inc.trade) {
         const t = inc.trade;
         const I = d.income.trade;
         const r = I.baseReturn + t.skillReckoning * I.perReckoning + t.skillStory * I.perStory + t.rankBonus;
-        cash += (t.capital * r * (1 - I.lossChance) - t.capital * I.lossChance * (I.lossRange[0] + I.lossRange[1]) / 4 - I.costPerDay * t.tripDays) / (t.tripDays + t.prepDays);
+        cash += ((t.capital * r * (1 - I.lossChance) - t.capital * I.lossChance * (I.lossRange[0] + I.lossRange[1]) / 4 - I.costPerDay * t.tripDays) / (t.tripDays + t.prepDays)) * pt.mult;
       }
       if (inc.stipend) cash += inc.stipend;
       if (inc.sacraments) cash += inc.sacraments;

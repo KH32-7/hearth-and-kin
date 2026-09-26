@@ -1584,7 +1584,12 @@ export class Simulation {
       // 레시피 경험치는 레시피 스킬로만 (레시피 tags 는 특성 선호용: 제빵에도 cook 이 붙어 있음)
       const r = this.data.recipes[a.item.interactionId.slice(7)];
       if (r) this.skillMinute(p, NO_TAGS, r.skill, 0, r.xp);
-    } else if (this.skills && ia.tags && !step.sleep) this.skillMinute(p, ia.tags, (ia as { skill?: string }).skill);
+    } else if (this.skills && ia.tags && !step.sleep) {
+      // 가보로 하는 일 (16-5): 관련 스킬 경험치 보너스 (손상이면 절반)
+      const sk = (ia as { skill?: string }).skill;
+      const hl = this.house?.house.heirlooms.isHeirloomObject(a.item.targetUid);
+      this.skillMinute(p, ia.tags, sk, 0, hl && sk ? this.house!.house.heirlooms.xpMult(hl, sk) : 1);
+    }
     a.elapsed++;
     a.lastProgress = this.world.minute;
     this.stats.minutesByInteraction[a.item.interactionId] = (this.stats.minutesByInteraction[a.item.interactionId] ?? 0) + 1;
@@ -1662,6 +1667,8 @@ export class Simulation {
     const wasSleep = !!step.sleep;
     const bed = this.world.byUid.get(a.stepObj)?.defId;
     this.finishAction(p, true, 'done');
+    // 가보를 씀 (16-5): 이력·조상의 기억 무드렛
+    if (target && this.house?.house.heirlooms.isHeirloomObject(target.uid)) this.house.house.heirlooms.useObject(target.uid, p, (ia as { skill?: string }).skill ?? null);
     this.inner?.onActionDone(p, iaId, ia.tags ?? [], ia.moodlets);
     if (!this.inner) return;
     if (wasSleep) {
@@ -1847,6 +1854,7 @@ export class Simulation {
     if (this.childcare && cause !== 'moved_away') this.childcare.onDeath(p, (id) => this.persons.find((q) => q.id === id), (q) => (this.lifecycle ? this.lifecycle.displayAge(q) : this.judge?.age(q) ?? 30) < 18);
     this.inner?.forget(p);
     this.rumors?.forget(p.id);
+    this.society?.forget(p.id);
     this.releaseHousehold(p.household);
     if (p.townId) this.town?.personById.delete(p.townId);
     this.gone.push({ id: p.id, name: p.name, cause, day: this.world.day(), household: p.household });
@@ -2190,6 +2198,8 @@ export class Simulation {
     o.state.wear = Math.round(after * 10) / 10;
     if (after >= 100 && !o.state.broken) {
       o.state.broken = true;
+      // 가보가 닳아 고장 나면 금 간 가보 (16-5 표 1행)
+      this.house?.house.heirlooms.onBroken(o.uid);
       this.notice(p, 'object_broken', { object: d.nameKey });
     }
   }
@@ -4064,6 +4074,7 @@ export class Simulation {
     if (lc && hour === lc.d.birthday.hour) lc.morning();
     this.cards?.hourly();
     this.house?.hourly();
+    this.society?.hourly();
     if (this.pregnancy) {
       this.pregnancy.tick();
       // 입덧 (15-1 초기): 아침에 깨면
@@ -4572,6 +4583,8 @@ export class Simulation {
       },
       heirloom: (q, what) => this.heirloomEvent(q, what),
       setFlag: (q, flag) => {
+        // 재판·결투 사건 플래그는 그 모듈이 처리 (가구 플래그로 남기지 않음)
+        if (this.society?.onCardFlag(q, flag, null)) return;
         const set = this.householdFlags.get(q.household) ?? new Set<string>();
         set.add(flag);
         this.householdFlags.set(q.household, set);

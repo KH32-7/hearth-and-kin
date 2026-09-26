@@ -110,5 +110,10 @@
   "catalog.cat.crafted.short": "손수",
   "nb.moodSum": "무드렛 합계 {n}",
   "build.sub.obj": "물건",
-  "build.sub.make": "짓기"
+  "build.sub.make": "짓기",
+  "nb.page.heirlooms": "가보",
+  "nb.page.hire": "하인 들이기",
+  "nb.btn.emancipate": "해방금 내기",
+  "money.sd": "{s}은화 {d}동화",
+  "money.d": "{d}동화"
 }

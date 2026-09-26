@@ -8,6 +8,7 @@
  */
 import type { PersonSnap, Snapshot } from '../sim/protocol';
 import { t } from '../i18n';
+import { composeCoatOfArms } from '../render/heraldry';
 import { bookUrl, iconEl, pieceImg, pieceUrl, stitchCard, tabUrl } from './skin';
 import type { InnerPanel } from './InnerPanel';
 import type { RelationsPanel } from './RelationsPanel';
@@ -29,6 +30,15 @@ export interface NotebookHooks {
   emotionColor(e: string): string;
   /** 대사창 기록 (27-13) */
   dialogLog(): Array<{ minute: number; who: string; text: string; act?: string }>;
+  /** 의도 보내기 (해방금 내기, 편지 읽기 …) */
+  intent?(i: Record<string, unknown>): Promise<unknown>;
+}
+
+/** 금액 표시 (파딩 → 은화·동화) */
+function money(f: number): string {
+  const d = Math.floor(f / 4);
+  const sil = Math.floor(d / 12);
+  return sil ? t('money.sd', { s: sil, d: d % 12 }) : t('money.d', { d });
 }
 
 const estateOf = (p: PersonSnap | null, s: Snapshot | null): string => s?.econ?.estate ?? p?.inner?.estate ?? 'freeman';
@@ -533,6 +543,25 @@ export class Notebook {
         break;
       }
       case 'tree': {
+        const nodes = s.house?.tree ?? [];
+        if (nodes.length) {
+          const box = el('div', 'nb-tree', L);
+          const gens = [...new Set(nodes.map((n) => n.generation))].sort((a, b) => a - b);
+          const side = [box, el('div', 'nb-tree', R)];
+          gens.forEach((g, i) => {
+            const row = el('div', 'nb-tree-row', side[i < 3 ? 0 : 1]);
+            const list = nodes.filter((n) => n.generation === g);
+            this.cells(row, list.slice(0, 4).map((n) => ({
+              canvas: n.alive ? this.hooks.portrait(n.id, 'head') : null, icon: n.alive ? undefined : 'cute.shield',
+              label: n.name, dim: !n.alive, title: n.alive ? n.name : `${n.name} · ${t(`death.cause.${n.cause ?? 'old_age'}`)}`,
+            })), Math.min(4, list.length), list.length);
+          });
+          if (gens.length <= 3) {
+            this.ribbon(R, family[0]?.name ?? '');
+            this.empty(R, 'cute.shield');
+          }
+          break;
+        }
         const kids = family.filter((q) => ['baby', 'toddler', 'child', 'teen'].includes(q.inner?.stage_life ?? ''));
         const elders = family.filter((q) => q.inner?.stage_life === 'elder');
         const adults = family.filter((q) => !kids.includes(q) && !elders.includes(q));
@@ -563,21 +592,76 @@ export class Notebook {
         }
         break;
       }
-      case 'fame':
-      case 'freedom':
-      case 'servants': {
-        this.ribbon(L, t(`nb.page.${id}`));
+      case 'fame': {
+        const H = s.house;
+        const cl = H?.clan;
+        this.ribbon(L, cl?.name ? t(cl.name) : t('nb.page.fame'));
+        if (cl?.heraldry) {
+          try {
+            const cv = composeCoatOfArms(cl.heraldry as never, 3) as HTMLCanvasElement;
+            cv.className = 'nb-arms';
+            L.appendChild(cv);
+          } catch {
+            /* 문장 사양이 옛 형식이면 건너뜀 */
+          }
+        }
+        const pp = this.paper(L);
+        const l1 = el('div', 'nb-line', pp);
+        l1.appendChild(iconEl('cute.star', 2));
+        el('b', 'nb-grow', l1, t(`fame.tier.${cl?.tier ?? 'ordinary'}`));
+        el('b', '', l1, String(Math.round(cl?.fame ?? 0)));
+        this.bar(pp, Math.min(1, (cl?.fame ?? 0) / 1000), 'blue');
+        if (cl?.motto) el('p', 'nb-motto', pp, cl.motto.startsWith('clan.motto.') ? t(cl.motto) : cl.motto);
+        const l2 = el('div', 'nb-line', pp);
+        l2.appendChild(iconEl('cute.crown', 2));
+        el('b', 'nb-grow', l2, t(`estate.${estate}`));
+        if (cl) el('small', '', l2, t(`inherit.${cl.law === 'will' ? 'designated' : cl.law}`));
+        this.ribbon(R, t('nb.page.heirlooms'));
+        const hl = H?.heirlooms ?? [];
+        if (!hl.length && !(H?.lostHeirlooms.length)) this.empty(R, 'cute.trophy');
+        else this.rows(R, [
+          ...hl.map((h) => ({ icon: 'cute.trophy', title: h.name ?? t(`object.${h.defId}`), sub: h.damaged ? t(`heirloom.state.${h.damaged}`) : undefined })),
+          ...(H?.lostHeirlooms ?? []).map(() => ({ icon: 'cute.no', title: t('heirloom.lost.stolen'), dim: true })),
+        ]);
+        if (s.econ?.shop) {
+          const l3 = el('div', 'nb-line', pp);
+          l3.appendChild(iconEl('cute.coins', 2));
+          el('b', 'nb-grow', l3, t('nb.fame.shop'));
+          el('b', '', l3, String(Math.round(s.econ.shop.reputation)));
+        }
+        break;
+      }
+      case 'freedom': {
+        const em = s.house?.emancipation;
+        this.ribbon(L, t('nb.page.freedom'));
         const pp = this.paper(L);
         const l = el('div', 'nb-line', pp);
-        l.appendChild(iconEl('cute.crown', 2));
-        el('b', 'nb-grow', l, t(`estate.${estate}`));
-        if (s.econ?.shop) {
-          const l2 = el('div', 'nb-line', pp);
-          l2.appendChild(iconEl('cute.star', 2));
-          el('b', 'nb-grow', l2, t('nb.fame.shop'));
-          el('b', '', l2, String(Math.round(s.econ.shop.reputation)));
+        l.appendChild(iconEl('cute.coins', 2));
+        el('b', 'nb-grow', l, em ? money(Math.max(0, em.money)) : '-');
+        el('b', '', l, em ? money(em.fee) : '-');
+        this.bar(pp, em ? Math.max(0, Math.min(1, em.money / Math.max(1, em.fee))) : 0, 'green');
+        const btns = el('div', 'nb-btns', L);
+        const b = this.button(btns, t('nb.btn.emancipate'), () => void this.hooks.intent?.({ kind: 'house', op: 'payEmancipation', args: {} }));
+        if (!em || em.money < em.fee) b.disabled = true;
+        this.ribbon(R, t('estate.serf'));
+        const pr = this.paper(R);
+        el('p', '', pr, t('estate.serf.desc'));
+        break;
+      }
+      case 'servants': {
+        const sv = s.house?.servants ?? [];
+        this.ribbon(L, t('nb.page.servants'));
+        if (!sv.length) this.empty(L, 'cute.bag');
+        else this.rows(L, sv.map((x) => {
+          const q = s.persons.find((pp) => pp.id === x.id);
+          return { canvas: this.hooks.portrait(x.id, 'head'), title: q?.name ?? '', sub: t(`servant.role.${x.role}`), right: String(Math.round(x.loyalty)) };
+        }));
+        this.ribbon(R, t('nb.page.hire'));
+        const cells = el('div', 'nb-btns nb-wrap', R);
+        for (const role of ['maid', 'cook', 'nurse', 'groom', 'steward', 'guard']) {
+          const b = this.button(cells, t(`servant.role.${role}`), () => void this.hooks.intent?.({ kind: 'house', op: 'hireServant', args: { role } }));
+          b.title = t(`servant.role.${role}`);
         }
-        this.empty(R, id === 'freedom' ? 'cute.star_blue' : id === 'servants' ? 'cute.bag' : 'cute.star_blue');
         break;
       }
       case 'career': {
@@ -643,8 +727,52 @@ export class Notebook {
         }
         break;
       }
-      case 'rumors':
-      case 'letters':
+      case 'rumors': {
+        const list = s.house?.rumors ?? [];
+        this.ribbon(L, t('nb.page.rumors'));
+        if (!list.length) {
+          this.empty(L, 'cute.exclaim');
+          this.empty(R, 'cute.exclaim');
+          break;
+        }
+        const pop = Math.max(1, s.town?.population ?? 100);
+        const half = Math.ceil(list.length / 2);
+        for (const [box, part] of [[L, list.slice(0, half)], [R, list.slice(half)]] as const) {
+          const pp = el('div', 'nb-text', box);
+          for (const r of part) {
+            const row = el('div', 'nb-line', pp);
+            row.appendChild(iconEl(r.good ? 'cute.star' : 'cute.exclaim', 2));
+            el('b', 'nb-grow', row, t(`rumor.kind.${r.kind}.name`));
+            el('small', '', row, `${Math.round((r.known / pop) * 100)}%`);
+            el('p', 'nb-quote', pp, t(`rumor.kind.${r.kind}`, r.args));
+          }
+        }
+        break;
+      }
+      case 'letters': {
+        const list = (s.house?.letters ?? []).slice().reverse();
+        this.ribbon(L, t('nb.page.letters'));
+        if (!list.length) {
+          this.empty(L, 'cute.letter');
+          this.empty(R, 'cute.letter');
+          break;
+        }
+        const cur = list.find((x) => String(x.id) === this.book.dataset.letter) ?? list[0];
+        this.rows(L, list.slice(0, 7).map((x) => ({ icon: x.read ? 'cute.letter' : 'cute.letter_q', title: x.fromName, sub: t(`letter.kind.${x.kind}`), right: t('hud.day', { d: x.sentDay + 1 }), cls: x.id === cur.id ? 'on' : '', data: { letter: String(x.id) } })));
+        L.querySelectorAll<HTMLElement>('.nb-row').forEach((r) => r.addEventListener('click', () => {
+          this.book.dataset.letter = r.dataset.letter ?? '';
+          this.sig = '';
+          this.render();
+        }));
+        this.ribbon(R, cur.fromName);
+        const pr = el('div', 'nb-text nb-letter', R);
+        void this.hooks.intent?.({ kind: 'society', op: 'readLetter', args: { personId: cur.to, letterId: cur.id } }).then((res) => {
+          const r = (res as { result?: { parts?: string[]; vars?: Record<string, string> } } | undefined)?.result;
+          pr.textContent = '';
+          for (const k of r?.parts ?? []) el('p', '', pr, t(k, r?.vars ?? {}));
+        });
+        break;
+      }
       case 'journey':
       case 'clergy':
       case 'guild':

@@ -164,7 +164,28 @@ export interface Snapshot {
     freeLots: string[];
     playerLot: string | null;
   } | null;
+  /** 가문·사회 (M8·M9): 조작 가문의 가문·명성·가훈·문장·신분·해방금·영지·하인·가보·가계도, 전해 들은 우리 소문, 편지함, 혼담 */
+  house?: HouseSnap | null;
   hash?: string;
+}
+
+export interface HouseSnap {
+  clan: { id: number; name: string | null; fame: number; tier: string; motto: string | null; heraldry: unknown; law: string; head: number } | null;
+  estate: string;
+  /** 농노 해방금 (파딩): 필요, 가진 돈 */
+  emancipation: { fee: number; money: number } | null;
+  fief: { manors: number; tenants: number; lord: boolean; policy: boolean } | null;
+  treasury: number;
+  morale: number;
+  lordFavor: number;
+  servants: { id: number; role: string; loyalty: number }[];
+  heirlooms: { id: number; defId: string; name: string | null; status: string; damaged: string | null }[];
+  lostHeirlooms: number[];
+  /** 가계도 (하루에 한 번 갱신): 세대 0 = 가장 위 */
+  tree: { id: number; name: string; sex: string; generation: number; alive: boolean; estate: string; title: string | null; cause: string | null; spouse: number; mother: number; father: number; bastard: boolean }[];
+  rumors: { id: number; kind: string; args: Record<string, string | number>; known: number; good: boolean; strength: number }[];
+  letters: { id: number; kind: string; fromName: string; to: number; read: boolean; sentDay: number }[];
+  betrothed: { a: number; b: number; weddingDay: number; path: string }[];
 }
 
 export type ToWorker =

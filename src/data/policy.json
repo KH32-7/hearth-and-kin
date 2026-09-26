@@ -1,0 +1,147 @@
+{
+  "$comment": "M9 영주 정책 (GDD 18-4), 민심 (16-4), 영주 금고 지출, 곡물 배급 (17-9), 탄원, NPC 영주 AI (src/sim/society/policy.ts) + 간이 역병 (src/sim/society/plagueLite.ts, M11 전까지). 돈은 파딩. 기간 필드는 {value, scale} (29-0). social/interactions 는 simData.mergeFamilyContent 가 합침",
+  "policy": {
+    "$comment": "effects.<정책>.<단계>: morale = 목표 민심 보정(50 + 합), moraleShock = 바꾼 날 한 번, taxRate = economy.json tax.rates 와 같은 값, price = 품목 가격 배수(manufactured = 공산품 묶음), crimeMult/detectMult/punishStep = 치안, guardWagePerDay = 금고에서 경비병 하루 급여, poachingMult = 밀렵 발생 배수(자유는 밀렵이 죄가 아님 = 0), publicContactMult = 역병 유행 중 공공 장소에 그래도 나가는 비율, festivalSupport = 축제일 금고 지원, festivalMorale = 축제일 민심",
+    "defaults": { "tax": "normal", "market": "free", "hunting": "license", "watch": "normal", "plague": "none", "festival": "normal" },
+    "effects": {
+      "tax": {
+        "low": { "taxRate": 0.03, "morale": 6, "moraleShock": 3 },
+        "normal": { "taxRate": 0.05, "morale": 0 },
+        "high": { "taxRate": 0.08, "morale": -16, "moraleShock": -4, "moodlet": "high_taxes_grumble" }
+      },
+      "market": {
+        "free": { "morale": 0 },
+        "guild": { "price": { "manufactured": 1.1 }, "artisanIncomeMult": 1.1, "marketTradeMult": 0.95, "morale": -2 }
+      },
+      "hunting": {
+        "ban": { "price": { "meat": 1.15 }, "poachingMult": 1, "morale": -3 },
+        "license": { "price": { "meat": 1.0 }, "poachingMult": 0.3, "morale": 0 },
+        "free": { "price": { "meat": 0.88 }, "poachingMult": 0, "morale": 3 }
+      },
+      "watch": {
+        "lax": { "crimeMult": 1.4, "detectMult": 0.6, "punishStep": -1, "guardWagePerDay": 16, "morale": 2 },
+        "normal": { "crimeMult": 1.0, "detectMult": 1.0, "punishStep": 0, "guardWagePerDay": 32, "morale": 0 },
+        "strict": { "crimeMult": 0.5, "detectMult": 1.8, "punishStep": 1, "guardWagePerDay": 64, "morale": -9, "moraleShock": -2, "moodlet": "strict_watch_uneasy" }
+      },
+      "plague": {
+        "none": { "publicContactMult": 1, "morale": 0 },
+        "quarantine": { "publicContactMult": 0.65, "confineSick": true, "confineHousehold": true, "compliance": 0.7, "marketTradeMult": 0.85, "morale": -2 },
+        "lockdown": { "publicContactMult": 0.35, "confineSick": true, "confineHousehold": true, "compliance": 0.85, "tradeBlocked": true, "marketTradeMult": 0.6, "morale": -6 }
+      },
+      "festival": {
+        "none": { "festivalSupport": 0, "festivalMorale": -2, "festivalScale": 0.5, "morale": -3 },
+        "normal": { "festivalSupport": 240, "festivalMorale": 2, "festivalScale": 1, "morale": 0 },
+        "grand": { "festivalSupport": 960, "festivalMorale": 6, "festivalScale": 2, "morale": 6, "festivalMoodlet": "generous_festival_joy" }
+      }
+    },
+    "manufactured": ["cloth", "iron", "tools", "horseshoes"],
+    "morale": {
+      "$comment": "민심은 가문 모듈 Honor.morale. 정책 목표 쪽으로 하루 pushPerDay (Honor 가 50 쪽으로 1 당기므로 더 커야 함). 폭동: riotBelow 밑에서 하루 확률. 반란: rebellionBelow 밑이 rebellionDays 이어짐",
+      "base": 50,
+      "pushPerDay": { "value": 2.5, "scale": "absolute" },
+      "lowFlagBelow": 35,
+      "riotBelow": 25,
+      "riotChancePerDay": 0.12,
+      "riotCooldown": { "value": 7, "scale": "absolute" },
+      "riot": { "treasuryShare": 0.1, "lordFame": -20, "moraleAfter": 5, "moodlet": "riot_fear", "card": "riot_brewing" },
+      "rebellionBelow": 12,
+      "rebellionDays": { "value": 7, "scale": "absolute" },
+      "rebellion": { "lordFame": -60, "treasuryShare": 0.3 },
+      "highAbove": 75,
+      "highLordFamePerDay": 1,
+      "highMoodlet": "lord_favor_proud"
+    },
+    "treasury": {
+      "$comment": "금고가 비어 있으면 시작 금액 (파딩). 경비병 급여를 못 주면 발각 배수와 민심",
+      "start": 2400,
+      "unpaidGuardDetectMult": 0.5,
+      "unpaidGuardMorale": -3
+    },
+    "festival": {
+      "$comment": "19-4 축제 달력이 아직 없으면 계절마다 이 날(0부터)을 축제일로",
+      "dayInSeason": 3
+    },
+    "grain": {
+      "$comment": "17-9 영주 곡물 배급: 흉년, 민심 moraleBelow 미만, 또는 탄원 성공. 인원 × 1 ration/일, 최대 14일. 영주 호의 소폭 하락, 농노는 부역 +1일",
+      "moraleBelow": 40,
+      "rationPerPersonDay": 1,
+      "maxDays": { "value": 14, "scale": "absolute" },
+      "lordFavor": -2,
+      "serfCorveeDays": 1,
+      "notice": "lord_grain"
+    },
+    "petition": {
+      "base": 0.35,
+      "perStorytelling": 0.04,
+      "perLordFavor": 0.2,
+      "lowMoraleBonus": 0.1,
+      "cooldown": { "value": 7, "scale": "absolute" },
+      "okMorale": 2,
+      "okFame": 5,
+      "okMoodlet": "petition_heard",
+      "failMoodlet": "lord_displeasure",
+      "failLordFavor": -2,
+      "pressureToChange": 2,
+      "grainOnOk": true
+    },
+    "ai": {
+      "$comment": "NPC 영주: every 마다 민심·금고·범죄·역병·탄원 압력을 보고 한 정책을 한 단계 바꿀 수 있음",
+      "every": { "value": 7, "scale": "absolute" },
+      "changeChance": 0.6,
+      "treasuryLowDays": 10,
+      "moraleLow": 35,
+      "moraleHigh": 70,
+      "crimePerDayHigh": 0.6,
+      "greedyTraits": ["greedy_old", "mean", "ambitious"],
+      "kindTraits": ["kind", "just", "humble"],
+      "embezzleTraits": ["greedy_old", "cunning"],
+      "embezzleChance": 0.1,
+      "embezzleShare": 0.15
+    },
+    "war": { "costPerDay": 120 }
+  },
+  "plague": {
+    "$comment": "간이 SEIR (M11 전). 목표 (정책 없음): 발병률 20~40%, 첫 환자부터 정점 3~6일, 유행 7~14일, 치명률 15~35%. outbreak = 한 인생 기대 횟수 (29-2 보통 0.4). beta = 공공 장소 접촉당, homeBeta = 앓는 식구 한 명당 하루. resistShare = 이번 유행에 걸리지 않는 사람 몫",
+    "outbreak": { "value": 0.4, "scale": "per_life" },
+    "lockdownImportMult": 0.2,
+    "orderTail": { "value": 14, "scale": "absolute" },
+    "seedCases": 3,
+    "hours": [7, 21],
+    "contactsPerHour": 2,
+    "maxContactsPerDay": 12,
+    "beta": 0.45,
+    "homeBeta": 0.45,
+    "placeMult": { "market": 1.5, "inn": 1.5, "bathhouse": 2, "church": 1.2, "well_square": 1.3, "castle": 0.8, "monastery": 0.7, "forest_river": 0.4 },
+    "resistShare": 0.68,
+    "latent": { "value": 1, "scale": "absolute" },
+    "sickMin": { "value": 2, "scale": "absolute" },
+    "sickMax": { "value": 3, "scale": "absolute" },
+    "sickStayHome": 0.3,
+    "cfr": 0.22,
+    "cfrStage": { "baby": 1.6, "toddler": 1.4, "child": 1.1, "teen": 0.8, "young": 0.7, "adult": 0.9, "elder": 1.7 },
+    "cfrTraits": { "frail": 1.5, "sickly_line": 1.4, "robust": 0.6, "long_lived": 0.8 },
+    "fallbackDays": { "value": 1, "scale": "lifespan" },
+    "marketKinds": ["market"],
+    "moodlets": { "sick": "fevered", "fear": "plague_fear", "confined": "quarantine_confined", "recovered": null }
+  },
+  "social": {
+    "social.petition_lord": {
+      "nameKey": "ia.social_petition_lord",
+      "icon": "ui.crest",
+      "category": "status",
+      "tags": ["social", "humble", "petition"],
+      "minutes": 20,
+      "needs": { "social": 0.6 },
+      "targetNeeds": { "social": 0.3 },
+      "ads": { "social": 6 },
+      "base": 55,
+      "requires": { "met": true, "gate": "lord_petition" },
+      "traitMods": { "sociable": 10, "just": 5, "humble": 5, "introvert": -10, "coward": -10 },
+      "targetTraitMods": { "kind": 10, "just": 10, "mean": -15, "suspicious": -5 },
+      "estateRule": "deference",
+      "topics": ["work", "family"],
+      "success": { "friendship": 2, "romance": 0, "respect": 3, "moodlets": ["petition_heard"], "targetMoodlets": [], "flagsAdd": [], "events": ["event:petition_heard"] },
+      "failure": { "friendship": -3, "romance": 0, "respect": -2, "moodlets": ["lord_displeasure"], "targetMoodlets": [], "flagsAdd": [], "events": ["event:petition_denied"] }
+    }
+  }
+}
