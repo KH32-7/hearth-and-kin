@@ -2029,6 +2029,8 @@ export class Simulation {
     const owner = t.ownerOf(o.x, o.y);
     if (owner < 0) return false;
     if (owner === p.household) return true;
+    // 창문(창밖 보기·창가 수다)은 자기 집 창문만: 공공 건물·남의 집 창은 벽 반대편이라 길이 없음
+    if (o.defId === 'window_opening') return false;
     if (owner === 0) {
       // 장소 안의 침대/부엌/궤짝은 그곳에 사는 가문과 그곳 일꾼만 (성, 교회, 여관 부엌, 공방 거리 빵집 …)
       const pl = t.placeOf(o.x, o.y);
