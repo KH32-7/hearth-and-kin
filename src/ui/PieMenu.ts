@@ -93,40 +93,47 @@ export class PieMenu {
     this.root.classList.add('open');
     this.open = true;
 
-    // 2) 반지름: 이웃 항목 상자(와 가운데 제목)가 겹치지 않을 때까지 키움 (타원, 세로 0.8)
+    // 2) 가운데에서 항목 안쪽 가장자리까지 거리를 늘 비슷하게: 항목을 원의 오른쪽·왼쪽에 위에서 아래로 쌓고
+    //    가운데 쪽 가장자리를 타원 위에 둠 (이름이 길면 바깥으로만 늘어남 → 몇 개든 원 크기가 거의 같음)
     const widths = buttons.map((b) => (b.offsetWidth || 160) + 8);
     const heights = buttons.map((b) => (b.offsetHeight || 40) + 6);
     const n = buttons.length;
-    const maxH = Math.max(40, ...heights);
     const cw = (center.offsetWidth || 80) + 8;
     const ch = (center.offsetHeight || 30) + 8;
-    const ang = (i: number) => -Math.PI / 2 + (i / Math.max(1, n)) * Math.PI * 2;
-    const hit = (ax: number, ay: number, aw: number, ah: number, bx: number, by: number, bw: number, bh: number) =>
-      Math.abs(ax - bx) * 2 < aw + bw && Math.abs(ay - by) * 2 < ah + bh;
-    let radius = 70;
-    for (; radius < 600; radius += 6) {
-      let ok = true;
-      for (let i = 0; i < n && ok; i++) {
-        const xi = Math.cos(ang(i)) * radius;
-        const yi = Math.sin(ang(i)) * radius * 0.8;
-        if (hit(xi, yi, widths[i], heights[i], 0, 0, cw, ch)) ok = false;
-        for (let j = i + 1; j < n && ok; j++) {
-          if (hit(xi, yi, widths[i], heights[i], Math.cos(ang(j)) * radius, Math.sin(ang(j)) * radius * 0.8, widths[j], heights[j])) ok = false;
-        }
+    const R = Math.max(64, cw / 2 + 18);
+    const right = Math.ceil(n / 2);
+    const pos: [number, number][] = new Array(n);
+    for (const [side, from, to] of [[1, 0, right], [-1, right, n]] as const) {
+      const idx: number[] = [];
+      for (let i = from; i < to; i++) idx.push(i);
+      const gap = 4;
+      const H = idx.reduce((a, i) => a + heights[i], 0) + gap * Math.max(0, idx.length - 1);
+      let y = -H / 2;
+      const ry = Math.max(R * 0.8, H / 2 + 8);
+      for (const i of idx) {
+        const yc = y + heights[i] / 2;
+        // 타원 위 안쪽 가장자리 (위아래 끝으로 갈수록 가운데로 조금 들어옴, 가운데 제목과는 안 겹침)
+        const inner = Math.max(cw / 2 + 12, R * Math.sqrt(Math.max(0, 1 - (yc / ry) ** 2)));
+        pos[i] = [side * (inner + widths[i] / 2), yc];
+        y += heights[i] + gap;
       }
-      if (ok) break;
     }
-    const maxW = Math.max(...widths);
-    const mx = radius + maxW / 2 + 12;
-    const my = radius * 0.8 + maxH / 2 + 12;
-    const cx = Math.min(Math.max(x, mx), window.innerWidth - mx);
-    const cy = Math.min(Math.max(y, my), window.innerHeight - my);
+    // 항목이 하나면 오른쪽, 둘이면 좌우 한 개씩 (위 반복이 처리)
+    // 화면 밖으로 나가지 않게 가운데를 옮김 (실제 상자 범위로)
+    let minX = -cw / 2, maxX = cw / 2, minY = -ch / 2, maxY = ch / 2;
+    pos.forEach(([bx, by], i) => {
+      minX = Math.min(minX, bx - widths[i] / 2);
+      maxX = Math.max(maxX, bx + widths[i] / 2);
+      minY = Math.min(minY, by - heights[i] / 2);
+      maxY = Math.max(maxY, by + heights[i] / 2);
+    });
+    const cx = Math.min(Math.max(x, -minX + 12), window.innerWidth - maxX - 12);
+    const cy = Math.min(Math.max(y, -minY + 12), window.innerHeight - maxY - 12);
     center.style.left = `${cx}px`;
     center.style.top = `${cy}px`;
     buttons.forEach((b, i) => {
-      const a = -Math.PI / 2 + (i / Math.max(1, n)) * Math.PI * 2;
-      b.style.left = `${Math.round(cx + Math.cos(a) * radius)}px`;
-      b.style.top = `${Math.round(cy + Math.sin(a) * radius * 0.8)}px`;
+      b.style.left = `${Math.round(cx + pos[i][0])}px`;
+      b.style.top = `${Math.round(cy + pos[i][1])}px`;
       b.style.visibility = '';
     });
   }
