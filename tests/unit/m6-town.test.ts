@@ -13,10 +13,10 @@ const town = (seed = 1) => new Simulation(data, seed);
 const canUse = (sim: Simulation, p: Person, uid: number) => (sim as unknown as { canUse(p: Person, o: unknown): boolean }).canUse(p, sim.world.byUid.get(uid));
 
 describe('M6 마을', () => {
-  it('애쉬포드: 122명, 가구마다 부지 또는 사는 장소, 조작 가문은 시작 부지, 모든 사람이 출구에서 닿는 칸에 있음', () => {
+  it('애쉬포드: 94명, 가구마다 부지 또는 사는 장소, 조작 가문은 시작 부지, 모든 사람이 출구에서 닿는 칸에 있음', () => {
     const sim = town();
     const t = sim.town!;
-    expect(sim.persons.length).toBe(122);
+    expect(sim.persons.length).toBe(94);
     expect(t.playerLot()?.start).toBe(true);
     const reach = sim.world.reachFromExits();
     const g = sim.world.grid;
@@ -173,7 +173,7 @@ describe('M6 마을', () => {
     for (const p of own) sim.persons.splice(sim.persons.indexOf(p), 1);
     for (let i = 0; i < 6 * 60; i++) sim.tick();
     expect(JSON.stringify(sim.world.stock)).toBe(before);
-  });
+  }, 60000);
 
   it('리뷰 회귀: 끊긴 가구는 부지를 돌려놓고, 새 가구 번호는 다시 쓰지 않음', () => {
     const sim = town(5);

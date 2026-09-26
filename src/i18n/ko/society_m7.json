@@ -268,5 +268,14 @@
   "reason.public_penance": "참회할 소문이 없음",
   "reason.has_grudge_target": "험담할 상대가 없음",
   "notice.rumor_heard": "우리 집 소문이 돈대요. {kind}",
-  "notice.rumor_explained": "{target}에게 해명했어요."
+  "notice.rumor_explained": "{target}에게 해명했어요.",
+  "ia.social_let_in": "들어오라고 하기",
+  "reason.knocking_here": "문 앞에 없음",
+  "notice.door_knock": "{a}이(가) 문을 두드려요.",
+  "notice.door_let_in": "{a}이(가) 문을 열어 줬어요.",
+  "notice.door_let_in_host": "{a}을(를) 들어오게 했어요.",
+  "notice.door_knocked": "문을 두드렸어요.",
+  "notice.door_nobody": "집에 아무도 없어요.",
+  "notice.door_refused": "{a}이(가) 문을 안 열어 줘요.",
+  "notice.punished": "벌을 받았어요. {kind}"
 }

@@ -1977,386 +1977,6 @@
    ]
   },
   {
-   "id": "h_brightwater",
-   "nameKey": "house.h_brightwater",
-   "estate": "freeman",
-   "wealth": "normal",
-   "lotSize": "small",
-   "lot": null,
-   "hookKey": null,
-   "members": [
-    {
-     "id": "nb_rowan",
-     "name": "로완",
-     "sex": "male",
-     "stage": "adult",
-     "ageDays": 2,
-     "traits": [
-      "flirt",
-      "sociable",
-      "brave"
-     ],
-     "career": "guard",
-     "role": null,
-     "virtue": null,
-     "sin": "lust",
-     "schedule": "guard",
-     "seed": 107,
-     "topics": [
-      "love",
-      "war"
-     ]
-    },
-    {
-     "id": "p_049",
-     "name": "셀레나",
-     "sex": "female",
-     "stage": "young",
-     "ageDays": 18,
-     "traits": [
-      "diligent",
-      "gourmet",
-      "kind"
-     ],
-     "career": "baker",
-     "role": null,
-     "virtue": "diligence",
-     "sin": null,
-     "schedule": "baker",
-     "seed": 685001,
-     "topics": [
-      "faith",
-      "work"
-     ]
-    }
-   ],
-   "relations": [
-    {
-     "kind": "sibling",
-     "a": "nb_rowan",
-     "b": "p_049",
-     "friendship": 50,
-     "romance": 0
-    }
-   ]
-  },
-  {
-   "id": "h_serf_01",
-   "nameKey": "house.h_serf_01",
-   "estate": "serf",
-   "wealth": "normal",
-   "lotSize": "small",
-   "lot": null,
-   "hookKey": null,
-   "members": [
-    {
-     "id": "p_050",
-     "name": "엘프릭",
-     "sex": "male",
-     "stage": "young",
-     "ageDays": 11,
-     "traits": [
-      "bookworm",
-      "sociable",
-      "drinker"
-     ],
-     "career": "field_hand",
-     "role": "reeve",
-     "virtue": null,
-     "sin": "envy",
-     "schedule": "reeve",
-     "seed": 214840,
-     "topics": [
-      "faith",
-      "work"
-     ]
-    },
-    {
-     "id": "p_051",
-     "name": "아델라",
-     "sex": "female",
-     "stage": "young",
-     "ageDays": 13,
-     "traits": [
-      "cunning",
-      "brave",
-      "hot_tempered"
-     ],
-     "career": "field_hand",
-     "role": null,
-     "virtue": "charity",
-     "sin": "envy",
-     "schedule": "field_hand",
-     "seed": 730824,
-     "topics": [
-      "faith",
-      "plague"
-     ]
-    },
-    {
-     "id": "p_052",
-     "name": "운나",
-     "sex": "female",
-     "stage": "elder",
-     "ageDays": 3,
-     "traits": [
-      "romantic",
-      "melancholic",
-      "coward"
-     ],
-     "career": null,
-     "role": null,
-     "virtue": null,
-     "sin": "sloth",
-     "schedule": "elder",
-     "seed": 570433,
-     "topics": [
-      "war",
-      "plague"
-     ]
-    }
-   ],
-   "relations": [
-    {
-     "kind": "spouse",
-     "a": "p_050",
-     "b": "p_051",
-     "friendship": 70,
-     "romance": 33
-    },
-    {
-     "kind": "parent",
-     "a": "p_052",
-     "b": "p_050",
-     "friendship": 57,
-     "romance": 0
-    }
-   ]
-  },
-  {
-   "id": "h_serf_02",
-   "nameKey": "house.h_serf_02",
-   "estate": "serf",
-   "wealth": "normal",
-   "lotSize": "small",
-   "lot": null,
-   "hookKey": null,
-   "members": [
-    {
-     "id": "p_053",
-     "name": "월터",
-     "sex": "male",
-     "stage": "young",
-     "ageDays": 23,
-     "traits": [
-      "lazy",
-      "nature_lover",
-      "gourmet"
-     ],
-     "career": "field_hand",
-     "role": null,
-     "virtue": null,
-     "sin": "wrath",
-     "schedule": "field_hand",
-     "seed": 466930,
-     "topics": [
-      "weather",
-      "food"
-     ]
-    },
-    {
-     "id": "p_054",
-     "name": "웬다",
-     "sex": "female",
-     "stage": "young",
-     "ageDays": 13,
-     "traits": [
-      "just",
-      "sociable",
-      "diligent"
-     ],
-     "career": null,
-     "role": null,
-     "virtue": null,
-     "sin": "envy",
-     "schedule": "homemaker",
-     "seed": 466279,
-     "topics": [
-      "love",
-      "war"
-     ]
-    },
-    {
-     "id": "p_055",
-     "name": "롤로",
-     "sex": "male",
-     "stage": "child",
-     "ageDays": 0,
-     "traits": [
-      "coward"
-     ],
-     "career": null,
-     "role": null,
-     "virtue": null,
-     "sin": null,
-     "schedule": "child",
-     "seed": 208626
-    }
-   ],
-   "relations": [
-    {
-     "kind": "spouse",
-     "a": "p_053",
-     "b": "p_054",
-     "friendship": 62,
-     "romance": 31
-    },
-    {
-     "kind": "parent",
-     "a": "p_053",
-     "b": "p_055",
-     "friendship": 61,
-     "romance": 0
-    },
-    {
-     "kind": "parent",
-     "a": "p_054",
-     "b": "p_055",
-     "friendship": 61,
-     "romance": 0
-    }
-   ]
-  },
-  {
-   "id": "h_serf_03",
-   "nameKey": "house.h_serf_03",
-   "estate": "serf",
-   "wealth": "poor",
-   "lotSize": "small",
-   "lot": null,
-   "hookKey": null,
-   "members": [
-    {
-     "id": "p_056",
-     "name": "세드릭",
-     "sex": "male",
-     "stage": "young",
-     "ageDays": 19,
-     "traits": [
-      "introvert",
-      "drinker",
-      "family_oriented"
-     ],
-     "career": "field_hand",
-     "role": null,
-     "virtue": "patience",
-     "sin": null,
-     "schedule": "field_hand",
-     "seed": 531265,
-     "topics": [
-      "faith",
-      "gossip"
-     ]
-    },
-    {
-     "id": "p_057",
-     "name": "에일리스",
-     "sex": "female",
-     "stage": "young",
-     "ageDays": 20,
-     "traits": [
-      "cheerful",
-      "humble",
-      "active"
-     ],
-     "career": null,
-     "role": null,
-     "virtue": null,
-     "sin": null,
-     "schedule": "homemaker",
-     "seed": 588914,
-     "topics": [
-      "plague",
-      "family"
-     ]
-    },
-    {
-     "id": "p_058",
-     "name": "카리스",
-     "sex": "female",
-     "stage": "elder",
-     "ageDays": 13,
-     "traits": [
-      "introvert",
-      "lazy",
-      "humble"
-     ],
-     "career": null,
-     "role": null,
-     "virtue": null,
-     "sin": null,
-     "schedule": "elder",
-     "seed": 620467,
-     "topics": [
-      "food",
-      "faith"
-     ]
-    },
-    {
-     "id": "p_059",
-     "name": "브랜드",
-     "sex": "male",
-     "stage": "elder",
-     "ageDays": 10,
-     "traits": [
-      "gossip",
-      "calm",
-      "cheerful"
-     ],
-     "career": null,
-     "role": null,
-     "virtue": "chastity",
-     "sin": null,
-     "schedule": "elder",
-     "seed": 165629,
-     "topics": [
-      "faith",
-      "war"
-     ]
-    }
-   ],
-   "relations": [
-    {
-     "kind": "spouse",
-     "a": "p_056",
-     "b": "p_057",
-     "friendship": 55,
-     "romance": 59
-    },
-    {
-     "kind": "parent",
-     "a": "p_058",
-     "b": "p_056",
-     "friendship": 54,
-     "romance": 0
-    },
-    {
-     "kind": "parent",
-     "a": "p_059",
-     "b": "p_056",
-     "friendship": 65,
-     "romance": 0
-    },
-    {
-     "kind": "spouse",
-     "a": "p_058",
-     "b": "p_059",
-     "friendship": 49,
-     "romance": 36
-    }
-   ]
-  },
-  {
    "id": "h_serf_04",
    "nameKey": "house.h_serf_04",
    "estate": "serf",
@@ -2542,350 +2162,6 @@
      "a": "p_064",
      "b": "p_065",
      "friendship": 45,
-     "romance": 0
-    }
-   ]
-  },
-  {
-   "id": "h_serf_06",
-   "nameKey": "house.h_serf_06",
-   "estate": "serf",
-   "wealth": "normal",
-   "lotSize": "small",
-   "lot": null,
-   "hookKey": null,
-   "members": [
-    {
-     "id": "p_066",
-     "name": "그림",
-     "sex": "male",
-     "stage": "adult",
-     "ageDays": 16,
-     "traits": [
-      "brave",
-      "drinker",
-      "bookworm"
-     ],
-     "career": null,
-     "role": "messenger",
-     "virtue": null,
-     "sin": null,
-     "schedule": "messenger",
-     "seed": 283454,
-     "topics": [
-      "gossip",
-      "family"
-     ]
-    },
-    {
-     "id": "p_067",
-     "name": "플로렌스",
-     "sex": "female",
-     "stage": "adult",
-     "ageDays": 10,
-     "traits": [
-      "introvert",
-      "neat",
-      "just"
-     ],
-     "career": "field_hand",
-     "role": null,
-     "virtue": "chastity",
-     "sin": null,
-     "schedule": "field_hand",
-     "seed": 719441,
-     "topics": [
-      "plague",
-      "food"
-     ]
-    },
-    {
-     "id": "p_068",
-     "name": "다리안",
-     "sex": "male",
-     "stage": "teen",
-     "ageDays": 0,
-     "traits": [
-      "melancholic",
-      "cunning"
-     ],
-     "career": "field_hand",
-     "role": null,
-     "virtue": null,
-     "sin": "envy",
-     "schedule": "field_hand",
-     "seed": 538893,
-     "topics": [
-      "weather",
-      "love"
-     ]
-    }
-   ],
-   "relations": [
-    {
-     "kind": "spouse",
-     "a": "p_066",
-     "b": "p_067",
-     "friendship": 37,
-     "romance": 60
-    },
-    {
-     "kind": "parent",
-     "a": "p_066",
-     "b": "p_068",
-     "friendship": 68,
-     "romance": 0
-    },
-    {
-     "kind": "parent",
-     "a": "p_067",
-     "b": "p_068",
-     "friendship": 68,
-     "romance": 0
-    }
-   ]
-  },
-  {
-   "id": "h_serf_07",
-   "nameKey": "house.h_serf_07",
-   "estate": "serf",
-   "wealth": "normal",
-   "lotSize": "small",
-   "lot": null,
-   "hookKey": null,
-   "members": [
-    {
-     "id": "p_069",
-     "name": "에그버트",
-     "sex": "male",
-     "stage": "young",
-     "ageDays": 11,
-     "traits": [
-      "gossip",
-      "diligent",
-      "creative"
-     ],
-     "career": "field_hand",
-     "role": null,
-     "virtue": null,
-     "sin": null,
-     "schedule": "field_hand",
-     "seed": 358162,
-     "topics": [
-      "family",
-      "plague"
-     ]
-    },
-    {
-     "id": "p_070",
-     "name": "데이지",
-     "sex": "female",
-     "stage": "young",
-     "ageDays": 4,
-     "traits": [
-      "ambitious",
-      "active",
-      "gossip"
-     ],
-     "career": null,
-     "role": null,
-     "virtue": "temperance",
-     "sin": "pride",
-     "schedule": "homemaker",
-     "seed": 224518,
-     "topics": [
-      "plague",
-      "faith"
-     ]
-    },
-    {
-     "id": "p_071",
-     "name": "이모젠",
-     "sex": "female",
-     "stage": "toddler",
-     "ageDays": 1,
-     "traits": [],
-     "temperament": "smiley",
-     "career": null,
-     "role": null,
-     "virtue": null,
-     "sin": null,
-     "schedule": "toddler",
-     "seed": 788850
-    },
-    {
-     "id": "p_072",
-     "name": "브론",
-     "sex": "male",
-     "stage": "elder",
-     "ageDays": 1,
-     "traits": [
-      "humble",
-      "gossip",
-      "family_oriented"
-     ],
-     "career": null,
-     "role": null,
-     "virtue": "kindness",
-     "sin": "wrath",
-     "schedule": "elder",
-     "seed": 122797,
-     "topics": [
-      "work",
-      "food"
-     ]
-    }
-   ],
-   "relations": [
-    {
-     "kind": "spouse",
-     "a": "p_069",
-     "b": "p_070",
-     "friendship": 51,
-     "romance": 53
-    },
-    {
-     "kind": "parent",
-     "a": "p_069",
-     "b": "p_071",
-     "friendship": 65,
-     "romance": 0
-    },
-    {
-     "kind": "parent",
-     "a": "p_070",
-     "b": "p_071",
-     "friendship": 65,
-     "romance": 0
-    },
-    {
-     "kind": "parent",
-     "a": "p_072",
-     "b": "p_069",
-     "friendship": 63,
-     "romance": 0
-    }
-   ]
-  },
-  {
-   "id": "h_serf_08",
-   "nameKey": "house.h_serf_08",
-   "estate": "serf",
-   "wealth": "poor",
-   "lotSize": "small",
-   "lot": null,
-   "hookKey": null,
-   "members": [
-    {
-     "id": "p_073",
-     "name": "자스퍼",
-     "sex": "male",
-     "stage": "young",
-     "ageDays": 15,
-     "traits": [
-      "gourmet",
-      "calm",
-      "nature_lover"
-     ],
-     "career": "field_hand",
-     "role": null,
-     "virtue": "charity",
-     "sin": "sloth",
-     "schedule": "field_hand",
-     "seed": 733150,
-     "topics": [
-      "weather",
-      "faith"
-     ]
-    },
-    {
-     "id": "p_074",
-     "name": "테사",
-     "sex": "female",
-     "stage": "young",
-     "ageDays": 13,
-     "traits": [
-      "active",
-      "lazy",
-      "mean"
-     ],
-     "career": "field_hand",
-     "role": null,
-     "virtue": "charity",
-     "sin": null,
-     "schedule": "field_hand",
-     "seed": 210389,
-     "topics": [
-      "work",
-      "family"
-     ]
-    },
-    {
-     "id": "p_075",
-     "name": "이다",
-     "sex": "female",
-     "stage": "child",
-     "ageDays": 0,
-     "traits": [
-      "suspicious"
-     ],
-     "career": null,
-     "role": null,
-     "virtue": null,
-     "sin": null,
-     "schedule": "child",
-     "seed": 124335
-    },
-    {
-     "id": "p_076",
-     "name": "우나",
-     "sex": "female",
-     "stage": "elder",
-     "ageDays": 6,
-     "traits": [
-      "cynical",
-      "kind",
-      "gourmet"
-     ],
-     "career": null,
-     "role": null,
-     "virtue": null,
-     "sin": "envy",
-     "schedule": "elder",
-     "seed": 186558,
-     "topics": [
-      "plague",
-      "love"
-     ]
-    }
-   ],
-   "relations": [
-    {
-     "kind": "spouse",
-     "a": "p_073",
-     "b": "p_074",
-     "friendship": 56,
-     "romance": 37
-    },
-    {
-     "kind": "parent",
-     "a": "p_073",
-     "b": "p_075",
-     "friendship": 49,
-     "romance": 0
-    },
-    {
-     "kind": "parent",
-     "a": "p_074",
-     "b": "p_075",
-     "friendship": 49,
-     "romance": 0
-    },
-    {
-     "kind": "parent",
-     "a": "p_076",
-     "b": "p_073",
-     "friendship": 55,
      "romance": 0
     }
    ]
@@ -3394,163 +2670,6 @@
    ]
   },
   {
-   "id": "h_redmond",
-   "nameKey": "house.h_redmond",
-   "estate": "freeman",
-   "wealth": "normal",
-   "lotSize": "medium",
-   "lot": null,
-   "hookKey": null,
-   "members": [
-    {
-     "id": "p_092",
-     "name": "길버트",
-     "sex": "male",
-     "stage": "adult",
-     "ageDays": 0,
-     "traits": [
-      "gossip",
-      "mean",
-      "diligent"
-     ],
-     "career": "healer",
-     "role": null,
-     "virtue": "temperance",
-     "sin": "lust",
-     "schedule": "healer",
-     "seed": 848315,
-     "topics": [
-      "plague",
-      "work"
-     ]
-    },
-    {
-     "id": "p_093",
-     "name": "케일라",
-     "sex": "female",
-     "stage": "young",
-     "ageDays": 15,
-     "traits": [
-      "cheerful",
-      "coward",
-      "kind"
-     ],
-     "career": null,
-     "role": null,
-     "virtue": "temperance",
-     "sin": null,
-     "schedule": "homemaker",
-     "seed": 335395,
-     "topics": [
-      "plague",
-      "work"
-     ]
-    },
-    {
-     "id": "p_094",
-     "name": "콜린",
-     "sex": "male",
-     "stage": "elder",
-     "ageDays": 16,
-     "traits": [
-      "nature_lover",
-      "handy",
-      "creative"
-     ],
-     "career": null,
-     "role": null,
-     "virtue": "temperance",
-     "sin": null,
-     "schedule": "elder",
-     "seed": 827004,
-     "topics": [
-      "work",
-      "plague"
-     ]
-    }
-   ],
-   "relations": [
-    {
-     "kind": "spouse",
-     "a": "p_092",
-     "b": "p_093",
-     "friendship": 67,
-     "romance": 27
-    },
-    {
-     "kind": "parent",
-     "a": "p_094",
-     "b": "p_092",
-     "friendship": 57,
-     "romance": 0
-    }
-   ]
-  },
-  {
-   "id": "h_fairweather",
-   "nameKey": "house.h_fairweather",
-   "estate": "freeman",
-   "wealth": "normal",
-   "lotSize": "small",
-   "lot": null,
-   "hookKey": null,
-   "members": [
-    {
-     "id": "p_095",
-     "name": "앨리슨",
-     "sex": "female",
-     "stage": "adult",
-     "ageDays": 4,
-     "traits": [
-      "gourmet",
-      "ambitious",
-      "introvert"
-     ],
-     "career": null,
-     "role": "bailiff",
-     "virtue": null,
-     "sin": "lust",
-     "schedule": "bailiff",
-     "seed": 615687,
-     "topics": [
-      "faith",
-      "work"
-     ]
-    },
-    {
-     "id": "p_096",
-     "name": "테오발드",
-     "sex": "male",
-     "stage": "adult",
-     "ageDays": 8,
-     "traits": [
-      "drinker",
-      "family_oriented",
-      "cunning"
-     ],
-     "career": "minstrel",
-     "role": null,
-     "virtue": null,
-     "sin": "lust",
-     "schedule": "minstrel",
-     "seed": 871865,
-     "topics": [
-      "weather",
-      "food"
-     ]
-    }
-   ],
-   "relations": [
-    {
-     "kind": "spouse",
-     "a": "p_095",
-     "b": "p_096",
-     "friendship": 46,
-     "romance": 18
-    }
-   ]
-  },
-  {
    "id": "h_croft",
    "nameKey": "house.h_croft",
    "estate": "artisan",
@@ -4009,33 +3128,6 @@
    ]
   },
   {
-   "a": "nb_rosamund",
-   "b": "nb_rowan",
-   "friendship": 30,
-   "romance": 25,
-   "flags": [
-    "former_lovers"
-   ]
-  },
-  {
-   "a": "nb_rowan",
-   "b": "p_019",
-   "friendship": 10,
-   "romance": 0,
-   "flags": [
-    "rumored_father"
-   ]
-  },
-  {
-   "a": "p_017",
-   "b": "nb_rowan",
-   "friendship": -50,
-   "romance": 0,
-   "flags": [
-    "grudge"
-   ]
-  },
-  {
    "a": "p_026",
    "b": "nb_edith",
    "friendship": 55,
@@ -4219,27 +3311,9 @@
    ]
   },
   {
-   "a": "p_001",
-   "b": "p_069",
-   "friendship": 59,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_002",
    "b": "p_010",
    "friendship": 55,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_002",
-   "b": "p_050",
-   "friendship": 26,
    "romance": 0,
    "flags": [
     "friend"
@@ -4282,27 +3356,9 @@
    ]
   },
   {
-   "a": "p_005",
-   "b": "p_051",
-   "friendship": 22,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_006",
    "b": "p_061",
    "friendship": 28,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_006",
-   "b": "p_056",
-   "friendship": 29,
    "romance": 0,
    "flags": [
     "friend"
@@ -4354,45 +3410,9 @@
    ]
   },
   {
-   "a": "p_009",
-   "b": "p_093",
-   "friendship": 35,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_010",
    "b": "p_098",
    "friendship": 38,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_011",
-   "b": "p_068",
-   "friendship": 48,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_013",
-   "b": "p_067",
-   "friendship": 50,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_013",
-   "b": "p_092",
-   "friendship": 53,
    "romance": 0,
    "flags": [
     "friend"
@@ -4417,36 +3437,9 @@
    ]
   },
   {
-   "a": "p_016",
-   "b": "p_093",
-   "friendship": 54,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_017",
    "b": "p_060",
    "friendship": 43,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_017",
-   "b": "p_095",
-   "friendship": 54,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "nb_rosamund",
-   "b": "p_095",
-   "friendship": 57,
    "romance": 0,
    "flags": [
     "friend"
@@ -4471,27 +3464,9 @@
    ]
   },
   {
-   "a": "nb_agnes",
-   "b": "p_059",
-   "friendship": 58,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "nb_osric",
    "b": "nb_rosamund",
    "friendship": 49,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "nb_osric",
-   "b": "p_054",
-   "friendship": 24,
    "romance": 0,
    "flags": [
     "friend"
@@ -4561,15 +3536,6 @@
    ]
   },
   {
-   "a": "p_026",
-   "b": "p_056",
-   "friendship": 59,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_027",
    "b": "p_110",
    "friendship": 53,
@@ -4597,24 +3563,6 @@
    ]
   },
   {
-   "a": "p_029",
-   "b": "p_073",
-   "friendship": 53,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_029",
-   "b": "p_093",
-   "friendship": 50,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "nb_gerard",
    "b": "p_061",
    "friendship": 44,
@@ -4636,24 +3584,6 @@
    "a": "p_032",
    "b": "p_007",
    "friendship": 45,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_033",
-   "b": "p_075",
-   "friendship": 42,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "nb_mabel",
-   "b": "p_095",
-   "friendship": 56,
    "romance": 0,
    "flags": [
     "friend"
@@ -4696,15 +3626,6 @@
    ]
   },
   {
-   "a": "nb_maud",
-   "b": "p_058",
-   "friendship": 30,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_038",
    "b": "p_077",
    "friendship": 53,
@@ -4717,42 +3638,6 @@
    "a": "p_039",
    "b": "p_062",
    "friendship": 42,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "nb_godwin",
-   "b": "p_092",
-   "friendship": 29,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "nb_godwin",
-   "b": "p_066",
-   "friendship": 54,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_040",
-   "b": "p_074",
-   "friendship": 54,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_040",
-   "b": "p_092",
-   "friendship": 56,
    "romance": 0,
    "flags": [
     "friend"
@@ -4804,33 +3689,6 @@
    ]
   },
   {
-   "a": "nb_anselm",
-   "b": "p_066",
-   "friendship": 36,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_045",
-   "b": "p_095",
-   "friendship": 33,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_046",
-   "b": "p_056",
-   "friendship": 31,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_047",
    "b": "p_062",
    "friendship": 36,
@@ -4843,15 +3701,6 @@
    "a": "nb_edith",
    "b": "p_001",
    "friendship": 59,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "nb_edith",
-   "b": "p_093",
-   "friendship": 25,
    "romance": 0,
    "flags": [
     "friend"
@@ -4876,180 +3725,9 @@
    ]
   },
   {
-   "a": "nb_rowan",
-   "b": "p_073",
-   "friendship": 21,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_049",
-   "b": "p_078",
-   "friendship": 37,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_050",
-   "b": "p_038",
-   "friendship": 21,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_050",
-   "b": "p_069",
-   "friendship": 45,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_051",
-   "b": "p_057",
-   "friendship": 52,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_051",
-   "b": "p_093",
-   "friendship": 23,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_052",
-   "b": "p_076",
-   "friendship": 26,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_052",
-   "b": "p_042",
-   "friendship": 55,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_053",
-   "b": "p_080",
-   "friendship": 51,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_054",
-   "b": "p_064",
-   "friendship": 21,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_054",
-   "b": "p_056",
-   "friendship": 51,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_055",
-   "b": "p_084",
-   "friendship": 58,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_056",
-   "b": "p_051",
-   "friendship": 46,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_056",
-   "b": "p_078",
-   "friendship": 37,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_057",
-   "b": "p_036",
-   "friendship": 54,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_057",
-   "b": "p_074",
-   "friendship": 54,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_058",
-   "b": "p_042",
-   "friendship": 46,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_059",
-   "b": "p_028",
-   "friendship": 46,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_060",
    "b": "p_043",
    "friendship": 51,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_060",
-   "b": "p_070",
-   "friendship": 37,
    "romance": 0,
    "flags": [
     "friend"
@@ -5110,141 +3788,6 @@
    ]
   },
   {
-   "a": "p_066",
-   "b": "p_103",
-   "friendship": 54,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_067",
-   "b": "p_099",
-   "friendship": 58,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_067",
-   "b": "p_076",
-   "friendship": 33,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_068",
-   "b": "p_075",
-   "friendship": 38,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_068",
-   "b": "p_062",
-   "friendship": 41,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_069",
-   "b": "nb_hilda",
-   "friendship": 24,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_070",
-   "b": "p_103",
-   "friendship": 48,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_070",
-   "b": "p_077",
-   "friendship": 45,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_072",
-   "b": "p_102",
-   "friendship": 50,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_072",
-   "b": "p_028",
-   "friendship": 40,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_073",
-   "b": "p_100",
-   "friendship": 35,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_074",
-   "b": "p_064",
-   "friendship": 42,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_075",
-   "b": "p_015",
-   "friendship": 38,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_076",
-   "b": "p_058",
-   "friendship": 21,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_077",
-   "b": "p_049",
-   "friendship": 57,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_077",
    "b": "nb_edith",
    "friendship": 22,
@@ -5281,15 +3824,6 @@
    ]
   },
   {
-   "a": "p_081",
-   "b": "p_051",
-   "friendship": 21,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_082",
    "b": "p_019",
    "friendship": 22,
@@ -5320,15 +3854,6 @@
    "a": "p_085",
    "b": "p_063",
    "friendship": 33,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_086",
-   "b": "p_059",
-   "friendship": 21,
    "romance": 0,
    "flags": [
     "friend"
@@ -5407,78 +3932,6 @@
    ]
   },
   {
-   "a": "p_092",
-   "b": "p_080",
-   "friendship": 53,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_093",
-   "b": "p_040",
-   "friendship": 43,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_093",
-   "b": "p_104",
-   "friendship": 37,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_094",
-   "b": "p_091",
-   "friendship": 23,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_095",
-   "b": "nb_godwin",
-   "friendship": 54,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_096",
-   "b": "nb_edith",
-   "friendship": 49,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_096",
-   "b": "p_088",
-   "friendship": 52,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_097",
-   "b": "p_049",
-   "friendship": 54,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_098",
    "b": "p_108",
    "friendship": 38,
@@ -5542,24 +3995,6 @@
    ]
   },
   {
-   "a": "p_102",
-   "b": "p_076",
-   "friendship": 23,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_102",
-   "b": "p_052",
-   "friendship": 55,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_103",
    "b": "p_010",
    "friendship": 48,
@@ -5596,15 +4031,6 @@
    ]
   },
   {
-   "a": "p_107",
-   "b": "p_054",
-   "friendship": 42,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
    "a": "p_108",
    "b": "p_004",
    "friendship": 43,
@@ -5617,15 +4043,6 @@
    "a": "p_109",
    "b": "p_065",
    "friendship": 21,
-   "romance": 0,
-   "flags": [
-    "friend"
-   ]
-  },
-  {
-   "a": "p_109",
-   "b": "p_068",
-   "friendship": 34,
    "romance": 0,
    "flags": [
     "friend"
@@ -5668,78 +4085,6 @@
    ]
   },
   {
-   "a": "p_050",
-   "b": "nb_maud",
-   "friendship": 22,
-   "romance": 0,
-   "flags": [
-    "coworker"
-   ]
-  },
-  {
-   "a": "p_051",
-   "b": "nb_maud",
-   "friendship": 19,
-   "romance": 0,
-   "flags": [
-    "coworker"
-   ]
-  },
-  {
-   "a": "p_060",
-   "b": "p_050",
-   "friendship": 22,
-   "romance": 0,
-   "flags": [
-    "coworker"
-   ]
-  },
-  {
-   "a": "p_065",
-   "b": "p_056",
-   "friendship": 24,
-   "romance": 0,
-   "flags": [
-    "coworker"
-   ]
-  },
-  {
-   "a": "p_069",
-   "b": "p_065",
-   "friendship": 31,
-   "romance": 0,
-   "flags": [
-    "coworker"
-   ]
-  },
-  {
-   "a": "p_073",
-   "b": "p_051",
-   "friendship": 35,
-   "romance": 0,
-   "flags": [
-    "coworker"
-   ]
-  },
-  {
-   "a": "p_074",
-   "b": "p_056",
-   "friendship": 23,
-   "romance": 0,
-   "flags": [
-    "coworker"
-   ]
-  },
-  {
-   "a": "p_096",
-   "b": "p_046",
-   "friendship": -31,
-   "romance": 0,
-   "flags": [
-    "grudge"
-   ]
-  },
-  {
    "a": "p_104",
    "b": "nb_maud",
    "friendship": -46,
@@ -5767,48 +4112,12 @@
    ]
   },
   {
-   "a": "p_049",
-   "b": "nb_gerard",
-   "friendship": -31,
-   "romance": 0,
-   "flags": [
-    "grudge"
-   ]
-  },
-  {
    "a": "p_017",
    "b": "p_063",
    "friendship": -57,
    "romance": 0,
    "flags": [
     "grudge"
-   ]
-  },
-  {
-   "a": "nb_rowan",
-   "b": "p_050",
-   "friendship": -51,
-   "romance": 0,
-   "flags": [
-    "grudge"
-   ]
-  },
-  {
-   "a": "p_053",
-   "b": "p_035",
-   "friendship": -58,
-   "romance": 0,
-   "flags": [
-    "grudge"
-   ]
-  },
-  {
-   "a": "p_068",
-   "b": "p_083",
-   "friendship": 25,
-   "romance": 19,
-   "flags": [
-    "crush"
    ]
   }
  ]

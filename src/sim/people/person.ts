@@ -198,6 +198,8 @@ export class Person {
   lodCalmSince = -1;
   /** 마을 사람 데이터 id (people.json), 집 부지 id */
   townId: string | null = null;
+  /** 남의 집 문을 두드리는 중 (문 칸, 두드린 분). 18-1 출입 */
+  knocking: { cell: number; household: number; since: number } | null = null;
   homeLot: string | null = null;
   role: string | null = null;
   /** 일과표 템플릿 id (people.json member.schedule), 고용주 가문 키 (workAt "employer") */

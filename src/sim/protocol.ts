@@ -4,6 +4,8 @@
 import type { MenuEntry, Notice } from './sim';
 
 export interface PersonSnap {
+  /** 남의 집 문을 두드리는 중 (문 칸) — 문을 열어 그리지 않음 */
+  knocking?: number;
   id: number;
   name: string;
   /** 임신 배 레이어 (15-1): 1 중기, 2 후기 */

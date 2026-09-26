@@ -110,12 +110,12 @@
     "declineFloor": 0.2
   },
   "population": {
-    "target": 120,
+    "target": 94,
     "$feedback": "배수 = clamp(1 + 2 × (목표 − 현재) / 목표, 0.5, 2.0). 혼인에는 제곱근",
     "feedbackMin": 0.5,
     "feedbackMax": 2.0,
-    "immigrateBelow": 90,
-    "emigrateAbove": 180,
+    "immigrateBelow": 70,
+    "emigrateAbove": 141,
     "migrationCheckDays": 3,
     "immigrantFamily": [
       3,

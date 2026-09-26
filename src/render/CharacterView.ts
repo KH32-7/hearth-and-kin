@@ -63,6 +63,13 @@ class CharacterNode {
   tex: THREE.Texture | null = null;
   snap: PersonSnap | null = null;
   motion: Motion | null = null;
+  /** 앞으로 걸어갈 경로 (세계 px 점, 평평한 배열) — 일정한 속도로 따라감 */
+  path: number[] = [];
+  /** 걷는 속도 (px/ms, 스냅샷마다 새로 걸은 거리 ÷ 그 시간의 이동 평균) */
+  speed = 0;
+  /** 스냅샷 간격 (ms, 이동 평균) */
+  interval = 0;
+  lastMs = -1;
   /** 현재 그려진 발 위치 (세계 px) */
   fx = 0;
   fy = 0;
@@ -152,36 +159,50 @@ export class CharacterView {
       }
       n.snap = p;
       n.slab = pr.slab;
-      if (!advanced && n.motion && !p.direct) continue;
-      const pts: number[] = [];
-      // 현재 그려진 위치에서 시작해 trail을 따라감 → 끊김 없음
-      pts.push(n.fx, n.fy);
+      if (p.direct) {
+        // 직접 조작(WASD): 스냅샷 간격(약 33ms)만큼만 따라감 → 키 입력에 바로 반응
+        n.path = [];
+        const pts = [n.fx, n.fy, pr.x, pr.y];
+        const total = Math.hypot(pr.x - n.fx, pr.y - n.fy);
+        n.motion = total > T * 40 ? null : { pts, cum: [0, total], total, start: nowMs, duration: DIRECT_FOLLOW_MS };
+        if (total > T * 40) {
+          n.fx = pr.x;
+          n.fy = pr.y;
+        }
+        continue;
+      }
+      n.motion = null;
+      if (!advanced) continue;
+      // 새로 걸은 경로 (trail + 지금 위치)를 경로 끝에 이어 붙임
+      let lx = n.path.length ? n.path[n.path.length - 2] : n.fx;
+      let ly = n.path.length ? n.path[n.path.length - 1] : n.fy;
+      let fresh = 0;
+      const add = (x: number, y: number) => {
+        const d = Math.hypot(x - lx, y - ly);
+        if (d < 0.05) return;
+        fresh += d;
+        n!.path.push(x, y);
+        lx = x;
+        ly = y;
+      };
       for (let i = 0; i + 1 < p.trail.length; i += 2) {
         const q = this.world.project(p.trail[i], p.trail[i + 1]);
-        pts.push(q.x, q.y);
+        add(q.x, q.y);
       }
-      pts.push(pr.x, pr.y);
-      const cum = [0];
-      let total = 0;
-      for (let i = 2; i < pts.length; i += 2) {
-        total += Math.hypot(pts[i] - pts[i - 2], pts[i + 1] - pts[i - 1]);
-        cum.push(total);
-      }
-      // 순간 이동(수 칸 이상 한 번에 튄 경우: 강제 탈출·자리 배정)은 바로 옮김
-      if (total > T * 40) {
+      add(pr.x, pr.y);
+      // 순간 이동(수십 칸: 강제 탈출·자리 배정·층 이동 실패)은 바로 옮김
+      let left = Math.hypot((n.path[0] ?? n.fx) - n.fx, (n.path[1] ?? n.fy) - n.fy);
+      for (let i = 2; i < n.path.length; i += 2) left += Math.hypot(n.path[i] - n.path[i - 2], n.path[i + 1] - n.path[i - 1]);
+      if (left > T * 40) {
         n.fx = pr.x;
         n.fy = pr.y;
-        n.motion = null;
-      } else {
-        // 이번 스냅샷에 새로 걸은 거리(앞 구간 = 아직 못 따라간 몫 제외)를 그 시간에 걷는 속도로 계속 감.
-        // 밀린 몫은 최대 1.5배 시간으로 천천히 따라잡음 (갑자기 빨라지지 않게)
-        const lag = cum.length > 1 ? cum[1] : 0;
-        const fresh = total - lag;
-        let dur = duration;
-        if (fresh > 0.5 && lag > 0.5) dur = Math.min(duration * 1.5, (total / fresh) * duration);
-        // 직접 조작(WASD): 스냅샷 간격(약 33ms)만큼만 따라감 → 키 입력에 바로 반응
-        if (p.direct) dur = DIRECT_FOLLOW_MS;
-        n.motion = { pts, cum, total, start: nowMs, duration: dur };
+        n.path = [];
+        continue;
+      }
+      n.interval = n.interval ? n.interval * 0.8 + duration * 0.2 : duration;
+      if (fresh > 0.5) {
+        const v = fresh / duration;
+        n.speed = n.speed > 0 ? n.speed * 0.75 + v * 0.25 : v;
       }
     }
     for (const [id, n] of this.nodes) {
@@ -208,6 +229,36 @@ export class CharacterView {
   /** 스냅샷 경로 보간: 그려질 발 위치 갱신, 움직이는 중이면 true (걷는 방향으로 facing 갱신) */
   private interpolate(n: CharacterNode, p: PersonSnap, nowMs: number): boolean {
     let moving = false;
+    const dt = n.lastMs < 0 ? 16 : Math.min(100, Math.max(0, nowMs - n.lastMs));
+    n.lastMs = nowMs;
+    if (!n.motion && n.path.length) {
+      // 경로를 일정한 속도로: 남은 거리가 스냅샷 한 번 몫보다 많으면 조금 빠르게, 적으면 조금 느리게 (멈췄다 뛰는 걸음 없음)
+      let left = Math.hypot(n.path[0] - n.fx, n.path[1] - n.fy);
+      for (let i = 2; i < n.path.length; i += 2) left += Math.hypot(n.path[i] - n.path[i - 2], n.path[i + 1] - n.path[i - 1]);
+      const target = Math.max(1, n.speed * (n.interval || 500));
+      const k = Math.min(2.2, Math.max(0.85, 0.85 + 0.3 * (left / target) + (left > target * 3 ? 0.6 : 0)));
+      let step = Math.max(0.02, n.speed) * k * dt;
+      while (step > 0 && n.path.length) {
+        const bx = n.path[0];
+        const by = n.path[1];
+        const dx = bx - n.fx;
+        const dy = by - n.fy;
+        const d = Math.hypot(dx, dy);
+        if (d > 0.01) p.facing = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : dy > 0 ? 'down' : 'up';
+        if (d <= step) {
+          n.fx = bx;
+          n.fy = by;
+          step -= d;
+          n.path.splice(0, 2);
+        } else {
+          n.fx += (dx / d) * step;
+          n.fy += (dy / d) * step;
+          step = 0;
+        }
+        moving = true;
+      }
+      return moving;
+    }
     if (n.motion) {
       const m = n.motion;
       const t = Math.min(1, (nowMs - m.start) / m.duration);

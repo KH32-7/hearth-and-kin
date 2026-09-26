@@ -83,7 +83,7 @@ export class PathFinder {
   }
 
   /** 잠긴 문 (23-2): 지나가는 사람. 가족이면 모든 문, 아니면 잠금 0 문만 (신분 이상 잠금은 rankOk) */
-  who: { family: boolean; rankOk: boolean } | null = null;
+  who: { family: boolean; rankOk: boolean; canDoor?: (cell: number) => boolean } | null = null;
 
   /** start/goal은 칸 인덱스. 경로(시작 제외, 목표 포함) 또는 null */
   find(start: number, goal: number, allowGoalBlocked: boolean): number[] | null {
@@ -136,6 +136,8 @@ export class PathFinder {
         // 잠긴 문: 가족만 → 식구가 아니면, 신분 이상 → 신분이 모자라면 못 지나감
         const lk = grid.lock[ni];
         if (lk && this.who && !this.who.family && (lk === 1 || !this.who.rankOk)) continue;
+        // 남의 집 문 (18-1 출입): 식구·초대받은 사람·아주 친한 사이만. 집 안에서 나가는 것은 늘 됨
+        if (grid.door[ni] && this.who?.canDoor && !this.who.canDoor(ni)) continue;
         // 가구 안쪽 자리(막힌 목표)에는 걸을 수 있는 칸이나 같은 물건 칸에서만 들어감 (다른 가구로 건너가 갇히지 않게)
         if (isGoal && !grid.walkable(ni) && !pass(cur)) continue;
         if (d >= 4 && d < 8) {

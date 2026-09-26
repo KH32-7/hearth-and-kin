@@ -251,6 +251,36 @@ export class Town {
     return ly * this.W + lx;
   }
 
+  /**
+   * 문 칸의 집 주인 가구: 사람이 사는 집만 (18-1 출입). 공공 장소(여관·교회·성·방앗간 …), 장소에 사는 가문,
+   * 일터(누군가의 고용주 집), 빈 집이면 0 = 늘 열림
+   */
+  doorHousehold(cell: number): number {
+    const g = this.host.world.grid;
+    const x = cell % g.w;
+    const y = Math.floor(cell / g.w);
+    if (this.placeOf(x, y)) return 0;
+    const lot = this.lotOf(x, y);
+    const hh = lot ? this.lotHousehold.get(lot.id) ?? 0 : 0;
+    if (!hh || this.householdResidence.has(hh)) return 0;
+    if (this.workplaceHouseholds().has(hh)) return 0;
+    return hh;
+  }
+
+  private workCache: { n: number; set: Set<number> } | null = null;
+  /** 일터인 가구 (누군가 그 가구에 고용됨: 공방·가게) */
+  private workplaceHouseholds(): Set<number> {
+    const persons = this.host.persons;
+    if (this.workCache && this.workCache.n === persons.length) return this.workCache.set;
+    const set = new Set<number>();
+    for (const p of persons) if (p.employer) {
+      const hh = this.householdByKey.get(p.employer);
+      if (hh) set.add(hh);
+    }
+    this.workCache = { n: persons.length, set };
+    return set;
+  }
+
   lotOf(x: number, y: number): TownLotDef | null {
     const i = this.local(x, y);
     const v = i >= 0 ? this.lotAt[i] : 0;

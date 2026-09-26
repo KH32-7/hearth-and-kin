@@ -776,6 +776,14 @@ export class Simulation {
       const who = this.walker(p);
       if (!who.family && (lk === 1 || !who.rankOk)) return false;
     }
+    // 남의 집 문: 막히면 문을 두드림 (WASD 로 문 앞에 섬)
+    if (g.door[i] && this.town) {
+      const hh = this.town.doorHousehold(i);
+      if (hh && !this.mayEnter(p, hh)) {
+        this.knock(p, i);
+        return false;
+      }
+    }
     return true;
   }
 
@@ -2369,9 +2377,97 @@ export class Simulation {
   }
 
   /** 잠긴 문 판정용: 조작 가정 식구인지, 가장보다 신분이 같거나 높은지 */
-  private walker(p: Person): { family: boolean; rankOk: boolean } {
+  private walker(p: Person): { family: boolean; rankOk: boolean; canDoor?: (cell: number) => boolean } {
     const head = this.persons.find((q) => q.household === 1);
-    return { family: p.household === 1, rankOk: !head || rank(p) >= rank(head) };
+    const out: { family: boolean; rankOk: boolean; canDoor?: (cell: number) => boolean } = { family: p.household === 1, rankOk: !head || rank(p) >= rank(head) };
+    if (this.town) {
+      const memo = new Map<number, boolean>();
+      out.canDoor = (cell) => {
+        const hh = this.town!.doorHousehold(cell);
+        if (!hh) return true;
+        let ok = memo.get(hh);
+        if (ok === undefined) {
+          ok = this.mayEnter(p, hh);
+          memo.set(hh, ok);
+        }
+        return ok;
+      };
+    }
+    return out;
+  }
+
+  // ------------------------------------------------------------------ 집 출입 (18-1): 문 두드리기, 들어오라고 하기
+
+  /** 초대: 가구 → (인물 → 이 분까지 들어와도 됨) */
+  readonly invites = new Map<number, Map<number, number>>();
+
+  /**
+   * 이 사람이 그 가구 집에 들어가도 되나: 식구, 초대받은 사람, 아주 친한 사이(절친·배우자·연인·가족), 고용된 일꾼,
+   * 이웃 방문객(M3 초대), 불난 집, 이미 그 집 안에 있는 사람(나가기)
+   */
+  mayEnter(p: Person, hh: number): boolean {
+    if (!hh || p.household === hh || p.visitor) return true;
+    // 조작 가문이 가게를 열었으면 손님은 들어옴 (17-3)
+    if (hh === 1 && this.shop.open) return true;
+    const until = this.invites.get(hh)?.get(p.id);
+    if (until && until > this.world.minute) return true;
+    const t = this.town;
+    if (t) {
+      const lot = t.lotOf(p.x, p.y);
+      if (lot && t.lotHousehold.get(lot.id) === hh) return true;
+      if (p.employer && t.householdByKey.get(p.employer) === hh) return true;
+    }
+    if (this.world.objects.some((o) => o.defId === 'house_fire')) return true;
+    const best = this.data.relations?.names?.bestFriend ?? 70;
+    for (const q of this.persons) {
+      if (q.household !== hh) continue;
+      const r = this.rel.get(p.id, q.id);
+      if (r && (r.friendship >= best || r.flags.has('spouse') || r.flags.has('lover') || r.flags.has('engaged') || r.flags.has('family'))) return true;
+      if (q.id === p.mother || q.id === p.father || q.mother === p.id || q.father === p.id) return true;
+    }
+    return false;
+  }
+
+  /** 들여보냄 (들어오라고 하기): 4시간 */
+  letIn(hh: number, p: Person, by: Person | null): void {
+    let m = this.invites.get(hh);
+    if (!m) {
+      m = new Map();
+      this.invites.set(hh, m);
+    }
+    m.set(p.id, this.world.minute + 240);
+    p.knocking = null;
+    this.path.who = null;
+    if (p.household === 1) this.notice(p, 'door_let_in', { a: by?.name ?? '' });
+    if (hh === 1 && by) this.notice(by, 'door_let_in_host', { a: p.name });
+  }
+
+  /**
+   * 문 두드리기 (18-1): 30분에 한 번. 조작 가문 집이면 식구에게 알림 → "들어오라고 하기" 상호작용.
+   * NPC 집이면 집에 깨어 있는 사람이 있고 싫어하는 사이가 아니면 들여보냄
+   */
+  knock(p: Person, cell: number): void {
+    const hh = this.town?.doorHousehold(cell) ?? 0;
+    if (!hh || this.mayEnter(p, hh)) return;
+    const now = this.world.minute;
+    if (p.knocking && p.knocking.household === hh && now - p.knocking.since < 30) return;
+    p.knocking = { cell, household: hh, since: now };
+    const home = this.persons.filter((q) => q.household === hh && !q.hidden && !q.infant && !q.sleeping && this.town!.atHome(q) && q.lifeStage !== 'toddler');
+    if (hh === 1) {
+      for (const q of home) this.notice(q, 'door_knock', { a: p.name });
+      if (!home.length && p.household !== 1) p.knocking = null;
+      return;
+    }
+    if (p.household === 1) this.notice(p, 'door_knocked', {});
+    const host = home.find((q) => q.lifeStage !== 'child') ?? home[0];
+    if (!host) {
+      if (p.household === 1) this.notice(p, 'door_nobody', {});
+      return;
+    }
+    const f = this.rel.get(host.id, p.id)?.friendship ?? 0;
+    const night = this.world.hour() >= 21 || this.world.hour() < 6;
+    if (f >= (night ? 30 : -20)) this.letIn(hh, p, host);
+    else if (p.household === 1) this.notice(p, 'door_refused', { a: host.name });
   }
 
   /** 안전장치: 서 있는 칸에서 나갈 길이 전혀 없으면 가장 가까운 빈 칸으로 옮김 (13-5 절대 안 되는 것) */
@@ -2523,6 +2619,8 @@ export class Simulation {
     this.gates.set('confront_rumor', (p, t) => !!t && !!R()?.list.some((r) => r.household === p.household && r.aware.size > 0 && r.origin === t.id));
     // 교회에서 공개 참회: 우리 가문의 나쁜 소문이 아직 셈
     this.gates.set('public_penance', (p) => !!R()?.list.some((r) => r.household === p.household && r.aware.size > 0 && !r.good && r.rep > 0 && r.strength > 0.5));
+    // 들어오라고 하기 (18-1): 상대가 우리 집 문을 두드리는 중이고 나는 집에 있음
+    this.gates.set('knocking_here', (p, t) => !!t && !!t.knocking && t.knocking.household === p.household && this.world.minute - t.knocking.since < 90);
     // 험담 퍼뜨리기(거짓 소문): 싫어하는 사람이 있을 때
     this.gates.set('has_grudge_target', (p, t) => !!t && this.persons.some((q) => q !== p && q !== t && q.household !== p.household && (this.rel.get(p.id, q.id)?.friendship ?? 0) <= -20));
   }
@@ -2880,6 +2978,7 @@ export class Simulation {
       inner.thought(t, `action_done:${id}`);
     }
     this.rumorSocial(p, t, id, ok, def.tags);
+    if (ok && id === 'social.let_in' && t.knocking && t.knocking.household === p.household) this.letIn(p.household, t, p);
     this.society?.onSocial(p, t, id, ok);
   }
 
