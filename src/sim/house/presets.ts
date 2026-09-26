@@ -164,7 +164,7 @@ export interface PresetResult {
   fame: number;
   ids: number[];
   specs: PresetPersonSpec[];
-  house: { kind: string; tenure: string; ok: boolean };
+  house: { kind: string; tenure: string; ok: boolean; lot?: string | null; price?: number };
   careers: Record<number, string>;
   servants: string[];
   fief: { manors: number; tenants: number; lord: boolean; policy: boolean } | null;

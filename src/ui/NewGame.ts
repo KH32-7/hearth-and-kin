@@ -15,6 +15,7 @@ import credits from '../../assets/CREDITS.json';
 import type { HearthGame } from '../game/HearthGame';
 import type { Snapshot } from '../sim/protocol';
 import { Rng } from '../sim/core/rng';
+import presetsRaw from '../data/start_presets.json';
 import { presetCash, resolvePreset } from '../sim/house/presets';
 import { t } from '../i18n';
 import { formatMoney } from './Hud';
@@ -23,11 +24,16 @@ import { heraldryCanvas } from './HeraldryEditor';
 import { draftFromPreset, draftToSpec, ESTATES, estateTab, FamilyCreator, PRESETS, WEALTHS, type Estate, type FamilyDraft } from './FamilyCreator';
 import { Tutorial, tutorialDone } from './Tutorial';
 
-type Page = 'title' | 'setup' | 'family' | 'create' | 'credits' | 'settings' | 'starting' | 'closed';
+type Page = 'title' | 'setup' | 'family' | 'create' | 'house' | 'credits' | 'settings' | 'starting' | 'closed';
+type Step = 'rules' | 'family' | 'create' | 'house';
 
 const LIFESPANS = Object.keys((lifecycle as { lifespan: { presets: Record<string, number> } }).lifespan.presets);
 const LIFESPAN_MULT = (lifecycle as { lifespan: { presets: Record<string, number> } }).lifespan.presets;
 const DEATHS = Object.keys((deathRules as { presets: Record<string, unknown> }).presets);
+/** 시작 집 예산 (start_presets.json houseBudget) */
+const HOUSE_BUDGET = (presetsRaw as unknown as { houseBudget?: Record<string, number> }).houseBudget ?? {};
+/** 집 부지를 고르지 않는 집 (교회 사제관, 수도원 방) */
+const NO_LOT = new Set(['rectory', 'monastery_cell']);
 const ECON = economy as unknown as { presets: { savingsDays: number }; estates: Record<string, { target: { net: number } }> };
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, parent?: HTMLElement, text?: string): HTMLElementTagNameMap[K] {
@@ -106,7 +112,8 @@ export class NewGameFlow {
   }
 
   private show(page: Page): void {
-    if (this.page === 'create' && page !== 'create') this.creator?.close();
+    if (this.page === 'create' && page !== 'create' && page !== 'house') this.creator?.close();
+    if (this.page === 'house' && page !== 'house') this.leaveHouse();
     this.page = page;
     this.root.dataset.page = page;
     this.root.hidden = page === 'closed';
@@ -121,11 +128,12 @@ export class NewGameFlow {
     if (this.page === 'settings') return this.closeSettings();
     if (this.page === 'family') return this.showSetup();
     if (this.page === 'create') return this.showFamily();
+    if (this.page === 'house') return void this.openCreator();
   }
 
-  private steps(current: 'rules' | 'family' | 'create'): void {
+  private steps(current: Step): void {
     const bar = el('div', 'ng-steps g', this.stage);
-    const list: Array<['rules' | 'family' | 'create', string]> = [['rules', 'rv.map'], ['family', 'ui.crest'], ['create', 'cute.heart']];
+    const list: Array<[Step, string]> = [['rules', 'rv.map'], ['family', 'ui.crest'], ['create', 'cute.heart'], ['house', 'rv.house']];
     const idx = list.findIndex(([k]) => k === current);
     list.forEach(([k, icon], i) => {
       if (i) el('i', 'ng-steps-sep', bar);
@@ -263,9 +271,8 @@ export class NewGameFlow {
     const cards = el('div', 'ng-wealths', main);
     for (const w of WEALTHS) this.wealthCard(cards, w);
     this.corner('l', 'cute.left', t('ng.back'), 'back', () => this.showSetup());
-    const custom = btn(this.stage, 'ng-pill g s ng-customize', '', 'customize', 'cute.wrench', t('ng.customize'));
-    custom.addEventListener('click', () => void this.openCreator());
-    this.corner('r', 'cute.right', t('ng.start'), 'start', () => void this.start(null), 'go big');
+    // 심즈처럼: 형편(돈·명성·직업·재산)만 고르고, 식구는 다음 화면에서 한 사람부터 만듦, 집은 그다음 마을 지도에서 삼
+    this.corner('r', 'cute.right', t('ng.next'), 'next', () => void this.openCreator(), 'go big');
   }
 
   private wealthCard(parent: HTMLElement, w: 'poor' | 'normal' | 'rich'): void {
@@ -293,12 +300,10 @@ export class NewGameFlow {
     else line('cute.coins', t('ng.debt', { money: formatMoney(-cash) }), 'bad');
     line('cute.crown', String(r.fame));
     const A = r.assets;
-    line('rv.house', `${t(`ng.house.${A.house.kind}`)} · ${t(`ng.tenure.${A.house.tenure}`)}`);
+    if (A.house.tenure === 'owned') line('rv.house', t('ng.house.budget', { money: formatMoney(HOUSE_BUDGET[A.house.kind] ?? 0) }));
+    else line('rv.house', `${t(`ng.house.${A.house.kind}`)} · ${t(`ng.tenure.${A.house.tenure}`)}`);
     const careers = Object.values(A.careers ?? {}).map((c) => t(`career.${c}`));
     if (careers.length) line('cute.wrench', careers.join(' · '));
-    const roles = new Map<string, number>();
-    for (const m of r.members) roles.set(m.role, (roles.get(m.role) ?? 0) + 1);
-    line('rv.home', [...roles].map(([k, n]) => (n > 1 ? `${t(`ng.role.${k === 'child' && A.family === 'clergy' ? 'nephew' : k}`)} ${n}` : t(`ng.role.${k}`))).join(' · '));
     const extras: string[] = [];
     if (A.plots) extras.push(t('ng.asset.plots', { n: A.plots }));
     for (const [k, n] of Object.entries(A.animals ?? {})) if (n > 0) extras.push(t(`ng.animal.${k}`, { n }));
@@ -317,7 +322,7 @@ export class NewGameFlow {
 
   private async openCreator(): Promise<void> {
     const id = this.presetId();
-    if (!this.draft || this.draft.preset !== id) this.draft = draftFromPreset(id, this.rng);
+    if (!this.draft || (this.draft.preset !== id && this.page !== 'house')) this.draft = draftFromPreset(id, this.rng, true);
     if (!this.creator) {
       this.creator = new FamilyCreator(this.stage, (p) => this.game.assets.image(p), this.rng, {
         back: () => {
@@ -327,7 +332,7 @@ export class NewGameFlow {
           }
           this.showFamily();
         },
-        start: (d) => void this.start(d),
+        start: (d) => this.showHouse(d),
       });
     }
     await this.gameReady();
@@ -336,9 +341,182 @@ export class NewGameFlow {
     this.creator.open(this.draft);
   }
 
+  // ------------------------------------------------------------------ 집 고르기 (심즈 · 인조이식: 마을 지도에서 집을 사서 들어감)
+
+  private lot: string | null = null;
+  private pickRect: [number, number, number, number] | null = null;
+  private tags: HTMLElement | null = null;
+  private tagRaf = 0;
+
+  showHouse(d: FamilyDraft): void {
+    this.draft = d;
+    this.estate = d.estate;
+    this.wealth = d.wealth;
+    this.show('house');
+    this.steps('house');
+    const r = resolvePreset(PRESETS, d.preset)!;
+    const kind = r.assets.house.kind;
+    const tenure = r.assets.house.tenure;
+    const info = this.game.startLots();
+    this.corner('l', 'cute.left', t('ng.back'), 'back', () => void this.openCreator());
+    const S = (ECON.estates[r.estate]?.target.net ?? 0) * ECON.presets.savingsDays;
+    const cash = presetCash(S, r.cashS, LIFESPAN_MULT[this.lifespan] ?? 1);
+    const funds = Math.max(0, cash) + (tenure === 'owned' ? HOUSE_BUDGET[kind] ?? 0 : 0);
+    const go = this.corner('r', 'cute.right', t('ng.start'), 'start', () => void this.start(d, this.lot), 'go big');
+    const panel = el('div', 'ng-panel g ng-house', this.stage);
+    const head = el('div', 'ng-house-funds', panel);
+    head.appendChild(iconEl('cute.coins', 2));
+    el('b', 'fl', head, formatMoney(funds));
+    if (cash < 0) el('span', 'bad s', head, t('ng.debt', { money: formatMoney(-cash) }));
+    // 교회 집(사제관 · 수도원): 고를 부지가 없음
+    if (!info || NO_LOT.has(kind)) {
+      const row = el('div', 'ng-house-row on s', panel);
+      row.appendChild(iconEl('rv.church', 2));
+      el('b', '', row, `${t(`ng.house.${kind}`)} · ${t(`ng.tenure.${tenure}`)}`);
+      this.lot = null;
+      return;
+    }
+    const lots = info.lots.filter((l) => info.free.includes(l.id) && (tenure !== 'lord' || l.size === 'small'));
+    const priceOf = (l: { price: number }) => (tenure === 'owned' ? l.price : 0);
+    lots.sort((a, b) => priceOf(a) - priceOf(b) || a.id.localeCompare(b.id));
+    // 지도 (칸당 2px 바탕 + 빈 집 네모)
+    const mapBox = el('div', 'ng-house-map', panel);
+    if (info.map) mapBox.appendChild(info.map);
+    const over = el('canvas', 'ng-house-over', mapBox);
+    over.width = info.w * 2;
+    over.height = info.h * 2;
+    mapBox.style.aspectRatio = `${info.w} / ${info.h}`;
+    const list = el('div', 'ng-house-list ng-scroll', panel);
+    const rows = new Map<string, HTMLElement>();
+    const afford = (l: { price: number }) => priceOf(l) <= funds;
+    const drawMap = () => {
+      const c = over.getContext('2d')!;
+      c.clearRect(0, 0, over.width, over.height);
+      for (const l of lots) {
+        const on = l.id === this.lot;
+        const w = (l.rect[2] - l.rect[0] + 1) * 2;
+        const h = (l.rect[3] - l.rect[1] + 1) * 2;
+        c.fillStyle = on ? 'rgba(255,214,90,0.6)' : afford(l) ? 'rgba(140,230,120,0.4)' : 'rgba(200,90,70,0.3)';
+        c.fillRect(l.rect[0] * 2, l.rect[1] * 2, w, h);
+        c.strokeStyle = on ? '#ffd65a' : afford(l) ? 'rgba(170,245,150,0.95)' : 'rgba(220,110,90,0.8)';
+        c.lineWidth = on ? 2 : 1;
+        c.strokeRect(l.rect[0] * 2 + 0.5, l.rect[1] * 2 + 0.5, w - 1, h - 1);
+      }
+    };
+    const select = (id: string, look = true) => {
+      const l = lots.find((x) => x.id === id);
+      if (!l) return;
+      this.lot = id;
+      for (const [k, e] of rows) e.classList.toggle('on', k === id);
+      // 목록 안에서만 스크롤 (scrollIntoView 는 겹친 화면 전체를 밀어 판이 왼쪽으로 잘림)
+      const row = rows.get(id);
+      if (row) {
+        if (row.offsetTop < list.scrollTop) list.scrollTop = row.offsetTop;
+        else if (row.offsetTop + row.offsetHeight > list.scrollTop + list.clientHeight) list.scrollTop = row.offsetTop + row.offsetHeight - list.clientHeight;
+      }
+      go.disabled = !afford(l);
+      drawMap();
+      if (look) this.game.lookAtTile((l.rect[0] + l.rect[2] + 1) / 2, (l.rect[1] + l.rect[3] + 1) / 2, 2, 300);
+      // 집 안 들여다보기 (지붕을 걷어 가구 배치가 보이게)
+      this.game.peekLot(l.rect);
+      this.pickRect = l.rect;
+    };
+    for (const l of lots) {
+      const row = btn(list, `ng-house-row s ${afford(l) ? '' : 'poor'}`.trim(), '', `lot-${l.id}`);
+      row.dataset.lot = l.id;
+      row.appendChild(iconEl('rv.house', 2));
+      // 이름 = 크기 · 가까운 곳, 그 밑에 침대 수 · 넓이 (심즈 집 고르기의 침실 · 크기 표시)
+      const col = el('div', 'ng-house-col', row);
+      const cx = (l.rect[0] + l.rect[2] + 1) / 2;
+      const cy = (l.rect[1] + l.rect[3] + 1) / 2;
+      const near = info.places.reduce<{ p: (typeof info.places)[number] | null; d: number }>((b, p) => {
+        const d = Math.hypot(p.anchor[0] - cx, p.anchor[1] - cy);
+        return d < b.d ? { p, d } : b;
+      }, { p: null, d: 1e9 }).p;
+      el('b', '', col, near ? `${t(`town.lot.size.${l.size}`)} · ${t(near.nameKey)}` : t(`town.lot.size.${l.size}`));
+      const meta = el('small', 'ng-house-meta', col);
+      const objs = this.game.client.snap?.objects ?? [];
+      const beds = objs.filter((o) => /^bed/.test(o.defId) && o.x >= l.rect[0] && o.x <= l.rect[2] && o.y >= l.rect[1] && o.y <= l.rect[3]).length;
+      meta.appendChild(iconEl('sleep', 1));
+      el('span', '', meta, String(beds));
+      meta.appendChild(iconEl('rv.map', 1));
+      el('span', '', meta, `${l.rect[2] - l.rect[0] + 1}×${l.rect[3] - l.rect[1] + 1}`);
+      const p = el('span', 'ng-house-price', row);
+      p.appendChild(iconEl('cute.coin', 1));
+      el('span', '', p, tenure === 'owned' ? formatMoney(l.price) : t(`ng.tenure.${tenure}`));
+      if (tenure === 'owned') {
+        const left = el('small', afford(l) ? 'ng-house-left' : 'ng-house-left bad', row);
+        if (afford(l)) {
+          left.appendChild(iconEl('cute.right', 1));
+          el('span', '', left, formatMoney(funds - l.price));
+        } else left.appendChild(iconEl('cute.minus_red', 1));
+      }
+      row.addEventListener('click', () => select(l.id));
+      rows.set(l.id, row);
+    }
+    over.addEventListener('pointerdown', (e) => {
+      const b = over.getBoundingClientRect();
+      const x = ((e.clientX - b.left) / b.width) * info.w;
+      const y = ((e.clientY - b.top) / b.height) * info.h;
+      const hit = lots.find((l) => x >= l.rect[0] && x <= l.rect[2] + 1 && y >= l.rect[1] && y <= l.rect[3] + 1);
+      if (hit) select(hit.id);
+      else this.game.lookAtTile(x, y, undefined, 300);
+    });
+    // 화면(실제 마을)에서도: 부지를 누르면 고름, 빈 집 위에 값 딱지
+    this.game.lotPicker = (x, y) => {
+      const hit = lots.find((l) => x >= l.rect[0] && x <= l.rect[2] && y >= l.rect[1] && y <= l.rect[3]);
+      if (hit) select(hit.id, false);
+    };
+    this.tags = el('div', 'ng-house-tags', this.root);
+    const tagEls = lots.map((l) => {
+      const e = el('button', `ng-house-tag g s ${afford(l) ? '' : 'poor'}`.trim(), this.tags!);
+      e.type = 'button';
+      e.dataset.lot = l.id;
+      e.appendChild(iconEl('cute.coin', 1));
+      el('span', '', e, tenure === 'owned' ? formatMoney(l.price) : t(`ng.tenure.${tenure}`));
+      e.addEventListener('click', () => select(l.id, false));
+      return { l, e };
+    });
+    const panelRight = () => panel.getBoundingClientRect().right;
+    // 고른 부지 테두리 (실제 마을 위)
+    const box = el('div', 'ng-house-box', this.tags);
+    const frame = () => {
+      const minX = panelRight() + 20;
+      if (this.pickRect) {
+        const a = this.game.tileScreen(this.pickRect[0], this.pickRect[1]);
+        const b = this.game.tileScreen(this.pickRect[2] + 1, this.pickRect[3] + 1);
+        box.style.display = '';
+        box.style.transform = `translate(${Math.round(a.x)}px, ${Math.round(a.y)}px)`;
+        box.style.width = `${Math.round(b.x - a.x)}px`;
+        box.style.height = `${Math.round(b.y - a.y)}px`;
+      } else box.style.display = 'none';
+      for (const { l, e } of tagEls) {
+        const p = this.game.tileScreen((l.rect[0] + l.rect[2] + 1) / 2, l.rect[1] + 0.6);
+        const off = p.x < minX || p.y < 90 || p.x > window.innerWidth - 20 || p.y > window.innerHeight - 20;
+        e.style.display = off ? 'none' : '';
+        e.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%)`;
+        e.classList.toggle('on', l.id === this.lot);
+      }
+      this.tagRaf = requestAnimationFrame(frame);
+    };
+    frame();
+    const first = (this.lot && lots.find((l) => l.id === this.lot && afford(l))) || lots.find(afford) || lots[0];
+    if (first) select(first.id);
+    else go.disabled = true;
+  }
+
+  private leaveHouse(): void {
+    this.game.lotPicker = null;
+    this.game.peekLot(null);
+    this.pickRect = null;
+    cancelAnimationFrame(this.tagRaf);
+    this.tags?.remove();
+    this.tags = null;
+  }
+
   // ------------------------------------------------------------------ 시작
 
-  private async start(draft: FamilyDraft | null): Promise<void> {
+  private async start(draft: FamilyDraft | null, lot: string | null = null): Promise<void> {
     const preset = draft?.preset ?? this.presetId();
     this.show('starting');
     const box = el('div', 'ng-starting g s', this.stage);
@@ -356,7 +534,7 @@ export class NewGameFlow {
     await send('setDeathRules', { kind: 'setDeathRules', preset: this.death });
     // 꾸민 가족이면 프리셋(돈·집·직업·도제·말·하인·영지)을 그 식구에게 바로 줌 (houseLink applyPreset family/roles)
     const spec = draft ? draftToSpec(draft) : null;
-    const pr = await send('applyPreset', { kind: 'house', op: 'applyPreset', args: spec ? { preset, family: spec, roles: draft!.members.map((x) => x.role) } : { preset } });
+    const pr = await send('applyPreset', { kind: 'house', op: 'applyPreset', args: spec ? { preset, family: spec, roles: draft!.members.map((x) => x.role), lot } : { preset, lot } });
     const res = pr.result;
     const headId = res ? res.ids[Math.max(0, res.specs.findIndex((s) => s.role === 'head'))] ?? 0 : 0;
     if (draft) {

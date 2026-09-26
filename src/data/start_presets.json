@@ -5,6 +5,10 @@
     "normal": { "cashS": 0.3, "scale": "lifespan", "fame": 300 },
     "rich": { "cashS": 1.5, "scale": "lifespan", "fame": 400 }
   },
+  "houseBudget": {
+    "$comment": "새 게임 집 고르기 (심즈식): 소유 신분은 이 예산을 받고 마을 지도에서 고른 집값을 냄 (파딩, 남으면 현금 · 모자라면 빚). 종류 = 원래 받던 집 (estates.<신분>.house.kind), 값 = 그 크기 집의 보통 값",
+    "hut": 540, "farmhouse": 900, "workshop_house": 900, "merchant_house": 1296, "manor": 1764, "castle_hall": 2592
+  },
   "families": {
     "$comment": "기본 가족 구성: 청년 부부(가장 표시 나이 22세 안팎) + 아동. 성직자는 본인 + 같은 가문 형제 부부 + 아동 1. sex: male/female/any/opposite(가장의 반대), estate 가 없으면 가정 대표 신분",
     "couple": [

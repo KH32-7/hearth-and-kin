@@ -26,6 +26,8 @@ interface Step {
   /** 단계가 시작될 때 기준값 */
   begin?(): void;
   done(): boolean;
+  /** 지금은 할 수 없는 단계 (혼자 사는 가족의 식구 바꾸기 …): 건너뜀 */
+  skip?(): boolean;
 }
 
 const STORE = 'hk.tutorial.v1';
@@ -75,10 +77,14 @@ export class Tutorial {
     };
     const recent = (k: string, ms = 1500) => performance.now() - (this.keys.get(k) ?? -1e9) < ms;
     this.steps = [
-      { id: 'select', icons: ['mouse.left', 'key.space'], begin: () => (startSel = this.p.selectedId()), done: () => this.p.selectedId() !== startSel },
+      {
+        id: 'select', icons: ['mouse.left', 'key.space'], begin: () => (startSel = this.p.selectedId()), done: () => this.p.selectedId() !== startSel,
+        skip: () => (this.p.snap()?.persons.filter((q) => q.household === 1 && !q.visitor).length ?? 0) < 2,
+      },
       { id: 'usable', icons: ['key.shift'], begin: () => this.keys.delete('shift'), done: () => recent('shift', 60_000) },
       { id: 'pie', icons: ['mouse.left'], done: () => this.p.pieOpen() },
       { id: 'needs', icons: ['cute.bolt'], done: () => this.p.popup() === 'needs' },
+      { id: 'wish', icons: ['cute.trophy'], done: () => this.p.popup() === 'wish' },
       { id: 'speed', icons: ['key.2', 'key.3'], begin: () => (startSpeed = this.p.snap()?.speed ?? 1), done: () => (this.p.snap()?.speed ?? 0) > Math.max(1, startSpeed) },
       { id: 'move', icons: ['key.w', 'key.a', 'key.s', 'key.d'], begin: () => ['w', 'a', 's', 'd'].forEach((k) => this.keys.delete(k)), done: () => ['w', 'a', 's', 'd'].some((k) => recent(k, 60_000)) },
       { id: 'interact', icons: ['key.e'], begin: () => this.keys.delete('e'), done: () => this.p.pieOpen() && recent('e') },
@@ -124,6 +130,7 @@ export class Tutorial {
   }
 
   private go(i: number): void {
+    while (i < this.steps.length - 1 && this.steps[i].skip?.()) i++;
     this.i = i;
     this.advancing = false;
     const s = this.steps[i];

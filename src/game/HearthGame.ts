@@ -1060,8 +1060,9 @@ export class HearthGame {
       const px = this.roomPx.rect;
       if (px) (u.uRoom.value as import('three').Vector4).set(px[0], px[1], px[2], px[3]);
       else (u.uRoom.value as import('three').Vector4).set(r[0] * T - 2, r[1] * T - 88 - yo, (r[2] + 1) * T + 2, (r[3] + 1) * T - yo);
-      // 가족이 집을 나가면 바깥 화면으로
+      // 가족이 집을 나가면 바깥 화면으로. 데려간 사람이 없어졌으면(새 게임으로 가족이 바뀜) 닫음
       if (me && !me.hidden && this.world.shells.nearDoor(Math.floor(me.x), Math.floor(me.y) % this.lotRows()) !== this.interior) this.switchView(-1);
+      else if (!me && this.interiorOwner >= 0 && s) this.switchView(-1);
     } else {
       if (this.interiorK < 0.02) (u.uRoom.value as import('three').Vector4).set(0, 0, -1, -1);
       // 조작 인물이 집 안에 들어서면 지붕 없는 보기로 (나오면 위 조건이 바깥 화면으로 되돌림)
@@ -1369,6 +1370,7 @@ export class HearthGame {
   private pendingSpeedBeforePause = 1;
 
   private updateHover(cx: number, cy: number): void {
+    if (this.lotPicker) return;
     const w = this.renderer.screenToWorld(cx, cy);
     const person = this.chars.pick(w.x, w.y);
     const uid = person === null ? this.world.pick(w.x, w.y) : null;
@@ -1386,7 +1388,53 @@ export class HearthGame {
     this.renderer.canvas.style.cursor = person !== null || uid !== null ? 'pointer' : 'default';
   }
 
+  /** 새 게임 집 고르기 중: 화면 클릭은 그 칸의 집을 고름 (사람·물건 메뉴 없음) */
+  lotPicker: ((tx: number, ty: number) => void) | null = null;
+
+  /** 새 게임 집 고르기: 마을 집 부지 목록, 지금 빈 집(+ 기본 시작 집), 마을 지도 바탕 그림 */
+  startLots(): { lots: Array<{ id: string; kind: string; size: string; rect: [number, number, number, number]; price: number; house: string | null }>; free: string[]; w: number; h: number; map: HTMLCanvasElement | null; places: Array<{ nameKey: string; anchor: [number, number]; kind: string }> } | null {
+    if (!this.town) return null;
+    const s = this.client.snap?.town;
+    const free = new Set(s?.freeLots ?? []);
+    if (s?.playerLot) free.add(s.playerLot);
+    return { lots: this.town.def.lots.filter((l) => l.kind === 'residential'), free: [...free], w: this.lot.w, h: this.lot.h, map: this.townUi?.mapCanvas() ?? null, places: this.town.def.places };
+  }
+
+  /** 집 고르기: 그 부지 집 안을 들여다봄 (지붕 걷기), null = 닫기 */
+  peekLot(rect: [number, number, number, number] | null): void {
+    if (!rect) {
+      if (this.interior >= 0 && this.interiorOwner < 0) this.switchView(-1);
+      return;
+    }
+    const H = this.lotRows();
+    let k = -1;
+    for (let y = rect[1]; y <= rect[3] && k < 0; y++) for (let x = rect[0]; x <= rect[2] && k < 0; x++) k = this.world.shells.at(x, y % H);
+    this.interiorOwner = -1;
+    if (k >= 0 && k !== this.interior) this.switchView(k);
+    else if (k < 0 && this.interior >= 0) this.switchView(-1);
+  }
+
+  /** 칸 좌표 → 화면 CSS 좌표 */
+  tileScreen(x: number, y: number): { x: number; y: number } {
+    const T = this.pack.tilePx;
+    return this.renderer.worldToScreen(x * T, y * T);
+  }
+
+  /** 칸 좌표로 화면 이동 (확대 z, 화면 가운데에서 dx CSS px 비껴서) */
+  lookAtTile(x: number, y: number, z?: number, dx = 0): void {
+    const T = this.pack.tilePx;
+    this.followSelected = false;
+    if (z) this.renderer.setZoom(z);
+    this.renderer.centerOn(x * T - dx / this.renderer.zoom, y * T);
+  }
+
   private click(cx: number, cy: number): void {
+    if (this.lotPicker) {
+      const w = this.renderer.screenToWorld(cx, cy);
+      const T = this.pack.tilePx;
+      this.lotPicker(Math.floor(w.x / T), Math.floor(w.y / T));
+      return;
+    }
     if (this.pie.open) {
       this.pie.close();
       return;

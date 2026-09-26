@@ -3755,7 +3755,7 @@ export class Simulation {
 
   // ------------------------------------------------------------------ 직업 (M4, GDD 17-2)
 
-  setCareer(p: Person, careerId: string | null): { ok: boolean; reason?: string } {
+  setCareer(p: Person, careerId: string | null, start = false): { ok: boolean; reason?: string } {
     if (p.career && p.action && (p.action.item.interactionId === `work.${p.career.id}` || p.action.item.interactionId.startsWith('service.'))) this.abortAction(p, 'career_change');
     p.queue = p.queue.filter((q) => !q.interactionId.startsWith('work.') && !q.interactionId.startsWith('service.'));
     if (!careerId) {
@@ -3770,8 +3770,10 @@ export class Simulation {
     if (p.stage === 'child' || p.stage === 'teen') return { ok: false, reason: 'age' };
     // 장인 신분이 제 공방 직업을 얻으면 장인 등급부터 (17-2 장인 경로). 나머지는 맨 아래부터
     const startRank = def.type === 'onsite' && p.estate === 'artisan' ? Math.min(2, def.ranks.length - 1) : 0;
-    p.career = { id: careerId, rank: startRank, perf: 0, days: 0, attitude: 'normal', lastDay: -1, warned: false, orders: [] };
-    this.notice(p, 'new_job', { job: def.nameKey });
+    // 새 게임 시작 직업(start): 알림 없이, 첫날은 쉼 (시작하자마자 일하러 나가 조작할 사람이 없던 것)
+    p.career = { id: careerId, rank: startRank, perf: 0, days: 0, attitude: 'normal', lastDay: start ? this.world.day() : -1, warned: false, orders: [] };
+    if (start) p.career.workedDay = this.world.day();
+    else this.notice(p, 'new_job', { job: def.nameKey });
     this.inner?.event(p, `job:${careerId}`);
     return { ok: true };
   }

@@ -147,5 +147,8 @@
   "tut.done": "이제 가문을 이끌어 보세요.",
   "tut.skip": "튜토리얼 건너뛰기",
   "tut.step": "{n}/{max}",
-  "tut.usable": "쓸 수 있는 물건을 찾아보세요."
+  "tut.usable": "쓸 수 있는 물건을 찾아보세요.",
+  "ng.step.house": "집",
+  "ng.house.budget": "집 값 {money}",
+  "tut.wish": "소원을 눌러 할 일을 찾아보세요."
 }

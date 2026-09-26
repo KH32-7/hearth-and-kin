@@ -165,6 +165,15 @@ export class TownPanel {
     }
   }
 
+  /** 지도 바탕 그림 복사본 (칸당 2px): 새 게임 집 고르기 */
+  mapCanvas(): HTMLCanvasElement {
+    const c = document.createElement('canvas');
+    c.width = this.base.width;
+    c.height = this.base.height;
+    c.getContext('2d')!.drawImage(this.base, 0, 0);
+    return c;
+  }
+
   private drawBase(places: TownPlace[], zones: TownZone[]): void {
     const g = this.base.getContext('2d')!;
     const L = this.lot;

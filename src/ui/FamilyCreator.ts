@@ -81,10 +81,11 @@ export function fixedLaw(estate: string): string | null {
 let keySeq = 100;
 
 /** 프리셋 가족 구성 → 무작위 인물 초안 (아이는 부모 유전자로) */
-export function draftFromPreset(presetId: string, rng: Rng): FamilyDraft {
+export function draftFromPreset(presetId: string, rng: Rng, solo = false): FamilyDraft {
   const r = resolvePreset(PRESETS, presetId);
   if (!r) throw new Error(`unknown preset ${presetId}`);
-  const specs = presetMembers(r, rng);
+  // solo: 심즈처럼 가장 한 사람에서 시작 (식구는 플레이어가 더함)
+  const specs = presetMembers(r, rng).filter((sp) => !solo || sp.role === 'head');
   const taken: string[] = [];
   const members: MemberDraft[] = specs.map((sp, i) => {
     const m = randomMember(G, NAMES, rng, { key: `m${i}`, estate: sp.estate, sex: sp.sex, stage: sp.stage, householdEstate: r.estate, takenNames: taken });
@@ -543,6 +544,20 @@ export class FamilyCreator {
     const d = this.draft;
     const head = d.members.find((x) => x.role === 'head');
     const spouse = d.members.find((x) => x.role === 'spouse');
+    this.tab = 'basic';
+    // 심즈처럼: 혼자인 어른 가장에게 처음 더하는 식구는 배우자 (반대 성, 비슷한 나이), 그다음부터 아이
+    if (head && !spouse && d.estate !== 'clergy' && (head.m.stage === 'young' || head.m.stage === 'adult' || head.m.stage === 'elder')) {
+      const sp = randomMember(G, NAMES, this.rng, {
+        key: `m${keySeq++}`, estate: d.estate, sex: head.m.sex === 'male' ? 'female' : 'male', stage: head.m.stage, householdEstate: d.estate,
+        takenNames: d.members.map((x) => x.m.name),
+      });
+      const [lo, hi] = G.creation.stageAges[head.m.stage];
+      sp.age = Math.max(lo, Math.min(hi, (head.m.age ?? lo) + this.rng.int(5) - 2));
+      d.members.push({ m: sp, role: 'spouse' });
+      this.sel = d.members.length - 1;
+      this.changed();
+      return;
+    }
     const m = randomMember(G, NAMES, this.rng, {
       key: `m${keySeq++}`, estate: d.estate === 'clergy' ? 'freeman' : d.estate, stage: 'child', householdEstate: d.estate,
       takenNames: d.members.map((x) => x.m.name),
@@ -888,7 +903,7 @@ export class FamilyCreator {
       this.importMode = 'family';
       this.fileIn.click();
     });
-    const go = btn(F, 'ng-rbtn big go fc-start', t('ng.start'), 'start', 'cute.right');
+    const go = btn(F, 'ng-rbtn big go fc-start', t('ng.next'), 'start', 'cute.right');
     go.addEventListener('click', () => {
       if (this.issues().length) return;
       this.h.start(this.draft);

@@ -13,7 +13,7 @@ import type { HeirloomRef, Heirloom } from './house/heirlooms';
 import { Estates, parseEstates, type EstatesHost, type EstateId } from './house/estates';
 import { FiefSystem, parseFief, type FiefHost } from './house/fief';
 import { Sumptuary, parseSumptuary, tierIndex, estateTier, type SumptuaryHost, type WornItem } from './house/sumptuary';
-import { applyPreset, parsePresets, presetIds, type PresetHost, type PresetResult, type PresetsData, type PresetPersonSpec } from './house/presets';
+import { applyPreset, parsePresets, presetIds, resolvePreset, type PresetHost, type PresetResult, type PresetsData, type PresetPersonSpec } from './house/presets';
 import { randomMember, type FamilySpec, type RelSpec } from './family/creation';
 
 /** Simulation 의 내부 창구 (private 포함). 구조 캐스팅으로만 씀 */
@@ -44,7 +44,7 @@ interface Internals {
   moveHousehold(p: Person, household: number, lot: string | null): void;
   newHouseholdId(): number;
   freeLot(size: string): string | null;
-  setCareer(p: Person, careerId: string | null): { ok: boolean; reason?: string };
+  setCareer(p: Person, careerId: string | null, start?: boolean): { ok: boolean; reason?: string };
   addPerson(name: string, x?: number, y?: number, opts?: Record<string, unknown>): Person;
   createFamily(spec: FamilySpec): { ok: boolean; issues?: string[]; ids?: number[] };
   createChild(stage: LifeStage, estate: string, household: number): Person | null;
@@ -665,13 +665,48 @@ export class HouseLink {
   }
 
   /** 프리셋 적용. custom = 캐릭터 만들기 사양과 식구별 역할(head spouse child sibling sibling_spouse nephew …): 무작위 식구 대신 이 식구로 */
-  applyPreset(id: string, custom: { family: FamilySpec; roles: string[] } | null = null): PresetResult | null {
+  applyPreset(id: string, custom: { family: FamilySpec; roles: string[] } | null = null, lot: string | null = null): PresetResult | null {
     if (!this.presets) return null;
     this.custom = custom;
+    this.startLot = lot && this.startLotOk(id, lot) ? lot : null;
     const r = applyPreset(this.presetHost(), this.presets, id);
     this.custom = null;
+    if (r.ok && this.startLot) {
+      // 고른 집 (심즈식 집 구매): 소유면 집 예산을 받고 집값을 냄 (남으면 현금, 모자라면 빚). 영주·교회 집은 값 없음
+      const t = this.s.town!;
+      const l = t.lot(this.startLot)!;
+      const price = r.house.tenure === 'owned' ? l.price : 0;
+      if (price) {
+        const budget = this.houseBudget(r.house.kind);
+        if (budget) this.earnF(r.household, budget, 'start');
+        this.spendF(r.household, price, 'house', true);
+      }
+      r.house.lot = l.id;
+      r.house.price = price;
+    }
+    this.startLot = null;
     this.lastPreset = r;
     return r;
+  }
+
+  /** 새 게임에서 고른 집 (applyPreset 동안만) */
+  private startLot: string | null = null;
+
+  /** 시작 집 예산 (파딩, start_presets.json houseBudget): 집 종류별 */
+  houseBudget(kind: string): number {
+    return ((this.presets as { houseBudget?: Record<string, number> } | null)?.houseBudget ?? {})[kind] ?? 0;
+  }
+
+  /** 시작할 때 고를 수 있는 집 (빈 집, 길 있음, 사는 곳이 따로 없는 신분). 영주 땅 농노는 작은 집만 */
+  startLotOk(presetId: string, lotId: string): boolean {
+    const t = this.s.town;
+    const r = this.presets ? resolvePreset(this.presets, presetId) : null;
+    const l = t?.lot(lotId);
+    const owner = t?.lotHousehold.get(lotId);
+    if (!t || !r || !l || l.kind !== 'residential' || (owner !== undefined && owner !== 1) || t.sealed.has(lotId)) return false;
+    if (RESIDENCE[r.assets.house.kind]) return false;
+    if (r.assets.house.tenure === 'lord' && l.size !== 'small') return false;
+    return true;
   }
 
   private presetHost(): PresetHost {
@@ -698,7 +733,7 @@ export class HouseLink {
       assignHouse: (hh, kind, tenure) => this.assignHouse(hh, kind, tenure),
       setCareer: (id, career) => {
         const p = s.persons.find((q) => q.id === id);
-        return !!p && s.setCareer(p, career).ok;
+        return !!p && s.setCareer(p, career, true).ok;
       },
       addPlots: (hh, n) => this.addPlots(hh, n),
       addAnimals: (hh, kind, n) => {
@@ -835,10 +870,11 @@ export class HouseLink {
     const mem = this.members(hh);
     const res = RESIDENCE[kind];
     let lotId: string | null = null;
+    if (!res && this.startLot) lotId = this.startLot;
     if (!res) {
       const cur = [...t.lotHousehold].find(([, h]) => h === hh)?.[0] ?? null;
       const want = LOT_SIZE[kind] ?? ['small'];
-      if (cur && want[0] === t.lot(cur)?.size) lotId = cur;
+      if (!lotId && cur && want[0] === t.lot(cur)?.size) lotId = cur;
       for (const size of want) {
         if (lotId) break;
         lotId = [...t.lots].find((l) => l.size === size && !t.lotHousehold.has(l.id) && !t.sealed.has(l.id))?.id ?? null;
@@ -899,7 +935,7 @@ export class HouseLink {
     switch (op) {
       case 'applyPreset': {
         const fam = a.family as FamilySpec | undefined;
-        const r = this.applyPreset(String(a.preset), fam ? { family: fam, roles: (a.roles as string[]) ?? [] } : null);
+        const r = this.applyPreset(String(a.preset), fam ? { family: fam, roles: (a.roles as string[]) ?? [] } : null, a.lot ? String(a.lot) : null);
         return r ? { ok: r.ok, reason: r.reason, result: r } : { ok: false, reason: 'no_presets' };
       }
       case 'payEmancipation':
