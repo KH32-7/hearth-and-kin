@@ -107,5 +107,6 @@
   "catalog.cat.animal.short": "가축",
   "catalog.cat.outdoor.short": "바깥",
   "catalog.cat.religion.short": "신앙",
-  "catalog.cat.crafted.short": "손수"
+  "catalog.cat.crafted.short": "손수",
+  "nb.moodSum": "무드렛 합계 {n}"
 }

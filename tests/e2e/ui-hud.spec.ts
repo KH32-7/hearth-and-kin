@@ -29,6 +29,17 @@ test('HUD 묶음이 제자리에 있고 서로 겹치지 않음', async ({ page 
   expect(vw.width - quick.x1).toBeLessThan(40);
   expect(vw.height - quick.y1).toBeLessThan(40);
   await page.screenshot({ path: `artifacts/qa/ui/hud-${info.project.name}.png` });
+  // 모든 UI 그림이 선명하게 (27-3): 배경·9-slice 테두리·img·canvas 가 있는 요소는 pixelated
+  const blurry = await page.evaluate(() => {
+    const bad: string[] = [];
+    for (const e of document.querySelectorAll<HTMLElement>('#app *')) {
+      const cs = getComputedStyle(e);
+      const hasImg = e instanceof HTMLImageElement || e instanceof HTMLCanvasElement || cs.backgroundImage.includes('url(') || cs.borderImageSource.includes('url(');
+      if (hasImg && e.id !== 'game-canvas' && cs.imageRendering !== 'pixelated') bad.push(`${e.tagName}.${e.className}`);
+    }
+    return bad.slice(0, 10);
+  });
+  expect(blurry).toEqual([]);
   // 설명문 금지 (27-3): 예전 도움말 줄이 없음
   await expect(page.locator('.help')).toHaveCount(0);
   await expectNoGameErrors(page, errors);

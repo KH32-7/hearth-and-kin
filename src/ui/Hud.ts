@@ -626,6 +626,10 @@ export class Hud {
     this.needRows.clear();
     const head = el('div', 'pop-head', this.popBody);
     el('b', 'pop-title s', head, t('hud2.pop.needs', { name: p.name }));
+    // 제목 줄 오른쪽: 무드렛 합 (하트 + 값)
+    const sum = (p.inner?.moodlets ?? []).reduce((acc, m) => acc + (['sad', 'angry', 'tense', 'ashamed'].includes(m.emotion) ? -m.strength : m.strength), 0);
+    const mood = el('span', `pop-mood s ${sum < 0 ? 'neg' : ''}`, head);
+    mood.append(iconEl('cute.heart', 1), document.createTextNode(`${sum >= 0 ? '+' : '−'}${Math.abs(sum)}`));
     const grid = el('div', 'needs', this.popBody);
     for (const n of NEEDS) {
       const row = el('div', 'need s', grid);

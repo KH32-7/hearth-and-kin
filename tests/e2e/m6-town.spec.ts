@@ -11,6 +11,8 @@ test.setTimeout(240_000);
 
 test('M6 마을: 미니맵 이동, 세밀도, 포고, 말', async ({ page }) => {
   const errors = await openGame(page, '/?town=ashford');
+  // 지도는 우상단 지도 버튼으로 엶 (GDD 27-2)
+  await page.locator('.win-btn[data-win="map"]').click();
   await expect(page.getByTestId('town-map')).toBeVisible();
   const pop = await game<number>(page, 'return window.__hk.client.snap.town.population;');
   expect(pop).toBeGreaterThan(100);

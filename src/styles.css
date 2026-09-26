@@ -4,12 +4,13 @@
 @font-face {
   font-family: 'Warhaven';
   /* 넥슨 워헤이븐체: 설치된 배포 파일을 그대로 씀 (수정/서브셋 없음). 없으면 폴백 */
-  src: local('NEXON Warhaven'), local('NEXON Warhaven Regular'), local('Warhaven');
+  /* 설치된 폰트의 실제 이름: 'Warhaven OTF Regular' (PostScript WarhavenOTFR) */
+  src: local('Warhaven OTF Regular'), local('WarhavenOTFR'), local('NEXON Warhaven'), local('Warhaven');
   font-display: swap;
 }
 @font-face {
   font-family: 'Warhaven';
-  src: local('NEXON Warhaven Bold'), local('NEXON Warhaven OTF Bold');
+  src: local('Warhaven OTF Bold'), local('WarhavenOTFB'), local('NEXON Warhaven Bold');
   font-weight: 700;
   font-display: swap;
 }
@@ -39,7 +40,8 @@ html, body, #app { width: 100%; height: 100%; margin: 0; overflow: hidden; }
 body { min-width: 320px; user-select: none; }
 #app { position: relative; }
 #game-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; cursor: default; }
-img, canvas, .icon, .px { image-rendering: pixelated; }
+/* 모든 UI 그림(img, canvas, 배경, 9-slice 테두리)을 선명하게: 늘릴 때 뭉개지지 않게 (27-3) */
+*, *::before, *::after { image-rendering: pixelated; }
 .px { display: block; }
 button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; padding: 0; }
 .icon { display: inline-block; background-repeat: no-repeat; flex: none; }
@@ -205,6 +207,8 @@ button { font: inherit; color: inherit; cursor: pointer; background: none; borde
 .hud-pop.opening { animation: rise .16s steps(3); }
 .pop-head { display: flex; justify-content: space-between; margin-bottom: 10px; }
 .pop-title { font-size: 18px; }
+.pop-mood { display: flex; align-items: center; gap: 4px; font-size: 15px; color: var(--good); }
+.pop-mood.neg { color: var(--bad); }
 .pop-empty { padding: 14px 0; display: flex; justify-content: center; opacity: .6; }
 .pop-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
 .hp { display: flex; align-items: center; gap: 4px; font-size: 15px; }
@@ -367,7 +371,10 @@ button { font: inherit; color: inherit; cursor: pointer; background: none; borde
 /* ---------------- 인물 수첩 (27-8): 책 원본 1px = --S px */
 .nb-wrap { position: absolute; inset: 0; z-index: 28; display: none; align-items: center; justify-content: center; background: rgba(20,12,6,.35); }
 .nb-wrap.open { display: flex; }
-.nb { position: relative; color: var(--ink); font-size: calc(var(--S) * 3.8px); }
+.nb { position: relative; color: var(--ink); font-size: calc(var(--S) * 3.5px); }
+.nb-row.moodlet .nb-row-r { color: #3d7a2e; }
+.nb-row.moodlet.neg .nb-row-r { color: #b8322a; }
+.nb-row.moodlet.neg { opacity: .8; }
 .nb.flap { animation: nbFlap .26s steps(4); }
 @keyframes nbFlap { 0% { transform: translateY(40px) scale(.94); opacity: 0; } 60% { transform: translateY(-4px); } 100% { transform: none; } }
 .nb.turn .nb-page { animation: nbTurn .14s steps(3); }
@@ -421,7 +428,7 @@ button.nb-cell:hover { transform: translateY(-1px); }
 .nb-head-pic canvas { position: relative; width: 100%; height: 100%; }
 .nb-head-name { font-size: 1.35em; }
 .nb-needs { display: flex; flex-direction: column; gap: calc(var(--S) * 1.5px); }
-.nb-need { display: grid; grid-template-columns: 32px calc(var(--S) * 13px) 1fr; align-items: center; gap: calc(var(--S) * 2px); }
+.nb-need { display: grid; grid-template-columns: 32px calc(var(--S) * 11px) 1fr; font-size: .9em; align-items: center; gap: calc(var(--S) * 2px); }
 .nb-bar { height: 12px; }
 .nb-empty { flex: 1; display: flex; align-items: center; justify-content: center; opacity: .35; }
 .nb-btns { display: flex; gap: calc(var(--S) * 2px); margin-top: auto; }
@@ -651,7 +658,7 @@ button.nb-cell:hover { transform: translateY(-1px); }
 @keyframes townBlink { 50% { opacity: 0.2; } }
 .town-map-box { position: relative; border-radius: 8px; overflow: hidden; box-shadow: inset 0 0 0 2px var(--glass-edge); cursor: crosshair; }
 .town-map-box canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.town-news { position: absolute; right: 16px; top: 98px; width: 330px; max-height: 50vh; overflow-y: auto; z-index: 27; font-size: 13px; line-height: 1.45; pointer-events: auto; padding: 22px 26px !important; color: var(--ink); border-style: solid !important; border-width: 0 !important; border-image: var(--skin-panel-scene) var(--skin-panel-scene-slice) fill / var(--skin-panel-scene-w3) stretch !important; background: none !important; }
+.town-news { position: absolute; right: 400px; top: 98px; width: 330px; max-height: 50vh; overflow-y: auto; z-index: 27; font-size: 13px; line-height: 1.45; pointer-events: auto; padding: 22px 26px !important; color: var(--ink); border-style: solid !important; border-width: 0 !important; border-image: var(--skin-panel-scene) var(--skin-panel-scene-slice) fill / var(--skin-panel-scene-w3) stretch !important; background: none !important; }
 .town-news-row { display: flex; gap: 8px; padding: 4px 0; border-bottom: 1px dashed rgba(91,50,27,0.35); }
 .town-news-day { flex: none; width: 34px; color: #7a4a24; font-size: 12px; }
 .town-news-empty { opacity: 0.7; }
@@ -670,7 +677,7 @@ button.nb-cell:hover { transform: translateY(-1px); }
 .place-label { position: absolute; left: 0; top: 0; white-space: nowrap; font-size: 15px; color: #fff2c8; letter-spacing: 0.08em; text-shadow: 1px 0 #2b1a0e, -1px 0 #2b1a0e, 0 1px #2b1a0e, 0 -1px #2b1a0e, 0 2px 0 rgba(0,0,0,0.5); padding: 1px 8px; border-radius: 8px; background: rgba(43,26,14,0.45); }
 .place-label.zone { font-size: 13px; color: #d8f0c0; background: none; opacity: 0.85; }
 .town-hidden, .hide-ui .town-map, .hide-ui .town-news, .hide-ui .crier-wrap, .hide-ui .place-labels { display: none !important; }
-.town-move { right: 16px; top: 98px; }
+.town-move { right: 400px; top: 98px; }
 .town-move-note { font-size: 12px; color: #7a4a24; margin-bottom: 6px; }
 .town-move-row { display: flex; align-items: center; gap: 8px; padding: 4px 4px; border-bottom: 1px dashed rgba(91,50,27,0.35); cursor: default; }
 .town-move-row:hover { background: rgba(140,200,110,0.25); }

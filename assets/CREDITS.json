@@ -2964,7 +2964,11 @@
     "modified": false,
     "notes": "패널/막대/버튼/시계 조각 (tools/build-ui-atlas.py PIECES)",
     "usedBy": [
-      "src/data/ui/atlas.json 조각 (panel.*, bar.*, button.*, clock.*, slot.*)"
+      "src/data/ui/atlas.json 조각 (panel.*, bar.*, button.*, clock.*, slot.*)",
+      "clock.dial",
+      "clock.hand",
+      "key.*",
+      "ui.search"
     ]
   },
   {
@@ -2980,17 +2984,41 @@
     ],
     "attribution": "UI: Cute Fantasy UI by Kenmi",
     "modified": false,
-    "notes": "선택 표시, 말풍선, 초상화 판",
+    "notes": "UI 개편(GDD 27장) 메인 팩: 수첩 책·탭·책갈피, 동그란/넓은 버튼, 막대, 리본, 아이콘, 색 말풍선, 바느질 칸, 양피지 판, 커서. 신분별 표지·탭 색과 넘김 ▼ 색은 실행 중 캔버스로 팔레트만 바꿈 (파일로 저장·배포 안 함)",
     "usedBy": [
       "ui.select.*",
       "bubble.*",
-      "portrait.frame"
+      "portrait.frame",
+      "book.*",
+      "cbtn.*",
+      "cbar.*",
+      "ribbon.*",
+      "cute.*",
+      "ui.click"
+    ]
+  },
+  {
+    "id": "ui:elthen-status-effects",
+    "pack": "Elthen - Status Effect Sprites",
+    "files": "assets/vendor/elthen-status-effects (구매, 커밋 안 함)",
+    "source": "https://elthen.itch.io/",
+    "authors": [
+      "Elthen (Ahmet Avci)"
+    ],
+    "licenses": [
+      "구매 라이선스: 상업 사용 가능, AI 학습 금지, 암호화폐 금지, 원본 재배포 금지 (assets/README.md)"
+    ],
+    "attribution": "Status effects: Elthen's Pixel Art Shop",
+    "modified": false,
+    "notes": "머리 위 감정 효과 21종 x 8프레임 (GDD 27-12). 아틀라스에 픽셀 그대로 복사",
+    "usedBy": [
+      "emote.sheet"
     ]
   },
   {
     "id": "ui:original-icons",
     "pack": "가문 연대기 직접 그린 아이콘",
-    "files": "assets/original/ui/*.png (tools/icons/draw-originals.py)",
+    "files": "assets/original/ui/*.png (tools/icons/draw-originals.py, tools/ui/draw-panels.py)",
     "source": "이 프로젝트",
     "authors": [
       "가문 연대기 개발"
@@ -3000,9 +3028,12 @@
     ],
     "attribution": "",
     "modified": false,
-    "notes": "구매 팩에 없는 그림을 Raven 톤(외곽선 색)에 맞춰 점 단위로 그림: topic_weather(비구름)",
+    "notes": "구매 팩에 없는 그림을 Raven 톤(외곽선 색)에 맞춰 점 단위로 그림: topic_weather(비구름) · 장면 대사창 판과 선택지 카드 (panel_scene, card_choice, card_choice_on: Cute Fantasy 양피지 색에 맞춰 직접 찍음)",
     "usedBy": [
-      "topic.weather"
+      "topic.weather",
+      "panel.scene",
+      "card.choice",
+      "card.choice_on"
     ]
   },
   {

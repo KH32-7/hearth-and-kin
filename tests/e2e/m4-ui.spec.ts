@@ -29,7 +29,8 @@ test('M4 살림: 돈 · 일 탭 · 출근과 일당 · 가계부', async ({ page
   await page.waitForTimeout(300);
   await page.locator('.nb').screenshot({ path: `artifacts/qa/m4/work-job-${info.project.name}.png` });
 
-  // 가계부: 돈 칸을 눌러 열기
+  // 가계부: 수첩을 닫고 돈 칸을 눌러 열기
+  await page.keyboard.press('Tab');
   await page.getByTestId('money').click();
   await expect(page.getByTestId('ledger')).toBeVisible();
   await page.waitForTimeout(300);

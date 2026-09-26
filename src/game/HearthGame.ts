@@ -682,7 +682,10 @@ export class HearthGame {
   }
 
   /** 대사창이 열리면 두 사람이 창 위쪽에 오게 카메라를 옮김 (27-13) */
+  /** 이번 대사창이 카메라를 옮겨도 되는가 (플레이어가 시킨 대화만) */
+  private dialogFrames = false;
   private frameDialog(ids: number[]): void {
+    if (!this.dialogFrames) return;
     const pts = ids.map((id) => this.chars.drawnPosition(id)).filter((p): p is { x: number; y: number } => !!p);
     if (!pts.length) return;
     const mx = pts.reduce((a, p) => a + p.x, 0) / pts.length;
@@ -693,8 +696,14 @@ export class HearthGame {
 
   private seenDialog = new Set<string>();
   /** 조작 인물이 한 사회 상호작용이 끝나면 대사창 (27-13) */
+  /** 플레이어가 직접 시킨 사회 상호작용 (대기열에서 autonomous=false) — "사람:상호작용:상대" */
+  private playerSocial = new Set<string>();
   private updateDialog(s: Snapshot): void {
     if (!this.dialogLines) return;
+    for (const p of s.persons) {
+      for (const it of p.queue) if (!it.autonomous && it.interactionId.startsWith('social.')) this.playerSocial.add(`${p.id}:${it.interactionId}:${it.targetUid}`);
+    }
+    if (this.playerSocial.size > 200) this.playerSocial = new Set([...this.playerSocial].slice(-100));
     for (const p of s.persons) {
       const ls = p.lastSocial;
       if (!ls) continue;
@@ -706,8 +715,12 @@ export class HearthGame {
       if (p.id !== this.selectedId && ls.target !== this.selectedId) continue;
       const q = s.persons.find((x) => x.id === ls.target);
       if (!q) continue;
+      // 대사창은 플레이어가 시킨 대화, 또는 자율이라도 로맨스 · 짓궂음 · 특별한 대화만 (잡담마다 뜨지 않게, 27-13)
+      const mine = this.playerSocial.delete(`${p.id}:${ls.ia}:${ls.target}`);
       const lines = this.dialogLines(p, q, ls.ok, ls.ia, s, ls.minute * 31 + p.id * 7 + q.id);
       if (!lines) continue;
+      if (!mine && !['romance', 'mean', 'special'].includes(lines.category)) continue;
+      this.dialogFrames = mine;
       const colorOf = (x: PersonSnap) => emotionColor(x.inner && x.inner.stage >= 1 ? x.inner.emotion : 'neutral');
       this.dialog.talk({
         minute: ls.minute, ids: [p.id, q.id], ok: ls.ok, category: lines.category,

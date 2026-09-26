@@ -414,7 +414,10 @@ export class Notebook {
     const family = s.persons.filter((q) => q.household === p.household && !q.visitor);
     switch (id) {
       case 'emo': {
-        this.head(L, p, t(emoKey(p)));
+        const ms = [...(inner?.moodlets ?? [])].sort((a, b) => b.strength - a.strength);
+        const neg = (e: string) => ['sad', 'angry', 'tense', 'ashamed'].includes(e);
+        const sum = ms.reduce((a, m) => a + (neg(m.emotion) ? -m.strength : m.strength), 0);
+        this.head(L, p, `${t(emoKey(p))} · ${t('nb.moodSum', { n: `${sum >= 0 ? '+' : '−'}${Math.abs(sum)}` })}`);
         const needs = el('div', 'nb-needs', L);
         for (const n of ['hunger', 'energy', 'hygiene', 'bladder', 'fun', 'social', 'warmth', 'comfort']) {
           const r = el('div', 'nb-need', needs);
@@ -425,9 +428,19 @@ export class Notebook {
           this.bar(r, v, v < 30 ? 'red' : 'green');
         }
         this.ribbon(R, t('nb.page.moodlets'));
+        // 무드렛: 목록 줄 카드 (아이콘 · 이름 · 남은 시간 · 값), 목업과 같은 모양
         const box = el('div', 'nb-scroll inner-view', R);
-        this.inner?.invalidate();
-        this.inner?.render(box, 'mood', p);
+        const defs = this.inner?.defs;
+        if (!ms.length) this.empty(box, 'emo.neutral');
+        const list = this.rows(box, ms.map((m) => {
+          const keys = defs?.moodletKeys(m.id);
+          const left = m.remainingMin < 0 ? '' : m.remainingMin >= 60 ? t('panel.remaining.h', { n: Math.round(m.remainingMin / 60) }) : t('panel.remaining.m', { n: Math.max(1, Math.round(m.remainingMin)) });
+          return { icon: defs?.moodletIcon(m.id) ?? `emo.${m.emotion}`, title: keys ? t(keys.name) : m.id, sub: left, right: `${neg(m.emotion) ? '−' : '+'}${m.strength}`, cls: `moodlet ${neg(m.emotion) ? 'neg' : 'pos'}`, data: { moodlet: m.id } };
+        }));
+        list.querySelectorAll<HTMLElement>('.nb-row').forEach((r, i) => {
+          const keys = defs?.moodletKeys(ms[i].id);
+          if (keys) r.title = t(keys.desc);
+        });
         break;
       }
       case 'skills': {
