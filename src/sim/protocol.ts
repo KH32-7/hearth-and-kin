@@ -6,6 +6,8 @@ import type { MenuEntry, Notice } from './sim';
 export interface PersonSnap {
   id: number;
   name: string;
+  /** 말을 타고 있으면 털색 (0~4), 아니면 없음 (18-5) */
+  riding?: number;
   x: number;
   y: number;
   /** 이번 틱에 지나간 좌표 x0,y0,x1,y1,... (렌더러 보간) */
@@ -148,6 +150,9 @@ export interface Snapshot {
     lod: { full: number; simple: number; summary: number };
     news: { day: number; kind: string; args: Record<string, string | number> }[];
     people: { id: number; name: string; household: number; lod: string; x: number; y: number; stage: string }[];
+    /** 빈 집 부지 (이사), 조작 가문 부지 */
+    freeLots: string[];
+    playerLot: string | null;
   } | null;
   hash?: string;
 }

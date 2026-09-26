@@ -52,8 +52,9 @@ const COUNT = [4, 4, 4, 3, 3, 3];
 
 /** 방 종류별 가구: [기능 기반 또는 태그, 몇 개]. 앞쪽이 먼저 (벽 붙이기 화로는 맨 앞) */
 const PROGRAM: Record<RoomKind, [string, number][]> = {
-  hut: [['hearth', 1], ['bed_straw', 2], ['stool', 1], ['chest_clothes', 1], ['barrel_water', 1], ['chamber_pot', 1]],
-  kitchen: [['hearth', 1], ['dining_table', 1], ['bench', 1], ['stool', 1], ['cupboard', 1], ['prep_counter', 1], ['barrel_water', 1], ['candlestick', 1]],
+  // 찬장은 화덕 다음 (먹을거리 보관: 빵 꺼내 먹기, 장보기 채우기). 좁은 방에서 뒤로 밀리면 안 들어감
+  hut: [['hearth', 1], ['cupboard', 1], ['bed_straw', 2], ['stool', 1], ['chest_clothes', 1], ['barrel_water', 1], ['chamber_pot', 1]],
+  kitchen: [['hearth', 1], ['cupboard', 1], ['dining_table', 1], ['bench', 1], ['stool', 1], ['prep_counter', 1], ['barrel_water', 1], ['candlestick', 1]],
   bedroom: [['bed_double', 1], ['bed_straw', 1], ['chest_clothes', 1], ['chamber_pot', 1], ['washbasin', 1], ['candlestick', 1], ['rug', 1]],
   workshop: [['workbench', 1], ['loom', 1], ['spinning_wheel', 1], ['stool', 1], ['chest_clothes', 1], ['candlestick', 1]],
   hall: [['dining_table', 2], ['chair', 2], ['bench', 2], ['tapestry', 2], ['candlestick', 2], ['rug', 1], ['lute', 1]],
@@ -245,7 +246,7 @@ function build(t: Tier, idx: number): Built {
         // 낮은 등급 집은 싼 쪽 절반, 상인 이상은 비싼 쪽 절반 (17-4 역산표 집값에 맞춤)
         const top = t.tier <= 2 ? opts.slice(0, Math.max(1, Math.ceil(opts.length / 2))) : opts.slice(Math.floor(opts.length / 2));
         const choice = pick(top);
-        if (!place(choice, r)) place(opts[0], r);
+        if (!place(choice, r) && !place(opts[0], r) && process.env.DEBUG_HOUSES) console.log('배치 실패', t.id, r.kind, kind, choice, opts.slice(0, 4).join(','));
       }
     }
     // 장식 하나 둘 (방 점수)

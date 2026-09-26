@@ -241,8 +241,11 @@
    "name": "마을 이동",
    "doc": "13",
    "milestone": "M6",
-   "tests": [],
-   "lastPass": null
+   "tests": [
+    "tests/unit/m6-town.test.ts::세밀도 전환",
+    "tests/e2e/m6-town.spec.ts::M6 마을"
+   ],
+   "lastPass": "2026-09-26"
   },
   "social.relations3": {
    "area": "사회",
@@ -534,48 +537,66 @@
    "name": "끊김 없는 마을 지도 200×150, 청크",
    "doc": "18",
    "milestone": "M6",
-   "tests": [],
-   "lastPass": null
+   "tests": [
+    "tests/unit/m6-town.test.ts::애쉬포드",
+    "tests/e2e/m6-town.spec.ts::M6 마을"
+   ],
+   "lastPass": "2026-09-26"
   },
   "town.places12": {
    "area": "마을",
    "name": "공공 장소 12종",
    "doc": "18",
    "milestone": "M6",
-   "tests": [],
-   "lastPass": null
+   "tests": [
+    "tests/unit/m6-town.test.ts::애쉬포드",
+    "tests/unit/m6-town.test.ts::물건 사용"
+   ],
+   "lastPass": "2026-09-26"
   },
   "town.npc_schedule": {
    "area": "마을",
    "name": "NPC 120 일과표, 세밀도 3단계",
    "doc": "18",
    "milestone": "M6",
-   "tests": [],
-   "lastPass": null
+   "tests": [
+    "tests/unit/m6-town.test.ts::일과표",
+    "tests/unit/m6-town.test.ts::세밀도 전환"
+   ],
+   "lastPass": "2026-09-26"
   },
   "town.story": {
    "area": "마을",
    "name": "스토리 진행",
    "doc": "18",
    "milestone": "M6",
-   "tests": [],
-   "lastPass": null
+   "tests": [
+    "tests/unit/m6-town.test.ts::생애 판정기",
+    "tests/unit/m6-town.test.ts::소문"
+   ],
+   "lastPass": "2026-09-26"
   },
   "town.riding": {
    "area": "마을",
    "name": "말 타기",
    "doc": "18",
    "milestone": "M6",
-   "tests": [],
-   "lastPass": null
+   "tests": [
+    "tests/unit/m6-town.test.ts::말 타기",
+    "tests/e2e/m6-town.spec.ts::M6 마을"
+   ],
+   "lastPass": "2026-09-26"
   },
   "town.moving": {
    "area": "마을",
    "name": "이사",
    "doc": "18",
    "milestone": "M6",
-   "tests": [],
-   "lastPass": null
+   "tests": [
+    "tests/unit/m6-town.test.ts::이사와 건축 범위",
+    "tests/e2e/m6-town.spec.ts::M6 마을"
+   ],
+   "lastPass": "2026-09-26"
   },
   "season.calendar": {
    "area": "계절",

@@ -202,6 +202,9 @@ export class Person {
   role: string | null = null;
   /** 일과표 템플릿 id (people.json member.schedule), 고용주 가문 키 (workAt "employer") */
   schedule: string | null = null;
+  /** 말 (18-5): 가문이 말을 가짐 (털색 0~4), 지금 타고 있음 */
+  horse = -1;
+  riding = false;
   employer: string | null = null;
   /** 간이 세밀도 이동: 일과 목적지 칸, 길 (칸 인덱스), 진행 */
   simpleGoal = -1;

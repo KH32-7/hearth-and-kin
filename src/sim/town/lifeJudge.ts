@@ -86,7 +86,8 @@ export class LifeJudge {
       const len = this.s.stageDays[p.lifeStage] ?? 24;
       if (p.lifeStage !== 'elder' && p.ageDays >= len) {
         // 29-1 혼인률: 청년 단계를 마칠 때 한 번이라도 혼인했는가
-        if (p.lifeStage === 'young') {
+        // 성직자(독신 서원)는 혼인률 모집단에서 뺌
+        if (p.lifeStage === 'young' && p.estate !== 'clergy') {
           this.stats.youngEnded++;
           if (p.marriedDay >= 0) this.stats.youngEndedMarried++;
         }
@@ -199,7 +200,7 @@ export class LifeJudge {
       if (!h || h.household !== w.household) continue;
       const times = P.coitusPerDay[w.wantsKids] ?? P.coitusPerDay.any;
       let pr = 1 - Math.pow(1 - P.perCoitus, times);
-      if (age >= P.declineFromAge) pr *= Math.max(0.2, 1 - (age - P.declineFromAge) / 8);
+      if (age >= P.declineFromAge) pr *= Math.max(P.declineFloor, 1 - (age - P.declineFromAge) / P.declineYears);
       // 조작 가문은 피드백 없음 (플레이어 선택 존중)
       if (w.household !== 1) pr *= fb;
       if (this.host.rng.next() < pr) {
@@ -243,19 +244,19 @@ export class LifeJudge {
         const gap = Math.abs(this.age(w) - this.age(m));
         if (gap > M.ageGapYears) continue;
         let pr = M.baseDaily * fb;
-        const rank = (e: string) => ['serf', 'freeman', 'artisan', 'merchant', 'clergy', 'knight', 'noble'].indexOf(e);
+        const rank = (e: string) => M.estateRank.indexOf(e);
         const eg = Math.abs(rank(w.estate) - rank(m.estate));
         if (eg >= 2) pr *= M.estateGapPenalty;
-        if (w.estate === 'clergy' || m.estate === 'clergy') pr *= 0.1;
+        if (w.estate === 'clergy' || m.estate === 'clergy') pr *= M.clergyMult;
         pr *= 1 + Math.max(-0.5, this.host.rel.friendship(w.id, m.id) * M.friendshipBonus);
-        pr += this.host.rel.romance(w.id, m.id) * 0.002;
+        pr += this.host.rel.romance(w.id, m.id) * M.romanceBonus;
         if (pr > bestP) {
           bestP = pr;
           best = m;
         }
       }
       // 후보 중 가장 잘 맞는 한 사람과 하루 확률
-      if (best && this.host.rng.next() < Math.min(0.5, bestP * Math.min(4, men.length / 4))) {
+      if (best && this.host.rng.next() < Math.min(M.dailyCap, bestP * Math.min(M.poolDivisor, men.length / M.poolDivisor))) {
         w.betrothed = best.id;
         best.betrothed = w.id;
         w.betrothedDay = day;
@@ -263,8 +264,8 @@ export class LifeJudge {
         const r = this.host.rel.ensure(w.id, best.id);
         r.met = true;
         r.flags.add('engaged');
-        r.romance = Math.max(r.romance, 40);
-        r.friendship = Math.max(r.friendship, 20);
+        r.romance = Math.max(r.romance, M.engagedRomance);
+        r.friendship = Math.max(r.friendship, M.engagedFriendship);
         this.host.moodlet(w, 'engaged');
         this.host.moodlet(best, 'engaged');
         this.stats.engagements++;
@@ -302,7 +303,8 @@ export class LifeJudge {
     if (from.household === 1) [to, from] = [from, to];
     const cap = this.s.household.cap;
     const size = this.host.persons.filter((q) => q.household === to.household).length;
-    if (size + 1 > cap) {
+    // 조작 가문 식구는 조작에서 빠지지 않게 늘 조작 가문 집으로 (인원 상한 처리는 M8 가계, DECISIONS)
+    if (size + 1 > cap && to.household !== 1) {
       // 상한 초과: 둘이 분가 (빈 부지)
       const lot = this.host.emptyLot('small');
       const hh = this.host.newHousehold();
@@ -319,7 +321,8 @@ export class LifeJudge {
     const P = this.s.population;
     const n = this.host.persons.length;
     if (n < P.immigrateBelow) {
-      const came = this.host.immigrate(3 + Math.floor(this.host.rng.next() * 2));
+      const [lo, hi] = P.immigrantFamily;
+      const came = this.host.immigrate(lo + Math.floor(this.host.rng.next() * (hi - lo + 1)));
       this.stats.immigrants += came.length;
       if (came.length) this.host.news('moved_in', { a: came[0].name }, came);
     } else if (n > P.emigrateAbove) {

@@ -15,3 +15,6 @@ assets/generated/ui/
 # 로컬 도구 상태
 .claude/scheduled_tasks.lock
 .claude/settings.local.json
+
+# 레퍼런스 스크린샷 (남의 유료 에셋 목업, 참고용 전용)
+docs/레퍼런스_이미지/**/*.jpg

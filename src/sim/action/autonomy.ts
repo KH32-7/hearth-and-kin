@@ -58,6 +58,38 @@ export function adsFor(data: SimData, world: World, interactionId: string, targe
 const urgBuf = new Float64Array(8);
 const nearBuf: ObjectInstance[] = [];
 
+/**
+ * 볼일 물건 (장터 노점처럼 'duty' 태그 + 조건부 광고가 있는 상호작용): 자율 반경 밖이어도 후보 (M6 마을, 18-2).
+ * 물건 목록이 바뀔 때만 다시 셈
+ */
+let errandCache: { world: World | null; version: number; list: ObjectInstance[] } = { world: null, version: -1, list: [] };
+function errandObjects(data: SimData, world: World): ObjectInstance[] {
+  if (errandCache.world === world && errandCache.version === world.objectsVersion) return errandCache.list;
+  const list: ObjectInstance[] = [];
+  for (const o of world.objects) {
+    const cs = data.compiled.byDef.get(o.defId);
+    if (cs?.some((c) => (c.def.tags ?? []).includes('duty') && c.supportWhen.length > 0 && c.def.autonomous !== false)) list.push(o);
+  }
+  errandCache = { world, version: world.objectsVersion, list };
+  return list;
+}
+
+/** 자율 후보 물건: 반경 안 + (넓은 지도면) 반경 밖 볼일 물건 */
+const candBuf: ObjectInstance[] = [];
+function candidateObjects(data: SimData, world: World, person: Person, radius: number): ObjectInstance[] {
+  const near = world.objectsNear(person.x, person.y, radius, nearBuf);
+  if (world.objects.length < 400) return near;
+  candBuf.length = 0;
+  for (const o of near) candBuf.push(o);
+  const r2 = radius * radius;
+  for (const o of errandObjects(data, world)) {
+    const dx = o.x - person.x;
+    const dy = (o.y % (world.lot.h + 1)) - (person.y % (world.lot.h + 1));
+    if (dx * dx + dy * dy > r2) candBuf.push(o);
+  }
+  return candBuf;
+}
+
 /** 모든 (상호작용, 대상) 후보의 점수. 사용할 수 없는 것은 제외 */
 export function scoreCandidates(
   data: SimData,
@@ -73,7 +105,7 @@ export function scoreCandidates(
   for (let i = 0; i < 8; i++) urgBuf[i] = urgency(data, NEED_IDS[i], person.needs[i]);
   const hour = world.hour();
   // 마을(M6): 주변 물건만 (자율 반경). 작은 부지는 전부
-  for (const target of world.objectsNear(person.x, person.y, b.searchRadiusTiles ?? 32, nearBuf)) {
+  for (const target of candidateObjects(data, world, person, b.searchRadiusTiles ?? 32)) {
     const until = person.excludedUntil.get(target.uid);
     if (until !== undefined && until > world.minute) continue;
     const list = data.compiled.byDef.get(target.defId);
@@ -146,7 +178,7 @@ export function needSolvable(
   needIdx: number,
   reachable: (cell: number, blockedGoal: boolean) => boolean,
 ): boolean {
-  for (const target of world.objectsNear(person.x, person.y, data.balance.autonomy.searchRadiusTiles ?? 32, nearBuf)) {
+  for (const target of candidateObjects(data, world, person, data.balance.autonomy.searchRadiusTiles ?? 32)) {
     const list = data.compiled.byDef.get(target.defId);
     if (!list) continue;
     for (const c of list) {

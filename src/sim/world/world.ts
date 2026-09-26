@@ -12,7 +12,8 @@ export class World {
   readonly grid: Grid;
   readonly objects: ObjectInstance[] = [];
   readonly byUid = new Map<number, ObjectInstance>();
-  readonly stock: Record<string, number>;
+  /** 저장고 (조작 가문). 마을 모드에서 NPC 가 행동하는 동안은 sim 이 NPC 공용 창고로 잠시 바꿔 끼움 */
+  stock: Record<string, number>;
   /** uid → (slotId → personId). 조회할 때 문자열을 새로 만들지 않도록 두 단계 Map */
   readonly reservations = new Map<number, Map<string, number>>();
   roomTemps: number[] = [];

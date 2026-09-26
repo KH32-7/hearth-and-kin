@@ -33,7 +33,7 @@ import { CharacterView, type SheetLike } from '../render/CharacterView';
 import type { WorldPack } from '../render/artpack';
 import { composeCharacter, randomSpec } from '../render/lpc/compose';
 import type { CharacterSpec } from '../render/lpc/types';
-import { Hud, iconFor, registerInteractionMeta } from '../ui/Hud';
+import { Hud, formatMoney, iconFor, registerInteractionMeta } from '../ui/Hud';
 import { InnerPanel } from '../ui/InnerPanel';
 import { RelationsPanel } from '../ui/RelationsPanel';
 import { WorkPanel, type CareerInfo } from '../ui/WorkPanel';
@@ -48,6 +48,7 @@ import { loadSkin } from '../ui/skin';
 import { missing as missingI18n, t } from '../i18n';
 import { SimClient } from './SimClient';
 import { BuildController } from './BuildController';
+import { TownPanel } from '../ui/TownPanel';
 
 type LightKey = { minute: number; rgb: number[]; darkness: number };
 
@@ -94,6 +95,7 @@ export class HearthGame {
   private followSelected = false;
   /** 마을 모드 (M6, ?town=ashford): 지도 정의, 사람, 일과표 */
   town: TownBundle | null = null;
+  townUi: TownPanel | null = null;
   /** 마지막으로 보낸 화면 범위 (칸) — 세밀도 판정용, 4칸 이상 움직였을 때만 다시 보냄 */
   private sentView = { x0: -99, y0: -99, x1: -99, y1: -99, at: 0 };
   readonly errors: string[] = [];
@@ -139,6 +141,11 @@ export class HearthGame {
     this.chars = new CharacterView(this.world, (p) => this.sheetFor(p));
     Object.assign(this.chars, { seatInset: fx.character.seatInset, seatCarryDrop: fx.character.seatCarryDrop });
     this.renderer.scene.add(this.chars.group);
+    // 말 시트 (18-5, LPC Horses): 마을에서 말 탄 사람
+    if (this.town) {
+      const colors = ['brown', 'black', 'gray', 'golden', 'white'];
+      this.chars.horseTextures = await Promise.all(colors.map((c) => this.assets.texture(`assets/generated/lpc/animals/horse-${c}.png`)));
+    }
     const socialDefs = (socialData as { interactions: Record<string, { icon: string; category?: string }> }).interactions;
     this.bubbles = new Bubbles(uiAtlas as never, (fx as { bubbles: BubbleRules }).bubbles, iconFor, (id) => {
       const d = socialDefs[id];
@@ -188,6 +195,24 @@ export class HearthGame {
       },
     );
     this.ledger = new LedgerPanel(this.app);
+    if (this.town) {
+      const T2 = this.pack.tilePx;
+      this.townUi = new TownPanel(this.app, this.lot, this.town.def.places, this.town.def.zones, {
+        lookAt: (x, y) => {
+          this.followSelected = false;
+          this.renderer.centerOn(x * T2, y * T2);
+        },
+        viewTiles: () => {
+          const v = this.renderer.viewRect();
+          return { x0: v.x0 / T2, y0: v.y0 / T2, x1: v.x1 / T2, y1: v.y1 / T2 };
+        },
+        tileToScreen: (x, y) => this.renderer.worldToScreen(x * T2, y * T2),
+        zoom: () => this.renderer.zoom,
+        focusPerson: (id) => this.focus(id),
+        moveHouse: async (lot) => (await this.client.intent({ kind: 'moveHouse', lot })) as { ok: boolean; reason?: string },
+        money: (n) => formatMoney(n),
+      }, this.town.def.lots);
+    }
     this.hud.onMoney = () => this.ledger.toggle(this.client.snap);
     {
       const it = ((opt('items') as { items?: Record<string, { food?: { hunger: number } }> } | undefined)?.items) ?? {};
@@ -426,6 +451,7 @@ export class HearthGame {
     this.thoughts.ingest(s.notices, performance.now());
     this.updateChoice(s);
     this.build?.update(s);
+    this.townUi?.update(s);
   }
 
   private frame(): void {
@@ -448,6 +474,7 @@ export class HearthGame {
     const vr = this.renderer.viewRect();
     this.world.updateChunks(vr.x0, vr.y0, vr.x1, vr.y1);
     if (this.town) this.sendView(vr, now);
+    this.townUi?.frame(now);
     this.build?.frame(now);
     this.world.animate(now, this.darkness);
     if (this.followSelected) {
@@ -1087,7 +1114,7 @@ async function loadOtherLot(): Promise<LotDef | null> {
 
 /** 마을 모드 (M6): ?town=ashford → src/data/town/ashford.json + people.json + schedules.json */
 export interface TownBundle {
-  def: { id: string; lot: unknown; places: Array<{ id: string; kind: string; nameKey: string; rect: [number, number, number, number]; anchor: [number, number] }>; lots: Array<{ id: string; kind: string; size: string; rect: [number, number, number, number]; start?: boolean; house: string | null }>; zones: Array<{ id: string; kind: string; rect: [number, number, number, number]; nameKey?: string }> };
+  def: { id: string; lot: unknown; places: Array<{ id: string; kind: string; nameKey: string; rect: [number, number, number, number]; anchor: [number, number] }>; lots: Array<{ id: string; kind: string; size: string; rect: [number, number, number, number]; start?: boolean; house: string | null; price: number }>; zones: Array<{ id: string; kind: string; rect: [number, number, number, number]; nameKey?: string }> };
   people: unknown;
   schedules: unknown;
 }

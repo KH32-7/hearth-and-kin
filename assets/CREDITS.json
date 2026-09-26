@@ -3360,5 +3360,27 @@
       "hitching_post",
       "butter_churn"
     ]
+  },
+  {
+    "id": "lpc:horses",
+    "pack": "[LPC] Horses",
+    "files": "assets/vendor/lpc/oga/lpc-horses",
+    "source": "https://opengameart.org/content/lpc-horses",
+    "authors": [
+      "bluecarrot16"
+    ],
+    "licenses": [
+      "CC-BY 3.0",
+      "CC-BY-SA 3.0",
+      "GPL 3.0",
+      "GPL 2.0",
+      "OGA-BY 3.0"
+    ],
+    "attribution": "\"[LPC] Horses\" Artist: bluecarrot16. License: CC-BY 3.0 / GPL 3.0 / GPL 2.0 / OGA-BY 3.0. http://opengameart.org/content/lpc-horses",
+    "modified": false,
+    "notes": "unmodified sheets copied to assets/generated/lpc/animals/horse-*.png (18-5 말 타기)",
+    "usedBy": [
+      "horse_riding"
+    ]
   }
 ]

@@ -29,7 +29,9 @@
     "check:features": "tsx tools/check-features.ts",
     "check:catalog": "tsx tools/check-catalog.ts",
     "make:houses": "tsx tools/world/make-houses.ts",
-    "build:art": "tsx tools/world/build-world.ts"
+    "build:art": "tsx tools/world/build-world.ts",
+    "sim:town": "tsx tools/sim-town.ts --town ashford",
+    "qa:town": "node tools/qa/town-shots.mjs"
   },
   "dependencies": {
     "lil-gui": "^0.21.0",

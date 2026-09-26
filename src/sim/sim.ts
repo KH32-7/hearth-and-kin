@@ -93,7 +93,9 @@ export type SimIntent =
   /** 화면 범위 (M6 세밀도: 칸, 1층 판 좌표). 카메라가 움직일 때 게임이 보냄 → 입력 로그 (재생 결정론) */
   | { kind: 'setView'; x0: number; y0: number; x1: number; y1: number }
   /** 세밀도 강제 (13-6 회귀 테스트, 도구용) */
-  | { kind: 'forceLod'; lod: 'full' | 'simple' | 'summary' | null };
+  | { kind: 'forceLod'; lod: 'full' | 'simple' | 'summary' | null }
+  /** 이사 (18-5): 마을의 빈 집 부지를 사서 옮김. 살던 집은 되팔기 비율로 팔림 */
+  | { kind: 'moveHouse'; lot: string };
 
 export interface LoggedIntent {
   tick: number;
@@ -257,10 +259,16 @@ export class Simulation {
             p.sleeping = false;
           },
           walkSpeed: () => this.data.balance.movement.walkTilesPerMinute,
+          rideMult: (p, remaining, next) => this.rideMult(p, remaining, next),
           engagedWithControlled: (p) => this.engagedWithControlled(p),
         }, data.town.def, data.town.schedules)
       : null;
     if (this.town && data.town?.people) this.town.populate(data.town.people);
+    // 마을: 건축은 조작 가문 부지 안에서만
+    if (this.town && this.builder) {
+      const pl = this.town.playerLot();
+      this.builder.area = pl ? [...pl.rect] : [0, 0, -1, -1];
+    }
     this.judge = this.town && data.story ? new LifeJudge(this.judgeHost(), data.story) : null;
     this.rumors = this.town && data.story ? new Rumors(new Rng((seed * 977 + 3) >>> 0), data.story.rumor, this.town) : null;
     for (const h of data.town?.people?.households ?? []) for (const m of h.members) this.namePool[m.sex].push(m.name);
@@ -485,6 +493,8 @@ export class Simulation {
       case 'setView':
         if (this.town) this.town.view = { x0: intent.x0, y0: intent.y0, x1: intent.x1, y1: intent.y1 };
         return true;
+      case 'moveHouse':
+        return this.moveHouse(intent.lot);
       case 'forceLod':
         if (this.town) {
           this.town.forceLod = intent.lod;
@@ -637,6 +647,10 @@ export class Simulation {
         continue;
       }
       if (p.infant) continue;
+      // 마을 NPC 는 자기 가문의 추상 창고로 살림 (조작 가문 저장고를 쓰거나 채우지 않음)
+      const npc = !!town && p.household !== 1;
+      const own = this.world.stock;
+      if (npc) this.world.stock = this.npcPantry();
       // trail은 스냅샷을 보낼 때 비움(takeTrail) → 한 스냅샷에 여러 틱이 들어도 이동 경로가 끊기지 않음
       if (p.trail.length === 0) p.trail.push(p.x, p.y);
       if (p.trail.length > 512) p.trail.splice(0, p.trail.length - 2);
@@ -646,6 +660,7 @@ export class Simulation {
       if (this.inner) this.updateSmoke(p);
       if (p.trail[p.trail.length - 2] !== p.x || p.trail[p.trail.length - 1] !== p.y) p.trail.push(p.x, p.y);
       this.trackStats(p);
+      if (npc) this.world.stock = own;
     }
     this.updateMultitask();
     this.fire?.tick();
@@ -658,6 +673,18 @@ export class Simulation {
   }
 
   private noticeSeq = 0;
+  private npcStock: Record<string, number> | null = null;
+  private npcStockAt = -1e9;
+
+  /** NPC 공용 추상 창고: 정해진 간격마다 시작 재고로 다시 채움 (가문마다 따로 셈하지 않음, 18-2 요약 살림) */
+  private npcPantry(): Record<string, number> {
+    const every = this.data.story?.npcPantry?.refillMinutes ?? 60;
+    if (!this.npcStock || this.world.minute - this.npcStockAt >= every) {
+      this.npcStock = { ...this.data.balance.startStock };
+      this.npcStockAt = this.world.minute;
+    }
+    return this.npcStock;
+  }
 
   notice(p: Person, kind: string, args?: Record<string, string | number>): void {
     // 마을(M6): 조작 가문 밖 사람의 알림은 띄우지 않음 (마을 소식은 town_news 로 따로)
@@ -847,6 +874,17 @@ export class Simulation {
       this.startAction(p, p.queue[0]);
       if ((p.action as { phase: string } | null)?.phase === 'walk') this.progressAction(p);
     } else {
+      // 마을: 할 일이 없는데 집 부지 밖이면 집으로 (볼일 뒤 먼 곳에 멈춰 서지 않게)
+      const t = this.town;
+      if (t && p.household === 1 && p.homeLot && t.lotOf(p.x, p.y)?.id !== p.homeLot && (p.excludedUntil.get(-2) ?? -1) <= this.world.minute) {
+        const goal = t.targetCell(p, 'home');
+        if (goal !== this.world.grid.idx(p.cellX(), p.cellY())) {
+          p.excludedUntil.set(-2, this.world.minute + 30);
+          this.queueInteraction(p.id, GOTO_ID, goal, true);
+          this.startAction(p, p.queue[0]);
+          return;
+        }
+      }
       p.idleUntil = this.world.minute + this.data.balance.autonomy.idleWanderMinutes;
       p.anim = 'idle';
     }
@@ -1009,6 +1047,7 @@ export class Simulation {
       // 감정이 걸음걸이에 드러남 (11-3: 기운 넘침은 빠르게, 슬픔은 느리게)
       let speed = this.data.balance.movement.walkTilesPerMinute;
       if (this.inner && p.emotionStage >= 1) speed *= this.inner.walkMult(p);
+      speed *= this.rideMult(p, a.path.length - a.pathPos, a.path[a.pathPos] ?? -1);
       this.walk(p, speed);
       return;
     }
@@ -1265,8 +1304,12 @@ export class Simulation {
   // ------------------------------------------------------------------ 생애 판정기 창구 (18-3)
 
   private judgeHost(): import('./town/lifeJudge').JudgeHost {
+    const sim = this;
     return {
-      persons: this.persons,
+      // 방문 중인 이웃(마을 밖 사람)은 판정기 대상이 아님
+      get persons() {
+        return sim.persons.filter((q) => !q.visitor);
+      },
       rng: new Rng((this.seed * 131 + 71) >>> 0),
       rel: this.rel,
       town: this.town,
@@ -1276,7 +1319,7 @@ export class Simulation {
       kill: (p, cause) => this.killPerson(p, cause),
       birth: (m, f) => this.bornTo(m, f),
       moveTo: (p, hh, lot) => this.moveHousehold(p, hh, lot),
-      newHousehold: () => Math.max(100, ...this.persons.map((q) => q.household)) + 1,
+      newHousehold: () => this.newHouseholdId(),
       emptyLot: (size) => this.freeLot(size),
       immigrate: (n) => this.immigrate(n),
       emigrate: (hh) => {
@@ -1300,6 +1343,22 @@ export class Simulation {
         this.inner?.invalidate(p);
       },
     };
+  }
+
+  private nextHousehold = 0;
+  /** 새 가구 번호: 계속 늘기만 함 (끊긴 가구 번호를 다시 쓰지 않음 → 부지/가문 이름이 섞이지 않게) */
+  private newHouseholdId(): number {
+    if (!this.nextHousehold) this.nextHousehold = Math.max(100, ...this.persons.filter((q) => !q.visitor).map((q) => q.household)) + 1;
+    return this.nextHousehold++;
+  }
+
+  /** 가구의 마지막 사람이 떠나면 부지/가문 이름/사는 장소를 비움 (빈 집이 됨) */
+  private releaseHousehold(hh: number): void {
+    const t = this.town;
+    if (!t || hh === 1 || this.persons.some((q) => q.household === hh)) return;
+    for (const [lot, h] of [...t.lotHousehold]) if (h === hh) t.lotHousehold.delete(lot);
+    t.householdName.delete(hh);
+    t.householdResidence.delete(hh);
   }
 
   /** 마을 소식 + 눈에 띄는 일은 소문으로 (당사자와 식구가 먼저 앎) */
@@ -1340,10 +1399,17 @@ export class Simulation {
         if (kin) this.addEngineMoodlet(q, p.stage === 'child' ? 'child_death_grief' : 'funeral_grief');
       }
     }
+    // 그 사람을 대상으로 한 남의 대기열/사회 행동도 정리
+    for (const q of this.persons) {
+      if (q === p) continue;
+      q.queue = q.queue.filter((it) => !(this.data.social[it.interactionId] && it.targetUid === p.id));
+      if (q.action && this.data.social[q.action.item.interactionId] && q.action.item.targetUid === p.id) this.abortAction(q, 'target_left');
+    }
     const i = this.persons.indexOf(p);
     if (i >= 0) this.persons.splice(i, 1);
     this.inner?.forget(p);
     this.rumors?.forget(p.id);
+    this.releaseHousehold(p.household);
     if (p.townId) this.town?.personById.delete(p.townId);
     this.gone.push({ id: p.id, name: p.name, cause, day: this.world.day(), household: p.household });
     if (this.gone.length > 500) this.gone.shift();
@@ -1354,7 +1420,7 @@ export class Simulation {
   private bornTo(mother: Person, father: Person | null): Person | null {
     const sex: 'male' | 'female' = this.rng.next() < 0.5 ? 'male' : 'female';
     const pool = this.namePool[sex];
-    const name = pool.length ? pool[Math.floor(this.rng.next() * pool.length)] : sex === 'male' ? '아기' : '아기';
+    const name = pool.length ? pool[Math.floor(this.rng.next() * pool.length)] : mother.name;
     const baby = this.addPerson(name, mother.x, mother.y, { estate: mother.estate, sex, stage: 'child', household: mother.household });
     baby.lifeStage = 'baby';
     baby.ageDays = 0;
@@ -1363,14 +1429,14 @@ export class Simulation {
     baby.mother = mother.id;
     baby.father = father?.id ?? 0;
     baby.homeLot = mother.homeLot;
-    baby.lod = mother.lod === 'full' ? 'summary' : mother.lod;
+    baby.lod = 'summary';
     baby.appearance = { town: `born_${baby.id}`, seed: (baby.id * 2654435761) >>> 0, sex, stage: 'child', estate: mother.estate };
     for (const q of this.persons) {
       if (q === baby || q.household !== baby.household) continue;
       const r = this.rel.ensure(baby.id, q.id);
       r.met = true;
       r.flags.add('family');
-      r.friendship = 30;
+      r.friendship = this.data.story?.newborn?.familyFriendship ?? 30;
     }
     return baby;
   }
@@ -1407,14 +1473,14 @@ export class Simulation {
     const t = this.town;
     if (!t) return [];
     const lot = this.freeLot('small');
-    const hh = Math.max(100, ...this.persons.map((q) => q.household)) + 1;
+    const hh = this.newHouseholdId();
     const ex = this.world.exits[0];
     const out: Person[] = [];
-    const estate = this.rng.next() < 0.5 ? 'freeman' : 'serf';
+    const estate = this.rng.next() < (this.data.story?.population.immigrantFreemanChance ?? 0.5) ? 'freeman' : 'serf';
     for (let k = 0; k < n; k++) {
       const sex: 'male' | 'female' = k === 0 ? 'male' : k === 1 ? 'female' : this.rng.next() < 0.5 ? 'male' : 'female';
       const pool = this.namePool[sex];
-      const name = pool.length ? pool[Math.floor(this.rng.next() * pool.length)] : '나그네';
+      const name = pool.length ? pool[Math.floor(this.rng.next() * pool.length)] : `#${hh}`;
       const stage: import('./people/person').LifeStage = k < 2 ? 'young' : 'child';
       const p = this.addTownPerson({ id: `im_${this.world.day()}_${k}_${hh}`, name, sex, stage, ageDays: Math.floor(this.rng.next() * 10) }, hh, estate, (ex?.x ?? 1) + 0.5, (ex?.y ?? 1) + 0.5);
       p.homeLot = lot;
@@ -1455,8 +1521,37 @@ export class Simulation {
 
   /** 마을: 자기 집 부지 물건, 공공/바깥 물건, 손님이면 초대한 집 물건만 */
   private canUse(p: Person, o: ObjectInstance): boolean {
-    const owner = this.town!.ownerOf(o.x, o.y);
-    if (owner === 0 || owner === p.household) return true;
+    const t = this.town!;
+    // 마을에서는 지도 가장자리 출구로 장보러 나가지 않음 (장터 노점이 지도 안에 있음)
+    if (o.defId === 'lot_exit') return false;
+    const owner = t.ownerOf(o.x, o.y);
+    if (owner < 0) return false;
+    if (owner === p.household) return true;
+    if (owner === 0) {
+      // 장소 안의 침대/부엌/궤짝은 그곳에 사는 가문과 그곳 일꾼만 (성, 교회, 여관 부엌, 공방 거리 빵집 …)
+      const pl = t.placeOf(o.x, o.y);
+      if (pl) {
+        const ro = this.data.story?.town?.residentOnly ?? [];
+        const restricted = ro.some((k) => (k.endsWith('*') ? o.defId.startsWith(k.slice(0, -1)) : o.defId === k));
+        if (restricted && !t.residentsOf(pl.id).includes(p.household) && t.resolveAt(p, { from: 0, to: 24, at: 'work' }) !== pl.id) return false;
+      }
+      // 조작 가문 (자율): 밤에는 집 안만, 낮에는 집에서 가까운 공공장소 + 볼일(장보기)
+      if (p.household === 1 && !p.visitor) {
+        const T = this.data.story?.town;
+        const h = this.world.hour();
+        const errand = this.data.compiled.byDef.get(o.defId)?.some((c) => (c.def.tags ?? []).includes('duty') && c.supportWhen.length > 0);
+        const [d0, d1] = T?.playerRoamHours ?? [7, 20];
+        if (h < d0 || h >= d1) return false;
+        if (errand) return true;
+        const home = t.playerLot();
+        if (home) {
+          const cx = (home.rect[0] + home.rect[2]) / 2;
+          const cy = (home.rect[1] + home.rect[3]) / 2;
+          if (Math.hypot(o.x - cx, (o.y % (t.lots.length ? this.world.lot.h + 1 : 1)) - cy) > (T?.playerRoamTiles ?? 40)) return false;
+        }
+      }
+      return true;
+    }
     if (p.visitor && owner === 1) return true;
     return false;
   }
@@ -1470,13 +1565,57 @@ export class Simulation {
     const g = this.world.grid;
     const gx = goal % g.w;
     const gy = Math.floor(goal / g.w);
-    const here = at === 'home' ? t.lotOf(p.x, p.y)?.id === p.homeLot : t.placeOf(p.x, p.y)?.id === at || Math.abs(gx - p.x) + Math.abs(gy - p.y) < 6;
+    const cur = g.idx(p.cellX(), p.cellY());
+    // 집 없는 사람(부지 배정 전)은 제자리가 집: 도착한 것으로
+    const here = goal === cur || (at === 'home' ? !p.homeLot || t.lotOf(p.x, p.y)?.id === p.homeLot : t.placeOf(p.x, p.y)?.id === at || Math.abs(gx - p.x) + Math.abs(gy - p.y) < 6);
     if (here) return false;
     if ((p.excludedUntil.get(-1) ?? -1) > this.world.minute) return false;
     this.queueInteraction(p.id, GOTO_ID, goal, true);
     this.startAction(p, p.queue[0]);
     if ((p.action as { phase: string } | null)?.phase === 'walk') this.progressAction(p);
     return true;
+  }
+
+  /**
+   * 말 타기 (18-5): 말이 있는 어른이 집 밖(방이 아닌 칸)에서 먼 길을 가면 말을 탐 → 걷기의 horseSpeedMult 배.
+   * 방 안에 들어서거나 거의 다 오면 내림
+   */
+  private rideMult(p: Person, remaining: number, next: number): number {
+    const tr = this.data.story?.travel;
+    const order = ['baby', 'toddler', 'child', 'teen', 'young', 'adult', 'elder'];
+    const can = !!tr && p.horse >= 0 && order.indexOf(p.lifeStage) >= order.indexOf(tr.horseMinStage) && !p.carry;
+    const g = this.world.grid;
+    const here = g.idx(p.cellX(), p.cellY());
+    const outdoors = here >= 0 && g.room[here] < 0 && (next < 0 || g.room[next] < 0);
+    if (can && outdoors && remaining >= (p.riding ? 3 : tr!.rideMinTiles)) p.riding = true;
+    else p.riding = false;
+    return p.riding ? tr!.horseSpeedMult : 1;
+  }
+
+  /**
+   * 이사 (18-5, 23-1): 빈 집 부지를 사고 살던 집을 판 값으로 보탬. 식구는 새 집을 집으로 삼고 걸어서 감 (집으로 돌아가기),
+   * 건축 범위가 새 부지로 바뀜. 결과 {ok, reason?, price, refund}
+   */
+  private moveHouse(lotId: string): { ok: boolean; reason?: string; price: number; refund: number } {
+    const t = this.town;
+    const lot = t?.lot(lotId);
+    if (!t || !lot || t.lotHousehold.has(lotId)) return { ok: false, reason: 'taken', price: 0, refund: 0 };
+    const old = t.playerLot();
+    const rate = this.data.story?.town?.sellBackRate ?? 0.8;
+    const refund = old ? Math.round(old.price * rate) : 0;
+    const a = this.econ?.account(1);
+    if (a && this.econ) {
+      if (a.money + refund < lot.price) return { ok: false, reason: 'no_money', price: lot.price, refund };
+      if (refund) this.econ.earn(a, refund, 'house_sale', false);
+      this.econ.spend(a, lot.price, 'house');
+    }
+    if (old) t.lotHousehold.delete(old.id);
+    t.lotHousehold.set(lot.id, 1);
+    for (const p of this.persons) if (p.household === 1) p.homeLot = lot.id;
+    if (this.builder) this.builder.area = [...lot.rect];
+    const host = this.persons.find((p) => p.household === 1);
+    if (host) this.notice(host, 'moved_house', { price: lot.price, refund });
+    return { ok: true, price: lot.price, refund };
   }
 
   /** 조작 가문과 어울리는 중 (세밀도 승급 조건) */
@@ -2321,7 +2460,7 @@ export class Simulation {
       this.persons.push(p);
     } else {
       p = this.addPerson(nb.name, ex.x + 0.5, ex.y + 0.5, {
-        traits: nb.traits, estate: nb.estate, sex: nb.sex, stage: nb.stage, household: 100 + idx,
+        traits: nb.traits, estate: nb.estate, sex: nb.sex, stage: nb.stage, household: (this.town ? 900 : 100) + idx,
         virtue: nb.virtue ?? null, sin: nb.sin ?? null, topics: nb.topics, innerSeed: nb.seed,
       });
       p.appearance = { neighbor: nb.id, seed: nb.seed, sex: nb.sex };

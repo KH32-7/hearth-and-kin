@@ -133,12 +133,16 @@ export interface StoryData {
   elderHazard: { base: number; k: number; healthGood: number; healthPoor: number };
   backgroundDeath: Record<string, number>;
   backgroundCauses: Record<string, number>;
-  marriage: { minStage: string; minAge: number; baseDaily: number; estateGapPenalty: number; friendshipBonus: number; ageGapYears: number; betrothalDays: number; spouseMovesTo: string };
-  pregnancy: { perCoitus: number; coitusPerDay: Record<string, number>; fertileAge: [number, number]; declineFromAge: number; stageDays: number; twins: number; lossChance: number; maternalDeath: number; birthCooldownDays: number };
-  population: { target: number; feedbackMin: number; feedbackMax: number; immigrateBelow: number; emigrateAbove: number; migrationCheckDays: number };
+  marriage: { minStage: string; minAge: number; baseDaily: number; estateGapPenalty: number; friendshipBonus: number; ageGapYears: number; betrothalDays: number; spouseMovesTo: string; clergyMult: number; romanceBonus: number; dailyCap: number; poolDivisor: number; engagedRomance: number; engagedFriendship: number; estateRank: string[] };
+  pregnancy: { perCoitus: number; coitusPerDay: Record<string, number>; fertileAge: [number, number]; declineFromAge: number; stageDays: number; twins: number; lossChance: number; maternalDeath: number; birthCooldownDays: number; declineYears: number; declineFloor: number };
+  population: { target: number; feedbackMin: number; feedbackMax: number; immigrateBelow: number; emigrateAbove: number; migrationCheckDays: number; immigrantFamily: [number, number]; immigrantFreemanChance: number };
   household: { cap: number; controllableCap: number; splitChance: number };
-  rumor: { base: number; householdEvening: number; maxPairsPerPlace: number; forgetDays: number };
+  rumor: { base: number; householdEvening: number; maxPairsPerPlace: number; forgetDays: number; eveningHours?: [number, number] };
   news: { keep: number };
+  town?: { residentOnly: string[]; playerRoamHours?: [number, number]; playerRoamTiles?: number; sellBackRate?: number };
+  npcPantry?: { refillMinutes: number };
+  newborn?: { familyFriendship: number };
+  travel?: { horseSpeedMult: number; rideMinTiles: number; horseEstates: string[]; horseWealth: string[]; horseMinStage: string };
   lod: { viewMarginTiles: number; demoteFullMinutes: number; demoteSimpleMinutes: number; checkMinutes: number; simpleNeedsMinutes: number };
 }
 

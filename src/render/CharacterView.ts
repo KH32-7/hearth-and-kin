@@ -66,6 +66,10 @@ class CharacterNode {
   seatObj = -1;
   /** 서 있는 층 판 (스냅샷 목표 위치 기준) */
   slab = 0;
+  /** 말 (18-5, LPC Horses 128px 칸) */
+  horse: THREE.Mesh | null = null;
+  horseMat: THREE.ShaderMaterial | null = null;
+  horseColor = -1;
 
   constructor(group: THREE.Group, shadowTex: THREE.Texture) {
     this.mat = makeSpriteMaterial(new THREE.Texture());
@@ -89,6 +93,8 @@ export class CharacterView {
   seatInset = 4;
   /** 앉아서 든 물건을 서 있을 때보다 몇 px 내릴지 */
   seatCarryDrop = 6;
+  /** 말 시트 (털색 0~4): HearthGame 이 불러 넣음. 128px 칸, 행 0~3 = 질주 위/왼/아래/오른 */
+  horseTextures: THREE.Texture[] = [];
 
   constructor(
     private world: WorldView,
@@ -141,6 +147,7 @@ export class CharacterView {
       if (seen.has(id)) continue;
       this.group.remove(n.mesh, n.shadow);
       if (n.carry) this.group.remove(n.carry);
+      if (n.horse) this.group.remove(n.horse);
       if (n.blanket) this.group.remove(n.blanket);
       this.nodes.delete(id);
     }
@@ -195,6 +202,7 @@ export class CharacterView {
     if (p.hidden || !vis.visible) {
       n.mesh.visible = false;
       n.shadow.visible = false;
+      if (n.horse) n.horse.visible = false;
       if (n.carry) n.carry.visible = false;
       if (n.blanket) n.blanket.visible = false;
       return;
@@ -208,6 +216,10 @@ export class CharacterView {
       anim = 'hurt';
     } else if (p.sleeping || (p.pose === 'lie' && p.underBlanket)) {
       anim = 'sleep';
+    } else if (p.riding !== undefined && this.horseTextures[p.riding]) {
+      // 말 위: 의자 자세로 안장에 앉음
+      anim = 'sit';
+      fixedFrame = (sheet.anims.sit as { poses?: Record<string, number> } | undefined)?.poses?.chair ?? 2;
     } else if (moving || p.anim === 'walk') {
       anim = p.carry ? 'carry' : 'walk';
       if (!moving && p.anim === 'walk') anim = p.carry ? 'carry' : 'idle';
@@ -263,7 +275,11 @@ export class CharacterView {
       // 앉기: 엉덩이가 좌석 윗면에 오도록 발을 칸 아래쪽 가장자리 가까이 (LPC 의자 자세는 다리가 앞으로 나옴)
       const seated = p.pose === 'sit' && !moving;
       if (seated) footY = (Math.floor((n.fy + yo) / this.world.tile) + 1) * this.world.tile - this.seatInset - yo;
-      placeRect(n.mesh, footX - sheet.anchorX, footY - sheet.anchorY, fw, fh);
+      const riding = anim === 'sit' && p.riding !== undefined && !!this.horseTextures[p.riding];
+      // 말 위: 안장 높이만큼 올려 그림 (옆모습은 안장이 등 가운데, 앞/뒷모습은 조금 낮게)
+      const lift = riding ? (facing === 'left' || facing === 'right' ? 16 : 12) : 0;
+      placeRect(n.mesh, footX - sheet.anchorX + (riding && facing === 'left' ? 2 : riding && facing === 'right' ? -2 : 0), footY - lift - sheet.anchorY, fw, fh);
+      this.updateHorse(n, riding ? p.riding! : -1, facing, footX, footY, order, nowMs);
       // 앉기: 의자/걸상 위에 그림. 등을 보이고 앉거나(위쪽) 통 안(목욕)이면 물건이 몸을 가림
       if (p.pose === 'stand') n.seatObj = -1;
       else if (p.action && p.action.stepObj >= 0 && p.action.phase === 'perform') n.seatObj = p.action.stepObj;
@@ -282,6 +298,32 @@ export class CharacterView {
 
     // 들고 있는 물건
     this.updateCarry(n, p.carry, facing, footX, footY, order, p.pose === 'sit' && !moving);
+  }
+
+  /** 말: 질주 4프레임 (방향별 행). 사람 바로 뒤에 그림 (아래쪽을 보면 말 머리가 사람 앞) */
+  private updateHorse(n: CharacterNode, color: number, facing: FacingName, fx: number, fy: number, order: number, nowMs: number): void {
+    if (color < 0) {
+      if (n.horse) n.horse.visible = false;
+      return;
+    }
+    const tex = this.horseTextures[color];
+    if (!n.horse) {
+      n.horseMat = makeSpriteMaterial(tex);
+      n.horse = new THREE.Mesh(quad, n.horseMat);
+      this.group.add(n.horse);
+    }
+    if (n.horseColor !== color) {
+      n.horseMat!.uniforms.map.value = tex;
+      n.horseColor = color;
+    }
+    const row = facing === 'up' ? 0 : facing === 'left' ? 1 : facing === 'down' ? 2 : 3;
+    const frame = Math.floor(nowMs / 90) % 4;
+    const img = tex.image as { width: number; height: number };
+    setUvRect(n.horseMat!, img.width, img.height, frame * 128, row * 128, 128, 128);
+    // 발굽이 칸의 발 위치에 오게 (시트 칸 아래 여백 약 18px)
+    placeRect(n.horse, fx - 64, fy - 100, 128, 128);
+    n.horse.renderOrder = facing === 'down' ? order + 1 : order - 1;
+    n.horse.visible = true;
   }
 
   private updateCarry(n: CharacterNode, item: string | null, facing: FacingName, fx: number, fy: number, order: number, seated = false): void {

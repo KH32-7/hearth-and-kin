@@ -239,8 +239,30 @@ export class Builder {
   // ---------------------------------------------------------------- 실행
 
   /** 편집 하나를 적용. 실패하면 아무것도 바꾸지 않음 */
+  /** 마을(M6): 편집할 수 있는 범위 = 조작 가문 부지 (1층 판 좌표, 모든 층). null = 부지 전체 */
+  area: [number, number, number, number] | null = null;
+
+  /** 편집이 내 부지 안인가 (마을에서 남의 땅/공공 장소를 고치지 않게) */
+  private inArea(op: BuildOp): boolean {
+    const a = this.area;
+    if (!a) return true;
+    const H = this.lot.h + 1;
+    const inside = (x: number, y: number) => x >= a[0] && x <= a[2] && y % H >= a[1] && y % H <= a[3];
+    const o = op as { x0?: number; y0?: number; x1?: number; y1?: number; x?: number; y?: number; uid?: number };
+    // 지붕 재질은 지도 전체 하나 (건물별 지붕은 DECISIONS M6-7): 마을에서는 바꾸지 않음
+    if (op.op === 'roof') return false;
+    if (o.x0 !== undefined) return inside(o.x0, o.y0!) && inside(o.x1!, o.y1!);
+    if (o.uid !== undefined) {
+      const ob = this.host.world.byUid.get(o.uid);
+      if (!ob || !inside(ob.x, ob.y)) return false;
+    }
+    if (o.x !== undefined) return inside(o.x, o.y!);
+    return true;
+  }
+
   apply(op: BuildOp, fromRedo = false): BuildResult {
     if (!this.host.data.build) return { ok: false, reason: 'disabled', cost: 0, warnings: [] };
+    if (!this.inArea(op)) return { ok: false, reason: 'outside_lot', cost: 0, warnings: [] };
     const before: Snapshot = { lot: cloneLot(this.lot), objects: this.cloneObjects(), cost: 0 };
     const r = this.run(op);
     if (!r.ok) {

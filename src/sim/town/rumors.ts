@@ -51,7 +51,8 @@ export class Rumors {
       }
       g.push(p);
     }
-    const evening = hour >= 19 && hour < 21;
+    const [e0, e1] = this.s.eveningHours ?? [19, 21];
+    const evening = hour >= e0 && hour < e1;
     for (const [place, g] of this.groups) {
       if (g.length < 2) continue;
       const home = place.startsWith('home:');

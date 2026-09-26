@@ -305,7 +305,10 @@ export class WorldView {
       return typeof v === 'string' ? this.pack.tiles[v] : undefined;
     };
     if (id !== 'grass') {
-      const n = !same(0, -1), s = !same(0, 1), e = !same(1, 0), w = !same(-1, 0);
+      let n = !same(0, -1), s = !same(0, 1), e = !same(1, 0), w = !same(-1, 0);
+      // 한 칸 폭 길: 양쪽 가장자리 타일이 없으므로 가운데 타일 (한쪽 가장자리만 그리면 점선처럼 끊겨 보임)
+      if (e && w) e = w = false;
+      if (n && s) n = s = false;
       const t = n && w ? pick('nw') : n && e ? pick('ne') : s && w ? pick('sw') : s && e ? pick('se')
         : n ? pick('n') : s ? pick('s') : e ? pick('e') : w ? pick('w')
         : !same(-1, -1) ? pick('inw') : !same(1, -1) ? pick('ine') : !same(-1, 1) ? pick('isw') : !same(1, 1) ? pick('ise') : undefined;

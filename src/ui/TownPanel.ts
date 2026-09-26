@@ -43,6 +43,20 @@ export interface TownUiHooks {
   zoom(): number;
   /** 사람 id 로 가서 고르기 */
   focusPerson(id: number): void;
+  /** 이사 (18-5): 결과 {ok, reason?} */
+  moveHouse(lot: string): Promise<{ ok: boolean; reason?: string }>;
+  /** 돈 표시 (구리 동전 → 은/동 문자열) */
+  money(n: number): string;
+}
+
+export interface TownLot {
+  id: string;
+  kind: string;
+  size: string;
+  rect: [number, number, number, number];
+  house: string | null;
+  price: number;
+  start?: boolean;
 }
 
 export class TownPanel {
@@ -55,13 +69,23 @@ export class TownPanel {
   private popWrap: HTMLElement;
   private labels: { el: HTMLElement; x: number; y: number; zone: boolean }[] = [];
   private labelLayer: HTMLElement;
-  private seenNews = -1;
+  private seen = new Set<string>();
+  private primed = false;
+  private lastNews: NonNullable<Snapshot['town']>['news'] = [];
   private newsOpen = false;
   private pops: { el: HTMLElement; until: number }[] = [];
   private popQueue: { day: number; kind: string; args: Record<string, string | number> }[] = [];
   private lastPopAt = 0;
   private popTitle: HTMLElement;
   private lastPeople: NonNullable<Snapshot['town']>['people'] = [];
+  private movePanel: HTMLElement;
+  private moveOpen = false;
+  private freeLots: string[] = [];
+  private playerLot: string | null = null;
+  /** 목록에서 가리킨 부지 (미니맵에 반짝임) */
+  private hoverLot: string | null = null;
+  private lotsById = new Map<string, TownLot>();
+  private moveSig = '';
 
   constructor(
     parent: HTMLElement,
@@ -69,7 +93,9 @@ export class TownPanel {
     places: TownPlace[],
     zones: TownZone[],
     private hooks: TownUiHooks,
+    lots: TownLot[] = [],
   ) {
+    for (const l of lots) this.lotsById.set(l.id, l);
     const W = lot.w;
     const H = lot.h;
     this.scale = Math.max(1, Math.min(1.4, 260 / W));
@@ -83,6 +109,10 @@ export class TownPanel {
     this.newsBtn.dataset.testid = 'town-news-btn';
     this.newsBtn.textContent = t('town.news');
     this.newsBtn.onclick = () => this.toggleNews();
+    const moveBtn = el('button', 'town-news-btn', head);
+    moveBtn.dataset.testid = 'town-move-btn';
+    moveBtn.textContent = t('town.move');
+    moveBtn.onclick = () => this.toggleMove();
     const box = el('div', 'town-map-box', this.root);
     box.style.width = `${Math.round(W * this.scale)}px`;
     box.style.height = `${Math.round(H * this.scale)}px`;
@@ -114,6 +144,10 @@ export class TownPanel {
     this.newsList = el('div', 'town-news panel-cream', parent);
     this.newsList.dataset.testid = 'town-news';
     this.newsList.style.display = 'none';
+    // 이사: 빈 집 목록
+    this.movePanel = el('div', 'town-news town-move panel-cream', parent);
+    this.movePanel.dataset.testid = 'town-move';
+    this.movePanel.style.display = 'none';
     // 포고 두루마리 (새 소식이 오면 펼쳐졌다가 말림)
     this.popWrap = el('div', 'crier-wrap', parent);
     // 장소 이름표 (멀리 볼 때)
@@ -171,15 +205,22 @@ export class TownPanel {
     this.lastPeople = town.people;
     this.popTitle.textContent = t('town.population', { n: town.population });
     const news = town.news;
-    const lastDay = news.length ? news[news.length - 1].day * 1000 + news.length : -1;
-    if (this.seenNews < 0) this.seenNews = lastDay;
-    else if (lastDay !== this.seenNews) {
-      // 새로 온 것만 두루마리로 (한 번에 너무 많으면 마지막 셋)
-      const prevCount = this.seenNews % 1000;
-      const fresh = news.slice(Math.max(0, Math.min(prevCount, news.length) - (news.length >= 12 ? 1 : 0)));
-      const add = lastDay > this.seenNews ? fresh.slice(-3) : news.slice(-1);
-      this.popQueue.push(...add);
-      this.seenNews = lastDay;
+    this.lastNews = news;
+    this.freeLots = town.freeLots ?? [];
+    this.playerLot = town.playerLot ?? null;
+    if (this.moveOpen) this.renderMove();
+    // 새 소식: 처음 본 것만 두루마리로 (첫 스냅샷에 있던 것은 이미 본 것으로)
+    const first = this.seen.size === 0 && !this.primed;
+    this.primed = true;
+    const fresh: typeof news = [];
+    for (const n of news) {
+      const key = `${n.day}|${n.kind}|${JSON.stringify(n.args)}`;
+      if (this.seen.has(key)) continue;
+      this.seen.add(key);
+      if (!first) fresh.push(n);
+    }
+    if (fresh.length) {
+      this.popQueue.push(...fresh.slice(-3));
       this.newsBtn.classList.add('fresh');
     }
     if (this.newsOpen) this.renderNews(news);
@@ -200,10 +241,67 @@ export class TownPanel {
     }
   }
 
+  private toggleMove(): void {
+    this.moveOpen = !this.moveOpen;
+    this.movePanel.style.display = this.moveOpen ? '' : 'none';
+    this.moveSig = '';
+    if (this.moveOpen) {
+      this.newsOpen = false;
+      this.newsList.style.display = 'none';
+      this.renderMove();
+    } else this.hoverLot = null;
+  }
+
+  /** 빈 집 목록: 크기, 집값, 지금 집을 팔면 받는 값. 줄을 가리키면 미니맵에서 그 부지가 반짝이고 화면이 그리로 감 */
+  private renderMove(): void {
+    const sig = this.freeLots.join(',') + '|' + this.playerLot;
+    if (sig === this.moveSig) return;
+    this.moveSig = sig;
+    this.movePanel.textContent = '';
+    el('div', 'panel-title', this.movePanel).textContent = t('town.move.title');
+    const mine = this.playerLot ? this.lotsById.get(this.playerLot) : null;
+    const refund = mine ? Math.round(mine.price * 0.8) : 0;
+    if (mine) el('div', 'town-move-note', this.movePanel).textContent = t('town.move.refund', { refund: this.hooks.money(refund) });
+    if (!this.freeLots.length) {
+      el('div', 'town-news-empty', this.movePanel).textContent = t('town.move.none');
+      return;
+    }
+    const list = this.freeLots.map((id) => this.lotsById.get(id)!).filter(Boolean).sort((a, b) => a.price - b.price);
+    for (const l of list) {
+      const row = el('div', 'town-move-row', this.movePanel);
+      row.dataset.lot = l.id;
+      el('span', 'town-move-size', row).textContent = t(l.house ? `town.lot.size.${l.size}` : 'town.lot.empty');
+      el('span', 'town-move-price', row).textContent = this.hooks.money(l.price);
+      const b = el('button', 'town-move-buy', row);
+      b.textContent = t('town.move.buy');
+      b.dataset.testid = `move-${l.id}`;
+      const msg = el('span', 'town-move-msg', row);
+      row.onmouseenter = () => {
+        this.hoverLot = l.id;
+        this.hooks.lookAt((l.rect[0] + l.rect[2] + 1) / 2, (l.rect[1] + l.rect[3] + 1) / 2);
+      };
+      row.onmouseleave = () => {
+        if (this.hoverLot === l.id) this.hoverLot = null;
+      };
+      b.onclick = async () => {
+        const r = await this.hooks.moveHouse(l.id);
+        if (!r.ok) {
+          msg.textContent = t(`town.move.fail.${r.reason ?? 'taken'}`);
+          row.classList.add('shake');
+          setTimeout(() => row.classList.remove('shake'), 400);
+          return;
+        }
+        this.toggleMove();
+        this.hooks.lookAt((l.rect[0] + l.rect[2] + 1) / 2, (l.rect[1] + l.rect[3] + 1) / 2);
+      };
+    }
+  }
+
   private toggleNews(): void {
     this.newsOpen = !this.newsOpen;
     this.newsList.style.display = this.newsOpen ? '' : 'none';
     this.newsBtn.classList.remove('fresh');
+    if (this.newsOpen) this.renderNews(this.lastNews);
   }
 
   /** 프레임마다: 화면 범위 네모, 이름표 위치, 두루마리 */
@@ -228,6 +326,24 @@ export class TownPanel {
       c.beginPath();
       c.arc(p.x * 2, y * 2, 4 + 5 * pulse, 0, Math.PI * 2);
       c.stroke();
+    }
+    // 빈 집(초록 점선), 우리 집(금색), 목록에서 가리킨 집(반짝임)
+    if (this.moveOpen) {
+      c.lineWidth = 1;
+      for (const id of this.freeLots) {
+        const l = this.lotsById.get(id);
+        if (!l) continue;
+        c.strokeStyle = id === this.hoverLot ? `rgba(140,255,120,${0.5 + 0.5 * pulse})` : 'rgba(140,230,120,0.7)';
+        c.setLineDash(id === this.hoverLot ? [] : [2, 2]);
+        c.strokeRect(l.rect[0] * 2 + 0.5, l.rect[1] * 2 + 0.5, (l.rect[2] - l.rect[0] + 1) * 2 - 1, (l.rect[3] - l.rect[1] + 1) * 2 - 1);
+      }
+      c.setLineDash([]);
+    }
+    const mine = this.playerLot ? this.lotsById.get(this.playerLot) : null;
+    if (mine) {
+      c.strokeStyle = `rgba(255,210,80,${0.55 + 0.35 * pulse})`;
+      c.lineWidth = 1.5;
+      c.strokeRect(mine.rect[0] * 2 + 0.5, mine.rect[1] * 2 + 0.5, (mine.rect[2] - mine.rect[0] + 1) * 2 - 1, (mine.rect[3] - mine.rect[1] + 1) * 2 - 1);
     }
     const v = this.hooks.viewTiles();
     c.strokeStyle = 'rgba(255,248,220,0.95)';
@@ -269,6 +385,6 @@ export class TownPanel {
   }
 
   setHidden(h: boolean): void {
-    for (const e of [this.root, this.newsList, this.popWrap, this.labelLayer]) e.classList.toggle('town-hidden', h);
+    for (const e of [this.root, this.newsList, this.movePanel, this.popWrap, this.labelLayer]) e.classList.toggle('town-hidden', h);
   }
 }

@@ -26,6 +26,9 @@ test('M2 내면: 말풍선 · 내면 패널 · 무너짐 카드 · 사회 메뉴
   await game(page, "await g.intent({kind:'queue', personId:1, interactionId:'social.deep_talk', targetUid:2}); g.setSpeed(3); return true;");
   await expect.poll(() => page.locator('.thought').count(), { timeout: 60_000 }).toBeGreaterThan(0);
   await game(page, 'g.setSpeed(1); return true;');
+  // 3배 줌 화면 밖으로 걸어갔을 수 있으니 말풍선 주인에게 카메라를 맞춤
+  await game(page, "const s=g.getState(); const id=s.persons[0].id; const p=s.persons[0].drawn; g.centerOn(p.x, p.y-24); return id;");
+  await page.waitForTimeout(300);
   const th = page.locator('.thought').first();
   const box = (await th.boundingBox())!;
   expect(box.width).toBeGreaterThan(20);

@@ -143,6 +143,8 @@ export interface TownHost {
   goTo(p: Person, cell: number): void;
   abortAll(p: Person): void;
   walkSpeed(): number;
+  /** 말 타기 배수 (남은 길 칸 수, 다음 칸): 타면 p.riding 을 켬 */
+  rideMult(p: Person, remaining: number, nextCell: number): number;
   /** 조작 가정 인물이 누구와 어울리는 중인지 */
   engagedWithControlled(p: Person): boolean;
 }
@@ -226,6 +228,13 @@ export class Town {
     return v ? this.places[v - 1] : null;
   }
 
+  /** 그 장소에 사는 가구들 (residence) */
+  residentsOf(placeId: string): number[] {
+    const out: number[] = [];
+    for (const [hh, pl] of this.householdResidence) if (pl === placeId) out.push(hh);
+    return out;
+  }
+
   /** 가장 가까운 공공 장소 (소식 문구의 {place}) */
   nearestPlace(x: number, y: number): PlaceDef | null {
     let best: PlaceDef | null = null;
@@ -254,11 +263,11 @@ export class Town {
     return null;
   }
 
-  /** 물건 주인: 부지 안이면 그 가구, 공공/바깥이면 0 (누구나) */
+  /** 물건 주인: 부지 안이면 그 가구, 공공/바깥이면 0 (누구나), 아무도 안 사는 집 부지는 -1 (팔 집, 아무도 못 씀) */
   ownerOf(x: number, y: number): number {
     const l = this.lotOf(x, y);
     if (!l) return 0;
-    return this.lotHousehold.get(l.id) ?? 0;
+    return this.lotHousehold.get(l.id) ?? (l.house ? -1 : 0);
   }
 
   // ------------------------------------------------------------------ 사람 채우기
@@ -303,6 +312,9 @@ export class Town {
         p.homeLot = lot?.id ?? null;
         p.role = m.role ?? m.career ?? null;
         p.schedule = m.schedule ?? null;
+        // 말: 기사/귀족 가문, 부유한 가문 (털색은 가문마다 같게)
+        const tr = this.host.data.story?.travel;
+        if (tr && (tr.horseEstates.includes(h.estate) || tr.horseWealth.includes(h.wealth ?? ''))) p.horse = hid % 5;
         p.employer = m.employer ?? null;
         this.personById.set(m.id, p);
       }
@@ -438,7 +450,7 @@ export class Town {
       const lot = lotId ? this.lotById.get(lotId) : null;
       if (lot) {
         const cells = this.homeCells(lot);
-        return cells[(p.id * 7919) % cells.length];
+        if (cells.length) return cells[(p.id * 7919) % cells.length];
       }
       at = (hh && this.householdResidence.get(hh)) || 'home';
     }
@@ -446,7 +458,7 @@ export class Town {
       const lot = p.homeLot ? this.lotById.get(p.homeLot) : null;
       if (!lot) return g.idx(Math.floor(p.x), Math.floor(p.y));
       const cells = this.homeCells(lot);
-      return cells[(p.id * 7919) % cells.length];
+      return cells.length ? cells[(p.id * 7919) % cells.length] : this.nearestWalkable(lot.entrance[0], lot.entrance[1]);
     }
     const pl = this.placeById.get(at);
     const z = pl ? null : this.zones.find((q) => q.id === at);
@@ -457,9 +469,13 @@ export class Town {
     // 사람마다 모임 칸 둘레의 다른 칸 (겹쳐 서지 않게)
     const k = p.id * 2654435761 >>> 0;
     const dx = (k % 7) - 3;
-    const dy = ((k >> 3) % 5) - 2;
+    const dy = ((k >>> 3) % 5) - 2;
     return this.nearestWalkable(Math.max(r[0], Math.min(r[2], ax + dx)), Math.max(r[1], Math.min(r[3], ay + dy)));
   }
+
+  private repathTick = -1;
+  private repaths = 0;
+  static readonly REPATH_PER_TICK = 12;
 
   /** 마을 출구에서 걸어서 닿는 칸 (World 가 캐시) */
   reach(): Uint8Array {
@@ -533,7 +549,8 @@ export class Town {
       const homeNow = at === 'home' || b.do === 'sleep';
       if (p.lodCalmSince < 0) p.lodCalmSince = minute;
       const calm = minute - p.lodCalmSince;
-      if (p.lod === 'full' && calm >= dFull) this.setLod(p, homeNow ? 'summary' : 'simple', minute);
+      // 집에 있어야 요약으로 (귀갓길에 요약이 되면 길에 선 채 밤을 보냄)
+      if (p.lod === 'full' && calm >= dFull) this.setLod(p, homeNow && this.atHome(p) ? 'summary' : 'simple', minute);
       else if (p.lod === 'simple' && homeNow && this.atHome(p) && calm >= dFull + dSimple) this.setLod(p, 'summary', minute);
       else if (p.lod === 'summary' && !homeNow) this.setLod(p, 'simple', minute);
     }
@@ -578,7 +595,14 @@ export class Town {
     const at = this.resolveAt(p, b);
     const goal = this.targetCell(p, at);
     const g = this.host.world.grid;
+    // 일과가 바뀌는 순간 모두가 한꺼번에 길을 찾지 않게 틱마다 길찾기 수 상한 (13-6 프레임 예산)
+    if (goal !== p.simpleGoal && this.repathTick === minute && this.repaths >= Town.REPATH_PER_TICK) return;
     if (goal !== p.simpleGoal) {
+      if (this.repathTick !== minute) {
+        this.repathTick = minute;
+        this.repaths = 0;
+      }
+      this.repaths++;
       p.simpleGoal = goal;
       const here = g.idx(p.cellX(), p.cellY());
       p.simplePath = here === goal ? [] : this.host.findPath(p, here, goal) ?? [];
@@ -589,7 +613,7 @@ export class Town {
         p.y = Math.floor(goal / g.w) + 0.5;
       }
     }
-    let budget = this.host.walkSpeed();
+    let budget = this.host.walkSpeed() * this.host.rideMult(p, p.simplePath.length - p.simpleStep, p.simplePath[p.simpleStep] ?? -1);
     while (budget > 0 && p.simpleStep < p.simplePath.length) {
       const c = p.simplePath[p.simpleStep];
       const cx = (c % g.w) + 0.5;

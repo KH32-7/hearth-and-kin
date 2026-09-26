@@ -2,152 +2,901 @@
  "$comment": "M6 공공 장소 상호작용 (contracts-m6 2절). interactions.json 과 같은 형식. 확장 필드(리드가 엔진에 연결): pay = 끝날 때 내는 돈(파딩, 재고 없이 그 자리에서 먹고 마심), days = 요일 제한, removeMoodlets = 끝날 때 지우는 무드렛, skill = 경험치 스킬",
  "interactions": {
   "stall.buy_food": {
-   "nameKey": "ia.stall_buy_food", "icon": "item.ingredients", "objects": ["market_stall_food"],
-   "tags": ["duty", "outdoor", "social"], "requires": { "money": 6 }, "hours": [6, 18],
-   "steps": [{ "at": "target", "slot": "front", "anim": "idle", "minutes": 15, "needs": { "social": 0.15, "fun": 0.05 }, "carry": "basket" }],
-   "effects": { "buy": { "ingredients": 8, "bread": 4, "flour": 4 } },
-   "ads": { "social": 6, "fun": 3 }, "supportAds": { "hunger": 80 }, "supportWhen": ["stock:ingredients<=3|stock:bread<=1"],
-   "moodlets": [{ "id": "bought_something", "chance": 0.4 }, { "id": "market_day", "chance": 0.3 }]
+   "nameKey": "ia.stall_buy_food",
+   "icon": "item.ingredients",
+   "objects": [
+    "market_stall_food"
+   ],
+   "tags": [
+    "duty",
+    "outdoor",
+    "social"
+   ],
+   "requires": {
+    "money": 6
+   },
+   "hours": [
+    6,
+    18
+   ],
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front",
+     "anim": "idle",
+     "minutes": 15,
+     "needs": {
+      "social": 0.15,
+      "fun": 0.05
+     },
+     "carry": "basket"
+    }
+   ],
+   "effects": {
+    "buy": {
+     "ingredients": 16,
+     "bread": 8,
+     "flour": 6
+    }
+   },
+   "ads": {
+    "social": 6,
+    "fun": 3
+   },
+   "supportAds": {
+    "hunger": 80
+   },
+   "supportWhen": [
+    "stock:ingredients<=3|stock:bread<=1"
+   ],
+   "moodlets": [
+    {
+     "id": "bought_something",
+     "chance": 0.4
+    },
+    {
+     "id": "market_day",
+     "chance": 0.3
+    }
+   ],
+   "$comment": "장보기 (M6): 장터까지 걸어가야 해서 한 번에 이틀 치 (ingredients 16, bread 8). effects.buy = 채울 목표 재고"
   },
   "stall.buy_cloth": {
-   "nameKey": "ia.stall_buy_cloth", "icon": "item.yarn", "objects": ["market_stall_cloth"],
-   "tags": ["outdoor", "social"], "requires": { "money": 20 }, "hours": [6, 18],
-   "steps": [{ "at": "target", "slot": "front", "anim": "idle", "minutes": 20, "needs": { "social": 0.15, "fun": 0.1 } }],
-   "effects": { "buy": { "cloth": 1, "yarn": 2 } },
-   "ads": { "social": 6, "fun": 6 },
-   "moodlets": [{ "id": "bought_something", "chance": 0.6 }]
+   "nameKey": "ia.stall_buy_cloth",
+   "icon": "item.yarn",
+   "objects": [
+    "market_stall_cloth"
+   ],
+   "tags": [
+    "outdoor",
+    "social"
+   ],
+   "requires": {
+    "money": 20
+   },
+   "hours": [
+    6,
+    18
+   ],
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front",
+     "anim": "idle",
+     "minutes": 20,
+     "needs": {
+      "social": 0.15,
+      "fun": 0.1
+     }
+    }
+   ],
+   "effects": {
+    "buy": {
+     "cloth": 1,
+     "yarn": 2
+    }
+   },
+   "ads": {
+    "social": 6,
+    "fun": 6
+   },
+   "moodlets": [
+    {
+     "id": "bought_something",
+     "chance": 0.6
+    }
+   ]
   },
   "stall.buy_tools": {
-   "nameKey": "ia.stall_buy_tools", "icon": "axe", "objects": ["market_stall_tools"],
-   "tags": ["duty", "outdoor", "social"], "requires": { "money": 12 }, "hours": [6, 18],
-   "steps": [{ "at": "target", "slot": "front", "anim": "idle", "minutes": 15, "needs": { "social": 0.1 } }],
-   "effects": { "buy": { "nails": 6, "firewood": 8 } },
-   "ads": { "social": 4 }, "supportAds": { "warmth": 40 }, "supportWhen": ["stock:firewood<=2"],
-   "moodlets": [{ "id": "bought_something", "chance": 0.3 }]
+   "nameKey": "ia.stall_buy_tools",
+   "icon": "axe",
+   "objects": [
+    "market_stall_tools"
+   ],
+   "tags": [
+    "duty",
+    "outdoor",
+    "social"
+   ],
+   "requires": {
+    "money": 12
+   },
+   "hours": [
+    6,
+    18
+   ],
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front",
+     "anim": "idle",
+     "minutes": 15,
+     "needs": {
+      "social": 0.1
+     }
+    }
+   ],
+   "effects": {
+    "buy": {
+     "nails": 6,
+     "firewood": 8
+    }
+   },
+   "ads": {
+    "social": 4
+   },
+   "supportAds": {
+    "warmth": 40
+   },
+   "supportWhen": [
+    "stock:firewood<=2"
+   ],
+   "moodlets": [
+    {
+     "id": "bought_something",
+     "chance": 0.3
+    }
+   ]
   },
   "stall.buy_livestock": {
-   "nameKey": "ia.stall_buy_livestock", "icon": "item.ingredients", "objects": ["market_stall_livestock"],
-   "tags": ["duty", "outdoor", "social"], "requires": { "money": 8 }, "hours": [6, 14],
-   "steps": [{ "at": "target", "slot": "front", "anim": "idle", "minutes": 15, "needs": { "social": 0.15 } }],
-   "effects": { "buy": { "eggs": 6, "milk": 2, "meat": 2 } },
-   "ads": { "social": 5 }, "supportAds": { "hunger": 50 }, "supportWhen": ["stock:ingredients<=2"],
-   "moodlets": [{ "id": "bought_something", "chance": 0.3 }]
+   "nameKey": "ia.stall_buy_livestock",
+   "icon": "item.ingredients",
+   "objects": [
+    "market_stall_livestock"
+   ],
+   "tags": [
+    "duty",
+    "outdoor",
+    "social"
+   ],
+   "requires": {
+    "money": 8
+   },
+   "hours": [
+    6,
+    14
+   ],
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front",
+     "anim": "idle",
+     "minutes": 15,
+     "needs": {
+      "social": 0.15
+     }
+    }
+   ],
+   "effects": {
+    "buy": {
+     "eggs": 6,
+     "milk": 2,
+     "meat": 2
+    }
+   },
+   "ads": {
+    "social": 5
+   },
+   "supportAds": {
+    "hunger": 50
+   },
+   "supportWhen": [
+    "stock:ingredients<=2"
+   ],
+   "moodlets": [
+    {
+     "id": "bought_something",
+     "chance": 0.3
+    }
+   ]
   },
   "stall.haggle": {
-   "nameKey": "ia.stall_haggle", "icon": "ui.coin", "objects": ["market_stall_food", "market_stall_cloth", "market_stall_tools", "market_stall_livestock"],
-   "tags": ["social", "brag", "outdoor"], "requires": { "money": 4 }, "hours": [6, 18],
-   "steps": [{ "at": "target", "slot": "front", "anim": "idle", "minutes": 15, "needs": { "social": 0.4, "fun": 0.3 } }],
-   "ads": { "social": 14, "fun": 10 },
-   "moodlets": [{ "id": "good_bargain", "chance": 0.45 }, { "id": "bad_bargain", "chance": 0.2 }]
+   "nameKey": "ia.stall_haggle",
+   "icon": "ui.coin",
+   "objects": [
+    "market_stall_food",
+    "market_stall_cloth",
+    "market_stall_tools",
+    "market_stall_livestock"
+   ],
+   "tags": [
+    "social",
+    "brag",
+    "outdoor"
+   ],
+   "requires": {
+    "money": 4
+   },
+   "hours": [
+    6,
+    18
+   ],
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front",
+     "anim": "idle",
+     "minutes": 15,
+     "needs": {
+      "social": 0.4,
+      "fun": 0.3
+     }
+    }
+   ],
+   "ads": {
+    "social": 14,
+    "fun": 10
+   },
+   "moodlets": [
+    {
+     "id": "good_bargain",
+     "chance": 0.45
+    },
+    {
+     "id": "bad_bargain",
+     "chance": 0.2
+    }
+   ]
   },
   "stall.browse": {
-   "nameKey": "ia.stall_browse", "icon": "eye", "objects": ["market_stall_food", "market_stall_cloth", "market_stall_tools", "market_stall_livestock"],
-   "tags": ["social", "outdoor"], "requires": {}, "hours": [6, 18],
-   "steps": [{ "at": "target", "slot": "front2", "anim": "idle", "minutes": 12, "needs": { "social": 0.3, "fun": 0.4 } }],
-   "ads": { "social": 10, "fun": 10 },
-   "moodlets": [{ "id": "market_day", "chance": 0.3 }]
+   "nameKey": "ia.stall_browse",
+   "icon": "eye",
+   "objects": [
+    "market_stall_food",
+    "market_stall_cloth",
+    "market_stall_tools",
+    "market_stall_livestock"
+   ],
+   "tags": [
+    "social",
+    "outdoor"
+   ],
+   "requires": {},
+   "hours": [
+    6,
+    18
+   ],
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front2",
+     "anim": "idle",
+     "minutes": 12,
+     "needs": {
+      "social": 0.3,
+      "fun": 0.4
+     }
+    }
+   ],
+   "ads": {
+    "social": 10,
+    "fun": 10
+   },
+   "moodlets": [
+    {
+     "id": "market_day",
+     "chance": 0.3
+    }
+   ]
   },
   "pew.attend_mass": {
-   "nameKey": "ia.attend_mass", "icon": "emo.pious", "objects": ["church_pew"],
-   "tags": ["pray", "social", "humble"], "requires": {}, "hours": [8, 12], "days": ["sun"], "skill": "faith",
-   "steps": [{ "at": "target", "slot": { "pose": "sit" }, "anim": "sit", "minutes": 90, "needs": { "social": 0.08, "fun": 0.03, "comfort": 0.2 } }],
-   "ads": { "social": 16, "fun": 8 },
-   "moodlets": [{ "id": "sermon_moved", "chance": 0.7 }, { "id": "grace_felt", "chance": 0.15 }],
-   "removeMoodlets": ["missed_mass"]
+   "nameKey": "ia.attend_mass",
+   "icon": "emo.pious",
+   "objects": [
+    "church_pew"
+   ],
+   "tags": [
+    "pray",
+    "social",
+    "humble"
+   ],
+   "requires": {},
+   "hours": [
+    8,
+    12
+   ],
+   "days": [
+    "sun"
+   ],
+   "skill": "faith",
+   "steps": [
+    {
+     "at": "target",
+     "slot": {
+      "pose": "sit"
+     },
+     "anim": "sit",
+     "minutes": 90,
+     "needs": {
+      "social": 0.08,
+      "fun": 0.03,
+      "comfort": 0.2
+     }
+    }
+   ],
+   "ads": {
+    "social": 16,
+    "fun": 8
+   },
+   "moodlets": [
+    {
+     "id": "sermon_moved",
+     "chance": 0.7
+    },
+    {
+     "id": "grace_felt",
+     "chance": 0.15
+    }
+   ],
+   "removeMoodlets": [
+    "missed_mass"
+   ]
   },
   "pew.pray": {
-   "nameKey": "ia.pray", "icon": "emo.pious", "objects": ["church_pew"],
-   "tags": ["pray", "humble", "solitary"], "requires": {}, "skill": "faith",
-   "steps": [{ "at": "target", "slot": { "pose": "sit" }, "anim": "sit", "minutes": 20, "needs": { "fun": 0.1, "social": 0.1, "comfort": 0.3 } }],
-   "ads": { "fun": 10, "social": 8 },
-   "moodlets": [{ "id": "prayer_calm" }]
+   "nameKey": "ia.pray",
+   "icon": "emo.pious",
+   "objects": [
+    "church_pew"
+   ],
+   "tags": [
+    "pray",
+    "humble",
+    "solitary"
+   ],
+   "requires": {},
+   "skill": "faith",
+   "steps": [
+    {
+     "at": "target",
+     "slot": {
+      "pose": "sit"
+     },
+     "anim": "sit",
+     "minutes": 20,
+     "needs": {
+      "fun": 0.1,
+      "social": 0.1,
+      "comfort": 0.3
+     }
+    }
+   ],
+   "ads": {
+    "fun": 10,
+    "social": 8
+   },
+   "moodlets": [
+    {
+     "id": "prayer_calm"
+    }
+   ]
   },
   "altar.pray": {
-   "nameKey": "ia.altar_pray", "icon": "emo.pious", "objects": ["church_altar"],
-   "tags": ["pray", "humble", "solitary"], "requires": {}, "hours": [5, 22], "skill": "faith",
-   "steps": [{ "at": "target", "slot": "front", "anim": "idle", "minutes": 25, "needs": { "fun": 0.15, "social": 0.1 } }],
-   "ads": { "fun": 12, "social": 8 },
-   "moodlets": [{ "id": "prayer_calm" }, { "id": "grace_felt", "chance": 0.1 }]
+   "nameKey": "ia.altar_pray",
+   "icon": "emo.pious",
+   "objects": [
+    "church_altar"
+   ],
+   "tags": [
+    "pray",
+    "humble",
+    "solitary"
+   ],
+   "requires": {},
+   "hours": [
+    5,
+    22
+   ],
+   "skill": "faith",
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front",
+     "anim": "idle",
+     "minutes": 25,
+     "needs": {
+      "fun": 0.15,
+      "social": 0.1
+     }
+    }
+   ],
+   "ads": {
+    "fun": 12,
+    "social": 8
+   },
+   "moodlets": [
+    {
+     "id": "prayer_calm"
+    },
+    {
+     "id": "grace_felt",
+     "chance": 0.1
+    }
+   ]
   },
   "counter.buy_ale": {
-   "nameKey": "ia.buy_ale", "icon": "water", "objects": ["inn_counter"],
-   "tags": ["drink", "social", "night_out", "feast"], "requires": { "money": 3 }, "hours": [11, 24], "pay": 3,
-   "hoursWeight": [[17, 24, 1.8]],
-   "steps": [
-    { "at": "target", "slot": "front", "anim": "idle", "minutes": 3, "needs": { "social": 0.3 } },
-    { "at": { "seatNear": "target" }, "anim": "eat", "minutes": 40, "needs": { "fun": 0.8, "social": 0.5, "energy": -0.03 }, "carry": "bowl" }
+   "nameKey": "ia.buy_ale",
+   "icon": "water",
+   "objects": [
+    "inn_counter"
    ],
-   "ads": { "fun": 30, "social": 24 },
-   "moodlets": [{ "id": "ale_merry", "chance": 0.7 }]
+   "tags": [
+    "drink",
+    "social",
+    "night_out",
+    "feast"
+   ],
+   "requires": {
+    "money": 3
+   },
+   "hours": [
+    11,
+    24
+   ],
+   "pay": 3,
+   "hoursWeight": [
+    [
+     17,
+     24,
+     1.8
+    ]
+   ],
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front",
+     "anim": "idle",
+     "minutes": 3,
+     "needs": {
+      "social": 0.3
+     }
+    },
+    {
+     "at": {
+      "seatNear": "target"
+     },
+     "anim": "eat",
+     "minutes": 40,
+     "needs": {
+      "fun": 0.8,
+      "social": 0.5,
+      "energy": -0.03
+     },
+     "carry": "bowl"
+    }
+   ],
+   "ads": {
+    "fun": 30,
+    "social": 24
+   },
+   "moodlets": [
+    {
+     "id": "ale_merry",
+     "chance": 0.7
+    }
+   ]
   },
   "counter.buy_meal": {
-   "nameKey": "ia.buy_meal", "icon": "stew", "objects": ["inn_counter"],
-   "tags": ["eat_good", "social", "night_out"], "requires": { "money": 4 }, "hours": [11, 22], "pay": 4,
-   "steps": [
-    { "at": "target", "slot": "front", "anim": "idle", "minutes": 3, "needs": { "social": 0.3 } },
-    { "at": { "seatNear": "target" }, "anim": "eat", "minutes": 25, "needs": { "hunger": 3.2, "comfort": 0.4, "social": 0.3 }, "carry": "bowl" }
+   "nameKey": "ia.buy_meal",
+   "icon": "stew",
+   "objects": [
+    "inn_counter"
    ],
-   "ads": { "hunger": 60, "social": 10 },
-   "moodlets": [{ "id": "good_meal", "chance": 0.6 }]
+   "tags": [
+    "eat_good",
+    "social",
+    "night_out"
+   ],
+   "requires": {
+    "money": 4
+   },
+   "hours": [
+    11,
+    22
+   ],
+   "pay": 4,
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front",
+     "anim": "idle",
+     "minutes": 3,
+     "needs": {
+      "social": 0.3
+     }
+    },
+    {
+     "at": {
+      "seatNear": "target"
+     },
+     "anim": "eat",
+     "minutes": 25,
+     "needs": {
+      "hunger": 3.2,
+      "comfort": 0.4,
+      "social": 0.3
+     },
+     "carry": "bowl"
+    }
+   ],
+   "ads": {
+    "hunger": 60,
+    "social": 10
+   },
+   "moodlets": [
+    {
+     "id": "good_meal",
+     "chance": 0.6
+    }
+   ]
   },
   "bath.bathe_public": {
-   "nameKey": "ia.bathe_public", "icon": "bath", "objects": ["bath_tub_public"],
-   "tags": ["rest", "social"], "requires": { "money": 1 }, "hours": [7, 21], "pay": 1,
-   "steps": [{ "at": "target", "slot": { "pose": "sit" }, "anim": "sit", "minutes": 45, "needs": { "hygiene": 2.4, "comfort": 0.6, "social": 0.6, "warmth": 0.5 }, "outfit": "bath" }],
-   "ads": { "hygiene": 70, "social": 20, "comfort": 12 },
-   "moodlets": [{ "id": "pleasant_chat", "chance": 0.4 }, { "id": "juicy_gossip", "chance": 0.15 }]
+   "nameKey": "ia.bathe_public",
+   "icon": "bath",
+   "objects": [
+    "bath_tub_public"
+   ],
+   "tags": [
+    "rest",
+    "social"
+   ],
+   "requires": {
+    "money": 1
+   },
+   "hours": [
+    7,
+    21
+   ],
+   "pay": 1,
+   "steps": [
+    {
+     "at": "target",
+     "slot": {
+      "pose": "sit"
+     },
+     "anim": "sit",
+     "minutes": 45,
+     "needs": {
+      "hygiene": 2.4,
+      "comfort": 0.6,
+      "social": 0.6,
+      "warmth": 0.5
+     },
+     "outfit": "bath"
+    }
+   ],
+   "ads": {
+    "hygiene": 70,
+    "social": 20,
+    "comfort": 12
+   },
+   "moodlets": [
+    {
+     "id": "pleasant_chat",
+     "chance": 0.4
+    },
+    {
+     "id": "juicy_gossip",
+     "chance": 0.15
+    }
+   ]
   },
   "board.read_news": {
-   "nameKey": "ia.read_news", "icon": "book", "objects": ["notice_board_town"],
-   "tags": ["read", "gossip", "outdoor"], "requires": {}, "hours": [6, 21],
-   "steps": [{ "at": "target", "slot": "front", "anim": "idle", "minutes": 8, "needs": { "fun": 0.6, "social": 0.3 } }],
-   "ads": { "fun": 10, "social": 6 },
-   "moodlets": [{ "id": "juicy_gossip", "chance": 0.2 }]
+   "nameKey": "ia.read_news",
+   "icon": "book",
+   "objects": [
+    "notice_board_town"
+   ],
+   "tags": [
+    "read",
+    "gossip",
+    "outdoor"
+   ],
+   "requires": {},
+   "hours": [
+    6,
+    21
+   ],
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front",
+     "anim": "idle",
+     "minutes": 8,
+     "needs": {
+      "fun": 0.6,
+      "social": 0.3
+     }
+    }
+   ],
+   "ads": {
+    "fun": 10,
+    "social": 6
+   },
+   "moodlets": [
+    {
+     "id": "juicy_gossip",
+     "chance": 0.2
+    }
+   ]
   },
   "fish.fish": {
-   "nameKey": "ia.fish", "icon": "raven:a1913", "objects": ["fishing_spot"],
-   "tags": ["nature", "outdoor", "solitary", "labor"], "requires": {}, "hours": [5, 20],
-   "steps": [{ "at": "target", "slot": "fish", "anim": "work", "minutes": 90, "needs": { "fun": 0.35, "comfort": -0.05 } }],
-   "effects": { "stock": { "fish": 2 } },
-   "ads": { "fun": 20 }, "supportAds": { "hunger": 30 }, "supportWhen": ["stock:ingredients<=2"],
-   "moodlets": [{ "id": "fresh_air", "chance": 0.5 }]
+   "nameKey": "ia.fish",
+   "icon": "raven:a1913",
+   "objects": [
+    "fishing_spot"
+   ],
+   "tags": [
+    "nature",
+    "outdoor",
+    "solitary",
+    "labor"
+   ],
+   "requires": {},
+   "hours": [
+    5,
+    20
+   ],
+   "steps": [
+    {
+     "at": "target",
+     "slot": "fish",
+     "anim": "work",
+     "minutes": 90,
+     "needs": {
+      "fun": 0.35,
+      "comfort": -0.05
+     }
+    }
+   ],
+   "effects": {
+    "stock": {
+     "fish": 2
+    }
+   },
+   "ads": {
+    "fun": 20
+   },
+   "moodlets": [
+    {
+     "id": "fresh_air",
+     "chance": 0.5
+    }
+   ]
   },
   "forage.herbs": {
-   "nameKey": "ia.forage_herbs", "icon": "plant", "objects": ["herb_patch_wild"],
-   "tags": ["nature", "labor", "outdoor", "herbal"], "requires": {}, "hours": [6, 19], "skill": "herbalism",
-   "steps": [{ "at": "target", "slot": "front", "anim": "work", "minutes": 40, "needs": { "fun": 0.25 } }],
-   "effects": { "stock": { "herbs": 2, "medicinal_herbs": 1 } },
-   "ads": { "fun": 16 },
-   "moodlets": [{ "id": "herbs_picked", "chance": 0.6 }]
+   "nameKey": "ia.forage_herbs",
+   "icon": "plant",
+   "objects": [
+    "herb_patch_wild"
+   ],
+   "tags": [
+    "nature",
+    "labor",
+    "outdoor",
+    "herbal"
+   ],
+   "requires": {},
+   "hours": [
+    6,
+    19
+   ],
+   "skill": "herbalism",
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front",
+     "anim": "work",
+     "minutes": 40,
+     "needs": {
+      "fun": 0.25
+     }
+    }
+   ],
+   "effects": {
+    "stock": {
+     "herbs": 2,
+     "medicinal_herbs": 1
+    }
+   },
+   "ads": {
+    "fun": 16
+   },
+   "moodlets": [
+    {
+     "id": "herbs_picked",
+     "chance": 0.6
+    }
+   ]
   },
   "guild.meeting": {
-   "nameKey": "ia.guild_meeting", "icon": "ui.crest", "objects": ["guild_table"],
-   "tags": ["social", "duty", "work"], "requires": {}, "hours": [9, 20], "careerPerformance": 2,
-   "steps": [{ "at": { "seatNear": "target" }, "anim": "sit", "minutes": 60, "needs": { "social": 0.6, "fun": 0.1 } }],
-   "ads": { "social": 22 },
-   "moodlets": [{ "id": "guild_nod", "chance": 0.25 }]
+   "nameKey": "ia.guild_meeting",
+   "icon": "ui.crest",
+   "objects": [
+    "guild_table"
+   ],
+   "tags": [
+    "social",
+    "duty",
+    "work"
+   ],
+   "requires": {},
+   "hours": [
+    9,
+    20
+   ],
+   "careerPerformance": 2,
+   "steps": [
+    {
+     "at": {
+      "seatNear": "target"
+     },
+     "anim": "sit",
+     "minutes": 60,
+     "needs": {
+      "social": 0.6,
+      "fun": 0.1
+     }
+    }
+   ],
+   "ads": {
+    "social": 22
+   },
+   "moodlets": [
+    {
+     "id": "guild_nod",
+     "chance": 0.25
+    }
+   ]
   },
   "throne.petition": {
-   "nameKey": "ia.petition", "icon": "ui.crest", "objects": ["lord_throne"],
-   "tags": ["social", "humble"], "requires": {}, "hours": [9, 16],
-   "steps": [{ "at": "target", "slot": "petitioner", "anim": "idle", "minutes": 30, "needs": { "social": 0.5 } }],
-   "ads": { "social": 12 },
-   "moodlets": [{ "id": "shown_deference", "chance": 0.5 }, { "id": "petition_granted", "chance": 0.25 }, { "id": "petition_denied", "chance": 0.2 }]
+   "nameKey": "ia.petition",
+   "icon": "ui.crest",
+   "objects": [
+    "lord_throne"
+   ],
+   "tags": [
+    "social",
+    "humble"
+   ],
+   "requires": {},
+   "hours": [
+    9,
+    16
+   ],
+   "steps": [
+    {
+     "at": "target",
+     "slot": "petitioner",
+     "anim": "idle",
+     "minutes": 30,
+     "needs": {
+      "social": 0.5
+     }
+    }
+   ],
+   "ads": {
+    "social": 12
+   },
+   "moodlets": [
+    {
+     "id": "shown_deference",
+     "chance": 0.5
+    },
+    {
+     "id": "petition_granted",
+     "chance": 0.25
+    },
+    {
+     "id": "petition_denied",
+     "chance": 0.2
+    }
+   ]
   },
   "well.chat": {
-   "nameKey": "ia.well_chat", "icon": "social", "objects": ["well"],
-   "tags": ["social", "gossip", "outdoor"], "requires": {}, "hours": [6, 20],
-   "steps": [{ "at": "target", "slot": "front", "anim": "idle", "minutes": 25, "needs": { "social": 2.2, "fun": 0.6 } }],
-   "ads": { "social": 40, "fun": 10 },
-   "moodlets": [{ "id": "pleasant_chat", "chance": 0.5 }, { "id": "juicy_gossip", "chance": 0.25 }]
+   "nameKey": "ia.well_chat",
+   "icon": "social",
+   "objects": [
+    "well"
+   ],
+   "tags": [
+    "social",
+    "gossip",
+    "outdoor"
+   ],
+   "requires": {},
+   "hours": [
+    6,
+    20
+   ],
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front",
+     "anim": "idle",
+     "minutes": 25,
+     "needs": {
+      "social": 2.2,
+      "fun": 0.6
+     }
+    }
+   ],
+   "ads": {
+    "social": 40,
+    "fun": 10
+   },
+   "moodlets": [
+    {
+     "id": "pleasant_chat",
+     "chance": 0.5
+    },
+    {
+     "id": "juicy_gossip",
+     "chance": 0.25
+    }
+   ]
   },
   "grave.mourn": {
-   "nameKey": "ia.mourn", "icon": "candle", "objects": ["grave"],
-   "tags": ["pray", "solitary", "family"], "requires": {}, "hours": [6, 20],
-   "steps": [{ "at": "target", "slot": "front", "anim": "idle", "minutes": 30, "needs": { "fun": 0.1 } }],
-   "ads": { "fun": 6 },
-   "moodlets": [{ "id": "grave_visit" }, { "id": "cried_it_out", "chance": 0.4 }],
-   "removeMoodlets": ["missing_the_dead"]
+   "nameKey": "ia.mourn",
+   "icon": "candle",
+   "objects": [
+    "grave"
+   ],
+   "tags": [
+    "pray",
+    "solitary",
+    "family"
+   ],
+   "requires": {},
+   "hours": [
+    6,
+    20
+   ],
+   "steps": [
+    {
+     "at": "target",
+     "slot": "front",
+     "anim": "idle",
+     "minutes": 30,
+     "needs": {
+      "fun": 0.1
+     }
+    }
+   ],
+   "ads": {
+    "fun": 6
+   },
+   "moodlets": [
+    {
+     "id": "grave_visit"
+    },
+    {
+     "id": "cried_it_out",
+     "chance": 0.4
+    }
+   ],
+   "removeMoodlets": [
+    "missing_the_dead"
+   ]
   }
  }
 }

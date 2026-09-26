@@ -82,6 +82,7 @@ function snapshot(): Snapshot {
     // 마을(M6): 전체 세밀도 인물만 그림 (간이/요약/아기는 화면 밖)
     persons: s.persons.filter((p) => p.lod === 'full' && !p.infant).map((p) => ({
       id: p.id, name: p.name, x: p.x, y: p.y, trail: takeTrail(p.trail, p.x, p.y),
+      ...(p.riding && p.action?.phase === 'walk' ? { riding: p.horse } : {}),
       facing: p.facing, pose: p.pose, anim: p.anim, outfit: p.outfit, carry: p.carry,
       hidden: p.hidden, underBlanket: p.underBlanket, sleeping: p.sleeping,
       needs: p.needsObject(),
@@ -144,6 +145,8 @@ function townPart(s: Simulation): NonNullable<Snapshot['town']> {
     lod: counts,
     news: s.news.slice(-12),
     people: s.persons.filter((p) => !p.infant).map((p) => ({ id: p.id, name: p.name, household: p.household, lod: p.lod, x: Math.round(p.x), y: Math.round(p.y), stage: p.lifeStage })),
+    freeLots: s.town!.lots.filter((l) => !s.town!.lotHousehold.has(l.id)).map((l) => l.id),
+    playerLot: s.town!.playerLot()?.id ?? null,
   };
 }
 

@@ -23,8 +23,12 @@ export function t(key: string, args?: Record<string, string | number>): string {
 }
 
 /** 한국어 조사: "베르타이(가)" → "베르타가", "에드릭이(가)" → "에드릭이" (앞 글자 받침으로) */
-const JOSA: Record<string, [string, string]> = { '이(가)': ['이', '가'], '을(를)': ['을', '를'], '은(는)': ['은', '는'], '과(와)': ['과', '와'], '아(야)': ['아', '야'], '으로(로)': ['으로', '로'], '이나(나)': ['이나', '나'] };
-const JOSA_RE = /([가-힣A-Za-z0-9])(이\(가\)|을\(를\)|은\(는\)|과\(와\)|아\(야\)|으로\(로\)|이나\(나\))/g;
+const JOSA: Record<string, [string, string]> = {
+  '이(가)': ['이', '가'], '을(를)': ['을', '를'], '은(는)': ['은', '는'], '과(와)': ['과', '와'], '아(야)': ['아', '야'], '으로(로)': ['으로', '로'], '이나(나)': ['이나', '나'],
+  // 받침 없는 쪽이 앞에 오는 표기도 (news.json 등)
+  '가(이)': ['이', '가'], '를(을)': ['을', '를'], '는(은)': ['은', '는'], '와(과)': ['과', '와'], '야(아)': ['아', '야'], '로(으로)': ['으로', '로'], '나(이나)': ['이나', '나'],
+};
+const JOSA_RE = new RegExp(`([가-힣A-Za-z0-9])(${Object.keys(JOSA).map((k) => k.replace(/[()]/g, '\\$&')).join('|')})`, 'g');
 export function josa(s: string): string {
   if (!s.includes('(')) return s;
   return s.replace(JOSA_RE, (_m, ch: string, j: string) => {
@@ -33,7 +37,7 @@ export function josa(s: string): string {
     const fin = hangul ? (code - 0xac00) % 28 : /[0-9]/.test(ch) ? ('013678'.includes(ch) ? 1 : 0) : 0;
     const [withF, noF] = JOSA[j];
     // 받침 ㄹ(8) 뒤 '으로' 는 '로'
-    if (j === '으로(로)' && fin === 8) return ch + noF;
+    if ((j === '으로(로)' || j === '로(으로)') && fin === 8) return ch + noF;
     return ch + (fin ? withF : noF);
   });
 }

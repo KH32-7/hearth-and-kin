@@ -28,7 +28,8 @@ export function simRaw(opts: { lot?: string; objects?: string; inner?: boolean; 
     balance: j('src/data/balance.json'),
     // M6: 공공 장소 물건/상호작용 추가 파일 (있으면 합침)
     interactions: { interactions: { ...(j('src/data/interactions.json') as { interactions: object }).interactions, ...((opt('src/data/interactions_town.json') as { interactions?: object } | undefined)?.interactions ?? {}) } },
-    objects: { ...(j(opts.objects ?? 'src/data/objects.json') as object), ...((opts.objects ? {} : (opt('src/data/objects_town.json') as object | undefined)) ?? {}) },
+    // 기본 물건 파일이면 마을 물건도 합침 (마을 상호작용이 그 물건을 가리킴). 시험용 물건 파일(fixture)만 따로
+    objects: { ...(j(opts.objects ?? 'src/data/objects.json') as object), ...((opts.objects && opts.objects !== 'src/data/objects.json' ? {} : (opt('src/data/objects_town.json') as object | undefined)) ?? {}) },
     lot: j(opts.lot ?? 'src/data/lots/cottage.json'),
     social: j('src/data/social.json'),
     relations: opts.inner === false ? undefined : opt('src/data/relations.json'),
