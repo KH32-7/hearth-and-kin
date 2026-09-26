@@ -4,6 +4,7 @@
  */
 import { existsSync, readFileSync } from 'node:fs';
 import { validateSimData, type SimData } from '../src/sim/data/simData';
+import { FAMILY_FILES } from '../src/sim/data/familyFiles';
 
 const j = (p: string): unknown => JSON.parse(readFileSync(p, 'utf8'));
 const opt = (p: string): unknown => (existsSync(p) ? j(p) : undefined);
@@ -47,8 +48,19 @@ export function simRaw(opts: { lot?: string; objects?: string; inner?: boolean; 
     people: opts.town ? opt('src/data/town/people.json') : undefined,
     schedules: opts.town ? opt('src/data/schedules.json') : undefined,
     catalog: opt('src/data/catalog.json'),
+    family: familyRaw(),
     inner,
   };
+}
+
+/** 생애와 가족 (M7~M9) 데이터 파일: 키 → 파일. 게임은 src/sim/data/familyFiles.ts 가 같은 목록을 씀 */
+export function familyRaw(): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, f] of Object.entries(FAMILY_FILES)) {
+    const v = opt(`src/data/${f}`);
+    if (v !== undefined) out[k] = v;
+  }
+  return out;
 }
 
 export function loadSimData(opts: { lot?: string; objects?: string; inner?: boolean; town?: string } = {}): SimData {

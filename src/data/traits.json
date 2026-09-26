@@ -792,6 +792,188 @@
         "direction": "up",
         "minMult": 1.5
       }
+    },
+    "temper_easy": {
+      "category": "temperament",
+      "nameKey": "trait.temper_easy",
+      "descKey": "trait.temper_easy.desc",
+      "icon": "emo.happy",
+      "effects": {
+        "cryThreshold": 0.8
+      }
+    },
+    "temper_fussy": {
+      "category": "temperament",
+      "nameKey": "trait.temper_fussy",
+      "descKey": "trait.temper_fussy.desc",
+      "icon": "emo.angry",
+      "effects": {
+        "cryThreshold": 1.3
+      }
+    },
+    "temper_smiley": {
+      "category": "temperament",
+      "nameKey": "trait.temper_smiley",
+      "descKey": "trait.temper_smiley.desc",
+      "icon": "emo.happy",
+      "effects": {
+        "needDecay": {
+          "social": 0.8
+        }
+      }
+    },
+    "temper_timid": {
+      "category": "temperament",
+      "nameKey": "trait.temper_timid",
+      "descKey": "trait.temper_timid.desc",
+      "icon": "emo.scared",
+      "effects": {
+        "cryThreshold": 1.1
+      }
+    },
+    "robust": {
+      "category": "congenital",
+      "nameKey": "trait.robust",
+      "descKey": "trait.robust.desc",
+      "icon": "energy",
+      "effects": {
+        "needDecay": {
+          "energy": 0.9
+        },
+        "health": 1.2
+      }
+    },
+    "frail": {
+      "category": "congenital",
+      "nameKey": "trait.frail",
+      "descKey": "trait.frail.desc",
+      "icon": "energy",
+      "effects": {
+        "needDecay": {
+          "energy": 1.1
+        },
+        "health": 0.8
+      }
+    },
+    "left_handed": {
+      "category": "congenital",
+      "nameKey": "trait.left_handed",
+      "descKey": "trait.left_handed.desc",
+      "icon": "emo.neutral",
+      "effects": {}
+    },
+    "twin_blood": {
+      "category": "congenital",
+      "nameKey": "trait.twin_blood",
+      "descKey": "trait.twin_blood.desc",
+      "icon": "family",
+      "effects": {
+        "twinsBonus": 0.1
+      }
+    },
+    "comely": {
+      "category": "congenital",
+      "nameKey": "trait.comely",
+      "descKey": "trait.comely.desc",
+      "icon": "emo.happy",
+      "effects": {
+        "firstImpression": 8
+      }
+    },
+    "homely": {
+      "category": "congenital",
+      "nameKey": "trait.homely",
+      "descKey": "trait.homely.desc",
+      "icon": "emo.sad",
+      "effects": {
+        "firstImpression": -8
+      }
+    },
+    "long_lived": {
+      "category": "congenital",
+      "nameKey": "trait.long_lived",
+      "descKey": "trait.long_lived.desc",
+      "icon": "emo.happy",
+      "effects": {
+        "elderHazard": 0.7
+      }
+    },
+    "sickly_line": {
+      "category": "congenital",
+      "nameKey": "trait.sickly_line",
+      "descKey": "trait.sickly_line.desc",
+      "icon": "emo.sad",
+      "effects": {
+        "elderHazard": 1.3,
+        "health": 0.9
+      }
+    },
+    "witch_blood": {
+      "category": "congenital",
+      "nameKey": "trait.witch_blood",
+      "descKey": "trait.witch_blood.desc",
+      "icon": "emo.neutral",
+      "effects": {}
+    },
+    "wise": {
+      "category": "elder",
+      "nameKey": "trait.wise",
+      "descKey": "trait.wise.desc",
+      "icon": "book",
+      "effects": {
+        "adTag": {
+          "advise": 2
+        }
+      }
+    },
+    "stubborn": {
+      "category": "elder",
+      "nameKey": "trait.stubborn",
+      "descKey": "trait.stubborn.desc",
+      "icon": "emo.angry",
+      "effects": {}
+    },
+    "senile": {
+      "category": "elder",
+      "nameKey": "trait.senile",
+      "descKey": "trait.senile.desc",
+      "icon": "emo.neutral",
+      "effects": {
+        "idleMoodlet": {
+          "moodlet": "good_spirits",
+          "chancePerHour": 0.1
+        }
+      }
+    },
+    "mellowed": {
+      "category": "elder",
+      "nameKey": "trait.mellowed",
+      "descKey": "trait.mellowed.desc",
+      "icon": "emo.happy",
+      "effects": {
+        "moodletDuration": {
+          "angry": 0.6
+        }
+      }
+    },
+    "greedy_old": {
+      "category": "elder",
+      "nameKey": "trait.greedy_old",
+      "descKey": "trait.greedy_old.desc",
+      "icon": "emo.neutral",
+      "effects": {}
+    },
+    "storyteller": {
+      "category": "elder",
+      "nameKey": "trait.storyteller",
+      "descKey": "trait.storyteller.desc",
+      "icon": "book",
+      "effects": {
+        "adTag": {
+          "story": 2
+        }
+      }
     }
-  }
+  },
+  "$categories": "personality(성격 30, 칸 슬롯에서 무작위) / temperament(기질 4: 아기·유아) / congenital(선천 9: 유전) / elder(노년 6: 노년 진입). 무작위 성격 선택은 personality 만 (inner.initPerson)"
 }

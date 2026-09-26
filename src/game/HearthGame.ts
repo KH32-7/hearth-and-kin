@@ -32,6 +32,7 @@ import { setSun } from '../render/Shadows';
 import { Particles } from '../render/Particles';
 import { WorldView, type CutawayMode } from '../render/WorldView';
 import { DirectControl } from './DirectControl';
+import { FAMILY_FILES } from '../sim/data/familyFiles';
 import { CharacterView, type SheetLike } from '../render/CharacterView';
 import type { WorldPack } from '../render/artpack';
 import { composeCharacter, randomSpec } from '../render/lpc/compose';
@@ -297,6 +298,7 @@ export class HearthGame {
       data: {
         needs, balance, interactions, objects, lot: this.lot, social: socialData, inner: innerRaw(), relations: opt('relations'), neighbors: opt('neighbors'), economy: opt('economy'), items: opt('items'), skills: opt('skills'), recipes: opt('recipes'), careers: opt('careers'), crops: opt('crops'), build: opt('build'), catalog: opt('catalog'),
         ...(this.town ? { town: this.town.def, people: this.town.people, schedules: this.town.schedules, story: opt('story') } : { story: opt('story') }),
+        family: familyRaw(),
       },
       seed: start.seed,
       persons,
@@ -1539,6 +1541,17 @@ const interactions = {
     ...(((townExtra['../data/interactions_town.json']?.default as { interactions?: object } | undefined)?.interactions) ?? {}),
   },
 };
+
+/** 생애와 가족 (M7~M9) 데이터: src/sim/data/familyFiles.ts 목록 (없는 파일은 빠짐) */
+const familyGlob = import.meta.glob<{ default: unknown }>(['../data/*.json', '../data/events/*.json'], { eager: true });
+function familyRaw(): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, f] of Object.entries(FAMILY_FILES)) {
+    const m = familyGlob[`../data/${f}`];
+    if (m) out[k] = m.default;
+  }
+  return out;
+}
 
 const optional = import.meta.glob<{ default: unknown }>(
   ['../data/moodlets.json', '../data/moodlets_m3.json', '../data/moodlets_m5.json', '../data/thoughts.json', '../data/wishes.json', '../data/aspirations.json', '../data/rewards.json', '../data/likes.json', '../data/relations.json', '../data/neighbors.json', '../data/economy.json', '../data/items.json', '../data/skills.json', '../data/recipes.json', '../data/careers.json', '../data/crops.json', '../data/build.json', '../data/catalog.json', '../data/story.json'],

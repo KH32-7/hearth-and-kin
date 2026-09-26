@@ -127,7 +127,15 @@ export interface SimData {
   /** 내면 데이터 (M2). 없으면 내면 시스템 꺼짐 (M1 테스트 부지 등) */
   inner: InnerData | null;
   stress: StressData | null;
+  /**
+   * 생애와 가족 (M7~M9) 원본 데이터 묶음: 파일마다 그 모듈이 자기 zod 스키마로 검증 (src/sim/family/*, house/*, society/*).
+   * 없으면 그 시스템 꺼짐 (M1~M6 테스트 부지)
+   */
+  family: FamilyRaw;
 }
+
+/** 생애와 가족 원본 (파일 → 키): genetics, pregnancy, deathRules, lifecycle, childcare, names, clanNames, heraldry, events, letters … */
+export type FamilyRaw = Record<string, unknown>;
 
 import type { SkillsData } from '../people/skills';
 import { normalizeLot } from '../world/lot';
@@ -387,6 +395,7 @@ export function validateSimData(raw: {
   people?: unknown;
   schedules?: unknown;
   story?: unknown;
+  family?: FamilyRaw;
 }): SimData {
   const needs = needsSchema.parse(raw.needs);
   const balance = balanceSchema.parse(raw.balance);
@@ -619,5 +628,6 @@ export function validateSimData(raw: {
   return { needs, balance, interactions, objects, lot, social, relations, neighbors, economy, items, skills, careers, recipes, crops, careerRules, build, fenceIds, blockedTerrain,
     town: raw.town ? { def: raw.town as import('../town/town').TownDef, people: (raw.people as import('../town/town').PeopleData) ?? null, schedules: (raw.schedules as import('../town/town').SchedulesData) ?? null } : null,
     story: (raw.story as StoryData) ?? null,
+    family: raw.family ?? {},
     compiled, inner, stress: raw.inner ? (raw.inner.stress as StressData) : null };
 }

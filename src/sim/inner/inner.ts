@@ -60,6 +60,9 @@ interface WishC {
   resolve: string | null;
 }
 
+/** 무작위 성격 칸에 들어가지 않는 특성 종류 */
+const NON_PERSONALITY = new Set(['temperament', 'congenital', 'elder', 'acquired', 'reward']);
+
 export class Inner {
   private fxCache = new Map<number, TraitFx>();
   /** 스트레스 해소 태그 (덕 keep + 죄 follow): 인물별, 덕/죄가 바뀌면 다시 만듦 */
@@ -145,7 +148,8 @@ export class Inner {
     if (fixedTraits) p.traits = [...fixedTraits];
     else {
       const n = this.d.traits.slots[p.stage] ?? 3;
-      const ids = Object.keys(slots);
+      // 성격 특성만 무작위 (기질·선천·노년은 생애/유전 규칙이 붙임, traits.json $categories)
+      const ids = Object.keys(slots).filter((k) => !NON_PERSONALITY.has(slots[k].category));
       const picked: string[] = [];
       for (let guard = 0; picked.length < n && guard < 200; guard++) {
         const t = ids[rng.int(ids.length)];
