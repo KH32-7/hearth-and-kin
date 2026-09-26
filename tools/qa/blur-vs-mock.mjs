@@ -1,0 +1,21 @@
+// 목업과 게임의 반투명 판(아래 빠른 버튼 띠, 욕구 팝업) 흐림 비교: 같은 크기로 잘라 3배 확대해 좌(목업)/우(게임)
+import { chromium } from 'playwright';
+import { pathToFileURL } from 'node:url';
+const browser = await chromium.launch({ channel: 'msedge' });
+const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
+await page.goto(pathToFileURL('artifacts/ui-mock/hud9.html').href + '?m=live&pop=needs');
+await page.waitForTimeout(1500);
+const mockRects = await page.evaluate(() => [...document.querySelectorAll('.g')].map((e) => { const r = e.getBoundingClientRect(); return { cls: String(e.className), r: [r.x, r.y, r.width, r.height] }; }).filter((x) => x.r[2] > 150 && x.r[3] > 40));
+console.log('mock', JSON.stringify(mockRects.map((m) => [m.cls, m.r.map(Math.round)])));
+const mockShot = await page.screenshot({ path: 'artifacts/qa/blur/mock_full.png' });
+await page.goto('http://127.0.0.1:5188/?town=ashford&new=0');
+await page.waitForFunction(() => window.__game?.ready?.(), null, { timeout: 120_000 });
+await page.evaluate(() => { const g = window.__game; g.setSpeed?.(0); });
+await page.waitForTimeout(2000);
+const b = await page.$('.quick.g > *');
+await b?.click();
+await page.waitForTimeout(600);
+await page.screenshot({ path: 'artifacts/qa/blur/game_full.png' });
+const gameRects = await page.evaluate(() => [...document.querySelectorAll('.g')].map((e) => { const r = e.getBoundingClientRect(); return { cls: String(e.className), r: [r.x, r.y, r.width, r.height], bf: getComputedStyle(e).backdropFilter }; }).filter((x) => x.r[2] > 150 && x.r[3] > 40));
+console.log('game', JSON.stringify(gameRects.map((m) => [m.cls, m.bf, m.r.map(Math.round)])));
+await browser.close();

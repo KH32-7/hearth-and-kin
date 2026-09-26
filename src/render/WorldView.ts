@@ -19,7 +19,7 @@ import { WaterView } from './WaterView';
 import shellsJson from '../data/artpacks/shells.json';
 import { ShellView, type ShellsData } from './ShellView';
 import { makeAoMaterial, makeShadowMaterial, SHADOW_ORDER, shadowQuad } from './Shadows';
-import { makeOutlineMaterial, makeSpriteMaterial, pixelTexture, setUvRect } from './SpriteMaterial';
+import { makeOutlineMaterial, makeSpriteMaterial, OUTLINE_PAD, pixelTexture, setUvRect } from './SpriteMaterial';
 
 export type CutawayMode = 'up' | 'cut' | 'down';
 
@@ -1606,7 +1606,7 @@ export class WorldView {
     if (!tex || !img) return;
     const mat = makeOutlineMaterial(tex, img.width, img.height, r, WorldView.OUTLINE_COLOR);
     const mesh = new THREE.Mesh(quad, mat);
-    placeRect(mesh, n.node.left - r.anchorX - 1, n.node.bottom - r.anchorY - 1, r.w + 2, r.h + 2);
+    placeRect(mesh, n.node.left - r.anchorX - OUTLINE_PAD, n.node.bottom - r.anchorY - OUTLINE_PAD, r.w + OUTLINE_PAD * 2, r.h + OUTLINE_PAD * 2);
     mesh.renderOrder = n.node.mesh.renderOrder + 0.5;
     // 좌우 반전한 물건은 외곽선도 반전
     if (n.node.mesh.scale.x < 0) mesh.scale.x = -mesh.scale.x;
@@ -1635,7 +1635,9 @@ export class WorldView {
       const left = n.node.left - r.anchorX;
       const top = n.node.bottom - r.anchorY;
       if (wx < left || wx >= left + r.w || wy < top || wy >= top + r.h) continue;
-      if (!this.opaqueAt(r, wx - left, wy - top)) continue;
+      // 좌우 반전해 그린 물건은 투명 판정도 반전 (안 그러면 마우스를 반대쪽에 둬야 잡힘)
+      const px = n.node.mesh.scale.x < 0 ? r.w - 1 - (wx - left) : wx - left;
+      if (!this.opaqueAt(r, px, wy - top)) continue;
       if (!best || n.node.mesh.renderOrder > best.node.mesh.renderOrder) best = n;
     }
     return best ? best.uid : null;

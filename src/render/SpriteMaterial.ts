@@ -83,12 +83,19 @@ const outlineFragment = /* glsl */ `
     if (p.x < inner.x || p.y < inner.y || p.x > inner.z || p.y > inner.w) return 0.0;
     return texture2D(map, p).a;
   }
+  float ring(float d) {
+    vec2 dx = vec2(texel.x * d, 0.0), dy = vec2(0.0, texel.y * d);
+    return max(max(max(alphaAt(vUv + dx), alphaAt(vUv - dx)), max(alphaAt(vUv + dy), alphaAt(vUv - dy))),
+               max(max(alphaAt(vUv + dx + dy), alphaAt(vUv - dx - dy)), max(alphaAt(vUv + dx - dy), alphaAt(vUv - dx + dy))));
+  }
   void main() {
     if (alphaAt(vUv) > 0.5) discard;
     float n = max(max(alphaAt(vUv + vec2(texel.x, 0.0)), alphaAt(vUv - vec2(texel.x, 0.0))),
                   max(alphaAt(vUv + vec2(0.0, texel.y)), alphaAt(vUv - vec2(0.0, texel.y))));
-    if (n < 0.5) discard;
-    gl_FragColor = vec4(uColor, uOpacity);
+    // 외곽선 한 줄 + 바깥으로 아주 옅은 발광 두 줄 (사용자 요청 2026-09-27)
+    float a = n > 0.5 ? 1.0 : ring(1.0) > 0.5 ? 0.42 : ring(2.0) > 0.5 ? 0.22 : ring(3.0) > 0.5 ? 0.1 : 0.0;
+    if (a <= 0.0) discard;
+    gl_FragColor = vec4(uColor, uOpacity * a);
     #include <colorspace_fragment>
   }
 `;
@@ -97,6 +104,9 @@ const outlineFragment = /* glsl */ `
  * 물건 외곽선 (마우스를 올린 상호작용 물건): 스프라이트 사각형보다 1px 큰 판에 불투명 픽셀 바로 바깥 한 줄만 칠함.
  * rect = 원래 스프라이트 픽셀 사각형 (텍스처 좌표, 위에서 아래)
  */
+/** 외곽선 판이 스프라이트보다 사방으로 큰 픽셀 (외곽선 1 + 발광 3) */
+export const OUTLINE_PAD = 4;
+
 export function makeOutlineMaterial(tex: THREE.Texture, texW: number, texH: number, rect: { x: number; y: number; w: number; h: number }, color: number): THREE.ShaderMaterial {
   const mat = new THREE.ShaderMaterial({
     uniforms: {
@@ -113,6 +123,6 @@ export function makeOutlineMaterial(tex: THREE.Texture, texW: number, texH: numb
     depthTest: false,
     depthWrite: false,
   });
-  setUvRect(mat, texW, texH, rect.x - 1, rect.y - 1, rect.w + 2, rect.h + 2);
+  setUvRect(mat, texW, texH, rect.x - OUTLINE_PAD, rect.y - OUTLINE_PAD, rect.w + OUTLINE_PAD * 2, rect.h + OUTLINE_PAD * 2);
   return mat;
 }
