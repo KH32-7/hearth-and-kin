@@ -26,6 +26,8 @@ export const needsSchema = z.object({
   collapse: z.object({
     energyFloorSleepMinutes: z.number(),
     hungerZeroWeakenMinutes: z.number(),
+    /** 배고픔 0 이 이만큼 이어지면 굶어 죽음 (사용자: 3일) */
+    hungerZeroDeathMinutes: z.number().optional(),
   }),
   warmth: z.object({
     comfortableFeltC: z.number(),

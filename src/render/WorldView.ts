@@ -19,7 +19,7 @@ import { WaterView } from './WaterView';
 import shellsJson from '../data/artpacks/shells.json';
 import { ShellView, type ShellsData } from './ShellView';
 import { makeAoMaterial, makeShadowMaterial, SHADOW_ORDER, shadowQuad } from './Shadows';
-import { makeSpriteMaterial, pixelTexture, setUvRect } from './SpriteMaterial';
+import { makeOutlineMaterial, makeSpriteMaterial, pixelTexture, setUvRect } from './SpriteMaterial';
 
 export type CutawayMode = 'up' | 'cut' | 'down';
 
@@ -1271,6 +1271,7 @@ export class WorldView {
   }
 
   private disposeObj(n: ObjNode): void {
+    if (this.hl?.uid === n.uid) this.clearHighlight();
     this.disposeNode(n.node);
     for (const c of n.crops ?? []) this.disposeNode(c);
     if (n.light) {
@@ -1575,6 +1576,47 @@ export class WorldView {
         n.light.visible = op > 0.01 && this.layers[n.slab].group.visible;
       }
     }
+  }
+
+  // ------------------------------------------------------------------ 마우스를 올린 물건 외곽선
+
+  private hl: { uid: number; spriteId: string; mesh: THREE.Mesh; mat: THREE.ShaderMaterial } | null = null;
+  /** 외곽선 색 (금빛: 밝은 돌바닥·풀밭 어디서나 보이게) */
+  static readonly OUTLINE_COLOR = 0xffd84a;
+
+  /** 매 프레임: 외곽선이 은은하게 숨 쉬듯 밝아졌다 어두워짐 */
+  pulseHighlight(nowMs: number): void {
+    if (this.hl) this.hl.mat.uniforms.uOpacity.value = 0.78 + 0.22 * Math.sin(nowMs / 180);
+  }
+
+  /** 외곽선을 그릴 물건 (null 이면 끔). 스프라이트가 바뀌면(불 켜짐 등) 다시 만듦 */
+  setHighlight(uid: number | null): void {
+    const n = uid === null ? undefined : this.objs.get(uid);
+    if (!n || !n.node.mesh.visible) {
+      this.clearHighlight();
+      return;
+    }
+    if (this.hl && this.hl.uid === uid && this.hl.spriteId === n.node.spriteId) return;
+    this.clearHighlight();
+    const r = n.node.ref;
+    const tex = this.textures.get(r.image);
+    const img = this.imageEls.get(r.image);
+    if (!tex || !img) return;
+    const mat = makeOutlineMaterial(tex, img.width, img.height, r, WorldView.OUTLINE_COLOR);
+    const mesh = new THREE.Mesh(quad, mat);
+    placeRect(mesh, n.node.left - r.anchorX - 1, n.node.bottom - r.anchorY - 1, r.w + 2, r.h + 2);
+    mesh.renderOrder = n.node.mesh.renderOrder + 0.5;
+    // 좌우 반전한 물건은 외곽선도 반전
+    if (n.node.mesh.scale.x < 0) mesh.scale.x = -mesh.scale.x;
+    (n.node.mesh.parent ?? this.layers[n.slab].group).add(mesh);
+    this.hl = { uid: n.uid, spriteId: n.node.spriteId, mesh, mat };
+  }
+
+  private clearHighlight(): void {
+    if (!this.hl) return;
+    this.hl.mesh.parent?.remove(this.hl.mesh);
+    this.hl.mat.dispose();
+    this.hl = null;
   }
 
   /** 세계 픽셀 좌표에 있는 물건 (위에 그려진 것 우선, 보이는 층만). 투명 픽셀은 통과 */

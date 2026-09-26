@@ -144,6 +144,10 @@
   },
   "town": {
     "$comment": "성/여관/교회/방앗간/수도원처럼 가문이 사는 장소 안에서 그 가문만 쓰는 물건 (defId, 끝이 *면 앞부분 일치). 나머지(제단, 긴 의자, 우물, 노점)는 누구나",
+    "$publicPlaces": "사는 사람 전용 물건 중 이 장소 종류에서는 누구나 쓰는 것 (손님이 드나드는 곳의 요강)",
+    "publicPlaces": {
+      "chamber_pot*": ["inn", "church", "guild_hall", "bathhouse", "market", "craft_street", "mill", "well_square"]
+    },
     "residentOnly": [
       "bed*",
       "straw_bedding",

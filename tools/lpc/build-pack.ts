@@ -14,6 +14,7 @@ import type { BodyType, BodyTypeInfo, CreditInfo, Facing, LayerDef, LpcPack, Out
 
 const OUT = 'src/data/artpacks/lpc.json';
 const GEN_LAYERS = 'assets/generated/lpc/layers.json';
+const GEN_INFANT = 'assets/generated/lpc/infant/infant.json';
 
 const outfits: OutfitsData = JSON.parse(readFileSync('src/data/outfits.json', 'utf8'));
 
@@ -185,6 +186,8 @@ const pack: LpcPack & { _comment: string } = {
   palettes,
   layers,
   credits,
+  // 아기/유아 (tools/lpc/gen-infant.ts)
+  ...(existsSync(GEN_INFANT) ? { infant: (({ _comment, ...rest }) => rest)(JSON.parse(readFileSync(GEN_INFANT, 'utf8'))) } : {}),
 };
 writeFileSync(OUT, JSON.stringify(pack) + '\n');
 const size = readFileSync(OUT).length;

@@ -139,6 +139,15 @@ export class LifeJudge {
     }
   }
 
+  /** 판정기 밖에서 일어난 죽음 (굶주림, 사고 …) 통계 */
+  recordDeath(p: Person, cause: string): void {
+    if (this.age(p) < 18) this.stats.deathsUnder18++;
+    this.stageDeaths[p.lifeStage] = (this.stageDeaths[p.lifeStage] ?? 0) + 1;
+    this.stats.deaths++;
+    this.stats.deathsByCause[cause] = (this.stats.deathsByCause[cause] ?? 0) + 1;
+    this.host.news('death_starved', { a: p.name }, [p]);
+  }
+
   // ------------------------------------------------------------------ 임신과 출산 (15-1)
 
   private pregnancies(day: number): void {

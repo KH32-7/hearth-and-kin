@@ -10,6 +10,13 @@ import type { PersonSnap } from '../sim/protocol';
 import { placeRect } from './GameRenderer';
 import { makeSpriteMaterial, pixelTexture, setUvRect } from './SpriteMaterial';
 import { ORDER_SCALE, type WorldView } from './WorldView';
+import grading from '../data/grading.json';
+import { applyGrade, PaletteIndex, type Grade } from './color';
+import { LPC_PACK, OUTFITS, renderPlan } from './lpc/compose';
+import { bodyTypeFor, randomSpecWith } from './lpc/plan';
+import { infantFrameRect, infantLookFromSpec, planInfant, type InfantKind, type InfantLook, type InfantPlan } from './lpc/infant';
+import type { CharacterSpec, Stage } from './lpc/types';
+import { Rng } from '../sim/core/rng';
 
 export type FacingName = 'up' | 'left' | 'down' | 'right';
 
@@ -70,6 +77,10 @@ class CharacterNode {
   horse: THREE.Mesh | null = null;
   horseMat: THREE.ShaderMaterial | null = null;
   horseColor = -1;
+  /** 이번 프레임에 그린 것 (품 안 아기가 안은 사람에게 붙을 때 씀) */
+  drawn: { rectX: number; rectY: number; anim: string; frame: number; facing: FacingName; order: number; seated: boolean } | null = null;
+  /** 아기/유아 시트 키 (바뀌면 텍스처 교체) */
+  infantKey = '';
 
   constructor(group: THREE.Group, shadowTex: THREE.Texture) {
     this.mat = makeSpriteMaterial(new THREE.Texture());
@@ -95,6 +106,18 @@ export class CharacterView {
   seatCarryDrop = 6;
   /** 말 시트 (털색 0~4): HearthGame 이 불러 넣음. 128px 칸, 행 0~3 = 질주 위/왼/아래/오른 */
   horseTextures: THREE.Texture[] = [];
+  /**
+   * 아기/유아 시트 (lpc.json infant): 이 뷰가 직접 합성함. 게임이 바꿔 끼울 수 있는 훅
+   *  - infantLoader: 그림 불러오기 (기본: BASE_URL 기준 <img>)
+   *  - infantLookFor: 사람 → 피부/눈/머리/옷 색 (기본: appearance 의 CharacterSpec 또는 마을 시드)
+   */
+  infantLoader: (path: string) => Promise<CanvasImageSource> = defaultLoader;
+  infantLookFor: ((p: PersonSnap) => InfantLook | null) | null = null;
+  private infantSheets = new Map<string, { image: HTMLCanvasElement | OffscreenCanvas; plan: InfantPlan } | 'loading' | 'failed'>();
+  /** 안은 사람 id → 아기 id */
+  private holding = new Map<number, number>();
+  private worldPalette: PaletteIndex | null = null;
+  infantErrors: string[] = [];
 
   constructor(
     private world: WorldView,
@@ -104,11 +127,15 @@ export class CharacterView {
   /** 새 스냅샷: 보간 경로를 새로 잡음 */
   sync(persons: PersonSnap[], tick: number, tickMs: number, nowMs: number): void {
     const T = this.world.tile;
+    // 틱이 지나지 않은 스냅샷(대기열 변경 등으로 중간에 온 것)은 이동 보간을 새로 잡지 않음 → 걸음 속도가 들쭉날쭉하지 않게
+    const advanced = this.lastTick < 0 || tick !== this.lastTick;
     const ticks = this.lastTick < 0 ? 1 : Math.max(1, tick - this.lastTick);
     this.lastTick = tick;
     // 스냅샷 한 번에 담긴 시간(실제 ms). 너무 길면(일시정지 해제 직후 등) 250ms로 자름
     const duration = Math.min(Math.max(ticks * tickMs, 16), 1000);
     const seen = new Set<number>();
+    this.holding.clear();
+    for (const p of persons) if (p.lifeStage === 'baby' && p.infant?.place === 'held' && p.infant.heldBy >= 0) this.holding.set(p.infant.heldBy, p.id);
     for (const p of persons) {
       seen.add(p.id);
       let n = this.nodes.get(p.id);
@@ -122,6 +149,7 @@ export class CharacterView {
       }
       n.snap = p;
       n.slab = pr.slab;
+      if (!advanced && n.motion) continue;
       const pts: number[] = [];
       // 현재 그려진 위치에서 시작해 trail을 따라감 → 끊김 없음
       pts.push(n.fx, n.fy);
@@ -141,7 +169,15 @@ export class CharacterView {
         n.fx = pr.x;
         n.fy = pr.y;
         n.motion = null;
-      } else n.motion = { pts, cum, total, start: nowMs, duration };
+      } else {
+        // 이번 스냅샷에 새로 걸은 거리(앞 구간 = 아직 못 따라간 몫 제외)를 그 시간에 걷는 속도로 계속 감.
+        // 밀린 몫은 최대 1.5배 시간으로 천천히 따라잡음 (갑자기 빨라지지 않게)
+        const lag = cum.length > 1 ? cum[1] : 0;
+        const fresh = total - lag;
+        let dur = duration;
+        if (fresh > 0.5 && lag > 0.5) dur = Math.min(duration * 1.5, (total / fresh) * duration);
+        n.motion = { pts, cum, total, start: nowMs, duration: dur };
+      }
     }
     for (const [id, n] of this.nodes) {
       if (seen.has(id)) continue;
@@ -155,24 +191,17 @@ export class CharacterView {
 
   /** 매 프레임: 위치 보간, 프레임 선택, 정렬 */
   update(nowMs: number): void {
-    for (const n of this.nodes.values()) this.updateNode(n, nowMs);
+    // 품 안 아기는 안은 사람을 먼저 그린 뒤에 (같은 프레임 위치에 붙임)
+    const held: CharacterNode[] = [];
+    for (const n of this.nodes.values()) {
+      if (n.snap?.lifeStage === 'baby' && n.snap.infant?.place === 'held') held.push(n);
+      else this.updateNode(n, nowMs);
+    }
+    for (const n of held) this.updateNode(n, nowMs);
   }
 
-  private updateNode(n: CharacterNode, nowMs: number): void {
-    const p = n.snap;
-    if (!p) return;
-    const sheet = this.sheets(p);
-    if (!sheet) {
-      n.mesh.visible = false;
-      return;
-    }
-    if (sheet !== n.sheet) {
-      n.sheet = sheet;
-      n.tex?.dispose();
-      n.tex = pixelTexture(sheet.image as HTMLCanvasElement);
-      n.mat.uniforms.map.value = n.tex;
-    }
-    // 위치 보간
+  /** 스냅샷 경로 보간: 그려질 발 위치 갱신, 움직이는 중이면 true (걷는 방향으로 facing 갱신) */
+  private interpolate(n: CharacterNode, p: PersonSnap, nowMs: number): boolean {
     let moving = false;
     if (n.motion) {
       const m = n.motion;
@@ -196,6 +225,31 @@ export class CharacterView {
       }
       if (t >= 1) n.motion = null;
     }
+    return moving;
+  }
+
+  private updateNode(n: CharacterNode, nowMs: number): void {
+    const p = n.snap;
+    if (!p) return;
+    const infantKind: InfantKind | null = p.lifeStage === 'baby' ? 'baby' : p.lifeStage === 'toddler' ? 'toddler' : null;
+    if (infantKind) {
+      this.updateInfant(n, p, infantKind, nowMs);
+      return;
+    }
+    n.drawn = null;
+    const sheet = this.sheets(p);
+    if (!sheet) {
+      n.mesh.visible = false;
+      return;
+    }
+    if (sheet !== n.sheet) {
+      n.sheet = sheet;
+      n.tex?.dispose();
+      n.tex = pixelTexture(sheet.image as HTMLCanvasElement);
+      n.mat.uniforms.map.value = n.tex;
+    }
+    // 위치 보간
+    const moving = this.interpolate(n, p, nowMs);
 
     // 보는 층 (23-2): 위층 사람은 숨김, 아래층 사람은 흐린 실루엣
     const vis = this.world.levelVisibility(this.world.levelOfRow(p.y));
@@ -212,10 +266,15 @@ export class CharacterView {
     let anim = p.anim;
     let facing = (p.facing as FacingName) ?? 'down';
     let fixedFrame: number | null = null;
+    // 아기를 안고 있음: 팔을 앞으로 모은 carry 자세 (서 있으면 첫 프레임에 멈춤, 앉으면 앉은 자세 그대로 무릎 위)
+    const holdingBaby = this.holding.has(p.id);
     if (p.collapsed) {
       anim = 'hurt';
     } else if (p.sleeping || (p.pose === 'lie' && p.underBlanket)) {
       anim = 'sleep';
+    } else if (holdingBaby && p.riding === undefined && !(p.pose === 'sit' && !moving)) {
+      anim = 'carry';
+      if (!moving) fixedFrame = 0;
     } else if (p.riding !== undefined && this.horseTextures[p.riding]) {
       // 말 위: 의자 자세로 안장에 앉음
       anim = 'sit';
@@ -278,7 +337,9 @@ export class CharacterView {
       const riding = anim === 'sit' && p.riding !== undefined && !!this.horseTextures[p.riding];
       // 말 위: 안장 높이만큼 올려 그림 (옆모습은 안장이 등 가운데, 앞/뒷모습은 조금 낮게)
       const lift = riding ? (facing === 'left' || facing === 'right' ? 16 : 12) : 0;
-      placeRect(n.mesh, footX - sheet.anchorX + (riding && facing === 'left' ? 2 : riding && facing === 'right' ? -2 : 0), footY - lift - sheet.anchorY, fw, fh);
+      const rectX = footX - sheet.anchorX + (riding && facing === 'left' ? 2 : riding && facing === 'right' ? -2 : 0);
+      placeRect(n.mesh, rectX, footY - lift - sheet.anchorY, fw, fh);
+      n.drawn = { rectX, rectY: footY - lift - sheet.anchorY, anim, frame, facing, order: 0, seated };
       this.updateHorse(n, riding ? p.riding! : -1, facing, footX, footY, order, nowMs);
       // 앉기: 의자/걸상 위에 그림. 등을 보이고 앉거나(위쪽) 통 안(목욕)이면 물건이 몸을 가림
       if (p.pose === 'stand') n.seatObj = -1;
@@ -292,12 +353,230 @@ export class CharacterView {
       }
     }
     n.mesh.renderOrder = order;
+    if (n.drawn) n.drawn.order = order;
     placeRect(n.shadow, footX - 10, footY - 4, 20, 6);
     n.shadow.renderOrder = base + (footY + yo) * ORDER_SCALE - 2;
     n.mat.uniforms.uTint.value.setRGB(vis.tint, vis.tint, vis.tint * 1.05);
 
     // 들고 있는 물건
     this.updateCarry(n, p.carry, facing, footX, footY, order, p.pose === 'sit' && !moving);
+  }
+
+  // ------------------------------------------------------------------ 아기/유아 (lpc.json infant)
+
+  /** 아기/유아 외형 색: 훅 → appearance 의 CharacterSpec → 마을 시드 → id */
+  private infantLook(p: PersonSnap): InfantLook {
+    const hooked = this.infantLookFor?.(p);
+    if (hooked) return hooked;
+    const a = (p.appearance ?? {}) as Record<string, unknown>;
+    let spec: CharacterSpec;
+    if (typeof a.skin === 'string' && a.hair && typeof a.estate === 'string') spec = a as unknown as CharacterSpec;
+    else {
+      // HearthGame 과 같은 방식 (마을 사람 시드 → randomSpec), 아기/유아 단계는 아동 목록으로
+      const rng = new Rng((Number(a.seed) >>> 0) || p.id + 1);
+      const stage = (['child', 'teen', 'adult', 'elder'].includes(String(a.stage)) ? a.stage : 'child') as Stage;
+      const estate = (typeof a.estate === 'string' && a.estate in OUTFITS.dyes ? a.estate : 'freeman') as CharacterSpec['estate'];
+      spec = randomSpecWith(OUTFITS, () => rng.next(), { sex: a.sex === 'female' ? 'female' : 'male', stage, estate });
+    }
+    return infantLookFromSpec(spec, OUTFITS, LPC_PACK);
+  }
+
+  /** 아기/유아 시트 (합성 끝날 때까지 null) */
+  private infantSheet(kind: InfantKind, look: InfantLook): { key: string; image: HTMLCanvasElement | OffscreenCanvas; plan: InfantPlan } | null {
+    const key = `${kind}|${look.skin}|${look.eyes}|${look.hairStyle}|${look.hairColor}|${look.main}|${look.accent}|${kind === 'toddler' ? look.garment : ''}`;
+    const hit = this.infantSheets.get(key);
+    if (hit && typeof hit !== 'string') return { key, ...hit };
+    if (!hit) {
+      this.infantSheets.set(key, 'loading');
+      let plan: InfantPlan;
+      try {
+        plan = planInfant(kind, look, LPC_PACK);
+      } catch (e) {
+        this.infantSheets.set(key, 'failed');
+        this.infantErrors.push(String(e));
+        return null;
+      }
+      renderPlan(plan, this.infantLoader)
+        .then((image) => {
+          this.gradeInfant(image);
+          this.infantSheets.set(key, { image, plan });
+        })
+        .catch((e) => {
+          this.infantSheets.set(key, 'failed');
+          this.infantErrors.push(`infant ${key}: ${String(e)}`);
+        });
+    }
+    return null;
+  }
+
+  /** 다른 인물 시트와 같은 화풍 보정 (src/data/grading.json, HearthGame.gradeSheet 와 같은 함수) */
+  private gradeInfant(img: HTMLCanvasElement | OffscreenCanvas): void {
+    const g = (grading as unknown as { character: Grade }).character;
+    const neutral = g.saturation === 1 && g.value === 1 && g.contrast === 1 && g.tint.every((v) => v === 1) && g.paletteSnap === 0;
+    if (neutral) return;
+    const ctx = img.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D | null;
+    if (!ctx) return;
+    const data = ctx.getImageData(0, 0, img.width, img.height);
+    if (g.paletteSnap > 0 && !this.worldPalette) this.worldPalette = new PaletteIndex(this.world.paletteColors());
+    applyGrade(data.data, g, this.worldPalette ?? undefined);
+    ctx.putImageData(data, 0, 0);
+  }
+
+  private hideNode(n: CharacterNode): void {
+    n.mesh.visible = false;
+    n.shadow.visible = false;
+    if (n.horse) n.horse.visible = false;
+    if (n.carry) n.carry.visible = false;
+    if (n.blanket) n.blanket.visible = false;
+    n.drawn = null;
+  }
+
+  /**
+   * 아기: 요람(자기 위치, 요람 매트 높이만큼 올림) / 바닥 깔개 / 품 안(안은 사람 스프라이트 사각형에 겹침, 위 보기는 뒤에)
+   * 유아: idle / walk / crawl / sit / fall / sleep (머리만, 베개 위)
+   */
+  private updateInfant(n: CharacterNode, p: PersonSnap, kind: InfantKind, nowMs: number): void {
+    const moving = this.interpolate(n, p, nowMs);
+    const vis = this.world.levelVisibility(this.world.levelOfRow(p.y));
+    const inf = LPC_PACK.infant;
+    const sheet = inf ? this.infantSheet(kind, this.infantLook(p)) : null;
+    if (!inf || !sheet || p.hidden || !vis.visible || this.world.hiddenInShell(p.x, p.y)) {
+      this.hideNode(n);
+      return;
+    }
+    if (sheet.key !== n.infantKey) {
+      n.infantKey = sheet.key;
+      n.sheet = null;
+      n.tex?.dispose();
+      n.tex = pixelTexture(sheet.image as HTMLCanvasElement);
+      n.mat.uniforms.map.value = n.tex;
+    }
+    if (n.carry) n.carry.visible = false;
+    if (n.horse) n.horse.visible = false;
+    const plan = sheet.plan;
+    const fw = plan.frameW;
+    const fh = plan.frameH;
+    let facing = (p.facing as FacingName) ?? 'down';
+    let anim = 'idle';
+    let fixedFrame: number | null = null;
+    const yo = this.world.yOff(n.slab);
+    const base = this.world.orderBase(n.slab);
+    let footX = Math.round(n.fx);
+    let footY = Math.round(n.fy);
+    let rectX = footX - plan.anchorX;
+    let rectY = footY - plan.anchorY;
+    let order = base + (footY + yo) * ORDER_SCALE + 2;
+    let shadow = false;
+    let blanketBed = -1;
+
+    if (kind === 'baby') {
+      const place = p.infant?.place ?? 'cradle';
+      const cry = !!p.infant?.crying;
+      const holder = place === 'held' ? this.nodes.get(p.infant!.heldBy) : undefined;
+      if (place === 'held' && holder?.drawn && holder.snap && holder.mesh.visible) {
+        const h = holder.drawn;
+        facing = h.facing;
+        anim = cry ? 'held_cry' : 'held';
+        const ib = inf.baby.place.held;
+        const ha = (holder.snap.appearance ?? {}) as { sex?: string; stage?: string; pregnant?: number };
+        const bt = bodyTypeFor({ sex: ha.sex === 'female' ? 'female' : 'male', stage: (ha.stage === 'teen' ? 'teen' : 'adult') as Stage, pregnant: (ha.pregnant ?? 0) as 0 | 1 | 2 });
+        // 안은 사람 carry 프레임의 윗몸 들썩임 (plan.ts carry 와 같은 값)
+        let bob = 0;
+        if (h.anim === 'carry') {
+          const src = LPC_PACK.anims.carry.src[0].frames;
+          bob = LPC_PACK.bodyTypes[bt]?.walkBob[h.facing]?.[src[h.frame % src.length]] ?? 0;
+        }
+        rectX = h.rectX;
+        rectY = h.rectY + (ib.dy[bt] ?? 0) + bob + (h.seated ? ib.seatedDy : 0);
+        order = h.order + (ib.front[facing] ? 1 : -1);
+        n.fx = holder.fx;
+        n.fy = holder.fy;
+        footX = Math.round(n.fx);
+        footY = Math.round(n.fy);
+      } else if (place === 'held') {
+        // 안은 사람이 안 보이면(다른 층, 숨음, 아직 합성 전) 같이 숨김
+        this.hideNode(n);
+        return;
+      } else if (place === 'floor') {
+        anim = cry ? 'floor_cry' : 'floor';
+        facing = 'down';
+        rectY = footY - inf.baby.place.floor.lift - plan.anchorY;
+        order = base + (footY + yo) * ORDER_SCALE + 1;
+      } else {
+        anim = cry ? 'cradle_cry' : 'cradle';
+        facing = 'down';
+        rectY = footY - inf.baby.place.cradle.lift - plan.anchorY;
+        const obj = p.action?.stepObj ?? -1;
+        const bottom = obj >= 0 ? this.world.objectBottom(obj) : null;
+        order = bottom !== null ? bottom * ORDER_SCALE + 1 : base + (footY + yo) * ORDER_SCALE + 3;
+      }
+    } else {
+      shadow = true;
+      if (p.sleeping || (p.pose === 'lie' && p.underBlanket)) {
+        anim = 'sleep';
+        facing = 'down';
+        shadow = false;
+        // 베개 위 머리 (어른 잠과 같은 규칙: 머리 중심 = 잘린 줄 - 15)
+        const crop = plan.sleepCropY ?? 44;
+        const bedUid = p.action ? p.action.stepObj : -1;
+        const head = bedUid >= 0 ? this.world.lieHead(bedUid, footX, footY) : null;
+        const hx = head ? head.x : footX;
+        const hy = head ? head.y : footY - 12;
+        rectX = hx - plan.anchorX;
+        rectY = hy - (crop - 15);
+        const bedBottom = bedUid >= 0 ? this.world.objectBottom(bedUid) : null;
+        order = bedBottom !== null ? bedBottom * ORDER_SCALE + 1 : base + (footY + yo + 16) * ORDER_SCALE + 1;
+        blanketBed = bedUid;
+      } else if (p.collapsed) {
+        anim = 'fall';
+        fixedFrame = 3;
+      } else if (moving) {
+        anim = p.anim === 'crawl' ? 'crawl' : 'walk';
+      } else if (p.anim === 'crawl') {
+        anim = 'crawl';
+        fixedFrame = 0;
+      } else if (p.anim === 'fall' || p.anim === 'sit' || p.pose === 'sit') {
+        anim = p.anim === 'fall' ? 'fall' : 'sit';
+      }
+      if (anim === 'sit' && p.pose === 'sit' && !moving) {
+        // 의자/걸상 위 (어른과 같은 발 위치 규칙)
+        footY = (Math.floor((n.fy + yo) / this.world.tile) + 1) * this.world.tile - this.seatInset - yo;
+        rectY = footY - plan.anchorY;
+      }
+    }
+    const info = plan.anims[anim];
+    if (!info) {
+      this.hideNode(n);
+      return;
+    }
+    if (!info.dirs.includes(facing)) facing = info.dirs[0] as FacingName;
+    const key = `${anim}:${facing}`;
+    if (key !== n.lastAnimKey) {
+      n.lastAnimKey = key;
+      n.animStart = nowMs;
+    }
+    let frame: number;
+    if (fixedFrame !== null) frame = Math.min(fixedFrame, info.frames - 1);
+    else if (info.fps <= 0) frame = 0;
+    else {
+      const raw = Math.floor(((nowMs - n.animStart) / 1000) * info.fps);
+      frame = info.loop ? raw % info.frames : Math.min(raw, info.frames - 1);
+    }
+    const r = infantFrameRect(plan, anim, facing, frame)!;
+    const img = sheet.image as { width: number; height: number };
+    setUvRect(n.mat, img.width, img.height, r.x, r.y, fw, fh);
+    placeRect(n.mesh, rectX, rectY, fw, fh);
+    n.mesh.renderOrder = order;
+    n.mesh.visible = true;
+    n.mat.uniforms.uTint.value.setRGB(vis.tint, vis.tint, vis.tint * 1.05);
+    n.shadow.visible = shadow;
+    if (shadow) {
+      placeRect(n.shadow, footX - 7, footY - 3, 14, 4);
+      n.shadow.renderOrder = base + (footY + yo) * ORDER_SCALE - 2;
+    }
+    if (blanketBed >= 0) this.updateBlanket(n, blanketBed, order + 1);
+    else if (n.blanket) n.blanket.visible = false;
+    n.drawn = { rectX, rectY, anim, frame, facing, order, seated: false };
   }
 
   /** 말: 질주 4프레임 (방향별 행). 사람 바로 뒤에 그림 (아래쪽을 보면 말 머리가 사람 앞) */
@@ -440,6 +719,22 @@ export class CharacterView {
     }
     return out;
   }
+}
+
+/** 기본 그림 불러오기 (Assets.url 과 같은 경로 규칙, 같은 경로는 한 번만) */
+const loaded = new Map<string, Promise<CanvasImageSource>>();
+function defaultLoader(path: string): Promise<CanvasImageSource> {
+  let pr = loaded.get(path);
+  if (!pr) {
+    pr = new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error(`이미지 로드 실패: ${path}`));
+      img.src = (import.meta.env.BASE_URL ?? '/') + path.split('/').map(encodeURIComponent).join('/');
+    });
+    loaded.set(path, pr);
+  }
+  return pr;
 }
 
 function makeShadowTexture(): THREE.Texture {

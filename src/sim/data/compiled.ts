@@ -66,6 +66,10 @@ export interface Compiled {
   /** [욕구 칸, 임계값] */
   interrupt: Array<[number, number]>;
   wakeIf: Array<[number, number]>;
+  /** 스스로 챙기는 욕구 기준 (balance.autonomy.selfCare) */
+  selfCare: Array<[number, number]>;
+  /** 욕구 칸별 광고 상한 (그 값 이상이면 그 욕구 광고 0). 없으면 101 */
+  adBelow: Float64Array;
   sleepDecay: Float64Array;
 }
 
@@ -77,7 +81,7 @@ function needArray(rec: Partial<Record<NeedId, number>> | undefined): Float64Arr
 
 export function compile(
   interactions: Record<string, InteractionDef>,
-  balance: { interrupt: Record<string, number>; sleep: { wakeIf: Record<string, number>; decayMultiplier: Record<string, number> } },
+  balance: { interrupt: Record<string, number>; autonomy?: { selfCare?: Record<string, number>; adBelow?: Record<string, number> }; sleep: { wakeIf: Record<string, number>; decayMultiplier: Record<string, number> } },
 ): Compiled {
   const list: CompiledIA[] = [];
   const byId = new Map<string, CompiledIA>();
@@ -106,7 +110,9 @@ export function compile(
     Object.entries(rec)
       .filter(([k]) => k in NEED_IDX)
       .map(([k, v]) => [NEED_IDX[k as NeedId], v]);
+  const adBelow = new Float64Array(8).fill(101);
+  for (const [k, v] of Object.entries(balance.autonomy?.adBelow ?? {})) if (k in NEED_IDX) adBelow[NEED_IDX[k as NeedId]] = v;
   const sleepDecay = new Float64Array(8).fill(1);
   for (const [k, v] of Object.entries(balance.sleep.decayMultiplier)) if (k in NEED_IDX) sleepDecay[NEED_IDX[k as NeedId]] = v;
-  return { list, byId, byDef, interrupt: pairs(balance.interrupt), wakeIf: pairs(balance.sleep.wakeIf), sleepDecay };
+  return { list, byId, byDef, interrupt: pairs(balance.interrupt), wakeIf: pairs(balance.sleep.wakeIf), selfCare: pairs(balance.autonomy?.selfCare ?? {}), adBelow, sleepDecay };
 }

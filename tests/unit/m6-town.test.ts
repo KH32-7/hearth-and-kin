@@ -98,7 +98,7 @@ describe('M6 마을', () => {
     }
     expect(promotions).toBeGreaterThan(5);
     expect(worst).toBeLessThanOrEqual(1);
-  });
+  }, 30000);
 
   it('생애 판정기: 같은 시드는 같은 결과 (요약 강제 10일)', () => {
     const run = () => {

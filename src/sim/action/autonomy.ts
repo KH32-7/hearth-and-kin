@@ -118,7 +118,9 @@ export function scoreCandidates(
       if (!requiresOk(world, ia, target)) continue;
       const support = c.supportWhen.length === 0 || supportActive(world, c);
       let s = 0;
+      const below = data.compiled.adBelow;
       for (let i = 0; i < 8; i++) {
+        if (person.needs[i] >= below[i]) continue;
         const a = adFor(c, target, i, support);
         if (a) s += (urgBuf[i] * a) / 100;
       }
@@ -129,9 +131,7 @@ export function scoreCandidates(
       // 첫 단계 자리를 잡을 수 있어야 후보
       const first = resolveStep(world, person.id, person.x, person.y, ia.steps[0], target);
       if (!first) continue;
-      const dx = world.centerX(first.obj) - person.x;
-      const dy = world.centerY(first.obj) - person.y;
-      s /= 1 + Math.sqrt(dx * dx + dy * dy) / b.distanceRefTiles;
+      s /= 1 + slabDistance(world, world.centerX(first.obj), world.centerY(first.obj), person.x, person.y) / b.distanceRefTiles;
       let repeats = 0;
       for (const u of person.recentObjects) if (u === target.uid) repeats++;
       if (repeats >= b.repeatWindow) s *= b.repeatPenalty;
@@ -140,6 +140,19 @@ export function scoreCandidates(
     }
   }
 }
+
+/**
+ * 여러 층 부지의 거리: 층 판을 접은 평면 거리 + 층을 오갈 때 계단 비용 (위층 사람이 아래층 화덕을 150칸 밖으로 보지 않게)
+ */
+export function slabDistance(world: World, ax: number, ay: number, bx: number, by: number): number {
+  const H1 = world.lot.h + 1;
+  const dx = ax - bx;
+  const dy = (ay % H1) - (by % H1);
+  const levels = Math.abs(Math.floor(ay / H1) - Math.floor(by / H1));
+  return Math.sqrt(dx * dx + dy * dy) + levels * LEVEL_COST_TILES;
+}
+/** 층 하나 오르내리는 거리 값 (칸) */
+const LEVEL_COST_TILES = 6;
 
 const weightBuf: number[] = [];
 
@@ -177,10 +190,13 @@ export function needSolvable(
   person: Person,
   needIdx: number,
   reachable: (cell: number, blockedGoal: boolean) => boolean,
+  allowTarget?: (o: ObjectInstance) => boolean,
 ): boolean {
   for (const target of candidateObjects(data, world, person, data.balance.autonomy.searchRadiusTiles ?? 32)) {
     const list = data.compiled.byDef.get(target.defId);
     if (!list) continue;
+    // 마을: 쓸 수 없는 물건(남의 집, 사는 사람 전용)은 해결 수단이 아님 (자율 선택과 같은 거름)
+    if (allowTarget && !allowTarget(target)) continue;
     for (const c of list) {
       if (!c.serves[needIdx]) continue;
       const direct = c.ads[needIdx] > 0 || c.steps.some((s) => s.needs[needIdx] > 0) || (c.supportAds[needIdx] > 0 && supportActive(world, c));

@@ -12,7 +12,7 @@
   ],
   "needs": {
     "hunger": {
-      "decayPerHour": 6,
+      "decayPerHour": 4,
       "scale": "absolute",
       "start": 55,
       "curve": {
@@ -22,7 +22,7 @@
       "icon": "hunger"
     },
     "energy": {
-      "decayPerHour": 4,
+      "decayPerHour": 3.5,
       "scale": "absolute",
       "start": 80,
       "curve": {
@@ -32,7 +32,7 @@
       "icon": "energy"
     },
     "hygiene": {
-      "decayPerHour": 3,
+      "decayPerHour": 2,
       "scale": "absolute",
       "start": 70,
       "curve": {
@@ -42,7 +42,7 @@
       "icon": "hygiene"
     },
     "bladder": {
-      "decayPerHour": 9,
+      "decayPerHour": 7,
       "scale": "absolute",
       "start": 45,
       "curve": {
@@ -52,7 +52,7 @@
       "icon": "bladder"
     },
     "fun": {
-      "decayPerHour": 4,
+      "decayPerHour": 3,
       "scale": "absolute",
       "start": 60,
       "curve": {
@@ -62,7 +62,7 @@
       "icon": "fun"
     },
     "social": {
-      "decayPerHour": 3,
+      "decayPerHour": 2,
       "scale": "absolute",
       "start": 60,
       "curve": {
@@ -83,7 +83,7 @@
       "note": "감소는 체감 기온 식 (11-1 온기)"
     },
     "comfort": {
-      "decayPerHour": 3,
+      "decayPerHour": 2,
       "scale": "absolute",
       "start": 70,
       "curve": {
@@ -101,7 +101,8 @@
   },
   "collapse": {
     "energyFloorSleepMinutes": 240,
-    "hungerZeroWeakenMinutes": 720
+    "hungerZeroWeakenMinutes": 1440,
+    "hungerZeroDeathMinutes": 4320
   },
   "warmth": {
     "comfortableFeltC": 15,
@@ -118,5 +119,6 @@
     },
     "nearHearthTiles": 2,
     "nearHearthBonusC": 8
-  }
+  },
+  "$tempo": "2026-09-26 사용자: 욕구가 너무 빨리 떨어짐. 한 끼로 하루 버팀(배고픔 4/시간), 용변 하루 몇 번(방광 7), 3일 굶어야 사망"
 }

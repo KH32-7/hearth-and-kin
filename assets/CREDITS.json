@@ -3431,5 +3431,74 @@
     "usedBy": [
       "src/styles.css @font-face"
     ]
+  },
+  {
+    "id": "lpc:infant/toddler/",
+    "pack": "hearth-and-kin (derived from LPC)",
+    "files": "assets/generated/lpc/infant/toddler/",
+    "source": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "authors": [
+      "Stephen Challener (Redshrike)",
+      "kheftel",
+      "bluecarrot16",
+      "JaidynReiman",
+      "Nila122",
+      "Hearth & Kin (pixel-edit script tools/lpc/gen-infant.ts)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0"
+    ],
+    "attribution": "\"infant/toddler/\" by Stephen Challener (Redshrike), kheftel, bluecarrot16 (LPC child head), JaidynReiman, Nila122 (LPC child hair), Hearth & Kin (tools/lpc/gen-infant.ts). License: CC-BY-SA 3.0. https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+    "modified": true,
+    "notes": "body/smock/gown/tunic drawn by script in LPC palette ramps; head.png, face_closed.png, hair/*.png are re-positioned LPC child head/hair idle frames; see assets/SHARE_ALIKE.md",
+    "usedBy": [
+      "toddler_body",
+      "toddler_head",
+      "toddler_face_closed",
+      "toddler_smock",
+      "toddler_gown",
+      "toddler_tunic",
+      "toddler_hair_*"
+    ]
+  },
+  {
+    "id": "lpc:infant/baby/",
+    "pack": "hearth-and-kin",
+    "files": "assets/generated/lpc/infant/baby/",
+    "source": "tools/lpc/gen-infant.ts",
+    "authors": [
+      "Hearth & Kin (pixel-edit script tools/lpc/gen-infant.ts)"
+    ],
+    "licenses": [
+      "CC-BY-SA 3.0"
+    ],
+    "attribution": "\"infant/baby/\" by Hearth & Kin (tools/lpc/gen-infant.ts), drawn in LPC palette ramps. License: CC-BY-SA 3.0.",
+    "modified": false,
+    "notes": "swaddled baby (cradle/floor/held, crying) drawn from scratch by script; no LPC pixels copied",
+    "usedBy": [
+      "baby_body",
+      "baby_swaddle",
+      "baby_hair",
+      "baby_mat",
+      "baby_tears"
+    ]
+  },
+  {
+    "id": "ui:heraldry",
+    "pack": "hearth-and-kin",
+    "files": "assets/generated/heraldry/heraldry.png",
+    "source": "tools/heraldry/gen-heraldry.ts",
+    "authors": [
+      "Hearth & Kin (pixel-edit script tools/heraldry/gen-heraldry.ts)"
+    ],
+    "licenses": [
+      "project"
+    ],
+    "attribution": "Heraldry elements (6 shields, 12 divisions, 40 charges, 8 tinctures) by Hearth & Kin. Tincture colours picked from the Epic RPG World palette (colour values only, no pixels copied).",
+    "modified": false,
+    "notes": "masks also embedded in src/data/heraldry.json; composed by src/render/heraldry.ts",
+    "usedBy": [
+      "heraldry"
+    ]
   }
 ]

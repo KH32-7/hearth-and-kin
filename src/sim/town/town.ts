@@ -24,6 +24,9 @@ export interface PlaceDef {
   estateMin?: string | null;
 }
 
+const DX4 = [1, -1, 0, 0];
+const DY4 = [0, 0, 1, -1];
+
 export interface TownLotDef {
   id: string;
   kind: 'residential' | 'empty';
@@ -202,6 +205,38 @@ export class Town {
       this.placeById.set(p.id, p);
       this.fill(this.placeAt, p.rect, i + 1);
     });
+    this.findSealedLots();
+  }
+
+  /**
+   * 길로 이어지지 않은 부지 (절벽·성벽 너머 주머니): 장터에서 걸어서 입구에 닿지 않으면 집으로 쓰지 않음.
+   * 그 집에 사람을 넣으면 갇혀 굶거나 용변을 못 봄 (사용자 보고 2026-09-26)
+   */
+  readonly sealed = new Set<string>();
+  private findSealedLots(): void {
+    const g = this.host.world.grid;
+    const market = this.places.find((p) => p.kind === 'market') ?? this.places[0];
+    if (!market) return;
+    const start = g.idx(market.anchor[0], market.anchor[1]);
+    if (start < 0) return;
+    const seen = new Uint8Array(g.w * g.h);
+    const stack = [start];
+    seen[start] = 1;
+    while (stack.length) {
+      const c = stack.pop()!;
+      const cx = c % g.w;
+      const cy = (c - cx) / g.w;
+      for (let d = 0; d < 5; d++) {
+        const n = d === 4 ? g.portal[c] : g.inBounds(cx + DX4[d], cy + DY4[d]) ? g.idx(cx + DX4[d], cy + DY4[d]) : -1;
+        if (n < 0 || seen[n] || !g.walkable(n)) continue;
+        seen[n] = 1;
+        stack.push(n);
+      }
+    }
+    for (const l of this.lots) {
+      const e = g.idx(l.entrance[0], l.entrance[1]);
+      if (e >= 0 && !seen[e]) this.sealed.add(l.id);
+    }
   }
 
   private fill(arr: Int16Array, r: [number, number, number, number], v: number): void {
@@ -274,10 +309,10 @@ export class Town {
 
   /** people.json → 인물, 가구, 관계. 가구마다 크기에 맞는 부지 배정 (조작 가문은 start 부지) */
   populate(people: PeopleData): void {
-    const free = this.lots.filter((l) => l.kind === 'residential' && l.house);
+    const free = this.lots.filter((l) => l.kind === 'residential' && l.house && !this.sealed.has(l.id));
     const taken = new Set<string>();
     const pickLot = (h: PeopleHousehold): TownLotDef | null => {
-      if (h.lot && this.lotById.has(h.lot) && !taken.has(h.lot)) return this.lotById.get(h.lot)!;
+      if (h.lot && this.lotById.has(h.lot) && !taken.has(h.lot) && !this.sealed.has(h.lot)) return this.lotById.get(h.lot)!;
       if (h.player) {
         const s = this.lots.find((l) => l.start && !taken.has(l.id));
         if (s) return s;
@@ -556,9 +591,16 @@ export class Town {
     }
   }
 
-  private atHome(p: Person): boolean {
+  atHome(p: Person): boolean {
     const lot = this.lotOf(p.x, p.y);
     return !!lot && lot.id === p.homeLot;
+  }
+
+  /** 집 안에 있는가: 집 부지, 또는 사는 장소(성·여관·교회 …) 안 */
+  insideHome(p: Person): boolean {
+    if (p.homeLot) return this.atHome(p);
+    const res = this.householdResidence.get(p.household);
+    return !!res && this.placeOf(p.x, p.y)?.id === res;
   }
 
   setLod(p: Person, to: Lod, minute: number): void {

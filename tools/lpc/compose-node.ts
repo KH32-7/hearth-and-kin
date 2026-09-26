@@ -20,7 +20,7 @@ export function loadData(): { pack: LpcPack; outfits: OutfitsData } {
 }
 
 /** Execute a plan: load (and recolor) every source, then copy the rects in order. */
-export function renderPlan(plan: Plan): Img {
+export function renderPlan(plan: Pick<Plan, 'width' | 'height' | 'sources' | 'ops'>): Img {
   const sheet = newImg(plan.width, plan.height);
   const imgs: Img[] = plan.sources.map((s) => {
     if (!existsSync(s.path)) throw new Error(`missing sprite ${s.path}`);

@@ -15,6 +15,7 @@
  "news.death_accident": "{a}이(가) {place}에서 사고로 목숨을 잃었소. 모두 발밑을 조심하시오.",
  "news.death_starve": "{house}의 {a}이(가) 굶주림 끝에 숨졌소. 곳간이 빈 집은 교회에 알리시오.",
  "news.death_cold": "{a}이(가) 간밤의 추위에 얼어 죽은 채 발견되었소. 장작을 아끼지 마시오.",
+ "news.death_starved": "{a}이(가) 며칠을 굶다가 끝내 숨을 거뒀다.",
  "news.death_battle": "{house}의 {a}이(가) 싸움터에서 돌아오지 못했소.",
  "news.death_duel": "{a}이(가) {b}와(과)의 결투에서 쓰러졌소. 영주께서 두 집안의 복수를 금하셨소.",
  "news.executed": "{a}이(가) 영주의 판결에 따라 {place}에서 처형되었소. 죄는 그 몸과 함께 묻혔소.",
@@ -62,7 +63,6 @@
  "news.came_of_age": "{house}의 {a}이(가) 어른이 되었소. 이제 혼사 이야기가 오갈 것이오.",
  "news.new_shop": "{a}이(가) {place}에 가게를 열었소. 첫날 값은 깎아 준다 하오.",
  "news.festival": "축제가 다가오오! {place}에 모이시오.",
-
  "rumor.engaged": "{a}와(과) {b}이(가) 곧 혼약한다더군. 지참금이 꽤 된다지?",
  "rumor.married": "{a}와(과) {b}이(가) 혼인했다는데, 서두른 까닭이 따로 있다는 말도 있어.",
  "rumor.betrothal_broken": "{a}네 혼약이 깨진 건 {b} 쪽에서 딴마음을 품어서라더군.",

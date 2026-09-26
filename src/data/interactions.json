@@ -429,7 +429,7 @@
       ],
       "requires": {
         "targetMax": {
-          "dirty": 3
+          "dirty": 4
         }
       },
       "steps": [
@@ -1755,6 +1755,104 @@
       ],
       "tags": [
         "floor_sleep"
+      ]
+    },
+    "hearth.eat_standing": {
+      "nameKey": "ia.eat_standing",
+      "icon": "stew",
+      "objects": [
+        "hearth"
+      ],
+      "requires": {
+        "exists": {
+          "object": "hearth",
+          "min": {
+            "servings": 1
+          }
+        }
+      },
+      "steps": [
+        {
+          "at": {
+            "object": "hearth",
+            "min": {
+              "servings": 1
+            }
+          },
+          "slot": "front",
+          "anim": "work",
+          "minutes": 2,
+          "effects": {
+            "atAdd": {
+              "servings": -1
+            }
+          }
+        },
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "eat",
+          "minutes": 18,
+          "needs": {
+            "hunger": 3.5
+          },
+          "carry": "bowl"
+        }
+      ],
+      "ads": {
+        "hunger": 50
+      },
+      "tags": [
+        "eat_plain"
+      ],
+      "$comment": "식탁이 없는 집: 화덕 옆에 서서 먹음 (심즈처럼). 그릇 수는 exists 로만 봄 (마지막 그릇을 뜬 뒤 먹는 도중 끊기지 않게)"
+    },
+    "chamber_pot.toss": {
+      "nameKey": "ia.toss_pot",
+      "icon": "outhouse",
+      "objects": [
+        "chamber_pot"
+      ],
+      "requires": {
+        "targetMin": {
+          "dirty": 2
+        }
+      },
+      "steps": [
+        {
+          "at": "target",
+          "slot": "front",
+          "anim": "work",
+          "minutes": 3,
+          "carry": "pot"
+        }
+      ],
+      "effects": {
+        "targetSet": {
+          "dirty": 0
+        }
+      },
+      "ads": {
+        "hygiene": 2
+      },
+      "adBonusWhen": {
+        "targetMin": {
+          "dirty": 4
+        },
+        "ads": {
+          "hygiene": 30,
+          "bladder": 45
+        }
+      },
+      "tags": [
+        "duty",
+        "clean"
+      ],
+      "moodlets": [
+        {
+          "id": "unpleasant_chore",
+          "chance": 0.8
+        }
       ]
     }
   }

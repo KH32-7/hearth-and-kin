@@ -1,0 +1,2048 @@
+{
+  "$comment": "M7~M9 소원/걱정 (GDD 12-5, 15, 16, 14). 형식은 wishes.json 과 같음. when 확장 키(엔진이 모르면 무시): married, hasChild, hasBaby, pregnant, flags (사건 카드 cond 와 같은 뜻. flags 는 인물/가정 플래그, 예: has_heirloom, lost_heirloom, has_feud, affair, on_trial, head_of_house, spouse_pregnant, has_toddler 등). 문장은 src/i18n/ko/wishes_m7.json",
+  "wishes": [
+    {
+      "id": "wish_tell_family_pregnant",
+      "kind": "wish",
+      "textKey": "wish.wish_tell_family_pregnant",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "pregnant": true
+      },
+      "fulfill": {
+        "event": "moodlet:pregnancy_announced"
+      },
+      "points": 25,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_see_midwife",
+      "kind": "wish",
+      "textKey": "wish.wish_see_midwife",
+      "icon": "goto",
+      "weight": 1,
+      "when": {
+        "pregnant": true
+      },
+      "fulfill": {
+        "event": "event:midwife_visited"
+      },
+      "points": 20,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_sew_baby_clothes",
+      "kind": "wish",
+      "textKey": "wish.wish_sew_baby_clothes",
+      "icon": "yarn",
+      "weight": 1,
+      "when": {
+        "pregnant": true,
+        "traitsAny": [
+          "family_oriented",
+          "creative",
+          "handy"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:baby_things_ready"
+      },
+      "points": 30,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_make_cradle",
+      "kind": "wish",
+      "textKey": "wish.wish_make_cradle",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "young",
+          "adult"
+        ],
+        "traitsAny": [
+          "handy",
+          "family_oriented"
+        ],
+        "flags": [
+          "spouse_pregnant"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:cradle_made"
+      },
+      "points": 35,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_rub_belly",
+      "kind": "wish",
+      "textKey": "wish.wish_rub_belly",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "married": true,
+        "traitsAny": [
+          "romantic",
+          "family_oriented"
+        ],
+        "flags": [
+          "spouse_pregnant"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:belly_rubbed"
+      },
+      "points": 20,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_name_baby",
+      "kind": "wish",
+      "textKey": "wish.wish_name_baby",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "hasBaby": true
+      },
+      "fulfill": {
+        "event": "moodlet:named_the_baby"
+      },
+      "points": 25,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_baptize_baby",
+      "kind": "wish",
+      "textKey": "wish.wish_baptize_baby",
+      "icon": "water",
+      "weight": 1,
+      "when": {
+        "hasBaby": true
+      },
+      "fulfill": {
+        "event": "moodlet:baptism_joy"
+      },
+      "points": 40,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_hold_baby",
+      "kind": "wish",
+      "textKey": "wish.wish_hold_baby",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "hasBaby": true
+      },
+      "fulfill": {
+        "event": "moodlet:held_baby_joy"
+      },
+      "points": 15,
+      "expire": {
+        "value": 360,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_soothe_baby",
+      "kind": "wish",
+      "textKey": "wish.wish_soothe_baby",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "hasBaby": true,
+        "traitsAny": [
+          "kind",
+          "calm",
+          "family_oriented"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:baby_soothed"
+      },
+      "points": 15,
+      "expire": {
+        "value": 360,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_sing_lullaby",
+      "kind": "wish",
+      "textKey": "wish.wish_sing_lullaby",
+      "icon": "lute",
+      "weight": 1,
+      "when": {
+        "hasBaby": true,
+        "traitsAny": [
+          "romantic",
+          "creative",
+          "kind"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.sing_for"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_see_first_steps",
+      "kind": "wish",
+      "textKey": "wish.wish_see_first_steps",
+      "icon": "goto",
+      "weight": 1,
+      "when": {
+        "hasChild": true,
+        "flags": [
+          "has_toddler"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:first_steps_pride"
+      },
+      "points": 40,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_hear_first_word",
+      "kind": "wish",
+      "textKey": "wish.wish_hear_first_word",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "hasChild": true,
+        "flags": [
+          "has_toddler"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:first_word_joy"
+      },
+      "points": 40,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_potty_train",
+      "kind": "wish",
+      "textKey": "wish.wish_potty_train",
+      "icon": "hygiene",
+      "weight": 1,
+      "when": {
+        "hasChild": true,
+        "flags": [
+          "has_toddler"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:potty_trained_relief"
+      },
+      "points": 30,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_hire_wet_nurse",
+      "kind": "wish",
+      "textKey": "wish.wish_hire_wet_nurse",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "hasBaby": true,
+        "estates": [
+          "merchant",
+          "knight",
+          "noble"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:wet_nurse_relief"
+      },
+      "points": 20,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_second_child",
+      "kind": "wish",
+      "textKey": "wish.wish_second_child",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "married": true,
+        "hasChild": true,
+        "traitsAny": [
+          "family_oriented"
+        ]
+      },
+      "fulfill": {
+        "event": "event:birth"
+      },
+      "points": 60,
+      "expire": {
+        "value": 14400,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_see_grandchild",
+      "kind": "wish",
+      "textKey": "wish.wish_see_grandchild",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "adult",
+          "elder"
+        ],
+        "hasChild": true
+      },
+      "fulfill": {
+        "event": "moodlet:grandchild_born"
+      },
+      "points": 60,
+      "expire": {
+        "value": 14400,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_adopt_orphan",
+      "kind": "wish",
+      "textKey": "wish.wish_adopt_orphan",
+      "icon": "candle",
+      "weight": 0.5,
+      "when": {
+        "married": true,
+        "traitsAny": [
+          "kind",
+          "family_oriented"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:adopted_joy"
+      },
+      "points": 50,
+      "expire": {
+        "value": 10080,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_child_to_school",
+      "kind": "wish",
+      "textKey": "wish.wish_child_to_school",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "hasChild": true,
+        "estates": [
+          "freeman",
+          "artisan",
+          "merchant"
+        ]
+      },
+      "fulfill": {
+        "event": "event:school_enrolled"
+      },
+      "points": 40,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_child_page",
+      "kind": "wish",
+      "textKey": "wish.wish_child_page",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "hasChild": true,
+        "estates": [
+          "knight",
+          "noble"
+        ]
+      },
+      "fulfill": {
+        "event": "event:school_enrolled"
+      },
+      "points": 40,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_good_grade",
+      "kind": "wish",
+      "textKey": "wish.wish_good_grade",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:school_proud"
+      },
+      "points": 30,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_finish_homework",
+      "kind": "wish",
+      "textKey": "wish.wish_finish_homework",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child"
+        ],
+        "traitsAny": [
+          "diligent",
+          "bookworm"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:homework_done"
+      },
+      "points": 15,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_teach_child",
+      "kind": "wish",
+      "textKey": "wish.wish_teach_child",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "hasChild": true,
+        "stages": [
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.teach"
+      },
+      "points": 20,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_tell_bedtime_story",
+      "kind": "wish",
+      "textKey": "wish.wish_tell_bedtime_story",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "hasChild": true,
+        "stages": [
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.tell_story"
+      },
+      "points": 15,
+      "expire": {
+        "value": 480,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_sneak_out",
+      "kind": "wish",
+      "textKey": "wish.wish_sneak_out",
+      "icon": "clock.night",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "teen"
+        ],
+        "traitsAny": [
+          "active",
+          "flirt",
+          "cunning"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:sneaked_out_thrill"
+      },
+      "points": 30,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_become_apprentice",
+      "kind": "wish",
+      "textKey": "wish.wish_become_apprentice",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "teen"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:apprenticed_excited"
+      },
+      "points": 50,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_first_love",
+      "kind": "wish",
+      "textKey": "wish.wish_first_love",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "teen"
+        ],
+        "traitsAny": [
+          "romantic",
+          "flirt"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:first_love_flutter"
+      },
+      "points": 30,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_birthday_feast",
+      "kind": "wish",
+      "textKey": "wish.wish_birthday_feast",
+      "icon": "stew",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "birthday_soon"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:birthday_feast"
+      },
+      "points": 30,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_celebrate_birthday",
+      "kind": "wish",
+      "textKey": "wish.wish_celebrate_birthday",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "family_oriented",
+          "sociable"
+        ],
+        "flags": [
+          "family_birthday_today"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:birthday_celebrated"
+      },
+      "points": 20,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_buy_freedom",
+      "kind": "wish",
+      "textKey": "wish.wish_buy_freedom",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "serf"
+        ],
+        "stages": [
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:freed_from_serfdom"
+      },
+      "points": 60,
+      "expire": {
+        "value": 28800,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_get_family_name",
+      "kind": "wish",
+      "textKey": "wish.wish_get_family_name",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "freeman"
+        ],
+        "flags": [
+          "no_family_name"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:got_family_name"
+      },
+      "points": 40,
+      "expire": {
+        "value": 14400,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_rise_estate",
+      "kind": "wish",
+      "textKey": "wish.wish_rise_estate",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "ambitious"
+        ],
+        "stages": [
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "fulfill": {
+        "event": "event:estate_up"
+      },
+      "points": 60,
+      "expire": {
+        "value": 28800,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_be_knighted",
+      "kind": "wish",
+      "textKey": "wish.wish_be_knighted",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "knight"
+        ],
+        "stages": [
+          "teen",
+          "young"
+        ],
+        "flags": [
+          "is_squire"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:knighted_pride"
+      },
+      "points": 60,
+      "expire": {
+        "value": 21600,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_buy_title",
+      "kind": "wish",
+      "textKey": "wish.wish_buy_title",
+      "icon": "ui.crest",
+      "weight": 0.3,
+      "when": {
+        "estates": [
+          "merchant"
+        ],
+        "traitsAny": [
+          "ambitious"
+        ],
+        "stages": [
+          "young",
+          "adult"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:ennobled_pride"
+      },
+      "points": 60,
+      "expire": {
+        "value": 43200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_use_heirloom",
+      "kind": "wish",
+      "textKey": "wish.wish_use_heirloom",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "has_heirloom"
+        ]
+      },
+      "fulfill": {
+        "event": "event:heirloom_used"
+      },
+      "points": 15,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_repair_heirloom",
+      "kind": "wish",
+      "textKey": "wish.wish_repair_heirloom",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "heirloom_damaged"
+        ],
+        "traitsAny": [
+          "handy",
+          "family_oriented",
+          "diligent"
+        ]
+      },
+      "fulfill": {
+        "event": "event:heirloom_repaired"
+      },
+      "points": 35,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_recover_heirloom",
+      "kind": "wish",
+      "textKey": "wish.wish_recover_heirloom",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "lost_heirloom"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:heirloom_recovered"
+      },
+      "points": 60,
+      "expire": {
+        "value": 14400,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_name_heirloom",
+      "kind": "wish",
+      "textKey": "wish.wish_name_heirloom",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "head_of_house"
+        ],
+        "traitsAny": [
+          "family_oriented",
+          "humble"
+        ]
+      },
+      "fulfill": {
+        "event": "event:heirloom_designated"
+      },
+      "points": 25,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_write_will",
+      "kind": "wish",
+      "textKey": "wish.wish_write_will",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "elder"
+        ],
+        "flags": [
+          "head_of_house"
+        ]
+      },
+      "fulfill": {
+        "event": "event:will_written"
+      },
+      "points": 30,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_raise_fame",
+      "kind": "wish",
+      "textKey": "wish.wish_raise_fame",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "artisan",
+          "merchant",
+          "knight",
+          "noble"
+        ],
+        "traitsAny": [
+          "ambitious"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:fame_proud"
+      },
+      "points": 40,
+      "expire": {
+        "value": 10080,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_host_grand_feast",
+      "kind": "wish",
+      "textKey": "wish.wish_host_grand_feast",
+      "icon": "stew",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "knight",
+          "noble"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:feast_hosted"
+      },
+      "points": 40,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_hire_servant",
+      "kind": "wish",
+      "textKey": "wish.wish_hire_servant",
+      "icon": "comfort",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "merchant",
+          "knight",
+          "noble"
+        ],
+        "flags": [
+          "no_servant"
+        ]
+      },
+      "fulfill": {
+        "event": "event:servant_hired"
+      },
+      "points": 30,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_clan_alliance",
+      "kind": "wish",
+      "textKey": "wish.wish_clan_alliance",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "head_of_house"
+        ],
+        "estates": [
+          "merchant",
+          "knight",
+          "noble"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:clan_alliance_joy"
+      },
+      "points": 45,
+      "expire": {
+        "value": 14400,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_end_feud",
+      "kind": "wish",
+      "textKey": "wish.wish_end_feud",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "has_feud"
+        ],
+        "traitsAny": [
+          "kind",
+          "calm",
+          "humble",
+          "just"
+        ]
+      },
+      "fulfill": {
+        "event": "event:feud_ended"
+      },
+      "points": 50,
+      "expire": {
+        "value": 14400,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_live_by_motto",
+      "kind": "wish",
+      "textKey": "wish.wish_live_by_motto",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "has_motto"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:motto_inspired"
+      },
+      "points": 20,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_send_love_letter",
+      "kind": "wish",
+      "textKey": "wish.wish_send_love_letter",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "teen",
+          "young",
+          "adult"
+        ],
+        "traitsAny": [
+          "romantic",
+          "bookworm"
+        ],
+        "flags": [
+          "can_read"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.love_letter"
+      },
+      "points": 25,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_give_flowers",
+      "kind": "wish",
+      "textKey": "wish.wish_give_flowers",
+      "icon": "plant",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "teen",
+          "young"
+        ],
+        "traitsAny": [
+          "romantic",
+          "flirt"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.give_flowers"
+      },
+      "points": 20,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_get_engaged",
+      "kind": "wish",
+      "textKey": "wish.wish_get_engaged",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "young",
+          "adult"
+        ],
+        "married": false
+      },
+      "fulfill": {
+        "event": "event:engaged"
+      },
+      "points": 50,
+      "expire": {
+        "value": 10080,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_parents_approve",
+      "kind": "wish",
+      "textKey": "wish.wish_parents_approve",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "teen",
+          "young"
+        ],
+        "flags": [
+          "match_refused"
+        ]
+      },
+      "fulfill": {
+        "event": "event:engaged"
+      },
+      "points": 50,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_find_match_for_child",
+      "kind": "wish",
+      "textKey": "wish.wish_find_match_for_child",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "adult",
+          "elder"
+        ],
+        "flags": [
+          "child_of_age"
+        ]
+      },
+      "fulfill": {
+        "event": "event:matchmaker_visited"
+      },
+      "points": 30,
+      "expire": {
+        "value": 10080,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_settle_dowry",
+      "kind": "wish",
+      "textKey": "wish.wish_settle_dowry",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "dowry_due"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:dowry_settled"
+      },
+      "points": 40,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_see_child_married",
+      "kind": "wish",
+      "textKey": "wish.wish_see_child_married",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "adult",
+          "elder"
+        ],
+        "flags": [
+          "child_engaged"
+        ]
+      },
+      "fulfill": {
+        "event": "event:wedding"
+      },
+      "points": 50,
+      "expire": {
+        "value": 10080,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_grand_wedding",
+      "kind": "wish",
+      "textKey": "wish.wish_grand_wedding",
+      "icon": "lute",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "engaged"
+        ]
+      },
+      "fulfill": {
+        "event": "event:wedding"
+      },
+      "points": 50,
+      "expire": {
+        "value": 10080,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_attend_wedding",
+      "kind": "wish",
+      "textKey": "wish.wish_attend_wedding",
+      "icon": "lute",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "sociable",
+          "gourmet"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:wedding_guest_merry"
+      },
+      "points": 15,
+      "expire": {
+        "value": 2880,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_reconcile_spouse",
+      "kind": "wish",
+      "textKey": "wish.wish_reconcile_spouse",
+      "icon": "social",
+      "weight": 1,
+      "when": {
+        "married": true,
+        "flags": [
+          "marriage_strained"
+        ]
+      },
+      "fulfill": {
+        "event": "social:social.reconcile"
+      },
+      "points": 35,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_end_affair",
+      "kind": "wish",
+      "textKey": "wish.wish_end_affair",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "affair"
+        ],
+        "traitsAny": [
+          "just",
+          "family_oriented",
+          "humble"
+        ]
+      },
+      "fulfill": {
+        "event": "event:confessed"
+      },
+      "points": 30,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_clear_my_name",
+      "kind": "wish",
+      "textKey": "wish.wish_clear_my_name",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "bad_rumor_about_me"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:cleared_name_relief"
+      },
+      "points": 40,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_hear_fresh_rumor",
+      "kind": "wish",
+      "textKey": "wish.wish_hear_fresh_rumor",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "gossip",
+          "sociable"
+        ]
+      },
+      "fulfill": {
+        "event": "event:rumor_heard"
+      },
+      "points": 15,
+      "expire": {
+        "value": 1440,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_public_penance",
+      "kind": "wish",
+      "textKey": "wish.wish_public_penance",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "dishonored"
+        ],
+        "traitsAny": [
+          "humble",
+          "just"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:public_penance_relief"
+      },
+      "points": 30,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_win_duel",
+      "kind": "wish",
+      "textKey": "wish.wish_win_duel",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "knight",
+          "noble"
+        ],
+        "traitsAny": [
+          "brave",
+          "hot_tempered",
+          "ambitious"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:duel_won"
+      },
+      "points": 45,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_take_revenge",
+      "kind": "wish",
+      "textKey": "wish.wish_take_revenge",
+      "icon": "emo.angry",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "has_feud"
+        ],
+        "traitsAny": [
+          "hot_tempered",
+          "mean",
+          "cunning"
+        ]
+      },
+      "fulfill": {
+        "event": "event:rival_shamed"
+      },
+      "points": 40,
+      "expire": {
+        "value": 10080,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_free_kin",
+      "kind": "wish",
+      "textKey": "wish.wish_free_kin",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "kin_on_trial"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:acquitted_relief"
+      },
+      "points": 50,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_receive_letter",
+      "kind": "wish",
+      "textKey": "wish.wish_receive_letter",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "kin_far_away"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:letter_joy"
+      },
+      "points": 20,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_write_letter",
+      "kind": "wish",
+      "textKey": "wish.wish_write_letter",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "can_read",
+          "kin_far_away"
+        ]
+      },
+      "fulfill": {
+        "event": "event:letter_sent"
+      },
+      "points": 20,
+      "expire": {
+        "value": 4320,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_petition_lord",
+      "kind": "wish",
+      "textKey": "wish.wish_petition_lord",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "young",
+          "adult",
+          "elder"
+        ],
+        "traitsAny": [
+          "just",
+          "ambitious",
+          "brave"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:petition_heard"
+      },
+      "points": 40,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_lord_favor",
+      "kind": "wish",
+      "textKey": "wish.wish_lord_favor",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "artisan",
+          "merchant",
+          "knight"
+        ],
+        "traitsAny": [
+          "ambitious"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:lord_favor_proud"
+      },
+      "points": 40,
+      "expire": {
+        "value": 10080,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "wish_grand_festival",
+      "kind": "wish",
+      "textKey": "wish.wish_grand_festival",
+      "icon": "lute",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "sociable",
+          "cheerful"
+        ]
+      },
+      "fulfill": {
+        "event": "moodlet:generous_festival_joy"
+      },
+      "points": 20,
+      "expire": {
+        "value": 7200,
+        "scale": "absolute"
+      }
+    },
+    {
+      "id": "fear_miscarry",
+      "kind": "fear",
+      "textKey": "wish.fear_miscarry",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "pregnant": true
+      },
+      "realize": {
+        "event": "event:miscarriage"
+      },
+      "resolve": {
+        "event": "event:birth"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_hard_labor",
+      "kind": "fear",
+      "textKey": "wish.fear_hard_labor",
+      "icon": "emo.tense",
+      "weight": 1,
+      "when": {
+        "pregnant": true
+      },
+      "realize": {
+        "event": "moodlet:difficult_birth_recovery"
+      },
+      "resolve": {
+        "event": "event:birth"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_child_dies",
+      "kind": "fear",
+      "textKey": "wish.fear_child_dies",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "hasChild": true
+      },
+      "realize": {
+        "event": "moodlet:lost_child_grief"
+      },
+      "resolve": {
+        "event": "moodlet:baby_healthy_relief"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_child_taken",
+      "kind": "fear",
+      "textKey": "wish.fear_child_taken",
+      "icon": "emo.ashamed",
+      "weight": 1,
+      "when": {
+        "hasBaby": true,
+        "traitsAny": [
+          "lazy",
+          "coward"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:taken_by_relatives_shame"
+      },
+      "resolve": {
+        "event": "moodlet:baby_soothed"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_bad_grade",
+      "kind": "fear",
+      "textKey": "wish.fear_bad_grade",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:school_ashamed"
+      },
+      "resolve": {
+        "event": "moodlet:school_proud"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_sent_to_monastery",
+      "kind": "fear",
+      "textKey": "wish.fear_sent_to_monastery",
+      "icon": "need.social",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "child"
+        ],
+        "traitsAny": [
+          "coward",
+          "family_oriented"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:homesick_boarding"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_arranged_marriage",
+      "kind": "fear",
+      "textKey": "wish.fear_arranged_marriage",
+      "icon": "emo.tense",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "teen",
+          "young"
+        ],
+        "married": false,
+        "traitsAny": [
+          "romantic"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:arranged_match_uneasy"
+      },
+      "resolve": {
+        "event": "event:engaged"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_proposal_refused",
+      "kind": "fear",
+      "textKey": "wish.fear_proposal_refused",
+      "icon": "emo.sad",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "teen",
+          "young",
+          "adult"
+        ],
+        "married": false
+      },
+      "realize": {
+        "event": "moodlet:proposal_rejected"
+      },
+      "resolve": {
+        "event": "event:engaged"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_affair_found_out",
+      "kind": "fear",
+      "textKey": "wish.fear_affair_found_out",
+      "icon": "emo.ashamed",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "affair"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:affair_exposed_shame"
+      },
+      "resolve": {
+        "event": "event:confessed"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_false_rumor",
+      "kind": "fear",
+      "textKey": "wish.fear_false_rumor",
+      "icon": "eye",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "suspicious",
+          "coward",
+          "ambitious"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:heard_rumor_about_me"
+      },
+      "resolve": {
+        "event": "moodlet:cleared_name_relief"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_heirloom_stolen",
+      "kind": "fear",
+      "textKey": "wish.fear_heirloom_stolen",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "has_heirloom"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:heirloom_lost_grief"
+      },
+      "resolve": {
+        "event": "moodlet:heirloom_recovered"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_estate_fall",
+      "kind": "fear",
+      "textKey": "wish.fear_estate_fall",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "merchant",
+          "knight",
+          "noble"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:estate_fallen"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_disinherited",
+      "kind": "fear",
+      "textKey": "wish.fear_disinherited",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "stages": [
+          "teen",
+          "young",
+          "adult"
+        ],
+        "flags": [
+          "sibling_rivalry"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:inheritance_slighted"
+      },
+      "resolve": {
+        "event": "moodlet:inheritance_received"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_duel_loss",
+      "kind": "fear",
+      "textKey": "wish.fear_duel_loss",
+      "icon": "axe",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "knight",
+          "noble"
+        ],
+        "traitsAny": [
+          "coward",
+          "suspicious"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:duel_lost"
+      },
+      "resolve": {
+        "event": "moodlet:duel_won"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_arrest",
+      "kind": "fear",
+      "textKey": "wish.fear_arrest",
+      "icon": "emo.tense",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "cunning",
+          "mean",
+          "hot_tempered"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:arrested_fear"
+      },
+      "resolve": {
+        "event": "moodlet:acquitted_relief"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_pillory",
+      "kind": "fear",
+      "textKey": "wish.fear_pillory",
+      "icon": "emo.ashamed",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "on_trial"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:pilloried_shame"
+      },
+      "resolve": {
+        "event": "moodlet:acquitted_relief"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_exile",
+      "kind": "fear",
+      "textKey": "wish.fear_exile",
+      "icon": "goto",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "on_trial"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:exiled_grief"
+      },
+      "resolve": {
+        "event": "moodlet:acquitted_relief"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_threat_letter",
+      "kind": "fear",
+      "textKey": "wish.fear_threat_letter",
+      "icon": "book",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "has_feud"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:threat_letter_fear"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_tax_rise",
+      "kind": "fear",
+      "textKey": "wish.fear_tax_rise",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "serf",
+          "freeman",
+          "artisan"
+        ]
+      },
+      "realize": {
+        "event": "event:policy_tax_high"
+      },
+      "resolve": {
+        "event": "event:tax_paid"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_riot",
+      "kind": "fear",
+      "textKey": "wish.fear_riot",
+      "icon": "fire",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "is_lord"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:riot_fear"
+      },
+      "resolve": {
+        "event": "moodlet:generous_festival_joy"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_servant_thief",
+      "kind": "fear",
+      "textKey": "wish.fear_servant_thief",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "has_servant"
+        ],
+        "traitsAny": [
+          "suspicious",
+          "mean"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:servant_theft_anger"
+      },
+      "resolve": {
+        "event": "done:stock.count"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_dowry_short",
+      "kind": "fear",
+      "textKey": "wish.fear_dowry_short",
+      "icon": "ui.coin",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "dowry_due"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:dowry_burden"
+      },
+      "resolve": {
+        "event": "moodlet:dowry_settled"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_quarantine",
+      "kind": "fear",
+      "textKey": "wish.fear_quarantine",
+      "icon": "need.fun",
+      "weight": 1,
+      "when": {
+        "traitsAny": [
+          "sociable",
+          "active"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:quarantine_confined"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_lord_anger",
+      "kind": "fear",
+      "textKey": "wish.fear_lord_anger",
+      "icon": "ui.crest",
+      "weight": 1,
+      "when": {
+        "estates": [
+          "serf",
+          "freeman",
+          "knight"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:lord_displeasure"
+      },
+      "resolve": {
+        "event": "moodlet:lord_favor_proud"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_kin_executed",
+      "kind": "fear",
+      "textKey": "wish.fear_kin_executed",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "flags": [
+          "kin_on_trial"
+        ]
+      },
+      "realize": {
+        "event": "event:kin_executed"
+      },
+      "resolve": {
+        "event": "moodlet:acquitted_relief"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    },
+    {
+      "id": "fear_widowhood",
+      "kind": "fear",
+      "textKey": "wish.fear_widowhood",
+      "icon": "candle",
+      "weight": 1,
+      "when": {
+        "married": true,
+        "stages": [
+          "adult",
+          "elder"
+        ],
+        "traitsAny": [
+          "romantic",
+          "family_oriented"
+        ]
+      },
+      "realize": {
+        "event": "moodlet:widowed_mourning"
+      },
+      "moodlet": "fear_realized",
+      "points": 10
+    }
+  ]
+}

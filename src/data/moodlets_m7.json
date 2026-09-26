@@ -1,0 +1,2052 @@
+{
+  "$comment": "M7 가족 / M8 가문 / M9 사회 무드렛 (GDD 15, 16, 14, 18). duration 단위는 게임 분. scale lifespan 이면 수명 배수를 곱함 (29-0). fade = [경과 분, 세기] (duration 과 같은 배수 적용). morning_sickness 는 moodlets.json 에 이미 있어 여기 두지 않음",
+  "moodlets": {
+    "pregnancy_glow": {
+      "nameKey": "moodlet.pregnancy_glow",
+      "descKey": "moodlet.pregnancy_glow.desc",
+      "icon": "emo.happy",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 2880,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "health",
+      "tags": [
+        "family"
+      ]
+    },
+    "heavy_belly": {
+      "nameKey": "moodlet.heavy_belly",
+      "descKey": "moodlet.heavy_belly.desc",
+      "icon": "need.comfort",
+      "emotion": "tense",
+      "strength": 1,
+      "duration": {
+        "value": 720,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "health"
+    },
+    "pregnancy_craving": {
+      "nameKey": "moodlet.pregnancy_craving",
+      "descKey": "moodlet.pregnancy_craving.desc",
+      "icon": "need.hunger",
+      "emotion": "tense",
+      "strength": 1,
+      "duration": {
+        "value": 360,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "health"
+    },
+    "uneasy_kicks": {
+      "nameKey": "moodlet.uneasy_kicks",
+      "descKey": "moodlet.uneasy_kicks.desc",
+      "icon": "emo.tense",
+      "emotion": "tense",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "health"
+    },
+    "pregnancy_announced": {
+      "nameKey": "moodlet.pregnancy_announced",
+      "descKey": "moodlet.pregnancy_announced.desc",
+      "icon": "social",
+      "emotion": "excited",
+      "strength": 2,
+      "duration": {
+        "value": 720,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "family"
+      ]
+    },
+    "belly_rubbed": {
+      "nameKey": "moodlet.belly_rubbed",
+      "descKey": "moodlet.belly_rubbed.desc",
+      "icon": "social",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 180,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "family",
+        "romance"
+      ]
+    },
+    "difficult_birth_recovery": {
+      "nameKey": "moodlet.difficult_birth_recovery",
+      "descKey": "moodlet.difficult_birth_recovery.desc",
+      "icon": "need.energy",
+      "emotion": "sad",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "health",
+      "fade": [
+        [
+          1440,
+          1
+        ]
+      ]
+    },
+    "premature_worry": {
+      "nameKey": "moodlet.premature_worry",
+      "descKey": "moodlet.premature_worry.desc",
+      "icon": "emo.tense",
+      "emotion": "tense",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "health",
+      "tags": [
+        "family"
+      ]
+    },
+    "lost_child_grief": {
+      "nameKey": "moodlet.lost_child_grief",
+      "descKey": "moodlet.lost_child_grief.desc",
+      "icon": "candle",
+      "emotion": "sad",
+      "strength": 3,
+      "duration": {
+        "value": 7200,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "memory",
+      "fade": [
+        [
+          1440,
+          2
+        ],
+        [
+          4320,
+          1
+        ]
+      ],
+      "tags": [
+        "family"
+      ]
+    },
+    "baby_crying_noise": {
+      "nameKey": "moodlet.baby_crying_noise",
+      "descKey": "moodlet.baby_crying_noise.desc",
+      "icon": "emo.angry",
+      "emotion": "angry",
+      "strength": 1,
+      "duration": {
+        "value": 60,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "env"
+    },
+    "sleep_broken_by_baby": {
+      "nameKey": "moodlet.sleep_broken_by_baby",
+      "descKey": "moodlet.sleep_broken_by_baby.desc",
+      "icon": "sleep",
+      "emotion": "tense",
+      "strength": 1,
+      "duration": {
+        "value": 480,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "env"
+    },
+    "held_baby_joy": {
+      "nameKey": "moodlet.held_baby_joy",
+      "descKey": "moodlet.held_baby_joy.desc",
+      "icon": "social",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 240,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "family"
+      ]
+    },
+    "baby_soothed": {
+      "nameKey": "moodlet.baby_soothed",
+      "descKey": "moodlet.baby_soothed.desc",
+      "icon": "social",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 120,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "family"
+      ]
+    },
+    "baby_healthy_relief": {
+      "nameKey": "moodlet.baby_healthy_relief",
+      "descKey": "moodlet.baby_healthy_relief.desc",
+      "icon": "emo.happy",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "health",
+      "tags": [
+        "family"
+      ]
+    },
+    "wet_nurse_relief": {
+      "nameKey": "moodlet.wet_nurse_relief",
+      "descKey": "moodlet.wet_nurse_relief.desc",
+      "icon": "sleep",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "birthday_celebrated": {
+      "nameKey": "moodlet.birthday_celebrated",
+      "descKey": "moodlet.birthday_celebrated.desc",
+      "icon": "emo.happy",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 720,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "family"
+      ]
+    },
+    "birthday_feast": {
+      "nameKey": "moodlet.birthday_feast",
+      "descKey": "moodlet.birthday_feast.desc",
+      "icon": "stew",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 720,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "family"
+      ]
+    },
+    "grew_up": {
+      "nameKey": "moodlet.grew_up",
+      "descKey": "moodlet.grew_up.desc",
+      "icon": "emo.energized",
+      "emotion": "energized",
+      "strength": 1,
+      "duration": {
+        "value": 720,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "cramped_house": {
+      "nameKey": "moodlet.cramped_house",
+      "descKey": "moodlet.cramped_house.desc",
+      "icon": "need.comfort",
+      "emotion": "angry",
+      "strength": 1,
+      "duration": {
+        "value": 720,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "env"
+    },
+    "first_steps_pride": {
+      "nameKey": "moodlet.first_steps_pride",
+      "descKey": "moodlet.first_steps_pride.desc",
+      "icon": "emo.happy",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "family"
+      ]
+    },
+    "first_word_joy": {
+      "nameKey": "moodlet.first_word_joy",
+      "descKey": "moodlet.first_word_joy.desc",
+      "icon": "emo.happy",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "family"
+      ]
+    },
+    "tantrum_annoyed": {
+      "nameKey": "moodlet.tantrum_annoyed",
+      "descKey": "moodlet.tantrum_annoyed.desc",
+      "icon": "emo.angry",
+      "emotion": "angry",
+      "strength": 1,
+      "duration": {
+        "value": 120,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "school_proud": {
+      "nameKey": "moodlet.school_proud",
+      "descKey": "moodlet.school_proud.desc",
+      "icon": "book",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "school_ashamed": {
+      "nameKey": "moodlet.school_ashamed",
+      "descKey": "moodlet.school_ashamed.desc",
+      "icon": "book",
+      "emotion": "ashamed",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "homesick_boarding": {
+      "nameKey": "moodlet.homesick_boarding",
+      "descKey": "moodlet.homesick_boarding.desc",
+      "icon": "need.social",
+      "emotion": "sad",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "family"
+      ]
+    },
+    "rebellious_mood": {
+      "nameKey": "moodlet.rebellious_mood",
+      "descKey": "moodlet.rebellious_mood.desc",
+      "icon": "emo.angry",
+      "emotion": "angry",
+      "strength": 2,
+      "duration": {
+        "value": 720,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "sneaked_out_thrill": {
+      "nameKey": "moodlet.sneaked_out_thrill",
+      "descKey": "moodlet.sneaked_out_thrill.desc",
+      "icon": "clock.night",
+      "emotion": "excited",
+      "strength": 2,
+      "duration": {
+        "value": 360,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "apprenticed_excited": {
+      "nameKey": "moodlet.apprenticed_excited",
+      "descKey": "moodlet.apprenticed_excited.desc",
+      "icon": "axe",
+      "emotion": "excited",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "adopted_joy": {
+      "nameKey": "moodlet.adopted_joy",
+      "descKey": "moodlet.adopted_joy.desc",
+      "icon": "social",
+      "emotion": "happy",
+      "strength": 3,
+      "duration": {
+        "value": 2880,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          1440,
+          2
+        ]
+      ],
+      "tags": [
+        "family"
+      ]
+    },
+    "orphaned_grief": {
+      "nameKey": "moodlet.orphaned_grief",
+      "descKey": "moodlet.orphaned_grief.desc",
+      "icon": "candle",
+      "emotion": "sad",
+      "strength": 3,
+      "duration": {
+        "value": 7200,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "memory",
+      "fade": [
+        [
+          1440,
+          2
+        ],
+        [
+          4320,
+          1
+        ]
+      ],
+      "tags": [
+        "family"
+      ]
+    },
+    "godparent_honored": {
+      "nameKey": "moodlet.godparent_honored",
+      "descKey": "moodlet.godparent_honored.desc",
+      "icon": "candle",
+      "emotion": "pious",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "faith"
+    },
+    "baptism_joy": {
+      "nameKey": "moodlet.baptism_joy",
+      "descKey": "moodlet.baptism_joy.desc",
+      "icon": "water",
+      "emotion": "pious",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "faith",
+      "tags": [
+        "family"
+      ]
+    },
+    "unbaptized_worry": {
+      "nameKey": "moodlet.unbaptized_worry",
+      "descKey": "moodlet.unbaptized_worry.desc",
+      "icon": "candle",
+      "emotion": "tense",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "faith"
+    },
+    "neglected_child_guilt": {
+      "nameKey": "moodlet.neglected_child_guilt",
+      "descKey": "moodlet.neglected_child_guilt.desc",
+      "icon": "emo.ashamed",
+      "emotion": "ashamed",
+      "strength": 3,
+      "duration": {
+        "value": 7200,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "memory",
+      "fade": [
+        [
+          2880,
+          2
+        ],
+        [
+          5760,
+          1
+        ]
+      ]
+    },
+    "taken_by_relatives_shame": {
+      "nameKey": "moodlet.taken_by_relatives_shame",
+      "descKey": "moodlet.taken_by_relatives_shame.desc",
+      "icon": "emo.ashamed",
+      "emotion": "ashamed",
+      "strength": 3,
+      "duration": {
+        "value": 7200,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "memory",
+      "fade": [
+        [
+          2880,
+          2
+        ],
+        [
+          5760,
+          1
+        ]
+      ]
+    },
+    "retired_elder": {
+      "nameKey": "moodlet.retired_elder",
+      "descKey": "moodlet.retired_elder.desc",
+      "icon": "comfort",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 4320,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "estate_risen": {
+      "nameKey": "moodlet.estate_risen",
+      "descKey": "moodlet.estate_risen.desc",
+      "icon": "ui.crest",
+      "emotion": "excited",
+      "strength": 3,
+      "duration": {
+        "value": 4320,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          1440,
+          2
+        ],
+        [
+          2880,
+          1
+        ]
+      ]
+    },
+    "estate_fallen": {
+      "nameKey": "moodlet.estate_fallen",
+      "descKey": "moodlet.estate_fallen.desc",
+      "icon": "ui.crest",
+      "emotion": "ashamed",
+      "strength": 3,
+      "duration": {
+        "value": 4320,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          1440,
+          2
+        ],
+        [
+          2880,
+          1
+        ]
+      ]
+    },
+    "freed_from_serfdom": {
+      "nameKey": "moodlet.freed_from_serfdom",
+      "descKey": "moodlet.freed_from_serfdom.desc",
+      "icon": "ui.crest",
+      "emotion": "happy",
+      "strength": 3,
+      "duration": {
+        "value": 4320,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          1440,
+          2
+        ],
+        [
+          2880,
+          1
+        ]
+      ]
+    },
+    "got_family_name": {
+      "nameKey": "moodlet.got_family_name",
+      "descKey": "moodlet.got_family_name.desc",
+      "icon": "ui.crest",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "ancestors_memory": {
+      "nameKey": "moodlet.ancestors_memory",
+      "descKey": "moodlet.ancestors_memory.desc",
+      "icon": "candle",
+      "emotion": "inspired",
+      "strength": 1,
+      "duration": {
+        "value": 180,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "memory"
+    },
+    "heirloom_sold_grief": {
+      "nameKey": "moodlet.heirloom_sold_grief",
+      "descKey": "moodlet.heirloom_sold_grief.desc",
+      "icon": "ui.coin",
+      "emotion": "sad",
+      "strength": 2,
+      "duration": {
+        "value": 4320,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "memory",
+      "fade": [
+        [
+          1440,
+          1
+        ]
+      ],
+      "tags": [
+        "family"
+      ]
+    },
+    "heirloom_lost_grief": {
+      "nameKey": "moodlet.heirloom_lost_grief",
+      "descKey": "moodlet.heirloom_lost_grief.desc",
+      "icon": "candle",
+      "emotion": "sad",
+      "strength": 2,
+      "duration": {
+        "value": 4320,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "memory",
+      "fade": [
+        [
+          1440,
+          1
+        ]
+      ],
+      "tags": [
+        "family"
+      ]
+    },
+    "heirloom_damaged": {
+      "nameKey": "moodlet.heirloom_damaged",
+      "descKey": "moodlet.heirloom_damaged.desc",
+      "icon": "fire",
+      "emotion": "sad",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "heirloom_recovered": {
+      "nameKey": "moodlet.heirloom_recovered",
+      "descKey": "moodlet.heirloom_recovered.desc",
+      "icon": "ui.crest",
+      "emotion": "happy",
+      "strength": 3,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          1440,
+          2
+        ]
+      ],
+      "tags": [
+        "family"
+      ]
+    },
+    "sumptuary_fined": {
+      "nameKey": "moodlet.sumptuary_fined",
+      "descKey": "moodlet.sumptuary_fined.desc",
+      "icon": "clothes",
+      "emotion": "ashamed",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "above_station_shame": {
+      "nameKey": "moodlet.above_station_shame",
+      "descKey": "moodlet.above_station_shame.desc",
+      "icon": "clothes",
+      "emotion": "ashamed",
+      "strength": 1,
+      "duration": {
+        "value": 360,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "shabby_noble_shame": {
+      "nameKey": "moodlet.shabby_noble_shame",
+      "descKey": "moodlet.shabby_noble_shame.desc",
+      "icon": "clothes",
+      "emotion": "ashamed",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "fame_proud": {
+      "nameKey": "moodlet.fame_proud",
+      "descKey": "moodlet.fame_proud.desc",
+      "icon": "ui.crest",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "dishonored_shame": {
+      "nameKey": "moodlet.dishonored_shame",
+      "descKey": "moodlet.dishonored_shame.desc",
+      "icon": "ui.crest",
+      "emotion": "ashamed",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "well_served": {
+      "nameKey": "moodlet.well_served",
+      "descKey": "moodlet.well_served.desc",
+      "icon": "comfort",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 360,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "env"
+    },
+    "servant_theft_anger": {
+      "nameKey": "moodlet.servant_theft_anger",
+      "descKey": "moodlet.servant_theft_anger.desc",
+      "icon": "emo.angry",
+      "emotion": "angry",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "inheritance_received": {
+      "nameKey": "moodlet.inheritance_received",
+      "descKey": "moodlet.inheritance_received.desc",
+      "icon": "ui.coin",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "inheritance_slighted": {
+      "nameKey": "moodlet.inheritance_slighted",
+      "descKey": "moodlet.inheritance_slighted.desc",
+      "icon": "ui.coin",
+      "emotion": "angry",
+      "strength": 2,
+      "duration": {
+        "value": 4320,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          1440,
+          1
+        ]
+      ]
+    },
+    "inheritance_quarrel": {
+      "nameKey": "moodlet.inheritance_quarrel",
+      "descKey": "moodlet.inheritance_quarrel.desc",
+      "icon": "emo.angry",
+      "emotion": "angry",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "family"
+      ]
+    },
+    "new_head_of_house": {
+      "nameKey": "moodlet.new_head_of_house",
+      "descKey": "moodlet.new_head_of_house.desc",
+      "icon": "ui.crest",
+      "emotion": "focused",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "motto_inspired": {
+      "nameKey": "moodlet.motto_inspired",
+      "descKey": "moodlet.motto_inspired.desc",
+      "icon": "ui.crest",
+      "emotion": "inspired",
+      "strength": 1,
+      "duration": {
+        "value": 360,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "memory"
+    },
+    "feast_hosted": {
+      "nameKey": "moodlet.feast_hosted",
+      "descKey": "moodlet.feast_hosted.desc",
+      "icon": "stew",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "knighted_pride": {
+      "nameKey": "moodlet.knighted_pride",
+      "descKey": "moodlet.knighted_pride.desc",
+      "icon": "axe",
+      "emotion": "excited",
+      "strength": 3,
+      "duration": {
+        "value": 4320,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          1440,
+          2
+        ],
+        [
+          2880,
+          1
+        ]
+      ]
+    },
+    "ennobled_pride": {
+      "nameKey": "moodlet.ennobled_pride",
+      "descKey": "moodlet.ennobled_pride.desc",
+      "icon": "ui.crest",
+      "emotion": "excited",
+      "strength": 3,
+      "duration": {
+        "value": 4320,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          1440,
+          2
+        ],
+        [
+          2880,
+          1
+        ]
+      ]
+    },
+    "clan_alliance_joy": {
+      "nameKey": "moodlet.clan_alliance_joy",
+      "descKey": "moodlet.clan_alliance_joy.desc",
+      "icon": "social",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "clan_enemy_anger": {
+      "nameKey": "moodlet.clan_enemy_anger",
+      "descKey": "moodlet.clan_enemy_anger.desc",
+      "icon": "emo.angry",
+      "emotion": "angry",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "disowned_ancestors_guilt": {
+      "nameKey": "moodlet.disowned_ancestors_guilt",
+      "descKey": "moodlet.disowned_ancestors_guilt.desc",
+      "icon": "candle",
+      "emotion": "ashamed",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "memory"
+    },
+    "heard_rumor_about_me": {
+      "nameKey": "moodlet.heard_rumor_about_me",
+      "descKey": "moodlet.heard_rumor_about_me.desc",
+      "icon": "eye",
+      "emotion": "ashamed",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "gossip_fun": {
+      "nameKey": "moodlet.gossip_fun",
+      "descKey": "moodlet.gossip_fun.desc",
+      "icon": "social",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 120,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "cleared_name_relief": {
+      "nameKey": "moodlet.cleared_name_relief",
+      "descKey": "moodlet.cleared_name_relief.desc",
+      "icon": "emo.happy",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "public_penance_relief": {
+      "nameKey": "moodlet.public_penance_relief",
+      "descKey": "moodlet.public_penance_relief.desc",
+      "icon": "candle",
+      "emotion": "pious",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "faith"
+    },
+    "courted_flattered": {
+      "nameKey": "moodlet.courted_flattered",
+      "descKey": "moodlet.courted_flattered.desc",
+      "icon": "social",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 360,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "romance"
+      ]
+    },
+    "proposal_rejected": {
+      "nameKey": "moodlet.proposal_rejected",
+      "descKey": "moodlet.proposal_rejected.desc",
+      "icon": "emo.sad",
+      "emotion": "sad",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "fade": [
+        [
+          1440,
+          1
+        ]
+      ],
+      "tags": [
+        "romance"
+      ]
+    },
+    "parents_refused_match": {
+      "nameKey": "moodlet.parents_refused_match",
+      "descKey": "moodlet.parents_refused_match.desc",
+      "icon": "emo.sad",
+      "emotion": "sad",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "romance"
+      ]
+    },
+    "eloped_thrill": {
+      "nameKey": "moodlet.eloped_thrill",
+      "descKey": "moodlet.eloped_thrill.desc",
+      "icon": "goto",
+      "emotion": "excited",
+      "strength": 3,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          1440,
+          2
+        ]
+      ],
+      "tags": [
+        "romance"
+      ]
+    },
+    "arranged_match_uneasy": {
+      "nameKey": "moodlet.arranged_match_uneasy",
+      "descKey": "moodlet.arranged_match_uneasy.desc",
+      "icon": "emo.tense",
+      "emotion": "tense",
+      "strength": 1,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "dowry_burden": {
+      "nameKey": "moodlet.dowry_burden",
+      "descKey": "moodlet.dowry_burden.desc",
+      "icon": "ui.coin",
+      "emotion": "tense",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "affair_thrill": {
+      "nameKey": "moodlet.affair_thrill",
+      "descKey": "moodlet.affair_thrill.desc",
+      "icon": "emo.excited",
+      "emotion": "excited",
+      "strength": 2,
+      "duration": {
+        "value": 360,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "romance"
+      ]
+    },
+    "affair_guilt": {
+      "nameKey": "moodlet.affair_guilt",
+      "descKey": "moodlet.affair_guilt.desc",
+      "icon": "emo.ashamed",
+      "emotion": "ashamed",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "memory"
+    },
+    "betrayed_by_spouse": {
+      "nameKey": "moodlet.betrayed_by_spouse",
+      "descKey": "moodlet.betrayed_by_spouse.desc",
+      "icon": "emo.angry",
+      "emotion": "angry",
+      "strength": 3,
+      "duration": {
+        "value": 7200,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "memory",
+      "fade": [
+        [
+          1440,
+          2
+        ],
+        [
+          4320,
+          1
+        ]
+      ]
+    },
+    "affair_exposed_shame": {
+      "nameKey": "moodlet.affair_exposed_shame",
+      "descKey": "moodlet.affair_exposed_shame.desc",
+      "icon": "emo.ashamed",
+      "emotion": "ashamed",
+      "strength": 3,
+      "duration": {
+        "value": 4320,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          1440,
+          2
+        ],
+        [
+          2880,
+          1
+        ]
+      ]
+    },
+    "annulment_relief": {
+      "nameKey": "moodlet.annulment_relief",
+      "descKey": "moodlet.annulment_relief.desc",
+      "icon": "candle",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "separated_lonely": {
+      "nameKey": "moodlet.separated_lonely",
+      "descKey": "moodlet.separated_lonely.desc",
+      "icon": "need.social",
+      "emotion": "sad",
+      "strength": 1,
+      "duration": {
+        "value": 4320,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "widowed_mourning": {
+      "nameKey": "moodlet.widowed_mourning",
+      "descKey": "moodlet.widowed_mourning.desc",
+      "icon": "candle",
+      "emotion": "sad",
+      "strength": 3,
+      "duration": {
+        "value": 10080,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "memory",
+      "fade": [
+        [
+          2880,
+          2
+        ],
+        [
+          7200,
+          1
+        ]
+      ]
+    },
+    "remarried_gossip": {
+      "nameKey": "moodlet.remarried_gossip",
+      "descKey": "moodlet.remarried_gossip.desc",
+      "icon": "eye",
+      "emotion": "ashamed",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "grudge_anger": {
+      "nameKey": "moodlet.grudge_anger",
+      "descKey": "moodlet.grudge_anger.desc",
+      "icon": "emo.angry",
+      "emotion": "angry",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "duel_won": {
+      "nameKey": "moodlet.duel_won",
+      "descKey": "moodlet.duel_won.desc",
+      "icon": "axe",
+      "emotion": "energized",
+      "strength": 3,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          720,
+          2
+        ]
+      ]
+    },
+    "duel_lost": {
+      "nameKey": "moodlet.duel_lost",
+      "descKey": "moodlet.duel_lost.desc",
+      "icon": "axe",
+      "emotion": "ashamed",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "duel_refused_shame": {
+      "nameKey": "moodlet.duel_refused_shame",
+      "descKey": "moodlet.duel_refused_shame.desc",
+      "icon": "emo.ashamed",
+      "emotion": "ashamed",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "fistfight_bruised": {
+      "nameKey": "moodlet.fistfight_bruised",
+      "descKey": "moodlet.fistfight_bruised.desc",
+      "icon": "emo.angry",
+      "emotion": "angry",
+      "strength": 1,
+      "duration": {
+        "value": 720,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "health"
+    },
+    "arrested_fear": {
+      "nameKey": "moodlet.arrested_fear",
+      "descKey": "moodlet.arrested_fear.desc",
+      "icon": "emo.tense",
+      "emotion": "tense",
+      "strength": 3,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          720,
+          2
+        ]
+      ]
+    },
+    "trial_anxious": {
+      "nameKey": "moodlet.trial_anxious",
+      "descKey": "moodlet.trial_anxious.desc",
+      "icon": "emo.tense",
+      "emotion": "tense",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "acquitted_relief": {
+      "nameKey": "moodlet.acquitted_relief",
+      "descKey": "moodlet.acquitted_relief.desc",
+      "icon": "emo.happy",
+      "emotion": "happy",
+      "strength": 3,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          720,
+          2
+        ]
+      ]
+    },
+    "pilloried_shame": {
+      "nameKey": "moodlet.pilloried_shame",
+      "descKey": "moodlet.pilloried_shame.desc",
+      "icon": "emo.ashamed",
+      "emotion": "ashamed",
+      "strength": 3,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          1440,
+          2
+        ]
+      ]
+    },
+    "flogged_pain": {
+      "nameKey": "moodlet.flogged_pain",
+      "descKey": "moodlet.flogged_pain.desc",
+      "icon": "emo.sad",
+      "emotion": "sad",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "health",
+      "fade": [
+        [
+          1440,
+          1
+        ]
+      ]
+    },
+    "jailed_misery": {
+      "nameKey": "moodlet.jailed_misery",
+      "descKey": "moodlet.jailed_misery.desc",
+      "icon": "sleep",
+      "emotion": "sad",
+      "strength": 2,
+      "duration": {
+        "value": 720,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "env"
+    },
+    "exiled_grief": {
+      "nameKey": "moodlet.exiled_grief",
+      "descKey": "moodlet.exiled_grief.desc",
+      "icon": "goto",
+      "emotion": "sad",
+      "strength": 3,
+      "duration": {
+        "value": 7200,
+        "scale": "lifespan"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          1440,
+          2
+        ],
+        [
+          4320,
+          1
+        ]
+      ]
+    },
+    "kin_on_trial_worry": {
+      "nameKey": "moodlet.kin_on_trial_worry",
+      "descKey": "moodlet.kin_on_trial_worry.desc",
+      "icon": "emo.tense",
+      "emotion": "tense",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "family"
+      ]
+    },
+    "crime_fined": {
+      "nameKey": "moodlet.crime_fined",
+      "descKey": "moodlet.crime_fined.desc",
+      "icon": "ui.coin",
+      "emotion": "angry",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "letter_joy": {
+      "nameKey": "moodlet.letter_joy",
+      "descKey": "moodlet.letter_joy.desc",
+      "icon": "book",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 360,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "love_letter_flutter": {
+      "nameKey": "moodlet.love_letter_flutter",
+      "descKey": "moodlet.love_letter_flutter.desc",
+      "icon": "book",
+      "emotion": "excited",
+      "strength": 2,
+      "duration": {
+        "value": 480,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "romance"
+      ]
+    },
+    "threat_letter_fear": {
+      "nameKey": "moodlet.threat_letter_fear",
+      "descKey": "moodlet.threat_letter_fear.desc",
+      "icon": "book",
+      "emotion": "tense",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "high_taxes_grumble": {
+      "nameKey": "moodlet.high_taxes_grumble",
+      "descKey": "moodlet.high_taxes_grumble.desc",
+      "icon": "ui.coin",
+      "emotion": "angry",
+      "strength": 1,
+      "duration": {
+        "value": 4320,
+        "scale": "season"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "generous_festival_joy": {
+      "nameKey": "moodlet.generous_festival_joy",
+      "descKey": "moodlet.generous_festival_joy.desc",
+      "icon": "lute",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "strict_watch_uneasy": {
+      "nameKey": "moodlet.strict_watch_uneasy",
+      "descKey": "moodlet.strict_watch_uneasy.desc",
+      "icon": "eye",
+      "emotion": "tense",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "env"
+    },
+    "quarantine_confined": {
+      "nameKey": "moodlet.quarantine_confined",
+      "descKey": "moodlet.quarantine_confined.desc",
+      "icon": "need.fun",
+      "emotion": "sad",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "env"
+    },
+    "riot_fear": {
+      "nameKey": "moodlet.riot_fear",
+      "descKey": "moodlet.riot_fear.desc",
+      "icon": "fire",
+      "emotion": "tense",
+      "strength": 3,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          720,
+          2
+        ]
+      ]
+    },
+    "lord_favor_proud": {
+      "nameKey": "moodlet.lord_favor_proud",
+      "descKey": "moodlet.lord_favor_proud.desc",
+      "icon": "ui.crest",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "petition_heard": {
+      "nameKey": "moodlet.petition_heard",
+      "descKey": "moodlet.petition_heard.desc",
+      "icon": "ui.crest",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "labor_pains": {
+      "nameKey": "moodlet.labor_pains",
+      "descKey": "moodlet.labor_pains.desc",
+      "icon": "emo.tense",
+      "emotion": "tense",
+      "strength": 3,
+      "duration": {
+        "value": 720,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "health"
+    },
+    "named_the_baby": {
+      "nameKey": "moodlet.named_the_baby",
+      "descKey": "moodlet.named_the_baby.desc",
+      "icon": "book",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "family"
+      ]
+    },
+    "baby_things_ready": {
+      "nameKey": "moodlet.baby_things_ready",
+      "descKey": "moodlet.baby_things_ready.desc",
+      "icon": "yarn",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "family"
+      ]
+    },
+    "twins_overwhelmed": {
+      "nameKey": "moodlet.twins_overwhelmed",
+      "descKey": "moodlet.twins_overwhelmed.desc",
+      "icon": "emo.tense",
+      "emotion": "tense",
+      "strength": 1,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "grandchild_born": {
+      "nameKey": "moodlet.grandchild_born",
+      "descKey": "moodlet.grandchild_born.desc",
+      "icon": "social",
+      "emotion": "happy",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "family"
+      ]
+    },
+    "new_sibling_jealous": {
+      "nameKey": "moodlet.new_sibling_jealous",
+      "descKey": "moodlet.new_sibling_jealous.desc",
+      "icon": "emo.angry",
+      "emotion": "angry",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "toddler_clung": {
+      "nameKey": "moodlet.toddler_clung",
+      "descKey": "moodlet.toddler_clung.desc",
+      "icon": "social",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 120,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "family"
+      ]
+    },
+    "potty_trained_relief": {
+      "nameKey": "moodlet.potty_trained_relief",
+      "descKey": "moodlet.potty_trained_relief.desc",
+      "icon": "hygiene",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "child_near_hearth_scare": {
+      "nameKey": "moodlet.child_near_hearth_scare",
+      "descKey": "moodlet.child_near_hearth_scare.desc",
+      "icon": "fire",
+      "emotion": "tense",
+      "strength": 2,
+      "duration": {
+        "value": 180,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "homework_done": {
+      "nameKey": "moodlet.homework_done",
+      "descKey": "moodlet.homework_done.desc",
+      "icon": "book",
+      "emotion": "focused",
+      "strength": 1,
+      "duration": {
+        "value": 180,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "first_love_flutter": {
+      "nameKey": "moodlet.first_love_flutter",
+      "descKey": "moodlet.first_love_flutter.desc",
+      "icon": "social",
+      "emotion": "excited",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "romance"
+      ]
+    },
+    "first_heartbreak": {
+      "nameKey": "moodlet.first_heartbreak",
+      "descKey": "moodlet.first_heartbreak.desc",
+      "icon": "emo.sad",
+      "emotion": "sad",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "fade": [
+        [
+          1440,
+          1
+        ]
+      ],
+      "tags": [
+        "romance"
+      ]
+    },
+    "child_sent_away": {
+      "nameKey": "moodlet.child_sent_away",
+      "descKey": "moodlet.child_sent_away.desc",
+      "icon": "need.social",
+      "emotion": "sad",
+      "strength": 1,
+      "duration": {
+        "value": 4320,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "family"
+      ]
+    },
+    "harsh_master": {
+      "nameKey": "moodlet.harsh_master",
+      "descKey": "moodlet.harsh_master.desc",
+      "icon": "emo.angry",
+      "emotion": "angry",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "betrothal_nerves": {
+      "nameKey": "moodlet.betrothal_nerves",
+      "descKey": "moodlet.betrothal_nerves.desc",
+      "icon": "emo.tense",
+      "emotion": "tense",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "romance"
+      ]
+    },
+    "wedding_guest_merry": {
+      "nameKey": "moodlet.wedding_guest_merry",
+      "descKey": "moodlet.wedding_guest_merry.desc",
+      "icon": "lute",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 720,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "dowry_settled": {
+      "nameKey": "moodlet.dowry_settled",
+      "descKey": "moodlet.dowry_settled.desc",
+      "icon": "ui.coin",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event"
+    },
+    "spread_lie_guilt": {
+      "nameKey": "moodlet.spread_lie_guilt",
+      "descKey": "moodlet.spread_lie_guilt.desc",
+      "icon": "emo.ashamed",
+      "emotion": "ashamed",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "memory"
+    },
+    "feud_watchful": {
+      "nameKey": "moodlet.feud_watchful",
+      "descKey": "moodlet.feud_watchful.desc",
+      "icon": "eye",
+      "emotion": "tense",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "saw_execution": {
+      "nameKey": "moodlet.saw_execution",
+      "descKey": "moodlet.saw_execution.desc",
+      "icon": "candle",
+      "emotion": "tense",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          720,
+          1
+        ]
+      ]
+    },
+    "pardoned_relief": {
+      "nameKey": "moodlet.pardoned_relief",
+      "descKey": "moodlet.pardoned_relief.desc",
+      "icon": "emo.happy",
+      "emotion": "happy",
+      "strength": 3,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "fade": [
+        [
+          720,
+          2
+        ]
+      ]
+    },
+    "servant_gratitude": {
+      "nameKey": "moodlet.servant_gratitude",
+      "descKey": "moodlet.servant_gratitude.desc",
+      "icon": "social",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 360,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "bastard_whispers": {
+      "nameKey": "moodlet.bastard_whispers",
+      "descKey": "moodlet.bastard_whispers.desc",
+      "icon": "eye",
+      "emotion": "ashamed",
+      "strength": 2,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "lord_displeasure": {
+      "nameKey": "moodlet.lord_displeasure",
+      "descKey": "moodlet.lord_displeasure.desc",
+      "icon": "ui.crest",
+      "emotion": "tense",
+      "strength": 2,
+      "duration": {
+        "value": 2880,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social"
+    },
+    "far_from_kin": {
+      "nameKey": "moodlet.far_from_kin",
+      "descKey": "moodlet.far_from_kin.desc",
+      "icon": "need.social",
+      "emotion": "sad",
+      "strength": 1,
+      "duration": {
+        "value": 4320,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "social",
+      "tags": [
+        "family"
+      ]
+    },
+    "cradle_made": {
+      "nameKey": "moodlet.cradle_made",
+      "descKey": "moodlet.cradle_made.desc",
+      "icon": "axe",
+      "emotion": "happy",
+      "strength": 1,
+      "duration": {
+        "value": 1440,
+        "scale": "absolute"
+      },
+      "stack": "refresh",
+      "source": "event",
+      "tags": [
+        "family"
+      ]
+    }
+  }
+}

@@ -1,0 +1,509 @@
+{
+ "$comment": "편지 문장 틀 (GDD 14-7). 본문 = open 1개 + body 1~2개 + close 1개를 골라 이어 붙임. register 는 쓴 사람과 받는 사람의 개인 신분 서열로 고름: 쓴 쪽이 낮으면 up (합쇼체), 같으면 equal (해요체), 높으면 down (반말). 한쪽 register 만 있는 kind 는 그것만 씀 (petition, manumission 은 항상 up, threat 는 any). 변수: {reader} 받는 사람, {writer} 쓴 사람, {house} 쓴 사람 가문명, {name} 편지가 다루는 인물(아기, 고인, 혼처 당사자, 분쟁 상대). AI 대화가 켜져 있으면 25장 방식으로 대체 (이 틀은 폴백)",
+ "estateRank": {
+  "serf": 0,
+  "freeman": 1,
+  "artisan": 2,
+  "merchant": 2,
+  "clergy": 3,
+  "knight": 4,
+  "noble": 5
+ },
+ "registerRule": {
+  "up": "writerRank < readerRank",
+  "equal": "writerRank == readerRank",
+  "down": "writerRank > readerRank"
+ },
+ "kinds": {
+  "kin_greeting": {
+   "nameKey": "letter.kind.kin_greeting",
+   "registers": {
+    "up": {
+     "open": [
+      "letter.kin_greeting.up.open.1",
+      "letter.kin_greeting.up.open.2",
+      "letter.kin_greeting.up.open.3",
+      "letter.kin_greeting.up.open.4"
+     ],
+     "body": [
+      "letter.kin_greeting.up.body.1",
+      "letter.kin_greeting.up.body.2",
+      "letter.kin_greeting.up.body.3",
+      "letter.kin_greeting.up.body.4"
+     ],
+     "close": [
+      "letter.kin_greeting.up.close.1",
+      "letter.kin_greeting.up.close.2",
+      "letter.kin_greeting.up.close.3",
+      "letter.kin_greeting.up.close.4"
+     ]
+    },
+    "equal": {
+     "open": [
+      "letter.kin_greeting.equal.open.1",
+      "letter.kin_greeting.equal.open.2",
+      "letter.kin_greeting.equal.open.3",
+      "letter.kin_greeting.equal.open.4"
+     ],
+     "body": [
+      "letter.kin_greeting.equal.body.1",
+      "letter.kin_greeting.equal.body.2",
+      "letter.kin_greeting.equal.body.3",
+      "letter.kin_greeting.equal.body.4"
+     ],
+     "close": [
+      "letter.kin_greeting.equal.close.1",
+      "letter.kin_greeting.equal.close.2",
+      "letter.kin_greeting.equal.close.3",
+      "letter.kin_greeting.equal.close.4"
+     ]
+    },
+    "down": {
+     "open": [
+      "letter.kin_greeting.down.open.1",
+      "letter.kin_greeting.down.open.2",
+      "letter.kin_greeting.down.open.3",
+      "letter.kin_greeting.down.open.4"
+     ],
+     "body": [
+      "letter.kin_greeting.down.body.1",
+      "letter.kin_greeting.down.body.2",
+      "letter.kin_greeting.down.body.3",
+      "letter.kin_greeting.down.body.4"
+     ],
+     "close": [
+      "letter.kin_greeting.down.close.1",
+      "letter.kin_greeting.down.close.2",
+      "letter.kin_greeting.down.close.3",
+      "letter.kin_greeting.down.close.4"
+     ]
+    }
+   }
+  },
+  "invitation": {
+   "nameKey": "letter.kind.invitation",
+   "registers": {
+    "up": {
+     "open": [
+      "letter.invitation.up.open.1",
+      "letter.invitation.up.open.2",
+      "letter.invitation.up.open.3",
+      "letter.invitation.up.open.4"
+     ],
+     "body": [
+      "letter.invitation.up.body.1",
+      "letter.invitation.up.body.2",
+      "letter.invitation.up.body.3",
+      "letter.invitation.up.body.4"
+     ],
+     "close": [
+      "letter.invitation.up.close.1",
+      "letter.invitation.up.close.2",
+      "letter.invitation.up.close.3",
+      "letter.invitation.up.close.4"
+     ]
+    },
+    "equal": {
+     "open": [
+      "letter.invitation.equal.open.1",
+      "letter.invitation.equal.open.2",
+      "letter.invitation.equal.open.3",
+      "letter.invitation.equal.open.4"
+     ],
+     "body": [
+      "letter.invitation.equal.body.1",
+      "letter.invitation.equal.body.2",
+      "letter.invitation.equal.body.3",
+      "letter.invitation.equal.body.4"
+     ],
+     "close": [
+      "letter.invitation.equal.close.1",
+      "letter.invitation.equal.close.2",
+      "letter.invitation.equal.close.3",
+      "letter.invitation.equal.close.4"
+     ]
+    },
+    "down": {
+     "open": [
+      "letter.invitation.down.open.1",
+      "letter.invitation.down.open.2",
+      "letter.invitation.down.open.3",
+      "letter.invitation.down.open.4"
+     ],
+     "body": [
+      "letter.invitation.down.body.1",
+      "letter.invitation.down.body.2",
+      "letter.invitation.down.body.3",
+      "letter.invitation.down.body.4"
+     ],
+     "close": [
+      "letter.invitation.down.close.1",
+      "letter.invitation.down.close.2",
+      "letter.invitation.down.close.3",
+      "letter.invitation.down.close.4"
+     ]
+    }
+   }
+  },
+  "love": {
+   "nameKey": "letter.kind.love",
+   "registers": {
+    "up": {
+     "open": [
+      "letter.love.up.open.1",
+      "letter.love.up.open.2",
+      "letter.love.up.open.3",
+      "letter.love.up.open.4"
+     ],
+     "body": [
+      "letter.love.up.body.1",
+      "letter.love.up.body.2",
+      "letter.love.up.body.3",
+      "letter.love.up.body.4"
+     ],
+     "close": [
+      "letter.love.up.close.1",
+      "letter.love.up.close.2",
+      "letter.love.up.close.3",
+      "letter.love.up.close.4"
+     ]
+    },
+    "equal": {
+     "open": [
+      "letter.love.equal.open.1",
+      "letter.love.equal.open.2",
+      "letter.love.equal.open.3",
+      "letter.love.equal.open.4"
+     ],
+     "body": [
+      "letter.love.equal.body.1",
+      "letter.love.equal.body.2",
+      "letter.love.equal.body.3",
+      "letter.love.equal.body.4"
+     ],
+     "close": [
+      "letter.love.equal.close.1",
+      "letter.love.equal.close.2",
+      "letter.love.equal.close.3",
+      "letter.love.equal.close.4"
+     ]
+    }
+   }
+  },
+  "matchmaking": {
+   "nameKey": "letter.kind.matchmaking",
+   "registers": {
+    "up": {
+     "open": [
+      "letter.matchmaking.up.open.1",
+      "letter.matchmaking.up.open.2",
+      "letter.matchmaking.up.open.3",
+      "letter.matchmaking.up.open.4"
+     ],
+     "body": [
+      "letter.matchmaking.up.body.1",
+      "letter.matchmaking.up.body.2",
+      "letter.matchmaking.up.body.3",
+      "letter.matchmaking.up.body.4"
+     ],
+     "close": [
+      "letter.matchmaking.up.close.1",
+      "letter.matchmaking.up.close.2",
+      "letter.matchmaking.up.close.3",
+      "letter.matchmaking.up.close.4"
+     ]
+    },
+    "equal": {
+     "open": [
+      "letter.matchmaking.equal.open.1",
+      "letter.matchmaking.equal.open.2",
+      "letter.matchmaking.equal.open.3",
+      "letter.matchmaking.equal.open.4"
+     ],
+     "body": [
+      "letter.matchmaking.equal.body.1",
+      "letter.matchmaking.equal.body.2",
+      "letter.matchmaking.equal.body.3",
+      "letter.matchmaking.equal.body.4"
+     ],
+     "close": [
+      "letter.matchmaking.equal.close.1",
+      "letter.matchmaking.equal.close.2",
+      "letter.matchmaking.equal.close.3",
+      "letter.matchmaking.equal.close.4"
+     ]
+    }
+   }
+  },
+  "petition": {
+   "nameKey": "letter.kind.petition",
+   "registers": {
+    "up": {
+     "open": [
+      "letter.petition.up.open.1",
+      "letter.petition.up.open.2",
+      "letter.petition.up.open.3",
+      "letter.petition.up.open.4"
+     ],
+     "body": [
+      "letter.petition.up.body.1",
+      "letter.petition.up.body.2",
+      "letter.petition.up.body.3",
+      "letter.petition.up.body.4"
+     ],
+     "close": [
+      "letter.petition.up.close.1",
+      "letter.petition.up.close.2",
+      "letter.petition.up.close.3",
+      "letter.petition.up.close.4"
+     ]
+    }
+   }
+  },
+  "threat": {
+   "nameKey": "letter.kind.threat",
+   "registers": {
+    "any": {
+     "open": [
+      "letter.threat.any.open.1",
+      "letter.threat.any.open.2",
+      "letter.threat.any.open.3",
+      "letter.threat.any.open.4"
+     ],
+     "body": [
+      "letter.threat.any.body.1",
+      "letter.threat.any.body.2",
+      "letter.threat.any.body.3",
+      "letter.threat.any.body.4"
+     ],
+     "close": [
+      "letter.threat.any.close.1",
+      "letter.threat.any.close.2",
+      "letter.threat.any.close.3",
+      "letter.threat.any.close.4"
+     ]
+    }
+   }
+  },
+  "birth_news": {
+   "nameKey": "letter.kind.birth_news",
+   "registers": {
+    "up": {
+     "open": [
+      "letter.birth_news.up.open.1",
+      "letter.birth_news.up.open.2",
+      "letter.birth_news.up.open.3",
+      "letter.birth_news.up.open.4"
+     ],
+     "body": [
+      "letter.birth_news.up.body.1",
+      "letter.birth_news.up.body.2",
+      "letter.birth_news.up.body.3",
+      "letter.birth_news.up.body.4"
+     ],
+     "close": [
+      "letter.birth_news.up.close.1",
+      "letter.birth_news.up.close.2",
+      "letter.birth_news.up.close.3",
+      "letter.birth_news.up.close.4"
+     ]
+    },
+    "equal": {
+     "open": [
+      "letter.birth_news.equal.open.1",
+      "letter.birth_news.equal.open.2",
+      "letter.birth_news.equal.open.3",
+      "letter.birth_news.equal.open.4"
+     ],
+     "body": [
+      "letter.birth_news.equal.body.1",
+      "letter.birth_news.equal.body.2",
+      "letter.birth_news.equal.body.3",
+      "letter.birth_news.equal.body.4"
+     ],
+     "close": [
+      "letter.birth_news.equal.close.1",
+      "letter.birth_news.equal.close.2",
+      "letter.birth_news.equal.close.3",
+      "letter.birth_news.equal.close.4"
+     ]
+    },
+    "down": {
+     "open": [
+      "letter.birth_news.down.open.1",
+      "letter.birth_news.down.open.2",
+      "letter.birth_news.down.open.3",
+      "letter.birth_news.down.open.4"
+     ],
+     "body": [
+      "letter.birth_news.down.body.1",
+      "letter.birth_news.down.body.2",
+      "letter.birth_news.down.body.3",
+      "letter.birth_news.down.body.4"
+     ],
+     "close": [
+      "letter.birth_news.down.close.1",
+      "letter.birth_news.down.close.2",
+      "letter.birth_news.down.close.3",
+      "letter.birth_news.down.close.4"
+     ]
+    }
+   }
+  },
+  "obituary": {
+   "nameKey": "letter.kind.obituary",
+   "registers": {
+    "up": {
+     "open": [
+      "letter.obituary.up.open.1",
+      "letter.obituary.up.open.2",
+      "letter.obituary.up.open.3",
+      "letter.obituary.up.open.4"
+     ],
+     "body": [
+      "letter.obituary.up.body.1",
+      "letter.obituary.up.body.2",
+      "letter.obituary.up.body.3",
+      "letter.obituary.up.body.4"
+     ],
+     "close": [
+      "letter.obituary.up.close.1",
+      "letter.obituary.up.close.2",
+      "letter.obituary.up.close.3",
+      "letter.obituary.up.close.4"
+     ]
+    },
+    "equal": {
+     "open": [
+      "letter.obituary.equal.open.1",
+      "letter.obituary.equal.open.2",
+      "letter.obituary.equal.open.3",
+      "letter.obituary.equal.open.4"
+     ],
+     "body": [
+      "letter.obituary.equal.body.1",
+      "letter.obituary.equal.body.2",
+      "letter.obituary.equal.body.3",
+      "letter.obituary.equal.body.4"
+     ],
+     "close": [
+      "letter.obituary.equal.close.1",
+      "letter.obituary.equal.close.2",
+      "letter.obituary.equal.close.3",
+      "letter.obituary.equal.close.4"
+     ]
+    },
+    "down": {
+     "open": [
+      "letter.obituary.down.open.1",
+      "letter.obituary.down.open.2",
+      "letter.obituary.down.open.3",
+      "letter.obituary.down.open.4"
+     ],
+     "body": [
+      "letter.obituary.down.body.1",
+      "letter.obituary.down.body.2",
+      "letter.obituary.down.body.3",
+      "letter.obituary.down.body.4"
+     ],
+     "close": [
+      "letter.obituary.down.close.1",
+      "letter.obituary.down.close.2",
+      "letter.obituary.down.close.3",
+      "letter.obituary.down.close.4"
+     ]
+    }
+   }
+  },
+  "manumission": {
+   "nameKey": "letter.kind.manumission",
+   "registers": {
+    "up": {
+     "open": [
+      "letter.manumission.up.open.1",
+      "letter.manumission.up.open.2",
+      "letter.manumission.up.open.3",
+      "letter.manumission.up.open.4"
+     ],
+     "body": [
+      "letter.manumission.up.body.1",
+      "letter.manumission.up.body.2",
+      "letter.manumission.up.body.3",
+      "letter.manumission.up.body.4"
+     ],
+     "close": [
+      "letter.manumission.up.close.1",
+      "letter.manumission.up.close.2",
+      "letter.manumission.up.close.3",
+      "letter.manumission.up.close.4"
+     ]
+    }
+   }
+  },
+  "match_refusal": {
+   "nameKey": "letter.kind.match_refusal",
+   "registers": {
+    "up": {
+     "open": [
+      "letter.match_refusal.up.open.1",
+      "letter.match_refusal.up.open.2",
+      "letter.match_refusal.up.open.3",
+      "letter.match_refusal.up.open.4"
+     ],
+     "body": [
+      "letter.match_refusal.up.body.1",
+      "letter.match_refusal.up.body.2",
+      "letter.match_refusal.up.body.3",
+      "letter.match_refusal.up.body.4"
+     ],
+     "close": [
+      "letter.match_refusal.up.close.1",
+      "letter.match_refusal.up.close.2",
+      "letter.match_refusal.up.close.3",
+      "letter.match_refusal.up.close.4"
+     ]
+    },
+    "equal": {
+     "open": [
+      "letter.match_refusal.equal.open.1",
+      "letter.match_refusal.equal.open.2",
+      "letter.match_refusal.equal.open.3",
+      "letter.match_refusal.equal.open.4"
+     ],
+     "body": [
+      "letter.match_refusal.equal.body.1",
+      "letter.match_refusal.equal.body.2",
+      "letter.match_refusal.equal.body.3",
+      "letter.match_refusal.equal.body.4"
+     ],
+     "close": [
+      "letter.match_refusal.equal.close.1",
+      "letter.match_refusal.equal.close.2",
+      "letter.match_refusal.equal.close.3",
+      "letter.match_refusal.equal.close.4"
+     ]
+    },
+    "down": {
+     "open": [
+      "letter.match_refusal.down.open.1",
+      "letter.match_refusal.down.open.2",
+      "letter.match_refusal.down.open.3",
+      "letter.match_refusal.down.open.4"
+     ],
+     "body": [
+      "letter.match_refusal.down.body.1",
+      "letter.match_refusal.down.body.2",
+      "letter.match_refusal.down.body.3",
+      "letter.match_refusal.down.body.4"
+     ],
+     "close": [
+      "letter.match_refusal.down.close.1",
+      "letter.match_refusal.down.close.2",
+      "letter.match_refusal.down.close.3",
+      "letter.match_refusal.down.close.4"
+     ]
+    }
+   }
+  }
+ }
+}

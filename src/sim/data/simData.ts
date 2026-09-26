@@ -54,6 +54,12 @@ export const balanceSchema = z.object({
     wakeExcludeMinutes: num.int().nonnegative(),
     searchRadiusTiles: num.optional(),
     socialRadiusTiles: num.optional(),
+    /** 스스로 챙기는 욕구 기준 (심즈식): 다음 행동을 고를 때 이 값 아래면 그 욕구부터 풂. 반경 안에 풀 곳이 없으면 집으로 */
+    selfCare: numRec.optional(),
+    /** 욕구를 채우는 광고는 그 욕구가 이 값 아래일 때만 (심즈식) */
+    adBelow: numRec.optional(),
+    /** 집으로 돌아가 욕구를 풀러 가는 시도 사이 간격 (분) */
+    goHomeCooldownMinutes: num.optional(),
   }),
   queue: z.object({ maxLength: num.int().positive(), waitMinutes: num.default(20), waitAutonomousMinutes: num.default(8) }).loose(),
   temperature: z.object({
@@ -139,7 +145,7 @@ export interface StoryData {
   household: { cap: number; controllableCap: number; splitChance: number };
   rumor: { base: number; householdEvening: number; maxPairsPerPlace: number; forgetDays: number; eveningHours?: [number, number] };
   news: { keep: number };
-  town?: { residentOnly: string[]; playerRoamHours?: [number, number]; playerRoamTiles?: number; sellBackRate?: number };
+  town?: { residentOnly: string[]; publicPlaces?: Record<string, string[]>; playerRoamHours?: [number, number]; playerRoamTiles?: number; sellBackRate?: number };
   npcPantry?: { refillMinutes: number };
   newborn?: { familyFriendship: number };
   travel?: { horseSpeedMult: number; rideMinTiles: number; horseEstates: string[]; horseWealth: string[]; horseMinStage: string };

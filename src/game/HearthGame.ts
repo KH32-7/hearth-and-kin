@@ -31,6 +31,7 @@ import { globalLight } from '../render/SpriteMaterial';
 import { setSun } from '../render/Shadows';
 import { Particles } from '../render/Particles';
 import { WorldView, type CutawayMode } from '../render/WorldView';
+import { DirectControl } from './DirectControl';
 import { CharacterView, type SheetLike } from '../render/CharacterView';
 import type { WorldPack } from '../render/artpack';
 import { composeCharacter, randomSpec } from '../render/lpc/compose';
@@ -518,6 +519,8 @@ export class HearthGame {
       const frac = s.speed > 0 && !this.pausedForShot ? Math.min(1, (now - this.client.snapAt) / s.tickMs) : 0;
       this.applyLighting(s.minuteOfDay + frac);
     }
+    this.direct.update(now);
+    this.world.pulseHighlight(now);
     this.chars.update(now);
     if (s) this.bubbles.update(s.persons, (id) => this.chars.headAnchor(id), now);
     this.world.roofTarget = this.roofWanted();
@@ -806,7 +809,7 @@ export class HearthGame {
   }
 
   /** 지붕 목표 (23-2 시점 처리): 멀리서 보고 조작 인물이 집 밖이면 보이고, 가까이 보거나 인물이 들어가면 투명 */
-  // ------------------------------------------------------------------ 실내 화면 (스타듀식, E)
+  // ------------------------------------------------------------------ 실내 화면 (스타듀식, V)
 
   /** 보고 있는 집 (외관 번호), -1 바깥 */
   interior = -1;
@@ -817,7 +820,7 @@ export class HearthGame {
   private fadeEl: HTMLDivElement | null = null;
   private outsideCam: { x: number; y: number; zoom: number } | null = null;
 
-  /** E: 선택한 가족이 집 안/문 앞이면 그 집 실내로, 실내면 바깥으로 (검은 화면 전환) */
+  /** V: 선택한 가족이 집 안/문 앞이면 그 집 실내로, 실내면 바깥으로 (검은 화면 전환) */
   toggleInterior(): void {
     const me = this.client.snap?.persons.find((p) => p.id === this.selectedId);
     if (this.interior >= 0) return this.switchView(-1);
@@ -1067,6 +1070,7 @@ export class HearthGame {
     });
     canvas.addEventListener('pointermove', (e) => {
       if (this.build?.active) {
+        this.world.setHighlight(null);
         const w = this.renderer.screenToWorld(e.clientX, e.clientY);
         this.build.pointerMove(w.x, w.y);
         if (drag && drag.button === 0) return;
@@ -1114,6 +1118,10 @@ export class HearthGame {
         e.preventDefault();
         return;
       }
+      if (this.direct.keyDown(e)) {
+        e.preventDefault();
+        return;
+      }
       if (e.key === 'Tab') {
         e.preventDefault();
         this.notebook.toggle();
@@ -1133,7 +1141,7 @@ export class HearthGame {
       else if (e.key === 'p' || e.key === 'P') this.setSpeed(this.client.snap?.speed === 0 ? Math.max(1, this.pendingSpeedBeforePause) : 0);
       else if (e.key === '1' || e.key === '2' || e.key === '3') this.setSpeed(Number(e.key));
       else if (e.key === 'Escape') this.pie.close();
-      else if (e.key === 'e' || e.key === 'E') this.toggleInterior();
+      else if (e.key === 'v' || e.key === 'V') this.toggleInterior();
       else if (e.key === 'i' || e.key === 'I') this.toggleInsideMode();
       else if (e.key === 'f' || e.key === 'F') this.followSelected = !this.followSelected;
       else if (e.key === 'PageUp') this.stepViewLevel(1);
@@ -1146,7 +1154,6 @@ export class HearthGame {
         const step = 48;
         const pan: Record<string, [number, number]> = {
           ArrowLeft: [step, 0], ArrowRight: [-step, 0], ArrowUp: [0, step], ArrowDown: [0, -step],
-          a: [step, 0], d: [-step, 0], w: [0, step], s: [0, -step],
         };
         const v = pan[e.key];
         if (v) {
@@ -1155,17 +1162,94 @@ export class HearthGame {
         }
       }
     });
+    window.addEventListener('keyup', (e) => this.direct.keyUp(e));
+    window.addEventListener('blur', () => this.direct.reset());
+    canvas.addEventListener('pointerleave', () => this.world.setHighlight(null));
     this.client.onSnapshot((s) => {
       if (s.speed > 0) this.pendingSpeedBeforePause = s.speed;
     });
+  }
+
+  // ------------------------------------------------------------------ 직접 조작 (WASD 이동, E 상호작용)
+
+  private readonly direct = new DirectControl({
+    selectedId: () => (this.client.snap?.persons.some((p) => p.id === this.selectedId) ? this.selectedId : null),
+    blocked: () => !!this.build?.active || this.notebook.open || this.dialog.open || this.pie.open || this.choice.open,
+    steer: (personId, dx, dy) => void this.client.intent({ kind: 'steer', personId, dx, dy }),
+    interactNearest: () => this.interactNearest(),
+    follow: () => {
+      this.followSelected = true;
+    },
+  });
+
+  /** 상호작용이 있는 물건 종류 (수리만 있는 장식은 뺌): 외곽선과 E 대상 */
+  private interactableKinds: Set<string> | null = null;
+  private isInteractable(defId: string): boolean {
+    if (!this.interactableKinds) {
+      this.interactableKinds = new Set();
+      for (const [id, ia] of Object.entries(interactions.interactions as Record<string, { objects?: string[]; autonomous?: boolean }>)) {
+        if (id === 'obj.repair') continue;
+        for (const o of ia.objects ?? []) this.interactableKinds.add(o);
+      }
+    }
+    const kind = (this.defs[defId] as { kind?: string } | undefined)?.kind ?? defId;
+    return this.interactableKinds.has(defId) || this.interactableKinds.has(kind);
+  }
+
+  /** E: 조작 인물 가까이(2.5칸 안, 같은 층) 상호작용 물건 중 바라보는 쪽·가까운 것의 원형 메뉴. 물건이 없으면 가까운 사람 */
+  private interactNearest(): void {
+    const s = this.client.snap;
+    const me = s?.persons.find((p) => p.id === this.selectedId);
+    if (!s || !me) return;
+    const H1 = this.lotRows();
+    const slab = Math.floor(me.y / H1);
+    const fx = me.facing === 'left' ? -1 : me.facing === 'right' ? 1 : 0;
+    const fy = me.facing === 'up' ? -1 : me.facing === 'down' ? 1 : 0;
+    let best: { uid: number; score: number } | null = null;
+    for (const o of s.objects) {
+      if (Math.floor(o.y / H1) !== slab || !this.isInteractable(o.defId)) continue;
+      const fp = this.defs[o.defId]?.footprint ?? { w: 1, h: 1 };
+      const nx = Math.max(o.x, Math.min(o.x + fp.w, me.x));
+      const ny = Math.max(o.y, Math.min(o.y + fp.h, me.y));
+      const d = Math.hypot(nx - me.x, ny - me.y);
+      if (d > 2.5) continue;
+      // 바라보는 쪽이면 가깝게 침
+      const ahead = (nx - me.x) * fx + (ny - me.y) * fy;
+      const score = d - (ahead > 0 ? 0.8 : 0);
+      if (!best || score < best.score) best = { uid: o.uid, score };
+    }
+    const r = this.renderer.canvas.getBoundingClientRect();
+    if (best) {
+      const rect = this.world.objectRect(best.uid);
+      if (rect) {
+        const T = this.world.tile;
+        const sp = this.renderer.worldToScreen((rect.x + rect.w / 2) * T, (rect.y + rect.h / 2) * T);
+        void this.openMenuAt(sp.x + r.left, sp.y + r.top, best.uid);
+        return;
+      }
+    }
+    const other = s.persons
+      .filter((p) => p.id !== me.id && Math.floor(p.y / H1) === slab && Math.hypot(p.x - me.x, p.y - me.y) <= 2.5)
+      .sort((a, b) => Math.hypot(a.x - me.x, a.y - me.y) - Math.hypot(b.x - me.x, b.y - me.y))[0];
+    if (other) {
+      const pos = this.chars.drawnPosition(other.id);
+      if (pos) {
+        const sp = this.renderer.worldToScreen(pos.x, pos.y - 30);
+        void this.openPersonMenu(sp.x + r.left, sp.y + r.top, other.id);
+      }
+    }
   }
 
   private pendingSpeedBeforePause = 1;
 
   private updateHover(cx: number, cy: number): void {
     const w = this.renderer.screenToWorld(cx, cy);
-    const hit = this.chars.pick(w.x, w.y) !== null || this.world.pick(w.x, w.y) !== null;
-    this.renderer.canvas.style.cursor = hit ? 'pointer' : 'default';
+    const person = this.chars.pick(w.x, w.y);
+    const uid = person === null ? this.world.pick(w.x, w.y) : null;
+    const obj = uid !== null ? this.client.snap?.objects.find((o) => o.uid === uid) : undefined;
+    // 상호작용할 수 있는 물건에 마우스를 올리면 외곽선
+    this.world.setHighlight(obj && this.isInteractable(obj.defId) ? obj.uid : null);
+    this.renderer.canvas.style.cursor = person !== null || uid !== null ? 'pointer' : 'default';
   }
 
   private click(cx: number, cy: number): void {

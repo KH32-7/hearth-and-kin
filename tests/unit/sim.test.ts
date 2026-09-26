@@ -45,13 +45,15 @@ describe('격자와 길찾기', () => {
 });
 
 describe('욕구', () => {
-  it('깨어 있으면 1시간에 배고픔 6 감소', () => {
+  it('깨어 있으면 1시간에 배고픔이 needs.json decayPerHour 만큼 감소 (한 끼로 하루 버팀: 4)', () => {
     const sim = makeSim();
     sim.autonomyEnabled = false;
     const p = sim.persons[0];
     const before = p.need('hunger');
     runMinutes(sim, 60);
-    expect(before - p.need('hunger')).toBeCloseTo(6, 3);
+    const rate = sim.data.needs.needs.hunger.decayPerHour;
+    expect(rate).toBeLessThanOrEqual(4);
+    expect(before - p.need('hunger')).toBeCloseTo(rate, 3);
   });
 
   it('긴급도는 욕구가 낮을수록 큼', () => {

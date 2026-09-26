@@ -1,0 +1,751 @@
+{
+ "$comment": "가문명(성) 풀 (GDD 16-1). estateHint: low = 농노 해방/자유민, mid = 장인/상인, high = 기사/귀족. 농노는 가문명이 없으므로 placeOrigin(\"{place}의 {name}\") 또는 householdPattern(\"{name}네\")으로 부름. 해방될 때 family_name_choice 카드로 성을 얻음. 기존 마을 가문명과 겹치는 이름은 뺐음",
+ "placeOrigin": "{place}의 {name}",
+ "householdPattern": "{name}네",
+ "clans": [
+  {
+   "name": "스미스",
+   "estateHint": "low"
+  },
+  {
+   "name": "밀러",
+   "estateHint": "low"
+  },
+  {
+   "name": "베이커",
+   "estateHint": "low"
+  },
+  {
+   "name": "테일러",
+   "estateHint": "low"
+  },
+  {
+   "name": "카터",
+   "estateHint": "low"
+  },
+  {
+   "name": "셰퍼드",
+   "estateHint": "low"
+  },
+  {
+   "name": "파머",
+   "estateHint": "low"
+  },
+  {
+   "name": "헌터",
+   "estateHint": "low"
+  },
+  {
+   "name": "피셔",
+   "estateHint": "low"
+  },
+  {
+   "name": "메이슨",
+   "estateHint": "low"
+  },
+  {
+   "name": "웨버",
+   "estateHint": "low"
+  },
+  {
+   "name": "터너",
+   "estateHint": "low"
+  },
+  {
+   "name": "스펜서",
+   "estateHint": "low"
+  },
+  {
+   "name": "챈들러",
+   "estateHint": "low"
+  },
+  {
+   "name": "태너",
+   "estateHint": "low"
+  },
+  {
+   "name": "대처",
+   "estateHint": "low"
+  },
+  {
+   "name": "월러",
+   "estateHint": "low"
+  },
+  {
+   "name": "채프먼",
+   "estateHint": "low"
+  },
+  {
+   "name": "프리먼",
+   "estateHint": "low"
+  },
+  {
+   "name": "워커",
+   "estateHint": "low"
+  },
+  {
+   "name": "브루어",
+   "estateHint": "low"
+  },
+  {
+   "name": "바커",
+   "estateHint": "low"
+  },
+  {
+   "name": "쇼",
+   "estateHint": "low"
+  },
+  {
+   "name": "파커",
+   "estateHint": "low"
+  },
+  {
+   "name": "우드",
+   "estateHint": "low"
+  },
+  {
+   "name": "브룩",
+   "estateHint": "low"
+  },
+  {
+   "name": "필드",
+   "estateHint": "low"
+  },
+  {
+   "name": "힐",
+   "estateHint": "low"
+  },
+  {
+   "name": "그린",
+   "estateHint": "low"
+  },
+  {
+   "name": "애쉬",
+   "estateHint": "low"
+  },
+  {
+   "name": "손턴",
+   "estateHint": "low"
+  },
+  {
+   "name": "버튼",
+   "estateHint": "low"
+  },
+  {
+   "name": "크로스",
+   "estateHint": "low"
+  },
+  {
+   "name": "웰스",
+   "estateHint": "low"
+  },
+  {
+   "name": "다운스",
+   "estateHint": "low"
+  },
+  {
+   "name": "무어",
+   "estateHint": "low"
+  },
+  {
+   "name": "반스",
+   "estateHint": "low"
+  },
+  {
+   "name": "콜",
+   "estateHint": "low"
+  },
+  {
+   "name": "스톤",
+   "estateHint": "low"
+  },
+  {
+   "name": "레인",
+   "estateHint": "low"
+  },
+  {
+   "name": "우드워드",
+   "estateHint": "low"
+  },
+  {
+   "name": "호스",
+   "estateHint": "low"
+  },
+  {
+   "name": "베일리",
+   "estateHint": "low"
+  },
+  {
+   "name": "콜리어",
+   "estateHint": "low"
+  },
+  {
+   "name": "스위프트",
+   "estateHint": "low"
+  },
+  {
+   "name": "롱",
+   "estateHint": "low"
+  },
+  {
+   "name": "브라운",
+   "estateHint": "low"
+  },
+  {
+   "name": "화이트",
+   "estateHint": "low"
+  },
+  {
+   "name": "영",
+   "estateHint": "low"
+  },
+  {
+   "name": "켐프",
+   "estateHint": "low"
+  },
+  {
+   "name": "호그",
+   "estateHint": "low"
+  },
+  {
+   "name": "래드",
+   "estateHint": "low"
+  },
+  {
+   "name": "스파로",
+   "estateHint": "low"
+  },
+  {
+   "name": "크로",
+   "estateHint": "low"
+  },
+  {
+   "name": "헤이",
+   "estateHint": "low"
+  },
+  {
+   "name": "포드",
+   "estateHint": "low"
+  },
+  {
+   "name": "게이츠",
+   "estateHint": "low"
+  },
+  {
+   "name": "번",
+   "estateHint": "low"
+  },
+  {
+   "name": "노크",
+   "estateHint": "low"
+  },
+  {
+   "name": "벡",
+   "estateHint": "low"
+  },
+  {
+   "name": "댈",
+   "estateHint": "low"
+  },
+  {
+   "name": "톱",
+   "estateHint": "low"
+  },
+  {
+   "name": "오크스",
+   "estateHint": "low"
+  },
+  {
+   "name": "하비",
+   "estateHint": "low"
+  },
+  {
+   "name": "토프트",
+   "estateHint": "low"
+  },
+  {
+   "name": "웰러",
+   "estateHint": "low"
+  },
+  {
+   "name": "소어",
+   "estateHint": "low"
+  },
+  {
+   "name": "러셀",
+   "estateHint": "low"
+  },
+  {
+   "name": "바우어",
+   "estateHint": "low"
+  },
+  {
+   "name": "애쉬버리",
+   "estateHint": "mid"
+  },
+  {
+   "name": "블랙우드",
+   "estateHint": "mid"
+  },
+  {
+   "name": "콜드웰",
+   "estateHint": "mid"
+  },
+  {
+   "name": "크랜포드",
+   "estateHint": "mid"
+  },
+  {
+   "name": "대븐포트",
+   "estateHint": "mid"
+  },
+  {
+   "name": "엘즈워스",
+   "estateHint": "mid"
+  },
+  {
+   "name": "페어팩스",
+   "estateHint": "mid"
+  },
+  {
+   "name": "골즈버리",
+   "estateHint": "mid"
+  },
+  {
+   "name": "해리슨",
+   "estateHint": "mid"
+  },
+  {
+   "name": "햄블턴",
+   "estateHint": "mid"
+  },
+  {
+   "name": "할로웨이",
+   "estateHint": "mid"
+  },
+  {
+   "name": "킹슬리",
+   "estateHint": "mid"
+  },
+  {
+   "name": "랭글리",
+   "estateHint": "mid"
+  },
+  {
+   "name": "로크우드",
+   "estateHint": "mid"
+  },
+  {
+   "name": "맨스필드",
+   "estateHint": "mid"
+  },
+  {
+   "name": "노스콧",
+   "estateHint": "mid"
+  },
+  {
+   "name": "펨버턴",
+   "estateHint": "mid"
+  },
+  {
+   "name": "레드필드",
+   "estateHint": "mid"
+  },
+  {
+   "name": "셀던",
+   "estateHint": "mid"
+  },
+  {
+   "name": "웨스트브룩",
+   "estateHint": "mid"
+  },
+  {
+   "name": "윈터번",
+   "estateHint": "mid"
+  },
+  {
+   "name": "얼링턴",
+   "estateHint": "mid"
+  },
+  {
+   "name": "애플비",
+   "estateHint": "mid"
+  },
+  {
+   "name": "버클리",
+   "estateHint": "mid"
+  },
+  {
+   "name": "캐슬포드",
+   "estateHint": "mid"
+  },
+  {
+   "name": "던바",
+   "estateHint": "mid"
+  },
+  {
+   "name": "에버렛",
+   "estateHint": "mid"
+  },
+  {
+   "name": "핀치",
+   "estateHint": "mid"
+  },
+  {
+   "name": "그랜섬",
+   "estateHint": "mid"
+  },
+  {
+   "name": "헤이스팅스",
+   "estateHint": "mid"
+  },
+  {
+   "name": "아이어턴",
+   "estateHint": "mid"
+  },
+  {
+   "name": "제닝스",
+   "estateHint": "mid"
+  },
+  {
+   "name": "켄들",
+   "estateHint": "mid"
+  },
+  {
+   "name": "레이턴",
+   "estateHint": "mid"
+  },
+  {
+   "name": "매들리",
+   "estateHint": "mid"
+  },
+  {
+   "name": "네틀턴",
+   "estateHint": "mid"
+  },
+  {
+   "name": "오들리",
+   "estateHint": "mid"
+  },
+  {
+   "name": "프레스턴",
+   "estateHint": "mid"
+  },
+  {
+   "name": "래드클리프",
+   "estateHint": "mid"
+  },
+  {
+   "name": "샌퍼드",
+   "estateHint": "mid"
+  },
+  {
+   "name": "톨리버",
+   "estateHint": "mid"
+  },
+  {
+   "name": "업턴",
+   "estateHint": "mid"
+  },
+  {
+   "name": "벤틀리",
+   "estateHint": "mid"
+  },
+  {
+   "name": "워들",
+   "estateHint": "mid"
+  },
+  {
+   "name": "야들리",
+   "estateHint": "mid"
+  },
+  {
+   "name": "올드캐슬",
+   "estateHint": "mid"
+  },
+  {
+   "name": "브릭웰",
+   "estateHint": "mid"
+  },
+  {
+   "name": "체스터턴",
+   "estateHint": "mid"
+  },
+  {
+   "name": "도빈",
+   "estateHint": "mid"
+  },
+  {
+   "name": "이스트우드",
+   "estateHint": "mid"
+  },
+  {
+   "name": "플린트",
+   "estateHint": "mid"
+  },
+  {
+   "name": "가드너",
+   "estateHint": "mid"
+  },
+  {
+   "name": "할리",
+   "estateHint": "mid"
+  },
+  {
+   "name": "인그럼",
+   "estateHint": "mid"
+  },
+  {
+   "name": "킬번",
+   "estateHint": "mid"
+  },
+  {
+   "name": "러드로",
+   "estateHint": "mid"
+  },
+  {
+   "name": "몰턴",
+   "estateHint": "mid"
+  },
+  {
+   "name": "누전트",
+   "estateHint": "mid"
+  },
+  {
+   "name": "오거",
+   "estateHint": "mid"
+  },
+  {
+   "name": "폴턴",
+   "estateHint": "mid"
+  },
+  {
+   "name": "레이븐스크로프트",
+   "estateHint": "mid"
+  },
+  {
+   "name": "솔즈베리",
+   "estateHint": "mid"
+  },
+  {
+   "name": "트렌트",
+   "estateHint": "mid"
+  },
+  {
+   "name": "볼드윈슨",
+   "estateHint": "mid"
+  },
+  {
+   "name": "웨이크필드",
+   "estateHint": "mid"
+  },
+  {
+   "name": "드 보몽",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 몽포르",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 클레르",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 브라오스",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 바르",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 쿠시",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 발랑스",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 모브레",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 그랑메닐",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 페레르",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 라시",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 뷔르",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 몽고메리",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 비고",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 보샹",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 바렌",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 뇌빌",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 모르티메르",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 라폴",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 쿠르트네",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 트라시",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 로스",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 베르",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 몰레",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 쿠르시",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 레이시",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 살리스베리",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 퀸시",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 투아르",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 륀느",
+   "estateHint": "high"
+  },
+  {
+   "name": "퍼시",
+   "estateHint": "high"
+  },
+  {
+   "name": "네빌",
+   "estateHint": "high"
+  },
+  {
+   "name": "스크로프",
+   "estateHint": "high"
+  },
+  {
+   "name": "클리퍼드",
+   "estateHint": "high"
+  },
+  {
+   "name": "그레이",
+   "estateHint": "high"
+  },
+  {
+   "name": "탤벗",
+   "estateHint": "high"
+  },
+  {
+   "name": "스태퍼드",
+   "estateHint": "high"
+  },
+  {
+   "name": "하워드",
+   "estateHint": "high"
+  },
+  {
+   "name": "모티머",
+   "estateHint": "high"
+  },
+  {
+   "name": "보포트",
+   "estateHint": "high"
+  },
+  {
+   "name": "라티머",
+   "estateHint": "high"
+  },
+  {
+   "name": "버컴",
+   "estateHint": "high"
+  },
+  {
+   "name": "코트니",
+   "estateHint": "high"
+  },
+  {
+   "name": "트레메인",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 에브뢰",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 로앙",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 생클레르",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 아르쿠르",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 마르미옹",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 퐁테",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 생모르",
+   "estateHint": "high"
+  },
+  {
+   "name": "드 발루아",
+   "estateHint": "high"
+  }
+ ]
+}

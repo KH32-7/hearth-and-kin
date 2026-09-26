@@ -135,7 +135,11 @@ describe('돈과 장부 (17-4, 17-8, 17-9)', () => {
     const s = family();
     s.apply({ kind: 'setAutonomy', enabled: false });
     s.world.stock.bread = 5;
-    runMinutes(s, 1440 * 5);
+    // 자율을 꺼서 아무도 먹지 않음: 사흘 굶어 죽지 않게 날마다 배를 채워 둠 (부패만 봄)
+    for (let d = 0; d < 5; d++) {
+      for (const p of s.persons) p.setNeed('hunger', 100);
+      runMinutes(s, 1440);
+    }
     expect(s.world.stock.bread).toBe(0);
     expect(s.notices.some((n) => n.kind === 'spoiled')).toBe(true);
   });

@@ -8,6 +8,10 @@ export interface PersonSnap {
   name: string;
   /** 말을 타고 있으면 털색 (0~4), 아니면 없음 (18-5) */
   riding?: number;
+  /** 생애 단계 (아기/유아는 전용 스프라이트, src/render/CharacterView.ts) */
+  lifeStage?: 'baby' | 'toddler' | 'child' | 'teen' | 'young' | 'adult' | 'elder';
+  /** 아기(0~1세): 요람/품 안/바닥, 안은 사람 id (품 안일 때), 울음 */
+  infant?: { place: 'cradle' | 'held' | 'floor'; heldBy: number; crying: boolean };
   x: number;
   y: number;
   /** 이번 틱에 지나간 좌표 x0,y0,x1,y1,... (렌더러 보간) */

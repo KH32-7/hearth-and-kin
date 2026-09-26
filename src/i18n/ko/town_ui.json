@@ -13,6 +13,7 @@
  "death.cause.illness": "병",
  "death.cause.accident": "사고",
  "death.cause.cold_hunger": "추위와 굶주림",
+ "death.cause.starvation": "굶주림",
  "death.cause.childbirth": "출산",
  "death.cause.moved_away": "이사",
  "build.err.outside_lot": "우리 집 부지 밖은 고칠 수 없습니다",

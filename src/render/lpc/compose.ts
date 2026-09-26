@@ -108,7 +108,7 @@ function recolored(img: CanvasImageSource, from: string[], to: string[]): HTMLCa
 }
 
 /** Execute a plan onto a new canvas. */
-export async function renderPlan(plan: Plan, load: (path: string) => Promise<CanvasImageSource>): Promise<HTMLCanvasElement | OffscreenCanvas> {
+export async function renderPlan(plan: Pick<Plan, 'width' | 'height' | 'sources' | 'ops'>, load: (path: string) => Promise<CanvasImageSource>): Promise<HTMLCanvasElement | OffscreenCanvas> {
   const images = await Promise.all(
     plan.sources.map(async (s) => {
       const img = await load(s.path);

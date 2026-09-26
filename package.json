@@ -17,6 +17,8 @@
     "check:data": "tsx tools/check-data.ts",
     "check:palette": "tsx tools/check-palette.ts",
     "check:supplement": "tsx tools/check-supplement.ts",
+    "check:infant": "tsx tools/check-infant.ts",
+    "check:heraldry": "tsx tools/check-heraldry.ts",
     "lot:tiled": "tsx tools/lot-to-tiled.ts",
     "check:thoughts": "tsx tools/check-thoughts.ts",
     "check:inner": "tsx tools/check-inner.ts",

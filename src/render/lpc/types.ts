@@ -167,6 +167,8 @@ export interface LpcPack {
   palettes: Record<Material, PaletteSet>;
   layers: Record<string, LayerDef>;
   credits: CreditInfo[];
+  /** 아기/유아 시트 (tools/lpc/gen-infant.ts) */
+  infant?: InfantPack;
 }
 
 // ---------------------------------------------------------------- outfits (src/data/outfits.json)
@@ -245,4 +247,55 @@ export interface Plan {
   anims: Record<AnimName, AnimInfo>;
   /** rows [0, sleepCropY) of a sleep frame hold head + shoulders (actual crop used) */
   sleepCropY: number;
+}
+
+// ---------------------------------------------------------------- infant (lpc.json "infant", tools/lpc/gen-infant.ts)
+
+/** One recolourable sheet of the infant layouts (every layer is a whole sheet in the same cell layout). */
+export interface InfantLayer {
+  id?: string;
+  /** relative to pack.roots.gen */
+  path: string;
+  z: number;
+  /** role: skin | eye | hair | main | accent */
+  recolor?: Array<{ material: Material; source: string[]; role: string }>;
+}
+
+export interface InfantAnim {
+  row: number;
+  col: number;
+  frames: number;
+  fps: number;
+  loop: boolean;
+  dirs: Facing[];
+}
+
+export interface InfantPack {
+  frameW: number;
+  frameH: number;
+  anchorX: number;
+  anchorY: number;
+  baby: {
+    cols: number;
+    rows: number;
+    layers: InfantLayer[];
+    anims: Record<'cradle' | 'cradle_cry' | 'floor' | 'floor_cry' | 'held' | 'held_cry', InfantAnim>;
+    place: {
+      cradle: { lift: number };
+      floor: { lift: number };
+      held: { front: Record<Facing, boolean>; dy: Partial<Record<BodyType, number>>; seatedDy: number };
+    };
+  };
+  toddler: {
+    cols: number;
+    rows: number;
+    layers: InfantLayer[];
+    garments: Record<string, InfantLayer>;
+    estateGarment: Record<Estate, string>;
+    hair: Record<string, InfantLayer>;
+    anims: Record<'idle' | 'walk' | 'crawl' | 'sit' | 'fall' | 'sleep', InfantAnim>;
+    sleepCropY: number;
+    heads: Array<{ col: number; row: number; dir: Facing; dx: number; dy: number; masked: boolean }>;
+  };
+  credits: Array<{ file: string; authors: string[]; licenses: string[]; note?: string }>;
 }

@@ -8,15 +8,20 @@
       "2": 3,
       "3": 10
     },
-    "autoAccelMinutesPerSecond": 30,
+    "autoAccelMinutesPerSecond": 10,
     "startMinuteOfDay": 420,
-    "dayMinutes": 1440
+    "dayMinutes": 1440,
+    "$autoAccel": "식구가 모두 자면 3단 속도(10분/초)로 (심즈처럼). 30배는 마을 사람이 화면에서 날아다녀 사용자가 이상하다고 함"
   },
   "movement": {
-    "walkTilesPerMinute": 3.0,
+    "walkTilesPerMinute": 2,
     "stuckMinutes": 30,
     "pathFailExcludeMinutes": 60,
-    "pathFailLimit": 3
+    "pathFailLimit": 3,
+    "$walk": "걷기 게임 1분에 2칸 = 1배속에서 초당 2칸 (심즈 걸음 템포, 사용자 2026-09-26)",
+    "steerTiles": 3,
+    "steerHoldMinutes": 20,
+    "$steer": "직접 조작(WASD): 한 번에 앞으로 잡는 칸 수, 멈춘 뒤 자율이 끼어들지 않는 분"
   },
   "autonomy": {
     "topK": 5,
@@ -29,7 +34,22 @@
     "wakeExcludeMinutes": 60,
     "searchRadiusTiles": 32,
     "$searchRadius": "자율이 보는 반경 (칸, M6 마을). 작은 부지(물건 400개 미만)는 전부",
-    "socialRadiusTiles": 24
+    "socialRadiusTiles": 24,
+    "$selfCare": "스스로 챙기기 (심즈식): 다음 행동을 고를 때 이 값 아래인 욕구부터 풂 (급한 욕구 interrupt 보다 먼저). 반경 안에 풀 곳이 없으면 집으로 (goHomeCooldownMinutes 간격)",
+    "selfCare": {
+      "bladder": 35,
+      "hunger": 35,
+      "energy": 22,
+      "hygiene": 22
+    },
+    "goHomeCooldownMinutes": 45,
+    "$adBelow": "욕구를 채우는 광고는 그 욕구가 이 값 아래일 때만 셈 (할 일이 없다고 방광 60에 요강 가지 않게, 심즈식)",
+    "adBelow": {
+      "bladder": 55,
+      "hunger": 65,
+      "hygiene": 60,
+      "energy": 60
+    }
   },
   "queue": {
     "maxLength": 8,

@@ -43,6 +43,8 @@ const NO_TAGS: readonly string[] = [];
 /** 사람 메뉴에서 아예 빼는 이유 (지금 상황이 아니라 관계/신분/나이 조건) */
 const HIDE_REASONS = new Set(['reason.not_adult', 'reason.family', 'reason.already_met', 'reason.estate', 'reason.estate_above', 'reason.estate_below', 'reason.household', 'reason.not_household', 'reason.trait', 'reason.virtue', 'reason.sin', 'reason.relation', 'reason.relation_not']);
 const DX4 = [1, -1, 0, 0];
+/** 마을 NPC 의 돈 조건 (추상 살림): 늘 충분함 */
+const NPC_MONEY = (): number => 1e12;
 const DY4 = [0, 0, 1, -1];
 
 export interface Notice {
@@ -95,7 +97,9 @@ export type SimIntent =
   /** 세밀도 강제 (13-6 회귀 테스트, 도구용) */
   | { kind: 'forceLod'; lod: 'full' | 'simple' | 'summary' | null }
   /** 이사 (18-5): 마을의 빈 집 부지를 사서 옮김. 살던 집은 되팔기 비율로 팔림 */
-  | { kind: 'moveHouse'; lot: string };
+  | { kind: 'moveHouse'; lot: string }
+  /** 직접 조작 (WASD): 그 방향 몇 칸 앞으로 걸어감. dx = dy = 0 이면 그 자리에 섬 */
+  | { kind: 'steer'; personId: number; dx: number; dy: number };
 
 export interface LoggedIntent {
   tick: number;
@@ -155,6 +159,10 @@ export class Simulation {
   private readonly path: PathFinder;
   private nextQueueId = 1;
   private readonly candBuf: Candidate[] = [];
+  /** 이번 틱에 죽은 사람 (굶주림 등): 틱 끝에 처리 */
+  private pendingDeaths: { p: Person; cause: string }[] = [];
+  /** 진단 도구용: 용변 실수 기록 (null 이면 안 모음) */
+  accidentLog: { minute: number; id: number; action: string; phase: string; x: number; y: number; solvable: number }[] | null = null;
   /** 디버그/테스트: 자율 끔 */
   autonomyEnabled = true;
   /** 입력 로그 (재생용) */
@@ -380,6 +388,8 @@ export class Simulation {
         return this.queueInteraction(intent.personId, intent.interactionId, intent.targetUid);
       case 'goto':
         return this.queueGoto(intent.personId, intent.x, intent.y);
+      case 'steer':
+        return this.steer(intent.personId, intent.dx, intent.dy);
       case 'cancel':
         this.cancelQueueItem(intent.personId, intent.queueItemId);
         return true;
@@ -565,6 +575,53 @@ export class Simulation {
     return this.queueInteraction(personId, GOTO_ID, g.idx(x, y));
   }
 
+  /**
+   * 직접 조작 (WASD): 하던 일과 대기열을 멈추고 그 방향으로 걸을 수 있는 데까지(최대 steerTiles 칸) 걸어감.
+   * 벽/가구 앞에서 멈추고, 대각선이 막히면 한 축으로. 잠시(steerHoldMinutes) 자율이 끼어들지 않음. dx = dy = 0 이면 섬
+   */
+  steer(personId: number, dx: number, dy: number): { ok: boolean } {
+    const p = this.persons.find((q) => q.id === personId);
+    if (!p || p.collapse || p.status !== 'available') return { ok: false };
+    const M = this.data.balance.movement as { steerTiles?: number; steerHoldMinutes?: number };
+    this.releaseEngaged(p);
+    if (p.action) this.abortAction(p, 'player_override');
+    p.queue = [];
+    this.world.release(p.id);
+    p.pose = 'stand';
+    p.sleeping = false;
+    p.underBlanket = false;
+    p.idleUntil = this.world.minute + (M.steerHoldMinutes ?? 20);
+    if (!dx && !dy) {
+      p.anim = 'idle';
+      return { ok: true };
+    }
+    const g = this.world.grid;
+    const reach = (sx: number, sy: number): [number, number] | null => {
+      let x = p.cellX();
+      let y = p.cellY();
+      let moved = false;
+      for (let k = 0; k < (M.steerTiles ?? 3); k++) {
+        const nx = x + sx;
+        const ny = y + sy;
+        if (!g.inBounds(nx, ny) || !g.walkable(g.idx(nx, ny))) break;
+        // 대각선은 모서리를 자르지 않음 (A* 규칙과 같게)
+        if (sx && sy && (!g.walkable(g.idx(x + sx, y)) || !g.walkable(g.idx(x, y + sy)))) break;
+        x = nx;
+        y = ny;
+        moved = true;
+      }
+      return moved ? [x, y] : null;
+    };
+    const to = reach(dx, dy) ?? (dx && dy ? reach(dx, 0) ?? reach(0, dy) : null);
+    if (to) {
+      p.facing = dx > 0 ? 'right' : dx < 0 ? 'left' : dy > 0 ? 'down' : 'up';
+      return this.queueGoto(p.id, to[0], to[1]);
+    }
+    // 막힌 방향: 그쪽을 바라보기만
+    p.facing = dx > 0 ? 'right' : dx < 0 ? 'left' : dy > 0 ? 'down' : 'up';
+    return { ok: false };
+  }
+
   /** 다른 사람의 자율 대화에 붙잡혀 있으면 그 대화를 끝냄 (플레이어 명령/취소가 우선) */
   private releaseEngaged(p: Person): void {
     if (!p.engagedWith) return;
@@ -650,7 +707,12 @@ export class Simulation {
       // 마을 NPC 는 자기 가문의 추상 창고로 살림 (조작 가문 저장고를 쓰거나 채우지 않음)
       const npc = !!town && p.household !== 1;
       const own = this.world.stock;
-      if (npc) this.world.stock = this.npcPantry();
+      const ownMoney = this.world.money;
+      if (npc) {
+        this.world.stock = this.npcPantry(p.household);
+        // NPC 살림은 추상 (돈을 따로 세지 않음): 돈 조건은 조작 가문만 받음
+        this.world.money = NPC_MONEY;
+      }
       // trail은 스냅샷을 보낼 때 비움(takeTrail) → 한 스냅샷에 여러 틱이 들어도 이동 경로가 끊기지 않음
       if (p.trail.length === 0) p.trail.push(p.x, p.y);
       if (p.trail.length > 512) p.trail.splice(0, p.trail.length - 2);
@@ -660,9 +722,19 @@ export class Simulation {
       if (this.inner) this.updateSmoke(p);
       if (p.trail[p.trail.length - 2] !== p.x || p.trail[p.trail.length - 1] !== p.y) p.trail.push(p.x, p.y);
       this.trackStats(p);
-      if (npc) this.world.stock = own;
+      if (npc) {
+        this.world.stock = own;
+        this.world.money = ownMoney;
+      }
     }
     this.updateMultitask();
+    if (this.pendingDeaths.length) {
+      for (const d of this.pendingDeaths) if (this.persons.includes(d.p)) {
+        this.judge?.recordDeath(d.p, d.cause);
+        this.killPerson(d.p, d.cause);
+      }
+      this.pendingDeaths.length = 0;
+    }
     this.fire?.tick();
     this.builder?.tickConstruction(w.minuteOfDay());
     if (this.rumors && w.minute % 60 === 0) this.rumors.hourly(this.persons, w.hour(), w.day());
@@ -673,17 +745,22 @@ export class Simulation {
   }
 
   private noticeSeq = 0;
-  private npcStock: Record<string, number> | null = null;
-  private npcStockAt = -1e9;
+  /** 가문별 추상 창고와 마지막으로 채운 분 (18-2 요약 살림). 가문마다 따로 셈 (한 창고를 120명이 나눠 쓰면 금방 바닥나 굶음) */
+  private npcStock = new Map<number, { stock: Record<string, number>; at: number }>();
 
-  /** NPC 공용 추상 창고: 정해진 간격마다 시작 재고로 다시 채움 (가문마다 따로 셈하지 않음, 18-2 요약 살림) */
-  private npcPantry(): Record<string, number> {
+  /** NPC 가문의 추상 창고: 정해진 간격마다 시작 재고로 다시 채움 (가계 재고를 실제로 셈하지 않음, 18-2 요약 살림) */
+  private npcPantry(household: number): Record<string, number> {
     const every = this.data.story?.npcPantry?.refillMinutes ?? 60;
-    if (!this.npcStock || this.world.minute - this.npcStockAt >= every) {
-      this.npcStock = { ...this.data.balance.startStock };
-      this.npcStockAt = this.world.minute;
+    let e = this.npcStock.get(household);
+    if (!e) {
+      e = { stock: { ...this.data.balance.startStock }, at: this.world.minute };
+      this.npcStock.set(household, e);
+    } else if (this.world.minute - e.at >= every) {
+      const base = this.data.balance.startStock;
+      for (const k in base) e.stock[k] = Math.max(e.stock[k] ?? 0, base[k]);
+      e.at = this.world.minute;
     }
-    return this.npcStock;
+    return e.stock;
   }
 
   notice(p: Person, kind: string, args?: Record<string, string | number>): void {
@@ -703,7 +780,7 @@ export class Simulation {
     const every = this.data.balance.autonomy.solvableRecheckMinutes;
     if (this.world.minute - p.solvableAt[i] >= every) {
       p.solvableAt[i] = this.world.minute;
-      p.solvableVal[i] = needSolvable(this.data, this.world, p, i, (c, bg) => this.reachable(p, c, bg)) ? 1 : 0;
+      p.solvableVal[i] = needSolvable(this.data, this.world, p, i, (c, bg) => this.reachable(p, c, bg), this.town ? (o) => this.canUse(p, o) : undefined) ? 1 : 0;
     }
     return p.solvableVal[i] === 1;
   }
@@ -770,6 +847,7 @@ export class Simulation {
       p.needs[NEED_INDEX.bladder] = 100;
       p.needs[NEED_INDEX.hygiene] = b.collapse.bladderAccidentHygiene;
       this.stats.accidents++;
+      if (this.accidentLog) this.accidentLog.push({ minute: this.world.minute, id: p.id, action: p.action?.item.interactionId ?? '-', phase: p.action?.phase ?? '', x: p.x, y: p.y, solvable: p.solvableVal[NEED_INDEX.bladder] });
       this.notice(p, 'accident_bladder');
       this.addEngineMoodlet(p, 'embarrassed');
     }
@@ -779,6 +857,9 @@ export class Simulation {
         p.weakened = true;
         this.notice(p, 'weakened');
       }
+      // 사흘 내리 굶으면 죽음 (틱이 끝난 뒤 처리: 인물 목록을 도는 중에 빼지 않음)
+      const die = nd.collapse.hungerZeroDeathMinutes;
+      if (die && p.hungerZeroMinutes >= die && !this.pendingDeaths.some((d) => d.p === p)) this.pendingDeaths.push({ p, cause: 'starvation' });
     } else p.hungerZeroMinutes = 0;
   }
 
@@ -847,6 +928,12 @@ export class Simulation {
         urgentNeed = i;
       }
     }
+    // 스스로 챙기기 (심즈식): 급하기 전에 다음 행동으로 모자란 욕구부터 풂. 반경 안에 풀 곳이 없으면 집으로 돌아감
+    if (urgentNeed < 0 && !p.visitor) {
+      const care = this.careNeed(p);
+      if (care.solvable >= 0) urgentNeed = care.solvable;
+      else if (care.unsolved >= 0 && this.goHomeForNeed(p)) return;
+    }
     // 방문객: 남의 집에서는 허용 목록의 물건 상호작용만 (잠/목욕/요리/집안일 안 함)
     const ex = p.visitor ? this.relData.visit.allowInteractions : null;
     // 깨우는 욕구(용변, 허기)가 급하고 풀 수 있으면 잠자리에 들지 않음 (눕자마자 깨는 헛돎 방지)
@@ -869,6 +956,26 @@ export class Simulation {
       allow as never,
       this.town ? (o) => this.canUse(p, o) : undefined,
     );
+    if (!c && urgentNeed >= 0 && !ex) {
+      // 풀 수 있다고 봤는데 실제 후보가 없음 (조건·자리·점수): 이 욕구는 잠시 못 푸는 것으로 두고
+      // 집으로 가거나, 급한 욕구 거름 없이 다시 고름 (10분 멍하니 서 있지 않게)
+      p.solvableAt[urgentNeed] = this.world.minute;
+      p.solvableVal[urgentNeed] = 0;
+      if (this.goHomeForNeed(p)) return;
+      const c2 = chooseAutonomous(
+        this.data, this.world, p, this.rng, this.candBuf,
+        inner ? (tags, id) => inner.adMult(p, tags, id) : undefined,
+        (buf, urg) => this.socialCandidates(p, buf, urg),
+        undefined,
+        this.town ? (o) => this.canUse(p, o) : undefined,
+      );
+      if (c2) {
+        this.queueInteraction(p.id, c2.interactionId, c2.targetUid, true);
+        this.startAction(p, p.queue[0]);
+        if ((p.action as { phase: string } | null)?.phase === 'walk') this.progressAction(p);
+        return;
+      }
+    }
     if (c) {
       this.queueInteraction(p.id, c.interactionId, c.targetUid, true);
       this.startAction(p, p.queue[0]);
@@ -888,6 +995,51 @@ export class Simulation {
       p.idleUntil = this.world.minute + this.data.balance.autonomy.idleWanderMinutes;
       p.anim = 'idle';
     }
+  }
+
+  /**
+   * 스스로 챙기는 욕구 (balance.autonomy.selfCare): 기준 아래인 욕구 중 기준 대비 가장 모자란 것.
+   * solvable = 지금 반경 안에서 풀 수 있는 가장 급한 욕구, unsolved = 풀 곳이 없는 욕구 (없으면 -1)
+   */
+  private careNeed(p: Person): { solvable: number; unsolved: number } {
+    const care = this.data.compiled.selfCare;
+    let best = -1;
+    let bestR = Infinity;
+    let miss = -1;
+    let missR = Infinity;
+    for (const [i, v] of care) {
+      if (p.needs[i] >= v) continue;
+      const r = p.needs[i] / v;
+      if (this.solvable(p, i)) {
+        if (r < bestR) {
+          bestR = r;
+          best = i;
+        }
+      } else if (r < missR) {
+        missR = r;
+        miss = i;
+      }
+    }
+    return { solvable: best, unsolved: miss };
+  }
+
+  /** 마을: 모자란 욕구를 풀 곳이 가까이 없으면 집(부지 또는 사는 장소)으로 걸어감. 넣었으면 true */
+  private goHomeForNeed(p: Person): boolean {
+    const t = this.town;
+    if (!t || p.infant) return false;
+    if ((p.excludedUntil.get(-3) ?? -1) > this.world.minute) return false;
+    if (t.insideHome(p)) return false;
+    const goal = t.targetCell(p, 'home');
+    if (goal < 0 || goal === this.world.grid.idx(p.cellX(), p.cellY())) return false;
+    p.excludedUntil.set(-3, this.world.minute + (this.data.balance.autonomy.goHomeCooldownMinutes ?? 45));
+    if (p.action?.item.autonomous) this.abortAction(p, 'self_care');
+    p.queue = p.queue.filter((q) => !q.autonomous);
+    this.queueInteraction(p.id, GOTO_ID, goal, true);
+    if (!p.action && p.queue.length) {
+      this.startAction(p, p.queue[0]);
+      if ((p.action as { phase: string } | null)?.phase === 'walk') this.progressAction(p);
+    }
+    return true;
   }
 
   private startAction(p: Person, item: QueueItem): void {
@@ -1464,7 +1616,7 @@ export class Simulation {
     const t = this.town;
     if (!t) return null;
     const used = new Set(t.lotHousehold.keys());
-    const cand = t.lots.filter((l) => !used.has(l.id));
+    const cand = t.lots.filter((l) => !used.has(l.id) && !t.sealed.has(l.id));
     return (cand.find((l) => l.house && l.size === size) ?? cand.find((l) => l.house) ?? cand[0])?.id ?? null;
   }
 
@@ -1532,7 +1684,11 @@ export class Simulation {
       const pl = t.placeOf(o.x, o.y);
       if (pl) {
         const ro = this.data.story?.town?.residentOnly ?? [];
-        const restricted = ro.some((k) => (k.endsWith('*') ? o.defId.startsWith(k.slice(0, -1)) : o.defId === k));
+        const match = (k: string) => (k.endsWith('*') ? o.defId.startsWith(k.slice(0, -1)) : o.defId === k);
+        // 공공 장소(여관·교회·길드 회관·목욕탕 …)의 요강 같은 물건은 누구나 (story.json town.publicPlaces)
+        const pub = this.data.story?.town?.publicPlaces;
+        const open = !!pub && Object.entries(pub).some(([k, kinds]) => match(k) && kinds.includes(pl.kind));
+        const restricted = !open && ro.some(match);
         if (restricted && !t.residentsOf(pl.id).includes(p.household) && t.resolveAt(p, { from: 0, to: 24, at: 'work' }) !== pl.id) return false;
       }
       // 조작 가문 (자율): 밤에는 집 안만, 낮에는 집에서 가까운 공공장소 + 볼일(장보기)
@@ -1600,6 +1756,7 @@ export class Simulation {
     const t = this.town;
     const lot = t?.lot(lotId);
     if (!t || !lot || t.lotHousehold.has(lotId)) return { ok: false, reason: 'taken', price: 0, refund: 0 };
+    if (t.sealed.has(lotId)) return { ok: false, reason: 'no_road', price: 0, refund: 0 };
     const old = t.playerLot();
     const rate = this.data.story?.town?.sellBackRate ?? 0.8;
     const refund = old ? Math.round(old.price * rate) : 0;
@@ -1754,6 +1911,12 @@ export class Simulation {
     if (success) {
       this.stats.completed[id] = (this.stats.completed[id] ?? 0) + 1;
       this.wearObject(p, a.item.targetUid, id);
+      // 사 먹기 (여관 끼니, 노점 먹거리): 값(파딩)을 가계에서 냄. NPC 는 추상 살림이라 계정이 없으면 셈하지 않음
+      const pay = (this.data.interactions[id] as { pay?: number } | undefined)?.pay;
+      if (pay && this.econ) {
+        const acct = this.account(p);
+        if (acct) this.econ.spend(acct, pay, 'food');
+      }
       if (id === 'construction.work' && this.builder && this.data.build) this.builder.addWork(a.item.targetUid, this.data.build.construction.familyWorkPerHour, true);
       if (id === 'fire.extinguish' && !this.putOut.includes(a.item.targetUid)) {
         // 물이 있으면 물통 하나를 씀 (없으면 흙)

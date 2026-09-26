@@ -1,0 +1,5664 @@
+{
+  "$comment": "M7~M9 사건 카드: 가족/혼인/육아, 가문/신분/상속/가보/하인, 소문/구애/불륜/원한/범죄/재판/편지/영주 정책 (GDD 24-1, 14, 15, 16, 18). 문장 키 card.<id>.title/.body/.o<n>/.o<n>.ok/.o<n>.fail (+ .cannot/.timeout), 문장은 src/i18n/ko/events_m7.json. 본문 변수: {name} 대상, {spouse} 배우자, {other} 상대 인물(카드마다 뜻이 다름: 형제, 조부모, 연인, 원수 등), {child} 대상 가정의 해당 자녀. moneyS 는 가정 대표 신분의 한 인생 저축 S 대비 비율",
+  "cards": [
+    {
+      "id": "labor_starts",
+      "titleKey": "card.labor_starts.title",
+      "bodyKey": "card.labor_starts.body",
+      "target": "person",
+      "source": "life",
+      "category": "family",
+      "rating": "15",
+      "cond": {
+        "pregnant": true
+      },
+      "availability": [
+        "available",
+        "rabbithole",
+        "asleep"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 5,
+      "once": false,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 12,
+      "options": [
+        {
+          "textKey": "card.labor_starts.o1",
+          "check": {
+            "skill": "medicine",
+            "base": 0.85,
+            "perLevel": 0.01
+          },
+          "success": {
+            "textKey": "card.labor_starts.o1.ok",
+            "moneyS": -0.02,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "held_baby_joy"
+              },
+              {
+                "who": "family",
+                "id": "held_baby_joy"
+              }
+            ],
+            "memory": {
+              "kind": "birth",
+              "importance": 5,
+              "valence": 1
+            },
+            "chronicle": "birth",
+            "flag": "birth_easy",
+            "action": {
+              "participants": [
+                {
+                  "role": "mother",
+                  "cond": {
+                    "pregnant": true
+                  },
+                  "states": [
+                    "available",
+                    "asleep"
+                  ]
+                }
+              ],
+              "start": {
+                "visitor": "midwife"
+              },
+              "maxMinutes": 240,
+              "onCannotStart": {
+                "textKey": "card.labor_starts.o1.ok.cannot",
+                "outcome": {
+                  "flag": "birth_by_family"
+                }
+              },
+              "onTimeout": {
+                "textKey": "card.labor_starts.o1.ok.timeout",
+                "outcome": {
+                  "flag": "birth_by_family"
+                }
+              }
+            }
+          },
+          "failure": {
+            "textKey": "card.labor_starts.o1.fail",
+            "moneyS": -0.02,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "difficult_birth_recovery"
+              }
+            ],
+            "memory": {
+              "kind": "birth",
+              "importance": 5,
+              "valence": 1
+            },
+            "chronicle": "birth",
+            "flag": "birth_hard"
+          }
+        },
+        {
+          "textKey": "card.labor_starts.o2",
+          "check": {
+            "skill": "medicine",
+            "base": 0.65,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.labor_starts.o2.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "held_baby_joy"
+              },
+              {
+                "who": "family",
+                "id": "held_baby_joy"
+              }
+            ],
+            "memory": {
+              "kind": "birth",
+              "importance": 5,
+              "valence": 1
+            },
+            "chronicle": "birth",
+            "flag": "birth_by_family"
+          },
+          "failure": {
+            "textKey": "card.labor_starts.o2.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "difficult_birth_recovery"
+              },
+              {
+                "who": "family",
+                "id": "premature_worry"
+              }
+            ],
+            "memory": {
+              "kind": "birth",
+              "importance": 5,
+              "valence": 1
+            },
+            "chronicle": "birth",
+            "flag": "birth_hard"
+          }
+        },
+        {
+          "textKey": "card.labor_starts.o3",
+          "check": {
+            "trait": "brave",
+            "base": 0.45
+          },
+          "success": {
+            "textKey": "card.labor_starts.o3.ok",
+            "fame": 5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "held_baby_joy"
+              }
+            ],
+            "memory": {
+              "kind": "birth",
+              "importance": 5,
+              "valence": 1
+            },
+            "chronicle": "birth",
+            "rumor": {
+              "kind": "bravery",
+              "good": true,
+              "strength": 0.4
+            },
+            "flag": "birth_alone"
+          },
+          "failure": {
+            "textKey": "card.labor_starts.o3.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "difficult_birth_recovery"
+              }
+            ],
+            "memory": {
+              "kind": "birth",
+              "importance": 5,
+              "valence": 1
+            },
+            "chronicle": "birth",
+            "flag": "birth_hard"
+          }
+        }
+      ]
+    },
+    {
+      "id": "labor_call_spouse_home",
+      "titleKey": "card.labor_call_spouse_home.title",
+      "bodyKey": "card.labor_call_spouse_home.body",
+      "target": "person",
+      "source": "journey",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "married": true,
+        "flags": [
+          "spouse_pregnant",
+          "spouse_in_labor"
+        ]
+      },
+      "availability": [
+        "journey",
+        "rabbithole"
+      ],
+      "absent": {
+        "kind": "drop"
+      },
+      "weight": 5,
+      "once": false,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 6,
+      "options": [
+        {
+          "textKey": "card.labor_call_spouse_home.o1",
+          "check": {
+            "skill": "riding",
+            "base": 0.55,
+            "perLevel": 0.06
+          },
+          "success": {
+            "textKey": "card.labor_call_spouse_home.o1.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "held_baby_joy"
+              }
+            ],
+            "relation": {
+              "with": "spouse",
+              "friendship": 10,
+              "romance": 10
+            },
+            "flag": "returned_home_early"
+          },
+          "failure": {
+            "textKey": "card.labor_call_spouse_home.o1.fail",
+            "relation": {
+              "with": "spouse",
+              "friendship": -5
+            },
+            "flag": "returned_home_early"
+          }
+        },
+        {
+          "textKey": "card.labor_call_spouse_home.o2",
+          "success": {
+            "textKey": "card.labor_call_spouse_home.o2.ok",
+            "moneyS": 0.02,
+            "relation": {
+              "with": "spouse",
+              "friendship": -10,
+              "romance": -10
+            }
+          }
+        },
+        {
+          "textKey": "card.labor_call_spouse_home.o3",
+          "success": {
+            "textKey": "card.labor_call_spouse_home.o3.ok",
+            "moneyS": -0.005,
+            "relation": {
+              "with": "spouse",
+              "friendship": -5
+            },
+            "flag": "birth_letter_sent"
+          }
+        }
+      ]
+    },
+    {
+      "id": "midwife_checkup",
+      "titleKey": "card.midwife_checkup.title",
+      "bodyKey": "card.midwife_checkup.body",
+      "target": "person",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "pregnant": true
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 3,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.midwife_checkup.o1",
+          "success": {
+            "textKey": "card.midwife_checkup.o1.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "pregnancy_glow"
+              }
+            ],
+            "flag": "rested_in_pregnancy"
+          }
+        },
+        {
+          "textKey": "card.midwife_checkup.o2",
+          "success": {
+            "textKey": "card.midwife_checkup.o2.ok",
+            "moneyS": -0.003,
+            "church": -2,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "pregnancy_glow"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.midwife_checkup.o3",
+          "success": {
+            "textKey": "card.midwife_checkup.o3.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "uneasy_kicks"
+              }
+            ],
+            "flag": "pregnancy_risk"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pregnancy_midnight_craving",
+      "titleKey": "card.pregnancy_midnight_craving.title",
+      "bodyKey": "card.pregnancy_midnight_craving.body",
+      "target": "couple",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "married": true,
+        "flags": [
+          "spouse_pregnant"
+        ],
+        "stage": [
+          "young",
+          "adult"
+        ]
+      },
+      "availability": [
+        "available",
+        "asleep"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 1,
+      "once": false,
+      "cooldown": {
+        "value": 4,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.pregnancy_midnight_craving.o1",
+          "check": {
+            "skill": "fitness",
+            "base": 0.7,
+            "perLevel": 0.03
+          },
+          "success": {
+            "textKey": "card.pregnancy_midnight_craving.o1.ok",
+            "karma": -1,
+            "relation": {
+              "with": "spouse",
+              "romance": 8
+            }
+          },
+          "failure": {
+            "textKey": "card.pregnancy_midnight_craving.o1.fail",
+            "karma": -1,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "fistfight_bruised"
+              }
+            ],
+            "rumor": {
+              "kind": "theft",
+              "good": false,
+              "strength": 0.2
+            }
+          }
+        },
+        {
+          "textKey": "card.pregnancy_midnight_craving.o2",
+          "success": {
+            "textKey": "card.pregnancy_midnight_craving.o2.ok",
+            "moneyS": -0.004,
+            "relation": {
+              "with": "spouse",
+              "friendship": 5
+            }
+          }
+        },
+        {
+          "textKey": "card.pregnancy_midnight_craving.o3",
+          "success": {
+            "textKey": "card.pregnancy_midnight_craving.o3.ok",
+            "relation": {
+              "with": "spouse",
+              "romance": -6
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "small_grave",
+      "titleKey": "card.small_grave.title",
+      "bodyKey": "card.small_grave.body",
+      "target": "family",
+      "source": "church",
+      "category": "family",
+      "rating": "15",
+      "cond": {
+        "flags": [
+          "lost_child_recent"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 3,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.small_grave.o1",
+          "success": {
+            "textKey": "card.small_grave.o1.ok",
+            "moneyS": -0.01,
+            "church": 3,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "lost_child_grief"
+              }
+            ],
+            "chronicle": "child_death"
+          }
+        },
+        {
+          "textKey": "card.small_grave.o2",
+          "success": {
+            "textKey": "card.small_grave.o2.ok",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "lost_child_grief"
+              }
+            ],
+            "relation": {
+              "with": "family",
+              "friendship": 5
+            },
+            "chronicle": "child_death"
+          }
+        },
+        {
+          "textKey": "card.small_grave.o3",
+          "success": {
+            "textKey": "card.small_grave.o3.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "lost_child_grief"
+              }
+            ],
+            "relation": {
+              "with": "family",
+              "friendship": -5
+            },
+            "chronicle": "child_death"
+          }
+        }
+      ]
+    },
+    {
+      "id": "baby_colic_night",
+      "titleKey": "card.baby_colic_night.title",
+      "bodyKey": "card.baby_colic_night.body",
+      "target": "couple",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "hasBaby": true
+      },
+      "availability": [
+        "available",
+        "asleep"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 3,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.baby_colic_night.o1",
+          "success": {
+            "textKey": "card.baby_colic_night.o1.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "sleep_broken_by_baby"
+              },
+              {
+                "who": "spouse",
+                "id": "sleep_broken_by_baby"
+              }
+            ],
+            "relation": {
+              "with": "spouse",
+              "friendship": 8
+            }
+          }
+        },
+        {
+          "textKey": "card.baby_colic_night.o2",
+          "check": {
+            "trait": "calm",
+            "base": 0.5
+          },
+          "success": {
+            "textKey": "card.baby_colic_night.o2.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "baby_soothed"
+              }
+            ]
+          },
+          "failure": {
+            "textKey": "card.baby_colic_night.o2.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "tantrum_annoyed"
+              },
+              {
+                "who": "family",
+                "id": "baby_crying_noise"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.baby_colic_night.o3",
+          "cond": {
+            "estate": [
+              "merchant",
+              "knight",
+              "noble"
+            ]
+          },
+          "success": {
+            "textKey": "card.baby_colic_night.o3.ok",
+            "moneyS": -0.005,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "wet_nurse_relief"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "baby_neglect_relatives_take",
+      "titleKey": "card.baby_neglect_relatives_take.title",
+      "bodyKey": "card.baby_neglect_relatives_take.body",
+      "target": "family",
+      "source": "home",
+      "category": "family",
+      "rating": "15",
+      "cond": {
+        "hasBaby": true,
+        "flags": [
+          "baby_neglected",
+          "has_living_grandparent"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 6,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.baby_neglect_relatives_take.o1",
+          "success": {
+            "textKey": "card.baby_neglect_relatives_take.o1.ok",
+            "fame": -30,
+            "church": -10,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "taken_by_relatives_shame"
+              },
+              {
+                "who": "spouse",
+                "id": "taken_by_relatives_shame"
+              }
+            ],
+            "memory": {
+              "kind": "taken_by_relatives_shame",
+              "importance": 5,
+              "valence": -1
+            },
+            "rumor": {
+              "kind": "neglect",
+              "good": false,
+              "strength": 0.6
+            },
+            "chronicle": "child_taken",
+            "flag": "child_taken_by_relatives"
+          }
+        },
+        {
+          "textKey": "card.baby_neglect_relatives_take.o2",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.35,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.baby_neglect_relatives_take.o2.ok",
+            "fame": -10,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "neglected_child_guilt"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "respect": -15
+            },
+            "flag": "watched_by_kin"
+          },
+          "failure": {
+            "textKey": "card.baby_neglect_relatives_take.o2.fail",
+            "fame": -30,
+            "church": -10,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "taken_by_relatives_shame"
+              }
+            ],
+            "memory": {
+              "kind": "taken_by_relatives_shame",
+              "importance": 5,
+              "valence": -1
+            },
+            "rumor": {
+              "kind": "neglect",
+              "good": false,
+              "strength": 0.6
+            },
+            "chronicle": "child_taken",
+            "flag": "child_taken_by_relatives"
+          }
+        },
+        {
+          "textKey": "card.baby_neglect_relatives_take.o3",
+          "success": {
+            "textKey": "card.baby_neglect_relatives_take.o3.ok",
+            "fame": -15,
+            "relation": {
+              "with": "other",
+              "friendship": -30,
+              "respect": -20
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "neglected_child_guilt"
+              }
+            ],
+            "rumor": {
+              "kind": "neglect",
+              "good": false,
+              "strength": 0.5
+            },
+            "chain": "baby_neglect_convent"
+          }
+        }
+      ]
+    },
+    {
+      "id": "baby_neglect_convent",
+      "titleKey": "card.baby_neglect_convent.title",
+      "bodyKey": "card.baby_neglect_convent.body",
+      "target": "family",
+      "source": "church",
+      "category": "family",
+      "rating": "15",
+      "cond": {
+        "hasBaby": true,
+        "flags": [
+          "baby_neglected"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 5,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.baby_neglect_convent.o1",
+          "success": {
+            "textKey": "card.baby_neglect_convent.o1.ok",
+            "fame": -25,
+            "church": -15,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "taken_by_relatives_shame"
+              },
+              {
+                "who": "spouse",
+                "id": "taken_by_relatives_shame"
+              }
+            ],
+            "memory": {
+              "kind": "taken_by_relatives_shame",
+              "importance": 5,
+              "valence": -1
+            },
+            "rumor": {
+              "kind": "neglect",
+              "good": false,
+              "strength": 0.5
+            },
+            "chronicle": "child_taken",
+            "flag": "child_taken_by_convent"
+          }
+        },
+        {
+          "textKey": "card.baby_neglect_convent.o2",
+          "success": {
+            "textKey": "card.baby_neglect_convent.o2.ok",
+            "church": -5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "neglected_child_guilt"
+              }
+            ],
+            "flag": "watched_by_church"
+          }
+        },
+        {
+          "textKey": "card.baby_neglect_convent.o3",
+          "success": {
+            "textKey": "card.baby_neglect_convent.o3.ok",
+            "moneyS": -0.02,
+            "karma": -5,
+            "church": -10,
+            "flag": "watched_by_church"
+          }
+        }
+      ]
+    },
+    {
+      "id": "baptism_day",
+      "titleKey": "card.baptism_day.title",
+      "bodyKey": "card.baptism_day.body",
+      "target": "family",
+      "source": "church",
+      "category": "faith",
+      "rating": "all",
+      "cond": {
+        "hasBaby": true,
+        "notFlags": [
+          "baby_baptized"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 3,
+      "once": false,
+      "cooldown": {
+        "value": 2,
+        "scale": "absolute"
+      },
+      "perLife": 4,
+      "options": [
+        {
+          "textKey": "card.baptism_day.o1",
+          "success": {
+            "textKey": "card.baptism_day.o1.ok",
+            "church": 5,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "baptism_joy"
+              },
+              {
+                "who": "other",
+                "id": "godparent_honored"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "friendship": 15
+            },
+            "chronicle": "baptism",
+            "flag": "baby_baptized"
+          }
+        },
+        {
+          "textKey": "card.baptism_day.o2",
+          "success": {
+            "textKey": "card.baptism_day.o2.ok",
+            "moneyS": -0.03,
+            "fame": 10,
+            "church": 5,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "baptism_joy"
+              }
+            ],
+            "chronicle": "baptism",
+            "flag": "baby_baptized"
+          }
+        },
+        {
+          "textKey": "card.baptism_day.o3",
+          "success": {
+            "textKey": "card.baptism_day.o3.ok",
+            "church": -5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "unbaptized_worry"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "toddler_near_well",
+      "titleKey": "card.toddler_near_well.title",
+      "bodyKey": "card.toddler_near_well.body",
+      "target": "person",
+      "source": "home",
+      "category": "family",
+      "rating": "15",
+      "cond": {
+        "hasChild": true,
+        "flags": [
+          "has_toddler"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 5,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.toddler_near_well.o1",
+          "check": {
+            "skill": "fitness",
+            "base": 0.8,
+            "perLevel": 0.03
+          },
+          "success": {
+            "textKey": "card.toddler_near_well.o1.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "child_near_hearth_scare"
+              }
+            ]
+          },
+          "failure": {
+            "textKey": "card.toddler_near_well.o1.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "child_near_hearth_scare"
+              },
+              {
+                "who": "self",
+                "id": "neglected_child_guilt"
+              }
+            ],
+            "flag": "child_injured",
+            "memory": {
+              "kind": "child_near_hearth_scare",
+              "importance": 3,
+              "valence": -1
+            }
+          }
+        },
+        {
+          "textKey": "card.toddler_near_well.o2",
+          "check": {
+            "base": 0.6
+          },
+          "success": {
+            "textKey": "card.toddler_near_well.o2.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "child_near_hearth_scare"
+              }
+            ]
+          },
+          "failure": {
+            "textKey": "card.toddler_near_well.o2.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "child_near_hearth_scare"
+              }
+            ],
+            "flag": "child_bruised"
+          }
+        },
+        {
+          "textKey": "card.toddler_near_well.o3",
+          "cond": {
+            "traitsAny": [
+              "handy",
+              "diligent"
+            ]
+          },
+          "success": {
+            "textKey": "card.toddler_near_well.o3.ok",
+            "moneyS": -0.003,
+            "fame": 3,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "child_near_hearth_scare"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "first_steps_moment",
+      "titleKey": "card.first_steps_moment.title",
+      "bodyKey": "card.first_steps_moment.body",
+      "target": "family",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "hasChild": true,
+        "flags": [
+          "has_toddler",
+          "toddler_can_stand"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 3,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.first_steps_moment.o1",
+          "success": {
+            "textKey": "card.first_steps_moment.o1.ok",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "first_steps_pride"
+              }
+            ],
+            "memory": {
+              "kind": "first_steps_pride",
+              "importance": 4,
+              "valence": 1
+            },
+            "chronicle": "first_steps"
+          }
+        },
+        {
+          "textKey": "card.first_steps_moment.o2",
+          "success": {
+            "textKey": "card.first_steps_moment.o2.ok",
+            "fame": 2,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "first_steps_pride"
+              }
+            ],
+            "chronicle": "first_steps"
+          }
+        },
+        {
+          "textKey": "card.first_steps_moment.o3",
+          "success": {
+            "textKey": "card.first_steps_moment.o3.ok",
+            "relation": {
+              "with": "family",
+              "friendship": -3
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "school_choice",
+      "titleKey": "card.school_choice.title",
+      "bodyKey": "card.school_choice.body",
+      "target": "family",
+      "source": "church",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "hasChild": true,
+        "estate": [
+          "freeman",
+          "artisan",
+          "merchant"
+        ],
+        "flags": [
+          "child_school_age"
+        ],
+        "notFlags": [
+          "child_in_school"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 3,
+      "once": false,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.school_choice.o1",
+          "success": {
+            "textKey": "card.school_choice.o1.ok",
+            "moneyS": -0.01,
+            "church": 3,
+            "flag": "child_in_school"
+          }
+        },
+        {
+          "textKey": "card.school_choice.o2",
+          "success": {
+            "textKey": "card.school_choice.o2.ok",
+            "moneyS": -0.03,
+            "church": 6,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "child_sent_away"
+              }
+            ],
+            "flag": "child_boarding"
+          }
+        },
+        {
+          "textKey": "card.school_choice.o3",
+          "success": {
+            "textKey": "card.school_choice.o3.ok",
+            "church": -2,
+            "relation": {
+              "with": "family",
+              "friendship": 3
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "child_stole_apples",
+      "titleKey": "card.child_stole_apples.title",
+      "bodyKey": "card.child_stole_apples.body",
+      "target": "family",
+      "source": "town",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "hasChild": true,
+        "flags": [
+          "has_school_child"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 5,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.child_stole_apples.o1",
+          "success": {
+            "textKey": "card.child_stole_apples.o1.ok",
+            "relation": {
+              "with": "other",
+              "friendship": 10
+            },
+            "karma": 2
+          }
+        },
+        {
+          "textKey": "card.child_stole_apples.o2",
+          "success": {
+            "textKey": "card.child_stole_apples.o2.ok",
+            "relation": {
+              "with": "family",
+              "friendship": -5
+            }
+          }
+        },
+        {
+          "textKey": "card.child_stole_apples.o3",
+          "success": {
+            "textKey": "card.child_stole_apples.o3.ok",
+            "moneyS": -0.002,
+            "fame": -3
+          }
+        }
+      ]
+    },
+    {
+      "id": "teen_sneaking_out",
+      "titleKey": "card.teen_sneaking_out.title",
+      "bodyKey": "card.teen_sneaking_out.body",
+      "target": "family",
+      "source": "home",
+      "category": "family",
+      "rating": "15",
+      "cond": {
+        "hasChild": true,
+        "flags": [
+          "has_teen"
+        ]
+      },
+      "availability": [
+        "available",
+        "asleep"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 5,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.teen_sneaking_out.o1",
+          "success": {
+            "textKey": "card.teen_sneaking_out.o1.ok",
+            "relation": {
+              "with": "family",
+              "friendship": -8
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "tantrum_annoyed"
+              }
+            ],
+            "action": {
+              "participants": [
+                {
+                  "role": "parent",
+                  "cond": {
+                    "stage": [
+                      "young",
+                      "adult",
+                      "elder"
+                    ]
+                  },
+                  "states": [
+                    "available"
+                  ]
+                }
+              ],
+              "start": {
+                "chase": true
+              },
+              "maxMinutes": 60,
+              "onCannotStart": {
+                "textKey": "card.teen_sneaking_out.o1.ok.cannot",
+                "outcome": {
+                  "moodlets": [
+                    {
+                      "who": "self",
+                      "id": "tantrum_annoyed"
+                    }
+                  ]
+                }
+              },
+              "onTimeout": {
+                "textKey": "card.teen_sneaking_out.o1.ok.timeout",
+                "outcome": {
+                  "moodlets": [
+                    {
+                      "who": "self",
+                      "id": "tantrum_annoyed"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "textKey": "card.teen_sneaking_out.o2",
+          "success": {
+            "textKey": "card.teen_sneaking_out.o2.ok",
+            "relation": {
+              "with": "family",
+              "respect": 5
+            }
+          }
+        },
+        {
+          "textKey": "card.teen_sneaking_out.o3",
+          "success": {
+            "textKey": "card.teen_sneaking_out.o3.ok",
+            "fame": -3,
+            "flag": "teen_unsupervised"
+          }
+        }
+      ]
+    },
+    {
+      "id": "apprenticeship_offer",
+      "titleKey": "card.apprenticeship_offer.title",
+      "bodyKey": "card.apprenticeship_offer.body",
+      "target": "person",
+      "source": "town",
+      "category": "work",
+      "rating": "all",
+      "cond": {
+        "stage": [
+          "teen"
+        ],
+        "notFlags": [
+          "apprenticed"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.apprenticeship_offer.o1",
+          "success": {
+            "textKey": "card.apprenticeship_offer.o1.ok",
+            "moneyS": -0.01,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "apprenticed_excited"
+              }
+            ],
+            "flag": "apprenticed"
+          }
+        },
+        {
+          "textKey": "card.apprenticeship_offer.o2",
+          "check": {
+            "skill": "reckoning",
+            "base": 0.4,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.apprenticeship_offer.o2.ok",
+            "moneyS": -0.02,
+            "fame": 3,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "apprenticed_excited"
+              }
+            ],
+            "flag": "apprenticed"
+          },
+          "failure": {
+            "textKey": "card.apprenticeship_offer.o2.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "rebellious_mood"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.apprenticeship_offer.o3",
+          "success": {
+            "textKey": "card.apprenticeship_offer.o3.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "rebellious_mood"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "orphan_relative",
+      "titleKey": "card.orphan_relative.title",
+      "bodyKey": "card.orphan_relative.body",
+      "target": "family",
+      "source": "town",
+      "category": "family",
+      "rating": "15",
+      "cond": {
+        "stage": [
+          "young",
+          "adult",
+          "elder"
+        ],
+        "notFlags": [
+          "house_full"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 1,
+      "once": false,
+      "cooldown": {
+        "value": 20,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.orphan_relative.o1",
+          "success": {
+            "textKey": "card.orphan_relative.o1.ok",
+            "fame": 10,
+            "church": 5,
+            "karma": 10,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "adopted_joy"
+              }
+            ],
+            "memory": {
+              "kind": "adopted_joy",
+              "importance": 4,
+              "valence": 1
+            },
+            "chronicle": "adoption",
+            "flag": "took_orphan"
+          }
+        },
+        {
+          "textKey": "card.orphan_relative.o2",
+          "success": {
+            "textKey": "card.orphan_relative.o2.ok",
+            "moneyS": -0.02,
+            "church": 3,
+            "karma": 2
+          }
+        },
+        {
+          "textKey": "card.orphan_relative.o3",
+          "success": {
+            "textKey": "card.orphan_relative.o3.ok",
+            "fame": -10,
+            "church": -5,
+            "karma": -10,
+            "rumor": {
+              "kind": "neglect",
+              "good": false,
+              "strength": 0.3
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "matchmaker_visit",
+      "titleKey": "card.matchmaker_visit.title",
+      "bodyKey": "card.matchmaker_visit.body",
+      "target": "family",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "child_of_age"
+        ],
+        "stage": [
+          "adult",
+          "elder"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 10,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.matchmaker_visit.o1",
+          "success": {
+            "textKey": "card.matchmaker_visit.o1.ok",
+            "moneyS": -0.005,
+            "flag": "match_candidates",
+            "action": {
+              "participants": [
+                {
+                  "role": "host",
+                  "cond": {
+                    "stage": [
+                      "young",
+                      "adult",
+                      "elder"
+                    ]
+                  },
+                  "states": [
+                    "available"
+                  ]
+                }
+              ],
+              "start": {
+                "visitor": "matchmaker",
+                "interaction": "social.chat"
+              },
+              "maxMinutes": 120,
+              "onCannotStart": {
+                "textKey": "card.matchmaker_visit.o1.ok.cannot",
+                "outcome": {}
+              },
+              "onTimeout": {
+                "textKey": "card.matchmaker_visit.o1.ok.timeout",
+                "outcome": {
+                  "flag": "match_candidates"
+                }
+              }
+            }
+          }
+        },
+        {
+          "textKey": "card.matchmaker_visit.o2",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.5,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.matchmaker_visit.o2.ok",
+            "fame": 5,
+            "flag": "match_candidates_good",
+            "karma": -3
+          },
+          "failure": {
+            "textKey": "card.matchmaker_visit.o2.fail",
+            "fame": -10,
+            "rumor": {
+              "kind": "arrogance",
+              "good": false,
+              "strength": 0.3
+            }
+          }
+        },
+        {
+          "textKey": "card.matchmaker_visit.o3",
+          "success": {
+            "textKey": "card.matchmaker_visit.o3.ok"
+          }
+        }
+      ]
+    },
+    {
+      "id": "elopement_offer",
+      "titleKey": "card.elopement_offer.title",
+      "bodyKey": "card.elopement_offer.body",
+      "target": "person",
+      "source": "home",
+      "category": "family",
+      "rating": "15",
+      "cond": {
+        "stage": [
+          "teen",
+          "young"
+        ],
+        "married": false,
+        "flags": [
+          "match_refused"
+        ]
+      },
+      "availability": [
+        "available",
+        "asleep"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 4,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.elopement_offer.o1",
+          "success": {
+            "textKey": "card.elopement_offer.o1.ok",
+            "fame": -60,
+            "church": -5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "eloped_thrill"
+              },
+              {
+                "who": "family",
+                "id": "dishonored_shame"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "romance": 20
+            },
+            "memory": {
+              "kind": "eloped_thrill",
+              "importance": 5,
+              "valence": 1
+            },
+            "rumor": {
+              "kind": "elopement",
+              "good": false,
+              "strength": 0.8
+            },
+            "chronicle": "elopement",
+            "flag": "eloped"
+          }
+        },
+        {
+          "textKey": "card.elopement_offer.o2",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.35,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.elopement_offer.o2.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "courted_flattered"
+              }
+            ],
+            "relation": {
+              "with": "family",
+              "friendship": 5
+            },
+            "flag": "match_allowed"
+          },
+          "failure": {
+            "textKey": "card.elopement_offer.o2.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "parents_refused_match"
+              }
+            ],
+            "relation": {
+              "with": "family",
+              "friendship": -10
+            }
+          }
+        },
+        {
+          "textKey": "card.elopement_offer.o3",
+          "success": {
+            "textKey": "card.elopement_offer.o3.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "first_heartbreak"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "romance": -30
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "wedding_feast_budget",
+      "titleKey": "card.wedding_feast_budget.title",
+      "bodyKey": "card.wedding_feast_budget.body",
+      "target": "family",
+      "source": "life",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "engaged"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 4,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.wedding_feast_budget.o1",
+          "success": {
+            "textKey": "card.wedding_feast_budget.o1.ok",
+            "moneyS": -0.08,
+            "fame": 25,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "feast_hosted"
+              }
+            ],
+            "chronicle": "wedding"
+          }
+        },
+        {
+          "textKey": "card.wedding_feast_budget.o2",
+          "success": {
+            "textKey": "card.wedding_feast_budget.o2.ok",
+            "moneyS": -0.02,
+            "relation": {
+              "with": "family",
+              "friendship": 5
+            },
+            "chronicle": "wedding"
+          }
+        },
+        {
+          "textKey": "card.wedding_feast_budget.o3",
+          "success": {
+            "textKey": "card.wedding_feast_budget.o3.ok",
+            "church": 3,
+            "fame": -5,
+            "chronicle": "wedding"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dowry_short",
+      "titleKey": "card.dowry_short.title",
+      "bodyKey": "card.dowry_short.body",
+      "target": "family",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "dowry_due"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 4,
+      "once": false,
+      "cooldown": {
+        "value": 3,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.dowry_short.o1",
+          "success": {
+            "textKey": "card.dowry_short.o1.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "dowry_settled"
+              }
+            ],
+            "flag": "in_debt"
+          }
+        },
+        {
+          "textKey": "card.dowry_short.o2",
+          "cond": {
+            "flags": [
+              "has_heirloom"
+            ]
+          },
+          "success": {
+            "textKey": "card.dowry_short.o2.ok",
+            "heirloom": "lose",
+            "fame": 5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "dowry_settled"
+              },
+              {
+                "who": "family",
+                "id": "heirloom_sold_grief"
+              }
+            ],
+            "flag": "heirloom_as_dowry"
+          }
+        },
+        {
+          "textKey": "card.dowry_short.o3",
+          "success": {
+            "textKey": "card.dowry_short.o3.ok",
+            "fame": -10,
+            "relation": {
+              "with": "other",
+              "friendship": -15,
+              "respect": -10
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "dowry_burden"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "in_laws_meddle",
+      "titleKey": "card.in_laws_meddle.title",
+      "bodyKey": "card.in_laws_meddle.body",
+      "target": "couple",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "married": true,
+        "hasChild": true,
+        "flags": [
+          "in_laws_near"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 5,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.in_laws_meddle.o1",
+          "success": {
+            "textKey": "card.in_laws_meddle.o1.ok",
+            "relation": {
+              "with": "other",
+              "friendship": 10
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "baby_healthy_relief"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.in_laws_meddle.o2",
+          "success": {
+            "textKey": "card.in_laws_meddle.o2.ok",
+            "relation": {
+              "with": "other",
+              "friendship": -15
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "tantrum_annoyed"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.in_laws_meddle.o3",
+          "success": {
+            "textKey": "card.in_laws_meddle.o3.ok",
+            "relation": {
+              "with": "spouse",
+              "friendship": -3
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "spouse_away_long",
+      "titleKey": "card.spouse_away_long.title",
+      "bodyKey": "card.spouse_away_long.body",
+      "target": "person",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "married": true,
+        "flags": [
+          "spouse_away"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 5,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.spouse_away_long.o1",
+          "cond": {
+            "flags": [
+              "can_read"
+            ]
+          },
+          "success": {
+            "textKey": "card.spouse_away_long.o1.ok",
+            "moneyS": -0.002,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "letter_joy"
+              }
+            ],
+            "relation": {
+              "with": "spouse",
+              "romance": 5
+            },
+            "flag": "letter_sent"
+          }
+        },
+        {
+          "textKey": "card.spouse_away_long.o2",
+          "cond": {
+            "notFlags": [
+              "can_read"
+            ]
+          },
+          "success": {
+            "textKey": "card.spouse_away_long.o2.ok",
+            "moneyS": -0.004,
+            "church": 1,
+            "relation": {
+              "with": "spouse",
+              "romance": 5
+            },
+            "flag": "letter_sent"
+          }
+        },
+        {
+          "textKey": "card.spouse_away_long.o3",
+          "success": {
+            "textKey": "card.spouse_away_long.o3.ok",
+            "church": 2,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "far_from_kin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cramped_house_split",
+      "titleKey": "card.cramped_house_split.title",
+      "bodyKey": "card.cramped_house_split.body",
+      "target": "family",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "house_full"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 3,
+      "once": false,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.cramped_house_split.o1",
+          "cond": {
+            "flags": [
+              "adult_child_home"
+            ]
+          },
+          "success": {
+            "textKey": "card.cramped_house_split.o1.ok",
+            "moneyS": -0.1,
+            "relation": {
+              "with": "family",
+              "friendship": 5
+            },
+            "flag": "split_household"
+          }
+        },
+        {
+          "textKey": "card.cramped_house_split.o2",
+          "cond": {
+            "flags": [
+              "has_servant"
+            ]
+          },
+          "success": {
+            "textKey": "card.cramped_house_split.o2.ok",
+            "fame": -5,
+            "flag": "servant_dismissed"
+          }
+        },
+        {
+          "textKey": "card.cramped_house_split.o3",
+          "success": {
+            "textKey": "card.cramped_house_split.o3.ok",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "cramped_house"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "elder_hand_over",
+      "titleKey": "card.elder_hand_over.title",
+      "bodyKey": "card.elder_hand_over.body",
+      "target": "person",
+      "source": "life",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "stage": [
+          "elder"
+        ],
+        "flags": [
+          "head_of_house"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.elder_hand_over.o1",
+          "success": {
+            "textKey": "card.elder_hand_over.o1.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "retired_elder"
+              }
+            ],
+            "flag": "head_passed",
+            "chronicle": "head_change"
+          }
+        },
+        {
+          "textKey": "card.elder_hand_over.o2",
+          "success": {
+            "textKey": "card.elder_hand_over.o2.ok",
+            "relation": {
+              "with": "family",
+              "friendship": -5
+            }
+          }
+        },
+        {
+          "textKey": "card.elder_hand_over.o3",
+          "check": {
+            "skill": "reading",
+            "base": 0.5,
+            "perLevel": 0.1
+          },
+          "success": {
+            "textKey": "card.elder_hand_over.o3.ok",
+            "flag": "will_written"
+          },
+          "failure": {
+            "textKey": "card.elder_hand_over.o3.fail",
+            "moneyS": -0.005,
+            "flag": "will_written"
+          }
+        }
+      ]
+    },
+    {
+      "id": "inheritance_dispute",
+      "titleKey": "card.inheritance_dispute.title",
+      "bodyKey": "card.inheritance_dispute.body",
+      "target": "clan",
+      "source": "life",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "stage": [
+          "young",
+          "adult",
+          "elder"
+        ],
+        "flags": [
+          "sibling_rivalry",
+          "recent_inheritance"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 5,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.inheritance_dispute.o1",
+          "success": {
+            "textKey": "card.inheritance_dispute.o1.ok",
+            "moneyS": -0.1,
+            "fame": 10,
+            "karma": 5,
+            "relation": {
+              "with": "other",
+              "friendship": 20,
+              "respect": 10
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "inheritance_quarrel"
+              }
+            ],
+            "chronicle": "inheritance"
+          }
+        },
+        {
+          "textKey": "card.inheritance_dispute.o2",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.5,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.inheritance_dispute.o2.ok",
+            "moneyS": -0.02,
+            "fame": -5,
+            "relation": {
+              "with": "other",
+              "friendship": -40
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "inheritance_received"
+              }
+            ],
+            "rumor": {
+              "kind": "family_quarrel",
+              "good": false,
+              "strength": 0.4
+            },
+            "chronicle": "inheritance",
+            "flag": "has_feud"
+          },
+          "failure": {
+            "textKey": "card.inheritance_dispute.o2.fail",
+            "moneyS": -0.12,
+            "fame": -5,
+            "relation": {
+              "with": "other",
+              "friendship": -30
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "inheritance_slighted"
+              }
+            ],
+            "rumor": {
+              "kind": "family_quarrel",
+              "good": false,
+              "strength": 0.4
+            },
+            "chronicle": "inheritance"
+          }
+        },
+        {
+          "textKey": "card.inheritance_dispute.o3",
+          "cond": {
+            "flags": [
+              "head_of_house"
+            ]
+          },
+          "success": {
+            "textKey": "card.inheritance_dispute.o3.ok",
+            "fame": -20,
+            "karma": -10,
+            "relation": {
+              "with": "other",
+              "friendship": -60,
+              "respect": -30
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "inheritance_quarrel"
+              },
+              {
+                "who": "family",
+                "id": "clan_enemy_anger"
+              }
+            ],
+            "rumor": {
+              "kind": "family_quarrel",
+              "good": false,
+              "strength": 0.7
+            },
+            "chronicle": "feud",
+            "flag": "has_feud"
+          }
+        }
+      ]
+    },
+    {
+      "id": "heirloom_stolen",
+      "titleKey": "card.heirloom_stolen.title",
+      "bodyKey": "card.heirloom_stolen.body",
+      "target": "family",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "has_heirloom"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 1,
+      "once": false,
+      "cooldown": {
+        "value": 20,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.heirloom_stolen.o1",
+          "success": {
+            "textKey": "card.heirloom_stolen.o1.ok",
+            "heirloom": "lose",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "heirloom_lost_grief"
+              }
+            ],
+            "chronicle": "heirloom_lost",
+            "flag": "lost_heirloom"
+          }
+        },
+        {
+          "textKey": "card.heirloom_stolen.o2",
+          "success": {
+            "textKey": "card.heirloom_stolen.o2.ok",
+            "heirloom": "lose",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "heirloom_lost_grief"
+              }
+            ],
+            "chronicle": "heirloom_lost",
+            "flag": "lost_heirloom",
+            "chain": "heirloom_thief_tracked"
+          }
+        },
+        {
+          "textKey": "card.heirloom_stolen.o3",
+          "cond": {
+            "flags": [
+              "has_servant"
+            ]
+          },
+          "success": {
+            "textKey": "card.heirloom_stolen.o3.ok",
+            "heirloom": "lose",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "heirloom_lost_grief"
+              }
+            ],
+            "chronicle": "heirloom_lost",
+            "flag": "lost_heirloom",
+            "chain": "servant_caught_stealing"
+          }
+        }
+      ]
+    },
+    {
+      "id": "heirloom_thief_tracked",
+      "titleKey": "card.heirloom_thief_tracked.title",
+      "bodyKey": "card.heirloom_thief_tracked.body",
+      "target": "person",
+      "source": "chain",
+      "category": "family",
+      "rating": "15",
+      "cond": {
+        "stage": [
+          "young",
+          "adult",
+          "elder"
+        ],
+        "flags": [
+          "lost_heirloom"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 5,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.heirloom_thief_tracked.o1",
+          "check": {
+            "skill": "fitness",
+            "base": 0.5,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.heirloom_thief_tracked.o1.ok",
+            "heirloom": "recover",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "heirloom_recovered"
+              }
+            ],
+            "chronicle": "heirloom_recovered",
+            "action": {
+              "participants": [
+                {
+                  "role": "chaser",
+                  "cond": {
+                    "stage": [
+                      "young",
+                      "adult",
+                      "elder"
+                    ]
+                  },
+                  "states": [
+                    "available"
+                  ]
+                }
+              ],
+              "start": {
+                "chase": true
+              },
+              "maxMinutes": 90,
+              "onCannotStart": {
+                "textKey": "card.heirloom_thief_tracked.o1.ok.cannot",
+                "outcome": {
+                  "moodlets": [
+                    {
+                      "who": "self",
+                      "id": "heirloom_lost_grief"
+                    }
+                  ]
+                }
+              },
+              "onTimeout": {
+                "textKey": "card.heirloom_thief_tracked.o1.ok.timeout",
+                "outcome": {
+                  "moodlets": [
+                    {
+                      "who": "self",
+                      "id": "heirloom_lost_grief"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "failure": {
+            "textKey": "card.heirloom_thief_tracked.o1.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "fistfight_bruised"
+              },
+              {
+                "who": "self",
+                "id": "heirloom_lost_grief"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.heirloom_thief_tracked.o2",
+          "check": {
+            "base": 0.5
+          },
+          "success": {
+            "textKey": "card.heirloom_thief_tracked.o2.ok",
+            "moneyS": -0.02,
+            "heirloom": "recover",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "heirloom_recovered"
+              }
+            ],
+            "chronicle": "heirloom_recovered"
+          },
+          "failure": {
+            "textKey": "card.heirloom_thief_tracked.o2.fail",
+            "moneyS": -0.02
+          }
+        },
+        {
+          "textKey": "card.heirloom_thief_tracked.o3",
+          "success": {
+            "textKey": "card.heirloom_thief_tracked.o3.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "heirloom_lost_grief"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "heirloom_found_at_market",
+      "titleKey": "card.heirloom_found_at_market.title",
+      "bodyKey": "card.heirloom_found_at_market.body",
+      "target": "person",
+      "source": "town",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "lost_heirloom"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.heirloom_found_at_market.o1",
+          "success": {
+            "textKey": "card.heirloom_found_at_market.o1.ok",
+            "moneyS": -0.04,
+            "heirloom": "recover",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "heirloom_recovered"
+              }
+            ],
+            "chronicle": "heirloom_recovered"
+          }
+        },
+        {
+          "textKey": "card.heirloom_found_at_market.o2",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.45,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.heirloom_found_at_market.o2.ok",
+            "heirloom": "recover",
+            "fame": 3,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "heirloom_recovered"
+              }
+            ],
+            "chronicle": "heirloom_recovered"
+          },
+          "failure": {
+            "textKey": "card.heirloom_found_at_market.o2.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "grudge_anger"
+              }
+            ],
+            "fame": -5
+          }
+        },
+        {
+          "textKey": "card.heirloom_found_at_market.o3",
+          "check": {
+            "base": 0.6
+          },
+          "success": {
+            "textKey": "card.heirloom_found_at_market.o3.ok",
+            "heirloom": "recover",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "heirloom_recovered"
+              }
+            ],
+            "chronicle": "heirloom_recovered"
+          },
+          "failure": {
+            "textKey": "card.heirloom_found_at_market.o3.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "heirloom_lost_grief"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "heirloom_auction",
+      "titleKey": "card.heirloom_auction.title",
+      "bodyKey": "card.heirloom_auction.body",
+      "target": "clan",
+      "source": "town",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "lost_heirloom"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 10,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.heirloom_auction.o1",
+          "cond": {
+            "minMoneyS": 0.12
+          },
+          "success": {
+            "textKey": "card.heirloom_auction.o1.ok",
+            "moneyS": -0.12,
+            "fame": 5,
+            "heirloom": "recover",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "heirloom_recovered"
+              }
+            ],
+            "chronicle": "heirloom_recovered"
+          }
+        },
+        {
+          "textKey": "card.heirloom_auction.o2",
+          "check": {
+            "skill": "reckoning",
+            "base": 0.4,
+            "perLevel": 0.06
+          },
+          "success": {
+            "textKey": "card.heirloom_auction.o2.ok",
+            "moneyS": -0.06,
+            "heirloom": "recover",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "heirloom_recovered"
+              }
+            ],
+            "chronicle": "heirloom_recovered"
+          },
+          "failure": {
+            "textKey": "card.heirloom_auction.o2.fail",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "clan_enemy_anger"
+              },
+              {
+                "who": "self",
+                "id": "heirloom_lost_grief"
+              }
+            ],
+            "flag": "heirloom_held_by_rival"
+          }
+        },
+        {
+          "textKey": "card.heirloom_auction.o3",
+          "check": {
+            "base": 0.6
+          },
+          "success": {
+            "textKey": "card.heirloom_auction.o3.ok",
+            "moneyS": -0.03,
+            "karma": -5,
+            "heirloom": "recover",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "heirloom_recovered"
+              }
+            ],
+            "chronicle": "heirloom_recovered"
+          },
+          "failure": {
+            "textKey": "card.heirloom_auction.o3.fail",
+            "moneyS": -0.03,
+            "karma": -5,
+            "fame": -20,
+            "rumor": {
+              "kind": "bribery",
+              "good": false,
+              "strength": 0.6
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "dishonored_shame"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "lost_heirloom_rumor",
+      "titleKey": "card.lost_heirloom_rumor.title",
+      "bodyKey": "card.lost_heirloom_rumor.body",
+      "target": "person",
+      "source": "town",
+      "category": "social",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "lost_heirloom"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.lost_heirloom_rumor.o1",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.55,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.lost_heirloom_rumor.o1.ok",
+            "moneyS": -0.002,
+            "chain": "heirloom_found_at_market"
+          },
+          "failure": {
+            "textKey": "card.lost_heirloom_rumor.o1.fail",
+            "moneyS": -0.004
+          }
+        },
+        {
+          "textKey": "card.lost_heirloom_rumor.o2",
+          "success": {
+            "textKey": "card.lost_heirloom_rumor.o2.ok",
+            "chain": "heirloom_thief_tracked"
+          }
+        },
+        {
+          "textKey": "card.lost_heirloom_rumor.o3",
+          "success": {
+            "textKey": "card.lost_heirloom_rumor.o3.ok"
+          }
+        }
+      ]
+    },
+    {
+      "id": "servant_caught_stealing",
+      "titleKey": "card.servant_caught_stealing.title",
+      "bodyKey": "card.servant_caught_stealing.body",
+      "target": "family",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "has_servant"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 14,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.servant_caught_stealing.o1",
+          "success": {
+            "textKey": "card.servant_caught_stealing.o1.ok",
+            "fame": 3,
+            "karma": -3,
+            "relation": {
+              "with": "other",
+              "friendship": -50
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "servant_theft_anger"
+              }
+            ],
+            "flag": "servant_dismissed"
+          }
+        },
+        {
+          "textKey": "card.servant_caught_stealing.o2",
+          "success": {
+            "textKey": "card.servant_caught_stealing.o2.ok",
+            "relation": {
+              "with": "other",
+              "friendship": -10,
+              "respect": 10
+            }
+          }
+        },
+        {
+          "textKey": "card.servant_caught_stealing.o3",
+          "check": {
+            "trait": "kind",
+            "base": 0.6
+          },
+          "success": {
+            "textKey": "card.servant_caught_stealing.o3.ok",
+            "karma": 5,
+            "relation": {
+              "with": "other",
+              "friendship": 30
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "servant_gratitude"
+              }
+            ]
+          },
+          "failure": {
+            "textKey": "card.servant_caught_stealing.o3.fail",
+            "karma": 2,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "servant_theft_anger"
+              }
+            ],
+            "chain": "heirloom_stolen",
+            "flag": "servant_dismissed"
+          }
+        }
+      ]
+    },
+    {
+      "id": "heirloom_scorched",
+      "titleKey": "card.heirloom_scorched.title",
+      "bodyKey": "card.heirloom_scorched.body",
+      "target": "family",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "has_heirloom"
+        ],
+        "notFlags": [
+          "heirloom_damaged"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 1,
+      "once": false,
+      "cooldown": {
+        "value": 14,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.heirloom_scorched.o1",
+          "success": {
+            "textKey": "card.heirloom_scorched.o1.ok",
+            "moneyS": -0.01,
+            "heirloom": "damage",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "heirloom_damaged"
+              }
+            ],
+            "flag": "heirloom_repaired"
+          }
+        },
+        {
+          "textKey": "card.heirloom_scorched.o2",
+          "check": {
+            "skill": "carpentry",
+            "base": 0.4,
+            "perLevel": 0.08
+          },
+          "success": {
+            "textKey": "card.heirloom_scorched.o2.ok",
+            "heirloom": "damage",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "ancestors_memory"
+              }
+            ],
+            "flag": "heirloom_repaired"
+          },
+          "failure": {
+            "textKey": "card.heirloom_scorched.o2.fail",
+            "heirloom": "damage",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "heirloom_damaged"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.heirloom_scorched.o3",
+          "success": {
+            "textKey": "card.heirloom_scorched.o3.ok",
+            "heirloom": "damage",
+            "chronicle": "heirloom_damaged"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sumptuary_caught",
+      "titleKey": "card.sumptuary_caught.title",
+      "bodyKey": "card.sumptuary_caught.body",
+      "target": "person",
+      "source": "town",
+      "category": "lord",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "wearing_above_station"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 3,
+      "once": false,
+      "cooldown": {
+        "value": 3,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.sumptuary_caught.o1",
+          "success": {
+            "textKey": "card.sumptuary_caught.o1.ok",
+            "moneyS": -0.01,
+            "fame": -10,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "sumptuary_fined"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.sumptuary_caught.o2",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.4,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.sumptuary_caught.o2.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "above_station_shame"
+              }
+            ]
+          },
+          "failure": {
+            "textKey": "card.sumptuary_caught.o2.fail",
+            "moneyS": -0.02,
+            "fame": -15,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "sumptuary_fined"
+              }
+            ],
+            "rumor": {
+              "kind": "above_station",
+              "good": false,
+              "strength": 0.3
+            }
+          }
+        },
+        {
+          "textKey": "card.sumptuary_caught.o3",
+          "success": {
+            "textKey": "card.sumptuary_caught.o3.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "above_station_shame"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "shabby_noble_visit",
+      "titleKey": "card.shabby_noble_visit.title",
+      "bodyKey": "card.shabby_noble_visit.body",
+      "target": "family",
+      "source": "home",
+      "category": "lord",
+      "rating": "all",
+      "cond": {
+        "estate": [
+          "knight",
+          "noble"
+        ],
+        "maxMoneyS": 0.2
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 10,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.shabby_noble_visit.o1",
+          "success": {
+            "textKey": "card.shabby_noble_visit.o1.ok",
+            "moneyS": -0.06,
+            "fame": 10,
+            "flag": "in_debt"
+          }
+        },
+        {
+          "textKey": "card.shabby_noble_visit.o2",
+          "check": {
+            "base": 0.6
+          },
+          "success": {
+            "textKey": "card.shabby_noble_visit.o2.ok",
+            "fame": 5
+          },
+          "failure": {
+            "textKey": "card.shabby_noble_visit.o2.fail",
+            "fame": -15,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "shabby_noble_shame"
+              }
+            ],
+            "rumor": {
+              "kind": "fallen_house",
+              "good": false,
+              "strength": 0.4
+            }
+          }
+        },
+        {
+          "textKey": "card.shabby_noble_visit.o3",
+          "success": {
+            "textKey": "card.shabby_noble_visit.o3.ok",
+            "fame": -15,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "shabby_noble_shame"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "freedom_payment",
+      "titleKey": "card.freedom_payment.title",
+      "bodyKey": "card.freedom_payment.body",
+      "target": "family",
+      "source": "town",
+      "category": "lord",
+      "rating": "all",
+      "cond": {
+        "estate": [
+          "serf"
+        ],
+        "flags": [
+          "has_freedom_fee"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 4,
+      "once": false,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.freedom_payment.o1",
+          "success": {
+            "textKey": "card.freedom_payment.o1.ok",
+            "moneyS": -0.3,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "freed_from_serfdom"
+              }
+            ],
+            "memory": {
+              "kind": "freed_from_serfdom",
+              "importance": 5,
+              "valence": 1
+            },
+            "chronicle": "estate_up",
+            "flag": "freed"
+          }
+        },
+        {
+          "textKey": "card.freedom_payment.o2",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.3,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.freedom_payment.o2.ok",
+            "moneyS": -0.24,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "freed_from_serfdom"
+              }
+            ],
+            "memory": {
+              "kind": "freed_from_serfdom",
+              "importance": 5,
+              "valence": 1
+            },
+            "chronicle": "estate_up",
+            "flag": "freed"
+          },
+          "failure": {
+            "textKey": "card.freedom_payment.o2.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "lord_displeasure"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.freedom_payment.o3",
+          "success": {
+            "textKey": "card.freedom_payment.o3.ok"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family_name_choice",
+      "titleKey": "card.family_name_choice.title",
+      "bodyKey": "card.family_name_choice.body",
+      "target": "family",
+      "source": "life",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "no_family_name",
+          "freed"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 5,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.family_name_choice.o1",
+          "success": {
+            "textKey": "card.family_name_choice.o1.ok",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "got_family_name"
+              }
+            ],
+            "chronicle": "family_name",
+            "flag": "family_name_place"
+          }
+        },
+        {
+          "textKey": "card.family_name_choice.o2",
+          "success": {
+            "textKey": "card.family_name_choice.o2.ok",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "got_family_name"
+              }
+            ],
+            "chronicle": "family_name",
+            "flag": "family_name_patronym"
+          }
+        },
+        {
+          "textKey": "card.family_name_choice.o3",
+          "success": {
+            "textKey": "card.family_name_choice.o3.ok",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "got_family_name"
+              }
+            ],
+            "chronicle": "family_name",
+            "flag": "family_name_trade"
+          }
+        }
+      ]
+    },
+    {
+      "id": "knighting_eve",
+      "titleKey": "card.knighting_eve.title",
+      "bodyKey": "card.knighting_eve.body",
+      "target": "person",
+      "source": "life",
+      "category": "lord",
+      "rating": "all",
+      "cond": {
+        "estate": [
+          "knight"
+        ],
+        "flags": [
+          "is_squire",
+          "knighting_soon"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 5,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.knighting_eve.o1",
+          "success": {
+            "textKey": "card.knighting_eve.o1.ok",
+            "church": 5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "knighted_pride"
+              }
+            ],
+            "chronicle": "knighted"
+          }
+        },
+        {
+          "textKey": "card.knighting_eve.o2",
+          "success": {
+            "textKey": "card.knighting_eve.o2.ok",
+            "fame": -5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "knighted_pride"
+              }
+            ],
+            "rumor": {
+              "kind": "drunkard",
+              "good": false,
+              "strength": 0.2
+            },
+            "chronicle": "knighted"
+          }
+        },
+        {
+          "textKey": "card.knighting_eve.o3",
+          "success": {
+            "textKey": "card.knighting_eve.o3.ok",
+            "moneyS": -0.02,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "knighted_pride"
+              },
+              {
+                "who": "self",
+                "id": "lord_favor_proud"
+              }
+            ],
+            "chronicle": "knighted"
+          }
+        }
+      ]
+    },
+    {
+      "id": "clan_alliance_offer",
+      "titleKey": "card.clan_alliance_offer.title",
+      "bodyKey": "card.clan_alliance_offer.body",
+      "target": "clan",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "head_of_house"
+        ],
+        "estate": [
+          "artisan",
+          "merchant",
+          "knight",
+          "noble"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 1,
+      "once": false,
+      "cooldown": {
+        "value": 20,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.clan_alliance_offer.o1",
+          "success": {
+            "textKey": "card.clan_alliance_offer.o1.ok",
+            "fame": 10,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "clan_alliance_joy"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "friendship": 20,
+              "respect": 10
+            },
+            "flag": "has_ally",
+            "chain": "matchmaker_visit"
+          }
+        },
+        {
+          "textKey": "card.clan_alliance_offer.o2",
+          "check": {
+            "skill": "reckoning",
+            "base": 0.45,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.clan_alliance_offer.o2.ok",
+            "moneyS": 0.03,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "clan_alliance_joy"
+              }
+            ],
+            "flag": "has_ally"
+          },
+          "failure": {
+            "textKey": "card.clan_alliance_offer.o2.fail",
+            "relation": {
+              "with": "other",
+              "friendship": -15
+            }
+          }
+        },
+        {
+          "textKey": "card.clan_alliance_offer.o3",
+          "success": {
+            "textKey": "card.clan_alliance_offer.o3.ok",
+            "relation": {
+              "with": "other",
+              "friendship": -20
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "feud_vandalism",
+      "titleKey": "card.feud_vandalism.title",
+      "bodyKey": "card.feud_vandalism.body",
+      "target": "family",
+      "source": "home",
+      "category": "social",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "has_feud"
+        ]
+      },
+      "availability": [
+        "available",
+        "asleep"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.feud_vandalism.o1",
+          "check": {
+            "base": 0.4
+          },
+          "success": {
+            "textKey": "card.feud_vandalism.o1.ok",
+            "fame": 5,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "cleared_name_relief"
+              }
+            ]
+          },
+          "failure": {
+            "textKey": "card.feud_vandalism.o1.fail",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "feud_watchful"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.feud_vandalism.o2",
+          "success": {
+            "textKey": "card.feud_vandalism.o2.ok",
+            "karma": -5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "grudge_anger"
+              }
+            ],
+            "rumor": {
+              "kind": "family_quarrel",
+              "good": false,
+              "strength": 0.4
+            }
+          }
+        },
+        {
+          "textKey": "card.feud_vandalism.o3",
+          "success": {
+            "textKey": "card.feud_vandalism.o3.ok",
+            "karma": 2,
+            "fame": 3,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "feud_watchful"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "wet_nurse_hire",
+      "titleKey": "card.wet_nurse_hire.title",
+      "bodyKey": "card.wet_nurse_hire.body",
+      "target": "family",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "hasBaby": true,
+        "estate": [
+          "merchant",
+          "knight",
+          "noble"
+        ],
+        "notFlags": [
+          "has_wet_nurse"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.wet_nurse_hire.o1",
+          "success": {
+            "textKey": "card.wet_nurse_hire.o1.ok",
+            "moneyS": -0.01,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "wet_nurse_relief"
+              }
+            ],
+            "flag": "has_wet_nurse"
+          }
+        },
+        {
+          "textKey": "card.wet_nurse_hire.o2",
+          "success": {
+            "textKey": "card.wet_nurse_hire.o2.ok",
+            "moneyS": -0.015,
+            "church": 3,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "wet_nurse_relief"
+              }
+            ],
+            "flag": "has_wet_nurse"
+          }
+        },
+        {
+          "textKey": "card.wet_nurse_hire.o3",
+          "success": {
+            "textKey": "card.wet_nurse_hire.o3.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "sleep_broken_by_baby"
+              },
+              {
+                "who": "self",
+                "id": "held_baby_joy"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "servant_romance_scandal",
+      "titleKey": "card.servant_romance_scandal.title",
+      "bodyKey": "card.servant_romance_scandal.body",
+      "target": "family",
+      "source": "home",
+      "category": "social",
+      "rating": "15",
+      "cond": {
+        "flags": [
+          "has_servant",
+          "servant_romance"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 3,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.servant_romance_scandal.o1",
+          "success": {
+            "textKey": "card.servant_romance_scandal.o1.ok",
+            "karma": -5,
+            "relation": {
+              "with": "family",
+              "friendship": -15
+            },
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "first_heartbreak"
+              }
+            ],
+            "flag": "servant_dismissed"
+          }
+        },
+        {
+          "textKey": "card.servant_romance_scandal.o2",
+          "success": {
+            "textKey": "card.servant_romance_scandal.o2.ok",
+            "fame": -30,
+            "relation": {
+              "with": "family",
+              "friendship": 15
+            },
+            "rumor": {
+              "kind": "love_match",
+              "good": true,
+              "strength": 0.5
+            },
+            "flag": "engaged"
+          }
+        },
+        {
+          "textKey": "card.servant_romance_scandal.o3",
+          "check": {
+            "base": 0.5
+          },
+          "success": {
+            "textKey": "card.servant_romance_scandal.o3.ok",
+            "moneyS": -0.02
+          },
+          "failure": {
+            "textKey": "card.servant_romance_scandal.o3.fail",
+            "moneyS": -0.02,
+            "fame": -15,
+            "rumor": {
+              "kind": "secret_lover",
+              "good": false,
+              "strength": 0.5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "motto_plaque_fallen",
+      "titleKey": "card.motto_plaque_fallen.title",
+      "bodyKey": "card.motto_plaque_fallen.body",
+      "target": "family",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "has_motto"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 1,
+      "once": false,
+      "cooldown": {
+        "value": 20,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.motto_plaque_fallen.o1",
+          "success": {
+            "textKey": "card.motto_plaque_fallen.o1.ok",
+            "moneyS": -0.005,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "motto_inspired"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.motto_plaque_fallen.o2",
+          "cond": {
+            "flags": [
+              "head_of_house"
+            ]
+          },
+          "success": {
+            "textKey": "card.motto_plaque_fallen.o2.ok",
+            "flag": "motto_change"
+          }
+        },
+        {
+          "textKey": "card.motto_plaque_fallen.o3",
+          "success": {
+            "textKey": "card.motto_plaque_fallen.o3.ok"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rumor_confrontation",
+      "titleKey": "card.rumor_confrontation.title",
+      "bodyKey": "card.rumor_confrontation.body",
+      "target": "person",
+      "source": "town",
+      "category": "social",
+      "rating": "all",
+      "cond": {
+        "stage": [
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ],
+        "flags": [
+          "bad_rumor_about_me",
+          "rumor_source_known"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 3,
+      "once": false,
+      "cooldown": {
+        "value": 5,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.rumor_confrontation.o1",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.5,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.rumor_confrontation.o1.ok",
+            "fame": 5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "cleared_name_relief"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "friendship": -20,
+              "respect": -10
+            },
+            "flag": "rumor_cleared"
+          },
+          "failure": {
+            "textKey": "card.rumor_confrontation.o1.fail",
+            "fame": -10,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "heard_rumor_about_me"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "friendship": -30
+            }
+          }
+        },
+        {
+          "textKey": "card.rumor_confrontation.o2",
+          "check": {
+            "base": 0.6
+          },
+          "success": {
+            "textKey": "card.rumor_confrontation.o2.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "cleared_name_relief"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "friendship": -5
+            },
+            "flag": "rumor_cleared"
+          },
+          "failure": {
+            "textKey": "card.rumor_confrontation.o2.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "grudge_anger"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.rumor_confrontation.o3",
+          "success": {
+            "textKey": "card.rumor_confrontation.o3.ok",
+            "fame": -10,
+            "relation": {
+              "with": "other",
+              "friendship": -40
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "fistfight_bruised"
+              }
+            ],
+            "rumor": {
+              "kind": "brawl",
+              "good": false,
+              "strength": 0.4
+            },
+            "action": {
+              "participants": [
+                {
+                  "role": "fighter",
+                  "cond": {
+                    "stage": [
+                      "teen",
+                      "young",
+                      "adult",
+                      "elder"
+                    ]
+                  },
+                  "states": [
+                    "available"
+                  ]
+                }
+              ],
+              "start": {
+                "combat": "brawl"
+              },
+              "maxMinutes": 30,
+              "onCannotStart": {
+                "textKey": "card.rumor_confrontation.o3.ok.cannot",
+                "outcome": {
+                  "moodlets": [
+                    {
+                      "who": "self",
+                      "id": "grudge_anger"
+                    }
+                  ]
+                }
+              },
+              "onTimeout": {
+                "textKey": "card.rumor_confrontation.o3.ok.timeout",
+                "outcome": {
+                  "moodlets": [
+                    {
+                      "who": "self",
+                      "id": "grudge_anger"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "false_rumor_spread",
+      "titleKey": "card.false_rumor_spread.title",
+      "bodyKey": "card.false_rumor_spread.body",
+      "target": "person",
+      "source": "town",
+      "category": "social",
+      "rating": "all",
+      "cond": {
+        "stage": [
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ],
+        "traitsAny": [
+          "cunning",
+          "mean",
+          "gossip"
+        ],
+        "flags": [
+          "has_feud"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.false_rumor_spread.o1",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.6,
+            "perLevel": 0.04
+          },
+          "success": {
+            "textKey": "card.false_rumor_spread.o1.ok",
+            "karma": -8,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "spread_lie_guilt"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "friendship": -20,
+              "respect": -20
+            },
+            "flag": "spread_false_rumor"
+          },
+          "failure": {
+            "textKey": "card.false_rumor_spread.o1.fail",
+            "karma": -8,
+            "fame": -20,
+            "rumor": {
+              "kind": "slander",
+              "good": false,
+              "strength": 0.6
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "heard_rumor_about_me"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.false_rumor_spread.o2",
+          "success": {
+            "textKey": "card.false_rumor_spread.o2.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "gossip_fun"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.false_rumor_spread.o3",
+          "success": {
+            "textKey": "card.false_rumor_spread.o3.ok",
+            "karma": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "duel_challenge_received",
+      "titleKey": "card.duel_challenge_received.title",
+      "bodyKey": "card.duel_challenge_received.body",
+      "target": "person",
+      "source": "town",
+      "category": "social",
+      "rating": "15",
+      "cond": {
+        "stage": [
+          "young",
+          "adult",
+          "elder"
+        ],
+        "estate": [
+          "knight",
+          "noble"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 1,
+      "once": false,
+      "cooldown": {
+        "value": 14,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.duel_challenge_received.o1",
+          "success": {
+            "textKey": "card.duel_challenge_received.o1.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "duel_pending"
+              }
+            ],
+            "chronicle": "duel",
+            "flag": "duel_accepted",
+            "action": {
+              "participants": [
+                {
+                  "role": "duelist",
+                  "cond": {
+                    "stage": [
+                      "young",
+                      "adult",
+                      "elder"
+                    ]
+                  },
+                  "states": [
+                    "available"
+                  ]
+                }
+              ],
+              "start": {
+                "combat": "duel"
+              },
+              "maxMinutes": 120,
+              "onCannotStart": {
+                "textKey": "card.duel_challenge_received.o1.ok.cannot",
+                "outcome": {
+                  "fame": 10,
+                  "moodlets": [
+                    {
+                      "who": "self",
+                      "id": "duel_won"
+                    }
+                  ]
+                }
+              },
+              "onTimeout": {
+                "textKey": "card.duel_challenge_received.o1.ok.timeout",
+                "outcome": {
+                  "fame": 5
+                }
+              }
+            }
+          }
+        },
+        {
+          "textKey": "card.duel_challenge_received.o2",
+          "success": {
+            "textKey": "card.duel_challenge_received.o2.ok",
+            "fame": -25,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "duel_refused_shame"
+              }
+            ],
+            "rumor": {
+              "kind": "duel_refused",
+              "good": false,
+              "strength": 0.6
+            },
+            "relation": {
+              "with": "other",
+              "respect": -20
+            }
+          }
+        },
+        {
+          "textKey": "card.duel_challenge_received.o3",
+          "cond": {
+            "estate": [
+              "noble"
+            ]
+          },
+          "success": {
+            "textKey": "card.duel_challenge_received.o3.ok",
+            "moneyS": -0.03,
+            "fame": -5,
+            "flag": "duel_champion"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pillory_day",
+      "titleKey": "card.pillory_day.title",
+      "bodyKey": "card.pillory_day.body",
+      "target": "person",
+      "source": "town",
+      "category": "lord",
+      "rating": "15",
+      "cond": {
+        "flags": [
+          "sentenced_pillory"
+        ]
+      },
+      "availability": [
+        "available",
+        "rabbithole"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 6,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.pillory_day.o1",
+          "success": {
+            "textKey": "card.pillory_day.o1.ok",
+            "fame": -20,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "pilloried_shame"
+              }
+            ],
+            "chronicle": "pillory",
+            "flag": "served_pillory"
+          }
+        },
+        {
+          "textKey": "card.pillory_day.o2",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.4,
+            "perLevel": 0.06
+          },
+          "success": {
+            "textKey": "card.pillory_day.o2.ok",
+            "fame": -8,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "pilloried_shame"
+              }
+            ],
+            "rumor": {
+              "kind": "bravery",
+              "good": true,
+              "strength": 0.2
+            },
+            "chronicle": "pillory",
+            "flag": "served_pillory"
+          },
+          "failure": {
+            "textKey": "card.pillory_day.o2.fail",
+            "fame": -25,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "pilloried_shame"
+              }
+            ],
+            "chronicle": "pillory",
+            "flag": "served_pillory"
+          }
+        },
+        {
+          "textKey": "card.pillory_day.o3",
+          "cond": {
+            "flags": [
+              "family_in_town"
+            ]
+          },
+          "success": {
+            "textKey": "card.pillory_day.o3.ok",
+            "fame": -20,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "pilloried_shame"
+              }
+            ],
+            "relation": {
+              "with": "family",
+              "friendship": 10
+            },
+            "chronicle": "pillory",
+            "flag": "served_pillory"
+          }
+        }
+      ]
+    },
+    {
+      "id": "trial_verdict_plea",
+      "titleKey": "card.trial_verdict_plea.title",
+      "bodyKey": "card.trial_verdict_plea.body",
+      "target": "person",
+      "source": "town",
+      "category": "lord",
+      "rating": "17",
+      "cond": {
+        "flags": [
+          "on_trial"
+        ]
+      },
+      "availability": [
+        "available",
+        "rabbithole"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 2
+      },
+      "weight": 6,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.trial_verdict_plea.o1",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.35,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.trial_verdict_plea.o1.ok",
+            "moneyS": -0.02,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "acquitted_relief"
+              },
+              {
+                "who": "family",
+                "id": "acquitted_relief"
+              }
+            ],
+            "chronicle": "trial",
+            "flag": "verdict_fine"
+          },
+          "failure": {
+            "textKey": "card.trial_verdict_plea.o1.fail",
+            "fame": -10,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "arrested_fear"
+              }
+            ],
+            "chronicle": "trial",
+            "flag": "sentenced_pillory",
+            "chain": "pillory_day"
+          }
+        },
+        {
+          "textKey": "card.trial_verdict_plea.o2",
+          "cond": {
+            "flags": [
+              "has_ally"
+            ]
+          },
+          "check": {
+            "base": 0.55
+          },
+          "success": {
+            "textKey": "card.trial_verdict_plea.o2.ok",
+            "fame": 5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "acquitted_relief"
+              },
+              {
+                "who": "family",
+                "id": "acquitted_relief"
+              }
+            ],
+            "chronicle": "trial",
+            "flag": "verdict_acquitted"
+          },
+          "failure": {
+            "textKey": "card.trial_verdict_plea.o2.fail",
+            "fame": -15,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "jailed_misery"
+              }
+            ],
+            "chronicle": "trial",
+            "flag": "sentenced_jail"
+          }
+        },
+        {
+          "textKey": "card.trial_verdict_plea.o3",
+          "check": {
+            "base": 0.5
+          },
+          "success": {
+            "textKey": "card.trial_verdict_plea.o3.ok",
+            "moneyS": -0.05,
+            "karma": -5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "acquitted_relief"
+              }
+            ],
+            "chronicle": "trial",
+            "flag": "verdict_fine"
+          },
+          "failure": {
+            "textKey": "card.trial_verdict_plea.o3.fail",
+            "moneyS": -0.05,
+            "karma": -5,
+            "fame": -30,
+            "rumor": {
+              "kind": "bribery",
+              "good": false,
+              "strength": 0.7
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "jailed_misery"
+              }
+            ],
+            "chronicle": "trial",
+            "flag": "sentenced_jail"
+          }
+        },
+        {
+          "textKey": "card.trial_verdict_plea.o4",
+          "success": {
+            "textKey": "card.trial_verdict_plea.o4.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "trial_anxious"
+              },
+              {
+                "who": "family",
+                "id": "kin_on_trial_worry"
+              }
+            ],
+            "chronicle": "trial",
+            "flag": "verdict_by_law"
+          }
+        }
+      ]
+    },
+    {
+      "id": "petition_to_lord",
+      "titleKey": "card.petition_to_lord.title",
+      "bodyKey": "card.petition_to_lord.body",
+      "target": "person",
+      "source": "town",
+      "category": "lord",
+      "rating": "all",
+      "cond": {
+        "stage": [
+          "young",
+          "adult",
+          "elder"
+        ],
+        "notFlags": [
+          "is_lord"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 1,
+      "once": false,
+      "cooldown": {
+        "value": 14,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.petition_to_lord.o1",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.3,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.petition_to_lord.o1.ok",
+            "fame": 10,
+            "morale": 5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "petition_heard"
+              }
+            ],
+            "flag": "petition_tax_granted"
+          },
+          "failure": {
+            "textKey": "card.petition_to_lord.o1.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "lord_displeasure"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.petition_to_lord.o2",
+          "check": {
+            "base": 0.6
+          },
+          "success": {
+            "textKey": "card.petition_to_lord.o2.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "petition_heard"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "friendship": -15
+            }
+          },
+          "failure": {
+            "textKey": "card.petition_to_lord.o2.fail",
+            "relation": {
+              "with": "other",
+              "friendship": 5
+            }
+          }
+        },
+        {
+          "textKey": "card.petition_to_lord.o3",
+          "cond": {
+            "estate": [
+              "serf"
+            ]
+          },
+          "check": {
+            "base": 0.08
+          },
+          "success": {
+            "textKey": "card.petition_to_lord.o3.ok",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "freed_from_serfdom"
+              }
+            ],
+            "memory": {
+              "kind": "freed_from_serfdom",
+              "importance": 5,
+              "valence": 1
+            },
+            "chronicle": "estate_up",
+            "flag": "freed"
+          },
+          "failure": {
+            "textKey": "card.petition_to_lord.o3.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "lord_displeasure"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "letter_from_afar",
+      "titleKey": "card.letter_from_afar.title",
+      "bodyKey": "card.letter_from_afar.body",
+      "target": "person",
+      "source": "home",
+      "category": "social",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "kin_far_away"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 4,
+      "options": [
+        {
+          "textKey": "card.letter_from_afar.o1",
+          "cond": {
+            "flags": [
+              "can_read"
+            ]
+          },
+          "success": {
+            "textKey": "card.letter_from_afar.o1.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "letter_joy"
+              }
+            ],
+            "chronicle": "letter"
+          }
+        },
+        {
+          "textKey": "card.letter_from_afar.o2",
+          "cond": {
+            "notFlags": [
+              "can_read"
+            ]
+          },
+          "success": {
+            "textKey": "card.letter_from_afar.o2.ok",
+            "moneyS": -0.002,
+            "church": 1,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "letter_joy"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.letter_from_afar.o3",
+          "success": {
+            "textKey": "card.letter_from_afar.o3.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "far_from_kin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "threat_letter",
+      "titleKey": "card.threat_letter.title",
+      "bodyKey": "card.threat_letter.body",
+      "target": "family",
+      "source": "home",
+      "category": "social",
+      "rating": "15",
+      "cond": {
+        "flags": [
+          "has_feud"
+        ]
+      },
+      "availability": [
+        "available",
+        "asleep"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 10,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.threat_letter.o1",
+          "check": {
+            "base": 0.5
+          },
+          "success": {
+            "textKey": "card.threat_letter.o1.ok",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "cleared_name_relief"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "friendship": -10
+            }
+          },
+          "failure": {
+            "textKey": "card.threat_letter.o1.fail",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "threat_letter_fear"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.threat_letter.o2",
+          "cond": {
+            "flags": [
+              "can_read"
+            ]
+          },
+          "check": {
+            "skill": "reading",
+            "base": 0.4,
+            "perLevel": 0.08
+          },
+          "success": {
+            "textKey": "card.threat_letter.o2.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "grudge_anger"
+              }
+            ],
+            "flag": "threat_source_known"
+          },
+          "failure": {
+            "textKey": "card.threat_letter.o2.fail",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "threat_letter_fear"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.threat_letter.o3",
+          "success": {
+            "textKey": "card.threat_letter.o3.ok",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "threat_letter_fear"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "love_letter_intercepted",
+      "titleKey": "card.love_letter_intercepted.title",
+      "bodyKey": "card.love_letter_intercepted.body",
+      "target": "family",
+      "source": "home",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "hasChild": true,
+        "flags": [
+          "has_teen",
+          "teen_in_love"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": true,
+      "cooldown": {
+        "value": 1,
+        "scale": "absolute"
+      },
+      "perLife": 1,
+      "options": [
+        {
+          "textKey": "card.love_letter_intercepted.o1",
+          "success": {
+            "textKey": "card.love_letter_intercepted.o1.ok",
+            "relation": {
+              "with": "family",
+              "friendship": -10
+            },
+            "flag": "read_teen_letter"
+          }
+        },
+        {
+          "textKey": "card.love_letter_intercepted.o2",
+          "success": {
+            "textKey": "card.love_letter_intercepted.o2.ok",
+            "relation": {
+              "with": "family",
+              "friendship": 5
+            }
+          }
+        },
+        {
+          "textKey": "card.love_letter_intercepted.o3",
+          "success": {
+            "textKey": "card.love_letter_intercepted.o3.ok",
+            "flag": "teen_match_known"
+          }
+        }
+      ]
+    },
+    {
+      "id": "affair_temptation",
+      "titleKey": "card.affair_temptation.title",
+      "bodyKey": "card.affair_temptation.body",
+      "target": "person",
+      "source": "town",
+      "category": "social",
+      "rating": "17",
+      "cond": {
+        "married": true,
+        "stage": [
+          "young",
+          "adult"
+        ],
+        "notFlags": [
+          "affair"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 1,
+      "once": false,
+      "cooldown": {
+        "value": 20,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.affair_temptation.o1",
+          "success": {
+            "textKey": "card.affair_temptation.o1.ok",
+            "karma": -10,
+            "church": -5,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "affair_thrill"
+              },
+              {
+                "who": "self",
+                "id": "affair_guilt"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "romance": 20
+            },
+            "flag": "affair"
+          }
+        },
+        {
+          "textKey": "card.affair_temptation.o2",
+          "success": {
+            "textKey": "card.affair_temptation.o2.ok",
+            "relation": {
+              "with": "spouse",
+              "friendship": 5
+            }
+          }
+        },
+        {
+          "textKey": "card.affair_temptation.o3",
+          "success": {
+            "textKey": "card.affair_temptation.o3.ok",
+            "relation": {
+              "with": "spouse",
+              "romance": 5,
+              "respect": 10
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "affair_discovered",
+      "titleKey": "card.affair_discovered.title",
+      "bodyKey": "card.affair_discovered.body",
+      "target": "couple",
+      "source": "home",
+      "category": "social",
+      "rating": "17",
+      "cond": {
+        "married": true,
+        "flags": [
+          "affair"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 4,
+      "once": false,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.affair_discovered.o1",
+          "check": {
+            "base": 0.3
+          },
+          "success": {
+            "textKey": "card.affair_discovered.o1.ok",
+            "relation": {
+              "with": "spouse",
+              "friendship": -20,
+              "romance": -20,
+              "respect": -15
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "affair_guilt"
+              }
+            ],
+            "flag": "affair_ended"
+          },
+          "failure": {
+            "textKey": "card.affair_discovered.o1.fail",
+            "fame": -40,
+            "church": -15,
+            "karma": -10,
+            "relation": {
+              "with": "spouse",
+              "friendship": -60,
+              "romance": -50,
+              "respect": -30
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "affair_exposed_shame"
+              },
+              {
+                "who": "spouse",
+                "id": "betrayed_by_spouse"
+              }
+            ],
+            "rumor": {
+              "kind": "affair",
+              "good": false,
+              "strength": 0.8
+            },
+            "chronicle": "affair_exposed"
+          }
+        },
+        {
+          "textKey": "card.affair_discovered.o2",
+          "success": {
+            "textKey": "card.affair_discovered.o2.ok",
+            "fame": -40,
+            "church": -15,
+            "karma": -10,
+            "relation": {
+              "with": "spouse",
+              "friendship": -60,
+              "romance": -50,
+              "respect": -30
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "affair_exposed_shame"
+              },
+              {
+                "who": "spouse",
+                "id": "betrayed_by_spouse"
+              }
+            ],
+            "rumor": {
+              "kind": "affair",
+              "good": false,
+              "strength": 0.9
+            },
+            "chronicle": "affair_exposed"
+          }
+        },
+        {
+          "textKey": "card.affair_discovered.o3",
+          "success": {
+            "textKey": "card.affair_discovered.o3.ok",
+            "fame": -20,
+            "church": -5,
+            "karma": -5,
+            "relation": {
+              "with": "spouse",
+              "friendship": -30,
+              "romance": -30
+            },
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "public_penance_relief"
+              },
+              {
+                "who": "spouse",
+                "id": "betrayed_by_spouse"
+              }
+            ],
+            "chronicle": "affair_exposed",
+            "flag": "affair_ended"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tavern_brawl",
+      "titleKey": "card.tavern_brawl.title",
+      "bodyKey": "card.tavern_brawl.body",
+      "target": "person",
+      "source": "town",
+      "category": "social",
+      "rating": "15",
+      "cond": {
+        "stage": [
+          "young",
+          "adult"
+        ],
+        "estate": [
+          "serf",
+          "freeman",
+          "artisan"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 1,
+      "once": false,
+      "cooldown": {
+        "value": 10,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.tavern_brawl.o1",
+          "success": {
+            "textKey": "card.tavern_brawl.o1.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "fistfight_bruised"
+              }
+            ],
+            "rumor": {
+              "kind": "brawl",
+              "good": false,
+              "strength": 0.3
+            },
+            "flag": "crime_assault_risk",
+            "action": {
+              "participants": [
+                {
+                  "role": "fighter",
+                  "cond": {
+                    "stage": [
+                      "young",
+                      "adult"
+                    ]
+                  },
+                  "states": [
+                    "available"
+                  ]
+                }
+              ],
+              "start": {
+                "combat": "brawl"
+              },
+              "maxMinutes": 30,
+              "onCannotStart": {
+                "textKey": "card.tavern_brawl.o1.ok.cannot",
+                "outcome": {}
+              },
+              "onTimeout": {
+                "textKey": "card.tavern_brawl.o1.ok.timeout",
+                "outcome": {
+                  "moodlets": [
+                    {
+                      "who": "self",
+                      "id": "grudge_anger"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "textKey": "card.tavern_brawl.o2",
+          "success": {
+            "textKey": "card.tavern_brawl.o2.ok",
+            "moneyS": -0.002,
+            "relation": {
+              "with": "other",
+              "friendship": 10
+            }
+          }
+        },
+        {
+          "textKey": "card.tavern_brawl.o3",
+          "success": {
+            "textKey": "card.tavern_brawl.o3.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "grudge_anger"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "high_tax_proclamation",
+      "titleKey": "card.high_tax_proclamation.title",
+      "bodyKey": "card.high_tax_proclamation.body",
+      "target": "family",
+      "source": "town",
+      "category": "lord",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "policy_tax_high"
+        ],
+        "notFlags": [
+          "is_lord"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 3,
+      "once": false,
+      "cooldown": {
+        "value": 14,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.high_tax_proclamation.o1",
+          "success": {
+            "textKey": "card.high_tax_proclamation.o1.ok",
+            "moneyS": -0.03,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "high_taxes_grumble"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.high_tax_proclamation.o2",
+          "check": {
+            "base": 0.5
+          },
+          "success": {
+            "textKey": "card.high_tax_proclamation.o2.ok",
+            "moneyS": -0.015,
+            "karma": -3,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "schemed"
+              }
+            ]
+          },
+          "failure": {
+            "textKey": "card.high_tax_proclamation.o2.fail",
+            "moneyS": -0.05,
+            "fame": -10,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "crime_fined"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.high_tax_proclamation.o3",
+          "success": {
+            "textKey": "card.high_tax_proclamation.o3.ok",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "high_taxes_grumble"
+              }
+            ],
+            "chain": "petition_to_lord"
+          }
+        }
+      ]
+    },
+    {
+      "id": "quarantine_order",
+      "titleKey": "card.quarantine_order.title",
+      "bodyKey": "card.quarantine_order.body",
+      "target": "family",
+      "source": "town",
+      "category": "health",
+      "rating": "all",
+      "cond": {
+        "flags": [
+          "policy_quarantine",
+          "plague_active"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 3,
+      "once": false,
+      "cooldown": {
+        "value": 7,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.quarantine_order.o1",
+          "success": {
+            "textKey": "card.quarantine_order.o1.ok",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "quarantine_confined"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.quarantine_order.o2",
+          "check": {
+            "base": 0.5
+          },
+          "success": {
+            "textKey": "card.quarantine_order.o2.ok",
+            "karma": -1,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "sneaked_out_thrill"
+              }
+            ]
+          },
+          "failure": {
+            "textKey": "card.quarantine_order.o2.fail",
+            "moneyS": -0.01,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "arrested_fear"
+              }
+            ],
+            "flag": "broke_quarantine"
+          }
+        },
+        {
+          "textKey": "card.quarantine_order.o3",
+          "success": {
+            "textKey": "card.quarantine_order.o3.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "gossip_fun"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "poaching_temptation",
+      "titleKey": "card.poaching_temptation.title",
+      "bodyKey": "card.poaching_temptation.body",
+      "target": "person",
+      "source": "town",
+      "category": "lord",
+      "rating": "all",
+      "cond": {
+        "stage": [
+          "teen",
+          "young",
+          "adult"
+        ],
+        "estate": [
+          "serf",
+          "freeman"
+        ],
+        "flags": [
+          "hunting_banned"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 1,
+      "once": false,
+      "cooldown": {
+        "value": 10,
+        "scale": "absolute"
+      },
+      "perLife": 3,
+      "options": [
+        {
+          "textKey": "card.poaching_temptation.o1",
+          "check": {
+            "base": 0.65
+          },
+          "success": {
+            "textKey": "card.poaching_temptation.o1.ok",
+            "karma": -2,
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "good_meal"
+              }
+            ]
+          },
+          "failure": {
+            "textKey": "card.poaching_temptation.o1.fail",
+            "karma": -2,
+            "fame": -10,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "arrested_fear"
+              }
+            ],
+            "flag": "on_trial",
+            "chain": "trial_verdict_plea"
+          }
+        },
+        {
+          "textKey": "card.poaching_temptation.o2",
+          "success": {
+            "textKey": "card.poaching_temptation.o2.ok",
+            "karma": 3
+          }
+        },
+        {
+          "textKey": "card.poaching_temptation.o3",
+          "success": {
+            "textKey": "card.poaching_temptation.o3.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "lord_favor_proud"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "riot_brewing",
+      "titleKey": "card.riot_brewing.title",
+      "bodyKey": "card.riot_brewing.body",
+      "target": "person",
+      "source": "town",
+      "category": "lord",
+      "rating": "15",
+      "cond": {
+        "stage": [
+          "young",
+          "adult",
+          "elder"
+        ],
+        "flags": [
+          "morale_low"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 14,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.riot_brewing.o1",
+          "check": {
+            "base": 0.5
+          },
+          "success": {
+            "textKey": "card.riot_brewing.o1.ok",
+            "morale": 5,
+            "karma": -2,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "petition_heard"
+              }
+            ]
+          },
+          "failure": {
+            "textKey": "card.riot_brewing.o1.fail",
+            "fame": -15,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "arrested_fear"
+              }
+            ],
+            "flag": "on_trial",
+            "chain": "trial_verdict_plea"
+          }
+        },
+        {
+          "textKey": "card.riot_brewing.o2",
+          "check": {
+            "skill": "storytelling",
+            "base": 0.4,
+            "perLevel": 0.05
+          },
+          "success": {
+            "textKey": "card.riot_brewing.o2.ok",
+            "fame": 10,
+            "morale": 2,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "lord_favor_proud"
+              }
+            ]
+          },
+          "failure": {
+            "textKey": "card.riot_brewing.o2.fail",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "riot_fear"
+              },
+              {
+                "who": "self",
+                "id": "fistfight_bruised"
+              }
+            ]
+          }
+        },
+        {
+          "textKey": "card.riot_brewing.o3",
+          "success": {
+            "textKey": "card.riot_brewing.o3.ok",
+            "moodlets": [
+              {
+                "who": "family",
+                "id": "riot_fear"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "widow_remarriage_proposal",
+      "titleKey": "card.widow_remarriage_proposal.title",
+      "bodyKey": "card.widow_remarriage_proposal.body",
+      "target": "person",
+      "source": "town",
+      "category": "family",
+      "rating": "all",
+      "cond": {
+        "stage": [
+          "young",
+          "adult",
+          "elder"
+        ],
+        "flags": [
+          "widowed_recent"
+        ]
+      },
+      "availability": [
+        "available"
+      ],
+      "absent": {
+        "kind": "hold",
+        "days": 1
+      },
+      "weight": 2,
+      "once": false,
+      "cooldown": {
+        "value": 10,
+        "scale": "absolute"
+      },
+      "perLife": 2,
+      "options": [
+        {
+          "textKey": "card.widow_remarriage_proposal.o1",
+          "success": {
+            "textKey": "card.widow_remarriage_proposal.o1.ok",
+            "church": -3,
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "remarried_gossip"
+              }
+            ],
+            "rumor": {
+              "kind": "hasty_remarriage",
+              "good": false,
+              "strength": 0.5
+            },
+            "flag": "engaged"
+          }
+        },
+        {
+          "textKey": "card.widow_remarriage_proposal.o2",
+          "success": {
+            "textKey": "card.widow_remarriage_proposal.o2.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "courted_flattered"
+              }
+            ],
+            "relation": {
+              "with": "other",
+              "romance": 10
+            }
+          }
+        },
+        {
+          "textKey": "card.widow_remarriage_proposal.o3",
+          "success": {
+            "textKey": "card.widow_remarriage_proposal.o3.ok",
+            "moodlets": [
+              {
+                "who": "self",
+                "id": "widowed_mourning"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
