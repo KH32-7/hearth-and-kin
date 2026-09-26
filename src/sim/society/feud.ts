@@ -524,7 +524,7 @@ export class Feuds {
     const B = this.d.brawl;
     const minute = day * 1440 + Math.round((B.hours[0] + B.hours[1]) / 2) * 60;
     const here = H.persons.filter((p) => {
-      if (!grownUp(p) || !B.estates.includes(p.estate)) return false;
+      if (!grownUp(p) || !B.estates.includes(p.estate) || p.schoolAway) return false;
       const pl = H.placeAt(p, minute);
       return !!pl && (H.placeKind(pl) ?? pl) === B.place;
     });

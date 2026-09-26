@@ -266,7 +266,7 @@ export class Simulation {
     this.farm = data.crops ? new Farming(data.crops) : null;
     if (this.farm) for (const o of this.world.objects) if (this.isFarmObj(o)) this.farm.initState(o, (this.world.def(o.defId).tags ?? []).includes('orchard') ? 'apples' : undefined);
     // 쓸 수 있는 돈: 가진 돈 + 식량이 떨어졌을 때만 외상 여유 (17-6 대출 한도까지, 자정에 빚으로 정리)
-    if (this.econ) this.world.money = () => (this.econ!.account(1)?.money ?? 0) + this.foodCredit(1);
+    if (this.econ) this.world.money = (forBuy) => (this.econ!.account(1)?.money ?? 0) + (forBuy ? this.foodCredit(1) : 0);
     this.rel = new Relations(relationRules(this.relData));
     this.builder = data.build
       ? new Builder({
@@ -389,6 +389,8 @@ export class Simulation {
     // 한 가구는 서로 아는 사이 (첫인상 없음)
     for (const q of this.persons) if (q.household === p.household) this.rel.ensure(p.id, q.id).met = true;
     this.persons.push(p);
+    this.house?.touch();
+    this.society?.touch();
     // 내면: 인물마다 따로 시드 (시뮬레이션 진행과 무관하게 같은 인물은 같은 성격)
     if (this.inner) {
       this.inner.initPerson(p, new Rng(opts.innerSeed ?? (this.seed * 7919 + p.id * 104729) >>> 0), opts.traits);
@@ -1764,6 +1766,7 @@ export class Simulation {
       },
       coarse: (p) => this.coarseStage(p),
       onMarried: (stay, incoming) => this.house?.onMarried(stay, incoming),
+      onSplit: (from, hh) => this.house?.onSplit(from, hh),
       deathAllowed: (p, cause) => this.deathAllowed(cause === 'cold_hunger' ? 'cold' : cause, p),
       agingOff: (p) => p.agingOff || this.settings.agingOffHouseholds.has(p.household),
       ...(this.lifecycle ? { ageDaily: (p: Person) => this.lifecycle!.dailyAge(p) } : {}),
@@ -1858,6 +1861,8 @@ export class Simulation {
     this.house?.onDeath(p, cause);
     const i = this.persons.indexOf(p);
     if (i >= 0) this.persons.splice(i, 1);
+    this.house?.touch();
+    this.society?.touch();
     // 부모를 모두 잃은 아이는 대부모 → 친척 → 교회 (15-7)
     if (this.childcare && cause !== 'moved_away') this.childcare.onDeath(p, (id) => this.persons.find((q) => q.id === id), (q) => (this.lifecycle ? this.lifecycle.displayAge(q) : this.judge?.age(q) ?? 30) < 18);
     this.inner?.forget(p);
@@ -2417,7 +2422,14 @@ export class Simulation {
       if (lot && t.lotHousehold.get(lot.id) === hh) return true;
       if (p.employer && t.householdByKey.get(p.employer) === hh) return true;
     }
-    if (this.world.objects.some((o) => o.defId === 'house_fire')) return true;
+    if (t) {
+      // 그 집에 불이 났을 때만 (18-1, 23-5 이웃이 끄러 옴)
+      for (const [lotId, h] of t.lotHousehold) {
+        if (h !== hh) continue;
+        const r = t.lot(lotId)?.rect;
+        if (r && this.fire && this.world.objects.some((o) => o.defId === 'house_fire' && o.x >= r[0] && o.x <= r[2] && o.y >= r[1] && o.y <= r[3])) return true;
+      }
+    }
     const best = this.data.relations?.names?.bestFriend ?? 70;
     for (const q of this.persons) {
       if (q.household !== hh) continue;
@@ -2435,7 +2447,7 @@ export class Simulation {
       m = new Map();
       this.invites.set(hh, m);
     }
-    m.set(p.id, this.world.minute + 240);
+    m.set(p.id, this.world.minute + this.doorCfg().invite);
     p.knocking = null;
     this.path.who = null;
     if (p.household === 1) this.notice(p, 'door_let_in', { a: by?.name ?? '' });
@@ -2450,7 +2462,7 @@ export class Simulation {
     const hh = this.town?.doorHousehold(cell) ?? 0;
     if (!hh || this.mayEnter(p, hh)) return;
     const now = this.world.minute;
-    if (p.knocking && p.knocking.household === hh && now - p.knocking.since < 30) return;
+    if (p.knocking && p.knocking.household === hh && now - p.knocking.since < this.doorCfg().knockCooldown) return;
     p.knocking = { cell, household: hh, since: now };
     const home = this.persons.filter((q) => q.household === hh && !q.hidden && !q.infant && !q.sleeping && this.town!.atHome(q) && q.lifeStage !== 'toddler');
     if (hh === 1) {
@@ -2466,8 +2478,18 @@ export class Simulation {
     }
     const f = this.rel.get(host.id, p.id)?.friendship ?? 0;
     const night = this.world.hour() >= 21 || this.world.hour() < 6;
-    if (f >= (night ? 30 : -20)) this.letIn(hh, p, host);
-    else if (p.household === 1) this.notice(p, 'door_refused', { a: host.name });
+    const D = this.doorCfg();
+    if (f >= (night ? D.minFriendshipNight : D.minFriendship)) this.letIn(hh, p, host);
+    else {
+      p.knocking = null;
+      if (p.household === 1) this.notice(p, 'door_refused', { a: host.name });
+    }
+  }
+
+  /** 집 출입 수치 (story.json door, 분) */
+  private doorCfg(): { invite: number; knockCooldown: number; knockExpire: number; minFriendship: number; minFriendshipNight: number } {
+    const d = (this.data.story as { door?: { invite: { value: number }; knockCooldown: { value: number }; knockExpire: { value: number }; minFriendship: number; minFriendshipNight: number } } | null)?.door;
+    return d ? { invite: d.invite.value, knockCooldown: d.knockCooldown.value, knockExpire: d.knockExpire.value, minFriendship: d.minFriendship, minFriendshipNight: d.minFriendshipNight } : { invite: 240, knockCooldown: 30, knockExpire: 90, minFriendship: -20, minFriendshipNight: 30 };
   }
 
   /** 안전장치: 서 있는 칸에서 나갈 길이 전혀 없으면 가장 가까운 빈 칸으로 옮김 (13-5 절대 안 되는 것) */
@@ -2620,7 +2642,7 @@ export class Simulation {
     // 교회에서 공개 참회: 우리 가문의 나쁜 소문이 아직 셈
     this.gates.set('public_penance', (p) => !!R()?.list.some((r) => r.household === p.household && r.aware.size > 0 && !r.good && r.rep > 0 && r.strength > 0.5));
     // 들어오라고 하기 (18-1): 상대가 우리 집 문을 두드리는 중이고 나는 집에 있음
-    this.gates.set('knocking_here', (p, t) => !!t && !!t.knocking && t.knocking.household === p.household && this.world.minute - t.knocking.since < 90);
+    this.gates.set('knocking_here', (p, t) => !!t && !!t.knocking && t.knocking.household === p.household && this.world.minute - t.knocking.since < this.doorCfg().knockExpire);
     // 험담 퍼뜨리기(거짓 소문): 싫어하는 사람이 있을 때
     this.gates.set('has_grudge_target', (p, t) => !!t && this.persons.some((q) => q !== p && q !== t && q.household !== p.household && (this.rel.get(p.id, q.id)?.friendship ?? 0) <= -20));
   }
@@ -2648,8 +2670,10 @@ export class Simulation {
       }
     } else if (ok && id === 'social.explain_rumor') {
       const r = R.strongestAbout(p.household, t);
-      if (r && R.explain(r, t, 0.9)) this.notice(p, 'rumor_explained', { target: t.name, kind: `rumor.kind.${r.kind}` });
+      if (r && R.explain(r, t, 0.9)) {
+        this.notice(p, 'rumor_explained', { target: t.name, kind: `rumor.kind.${r.kind}` });
         this.inner?.addMoodlet(p, 'cleared_name_relief', {});
+      }
     } else if (ok && id === 'social.confront_rumormonger') {
       for (const r of [...R.list]) {
         if (r.household !== p.household || r.origin !== t.id) continue;
@@ -3892,8 +3916,9 @@ export class Simulation {
     let food = 0;
     for (const [k, v] of Object.entries(this.world.stock)) if (this.item(k)?.food || k === 'bread' || k === 'preserves' || k === 'ingredients') food += v;
     if (food >= members) return 0;
+    const C = (this.data.economy as { relief?: { credit?: { days: number; perPersonDay: number } } } | null)?.relief?.credit ?? { days: 3, perPersonDay: 6 };
     const room = e.loanLimit(a) - e.debt(a) - Math.max(0, -a.money);
-    return Math.max(0, Math.min(room, members * 6 * 3));
+    return Math.max(0, Math.min(room, members * C.perPersonDay * C.days));
   }
 
   private trade(p: Person, buy?: Record<string, number>, sell?: Record<string, number>): void {
@@ -4029,13 +4054,14 @@ export class Simulation {
    */
   private seize(household: number, owe: number): number {
     if (household !== 1) return 0;
-    const keep = new Set(['bread', 'grain', 'flour', 'ingredients', 'vegetables', 'preserves', 'firewood', 'water']);
+    const SZ = (this.data.economy as { seize?: { keep: string[]; animalValue: number } } | null)?.seize ?? { keep: ['bread', 'grain', 'flour', 'ingredients', 'vegetables', 'preserves', 'firewood', 'water'], animalValue: 24 };
+    const keep = new Set(SZ.keep);
     let got = 0;
     const st = this.world.stock;
     for (const k of Object.keys(st).sort()) {
       if (got >= owe) break;
       if (keep.has(k) || (st[k] ?? 0) <= 0) continue;
-      const base = this.item(k)?.base ?? (k.startsWith('animal_') ? 24 : 0);
+      const base = this.item(k)?.base ?? (k.startsWith('animal_') ? SZ.animalValue : 0);
       if (!base) continue;
       const n = Math.min(st[k], Math.ceil((owe - got) / base));
       st[k] -= n;
@@ -4174,6 +4200,8 @@ export class Simulation {
     this.cards?.hourly();
     this.house?.hourly();
     this.society?.hourly();
+    const kx = this.doorCfg().knockExpire;
+    for (const q of this.persons) if (q.knocking && this.world.minute - q.knocking.since >= kx) q.knocking = null;
     if (this.pregnancy) {
       this.pregnancy.tick();
       // 입덧 (15-1 초기): 아침에 깨면
@@ -4190,7 +4218,7 @@ export class Simulation {
       if (p.lifeStage === 'child') {
         const away = cc.awayForSchool(p);
         if (away && !p.schoolAway && p.status === 'available' && !p.direct) this.leaveForSchool(p);
-        else if (!away && p.schoolAway) this.backFromSchool(p);
+        else if (!away && p.schoolAway && !this.society?.confined.has(p.id)) this.backFromSchool(p);
         cc.lessonHour(p);
       } else if (p.schoolAway && !p.sneakUntil) this.backFromSchool(p);
       if (hour === 22 && p.lifeStage === 'teen' && p.household === 1 && p.status === 'available') {
@@ -4627,7 +4655,10 @@ export class Simulation {
       return Math.round((est?.target?.net ?? 6 * 4) * 48 * this.settings.lifespan);
     };
     return {
-      onChosen: (p, cardId, option, ok, other) => this.society?.onCard(p, cardId, option, ok, other),
+      onChosen: (p, cardId, option, ok, other) => {
+        this.society?.onCard(p, cardId, option, ok, other);
+        this.house?.onCard(p, cardId, option, ok, other);
+      },
       get persons() {
         return sim.persons;
       },
@@ -4657,7 +4688,6 @@ export class Simulation {
       reputation: (q, d, reason) => {
         if (this.house) {
           this.house.house.honor.applyFor(q, d, reason);
-          if (d.fame && q.household === 1) this.notice(q, d.fame >= 0 ? 'fame_up' : 'fame_down', { n: Math.abs(d.fame), reason: `fame.reason.${reason}` });
           return;
         }
         if (d.fame) this.addFame(q.household, d.fame, reason);
@@ -4681,9 +4711,9 @@ export class Simulation {
         this.chronicleLog.push({ day: this.world.day(), trigger, subjects: subjects.map((x) => x.id) });
       },
       heirloom: (q, what) => this.heirloomEvent(q, what),
-      setFlag: (q, flag) => {
+      setFlag: (q, flag, cardId) => {
         // 재판·결투 사건 플래그는 그 모듈이 처리 (가구 플래그로 남기지 않음)
-        if (this.society?.onCardFlag(q, flag, null)) return;
+        if (this.society?.onCardFlag(q, flag, cardId ?? null)) return;
         const set = this.householdFlags.get(q.household) ?? new Set<string>();
         set.add(flag);
         this.householdFlags.set(q.household, set);
@@ -4832,6 +4862,9 @@ export class Simulation {
       if (p.direct) parts.push(`d${p.direct.dx},${p.direct.dy}`);
     }
     this.rumors?.hashParts(parts);
+    // 집 출입 (초대, 두드림)
+    for (const [hh, m] of [...this.invites].sort((a, b) => a[0] - b[0])) for (const [id, u] of [...m].sort((a, b) => a[0] - b[0])) parts.push(hh, id, u);
+    for (const q of this.persons) if (q.knocking) parts.push(q.id, q.knocking.cell, q.knocking.since);
     this.house?.hashParts(parts);
     this.society?.hashParts(parts);
     this.rel.hashParts(parts);

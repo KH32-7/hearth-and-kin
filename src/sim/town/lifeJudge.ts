@@ -34,6 +34,8 @@ export interface JudgeHost {
   moveTo(p: Person, household: number, lot: string | null): void;
   /** 혼인 뒤 (16-2 신분 두 층, 16-6 가문 동맹): stay = 집에 남는 쪽, incoming = 들어온 쪽 */
   onMarried?(stay: Person, incoming: Person): void;
+  /** 분가 (인원 상한 신혼부부): 새 가구도 같은 가문 */
+  onSplit?(fromHousehold: number, newHousehold: number): void;
   /** 구애 모듈이 있으면 약혼·혼례를 넘김 (14-4) */
   courtship?: JudgeCourtship;
   newHousehold(): number;
@@ -330,8 +332,10 @@ export class LifeJudge {
       // 상한 초과: 둘이 분가 (빈 부지)
       const lot = this.host.emptyLot('small');
       const hh = this.host.newHousehold();
+      const oldHh = to.household;
       this.host.moveTo(to, hh, lot);
       this.host.moveTo(from, hh, lot);
+      this.host.onSplit?.(oldHh, hh);
       this.stats.splits++;
       this.host.news('new_house', { a: h.name, b: w.name }, [h, w]);
     } else this.host.moveTo(from, to.household, to.homeLot);

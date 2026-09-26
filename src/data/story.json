@@ -441,5 +441,22 @@
   },
   "newborn": {
     "familyFriendship": 30
+  },
+  "door": {
+    "$comment": "18-1 집 출입: 들여보낸 뒤 들어올 수 있는 시간, 다시 두드리기까지, 두드림이 잊히는 시간 (게임 분, absolute). NPC 집주인이 들여보내는 우정 하한 (낮/밤)",
+    "invite": {
+      "value": 240,
+      "scale": "absolute"
+    },
+    "knockCooldown": {
+      "value": 30,
+      "scale": "absolute"
+    },
+    "knockExpire": {
+      "value": 90,
+      "scale": "absolute"
+    },
+    "minFriendship": -20,
+    "minFriendshipNight": 30
   }
 }

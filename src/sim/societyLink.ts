@@ -105,6 +105,23 @@ export class SocietyLink {
 
   // ================================================================== 공통
 
+  private cache: { minute: number; n: number; list: Person[] } = { minute: -1, n: -1, list: [] };
+  /** 방문객 뺀 인물 (같은 분·같은 인원이면 재사용, 들고 나면 touch) */
+  livePersons(): Person[] {
+    const s = this.s;
+    const c = this.cache;
+    if (c.minute !== s.world.minute || c.n !== s.persons.length) {
+      c.list = s.persons.filter((q) => !q.visitor);
+      c.minute = s.world.minute;
+      c.n = s.persons.length;
+    }
+    return c.list;
+  }
+
+  touch(): void {
+    this.cache.minute = -1;
+  }
+
   private day(): number {
     return this.s.world.day();
   }
@@ -153,7 +170,7 @@ export class SocietyLink {
     const H = () => s.house;
     return {
       get persons() {
-        return s.persons.filter((q) => !q.visitor);
+        return L.livePersons();
       },
       rng: this.rng,
       get rel() {
@@ -177,7 +194,10 @@ export class SocietyLink {
       spend: (hh, n, reason) => this.spend(hh, n, reason),
       addMoney: (hh, n, reason) => this.addMoney(hh, n, reason),
       savingsS: (estate) => Math.round((s.econ?.S(estate as never) ?? 0) * s.settings.lifespan * 4),
-      fame: (hh, d, reason, by) => H()?.fame(hh, d, reason, by ?? null),
+      fame: (hh, d, reason, by) => {
+        if (reason === 'wedding') H()?.lastFeast.set(hh, this.day());
+        H()?.fame(hh, d, reason, by ?? null);
+      },
       fameOf: (hh) => H()?.fameOf(hh) ?? 300,
       church: (p, d) => {
         p.churchRep = Math.max(-100, Math.min(100, p.churchRep + d));
@@ -205,15 +225,11 @@ export class SocietyLink {
         s.moveHousehold(p, hh, lot);
       },
       splitHousehold: (ps, reason) => {
+        const from = ps[0].household;
         const hh = s.newHouseholdId();
         const lot = s.town ? s.freeLot('small') : null;
-        const est = this.estateOf(ps[0].household);
         for (const p of ps) s.moveHousehold(p, hh, lot);
-        const house = H();
-        if (house) {
-          house.hhEstate.set(hh, est as never);
-          house.house.clans.onHouseholdSplit(ps[0].household === hh ? hh : ps[0].household, hh);
-        }
+        H()?.onSplit(from, hh);
         void reason;
         return hh;
       },
@@ -236,14 +252,14 @@ export class SocietyLink {
         const toClan = house.house.clans.clanIdOfHousehold(to);
         const h = house.house.heirlooms.held(cl)[0];
         if (!h) return 0;
-        const v = h.defId ? 40 : 0;
+        const v = house.heirloomValue(h);
         return house.house.heirlooms.dowry(h.id, toClan, to, by) ? v * 4 : 0;
       },
       borrow: (hh, n, reason) => {
         const e = s.econ;
         const a = e?.account(hh);
         if (!e || !a || e.debt(a) + n > e.loanLimit(a)) return false;
-        e.borrow(a, n, reason, 28, this.day());
+        e.borrow(a, n, reason, (e.d as { loans: { termDays: number[] } }).loans.termDays.at(-1) ?? 28, this.day());
         return true;
       },
       priestAvailable: () => s.persons.some((q) => q.role === 'priest' || q.career?.id === 'priest'),
@@ -686,6 +702,7 @@ export class SocietyLink {
       case 'petitionLord': {
         const p = P('personId');
         if (!p || !this.policy) return { ok: false };
+        if (!this.policy.canPetition(p)) return { ok: false, reason: 'reason.lord_petition' };
         const r = this.policy.petition(p);
         return { ok: r.ok, result: r };
       }

@@ -136,7 +136,7 @@ export interface CardsHost {
   rumor(subject: Person, kind: string, good: boolean, strength: number): void;
   chronicle(trigger: string, subjects: Person[]): void;
   heirloom(p: Person, what: 'damage' | 'lose' | 'recover'): void;
-  setFlag(p: Person, flag: string): void;
+  setFlag(p: Person, flag: string, cardId?: string | null): void;
   notice(p: Person, kind: string, args?: Record<string, string | number>): void;
 }
 
@@ -259,7 +259,11 @@ export class Cards {
     }
   }
 
+  /** 지금 결과를 적용 중인 카드 (setFlag 에 넘김: 카드별 죄목 등) */
+  private current: string | null = null;
+
   private resolve(pc: PendingCard, option: number): CardResult {
+    this.current = pc.cardId;
     const def = this.defs.get(pc.cardId)!;
     const o = def.options[option];
     const p = this.host.persons.find((q) => q.id === pc.personId);
@@ -304,7 +308,7 @@ export class Cards {
     if (out.rumor) H.rumor(p, out.rumor.kind, out.rumor.good, out.rumor.strength);
     if (out.chronicle) H.chronicle(out.chronicle, other ? [p, other] : [p]);
     if (out.heirloom) H.heirloom(p, out.heirloom);
-    if (out.flag) H.setFlag(p, out.flag);
+    if (out.flag) H.setFlag(p, out.flag, this.current);
     if (out.chain && depth < 3) this.offer(p, out.chain, {}, other, true);
   }
 }

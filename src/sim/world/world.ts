@@ -25,7 +25,7 @@ export class World {
   /** 품목 평균 품질 0~4 (제작 결과, 17-1) */
   readonly quality: Record<string, number> = {};
   /** 조작 가정의 돈 (경제가 있으면 Simulation 이 연결). 상호작용 조건 money 확인용 */
-  money: (() => number) | null = null;
+  money: ((forBuy?: boolean) => number) | null = null;
   /** 저장고 묶음 (품목 → [수량, 들어온 날]). 부패 판정용. world.stock 이 기준이고 하루 한 번 맞춤 */
   readonly batches = new Map<string, { qty: number; day: number }[]>();
   private nextUid = 1;

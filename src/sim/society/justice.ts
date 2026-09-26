@@ -318,7 +318,7 @@ export class Justice {
   daily(day: number): void {
     const H = this.host;
     this.todayCount = 0;
-    const cands = H.persons.filter((p) => !H.controlled(p.household) && atLeastTeen(p) && !this.inJail(p));
+    const cands = H.persons.filter((p) => !H.controlled(p.household) && atLeastTeen(p) && !this.inJail(p) && !p.schoolAway);
     for (const p of cands) {
       const u = H.rng.next();
       let total = 0;
@@ -487,6 +487,12 @@ export class Justice {
     const H = this.host;
     const now = H.minute();
     for (const t of this.state.trials) {
+      // 카드로 시작한 재판: 판결 카드가 이틀 안에 안 오면 법대로 판결 (소프트락 방지)
+      if (t.viaCard && t.stage !== 'done' && !t.verdict && now - t.stageAt > 2 * 1440) {
+        this.autoPlea(t);
+        this.resolve(t);
+        continue;
+      }
       if (!t.controlled || t.viaCard || t.stage === 'done') continue;
       if (t.stage === 'pending') {
         if (now < t.at) continue;
@@ -880,7 +886,7 @@ export class Justice {
     }
     const v = CARD_VERDICT[flag];
     if (!v) return false;
-    const t = this.state.trials.find((x) => x.accused === p.id && x.stage !== 'done');
+    const t = this.state.trials.find((x) => x.accused === p.id && x.stage !== 'done' && x.viaCard);
     if (!t) return false;
     if (v === 'law') {
       this.autoPlea(t);

@@ -44,7 +44,7 @@ export function requiresOk(world: World, ia: InteractionDef, target: ObjectInsta
   if (r.targetState) for (const k in r.targetState) if ((target.state[k] ?? false) !== r.targetState[k]) return false;
   if (r.targetMin) for (const k in r.targetMin) if (Number(target.state[k] ?? 0) < r.targetMin[k]) return false;
   if (r.targetMax) for (const k in r.targetMax) if (Number(target.state[k] ?? 0) > r.targetMax[k]) return false;
-  if (r.money !== undefined && (world.money?.() ?? Infinity) < r.money) return false;
+  if (r.money !== undefined && (world.money?.(!!ia.effects?.buy) ?? Infinity) < r.money) return false;
   if (r.stock) for (const k in r.stock) if ((world.stock[k] ?? 0) < r.stock[k]) return false;
   if (ia.hours) {
     const h = world.hour();
@@ -74,7 +74,7 @@ export function checkRequires(world: World, ia: InteractionDef, target: ObjectIn
       if (Number(target.state[k] ?? 0) > v) return { ok: false, reasonKey: `reason.max.${k}`, reasonArgs: { n: v } };
     }
   }
-  if (r.money !== undefined && (world.money?.() ?? Infinity) < r.money) return { ok: false, reasonKey: 'reason.money', reasonArgs: { n: r.money } };
+  if (r.money !== undefined && (world.money?.(!!ia.effects?.buy) ?? Infinity) < r.money) return { ok: false, reasonKey: 'reason.money', reasonArgs: { n: r.money } };
   if (r.stock) {
     for (const k in r.stock) {
       const v = r.stock[k];

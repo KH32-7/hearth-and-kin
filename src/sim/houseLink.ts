@@ -126,6 +126,11 @@ export class HouseLink {
 
   // ================================================================== 공통 도움
 
+  /** 인물이 들어오거나 나감 (캐시 무효화: 같은 분에 죽음과 출생이 겹쳐도 새 목록) */
+  touch(): void {
+    this.personsCache.minute = -1;
+  }
+
   private persons(): Person[] {
     const s = this.s;
     const c = this.personsCache;
@@ -544,8 +549,6 @@ export class HouseLink {
     this.house.honor.addFameHousehold(hh, delta, reason, by);
     const s = this.s;
     s.fame.set(hh, (s.fame.get(hh) ?? 0) + delta);
-    const head = this.members(hh)[0];
-    if (head && hh === 1) s.notice(head, delta >= 0 ? 'fame_up' : 'fame_down', { n: Math.abs(delta), reason: `fame.reason.${reason}` });
   }
 
   fameOf(hh: number): number {
@@ -560,6 +563,9 @@ export class HouseLink {
 
   /** 자정 (새 날, day = 방금 시작한 날) */
   daily(day: number): void {
+    // NPC 귀족·기사 가문은 연회를 스스로 엶 (16-2 사치 요구, 조작 가문은 혼례·잔치 상호작용·의도로)
+    const every = 7;
+    for (const [hh, est] of this.hhEstate) if (hh !== 1 && (est === 'noble' || est === 'knight') && day - (this.lastFeast.get(hh) ?? -99) >= every) this.lastFeast.set(hh, day);
     this.estates.daily();
     if (this.fief) this.fief.daily(day - 1);
     this.finesToday = 0;
@@ -586,12 +592,41 @@ export class HouseLink {
 
   /** 사망 (목록에서 빼기 전): 가계도, 하인, 가장이면 상속 전체 */
   onDeath(p: Person, cause: string): void {
+    if (this.house.servants.isServant(p)) this.house.servants.forget(p);
     if (cause === 'moved_away') {
-      if (this.house.servants.isServant(p)) this.house.servants.dismiss(p, 'left');
+      // 추방·이주로 떠난 가장: 승계 순서의 다음 사람이 가장 (장례·유언은 없음)
+      const cl = this.house.clans.clanOf(p);
+      if (cl && cl.headId === p.id) {
+        const next = this.house.inheritance.successionOrder(cl.id, p).find((q) => q !== p && this.s.persons.includes(q));
+        this.house.clans.setHead(cl.id, next ?? null);
+      }
       return;
     }
     this.house.inheritance.onDeath(p, cause);
-    if (this.house.servants.isServant(p)) this.house.servants.dismiss(p, 'died');
+  }
+
+  /** 판정기 분가 (인원 상한 신혼부부): 새 가구도 같은 가문, 신분 유지 */
+  onSplit(fromHh: number, newHh: number): void {
+    this.hhEstate.set(newHh, this.householdEstate(fromHh));
+    this.house.clans.onHouseholdSplit(fromHh, newHh);
+  }
+
+  /** 카드 선택 뒤 (상속 분쟁의 의절, 가문명 고르기) */
+  onCard(p: Person, cardId: string, option: number, _ok: boolean, other: Person | null): void {
+    if (cardId === 'inheritance_dispute' && other) {
+      const cl = this.house.clans.clanOf(p);
+      const heir = (cl && this.house.clans.head(cl.id)) ?? p;
+      this.house.inheritance.onDisputeResolved(option, heir, other === heir ? p : other);
+    } else if (cardId === 'family_name_choice') {
+      const cl = this.house.clans.clanOfHousehold(p.household);
+      const pool = (this.s.data.family?.clanNames as { names?: string[] } | undefined)?.names ?? [];
+      if (cl && !cl.name && pool.length) this.house.clans.grantFamilyName(cl.id, pool[(option * 7 + p.id * 13 + this.day()) % pool.length]);
+    }
+  }
+
+  /** 가보 값 (동화) */
+  heirloomValue(h: Heirloom): number {
+    return this.valueOf(h.ref);
   }
 
   /** 혼인 (판정기·혼례): 신분 두 층 규칙, 가문 동맹 */
@@ -926,6 +961,17 @@ export class HouseLink {
   }
 
   hashParts(parts: (string | number)[]): void {
+    const H = this.house;
+    for (const hh of [...this.hhEstate.keys()].sort((a, b) => a - b)) {
+      const cl = H.clans.clanOfHousehold(hh);
+      if (cl) parts.push(hh, cl.id, cl.fame, cl.headId, cl.law, cl.motto ?? '-', cl.name ?? '-');
+      if (cl) for (const h of H.heirlooms.held(cl.id)) parts.push(h.id, h.status, h.damaged ?? '-', h.household);
+      for (const sv of H.servants.of(hh)) parts.push(sv.personId, sv.role, Math.round(sv.loyalty * 100));
+    }
+    parts.push(Math.round(H.honor.morale * 100));
+    for (const [id, d] of [...this.dress].sort((a, b) => a[0] - b[0])) parts.push(id, d.cloth, d.dye);
+    for (const [hh, d] of [...this.lastFeast].sort((a, b) => a[0] - b[0])) parts.push(hh, d);
+    parts.push([...this.feats].sort((a, b) => a - b).join(','), [...this.awayFlight].sort((a, b) => a - b).join(','));
     this.estates.hashParts(parts);
     this.fief?.hashParts(parts);
     this.sumptuary?.hashParts(parts);

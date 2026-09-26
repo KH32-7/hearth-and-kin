@@ -519,6 +519,11 @@
     "lord": {
       "maxDays": 14,
       "unrestBelow": 40
+    },
+    "credit": {
+      "$comment": "17-6 식량 외상: 식량이 식구 하루치도 안 되면 대출 한도 안에서 사흘치 식비까지 (식구당 하루 식비, 파딩)",
+      "days": 3,
+      "perPersonDay": 6
     }
   },
   "loans": {
@@ -568,5 +573,19 @@
       "noble": 0.15,
       "knight": 0.4
     }
+  },
+  "seize": {
+    "$comment": "17-6 압류: 식량·땔감은 남기고 살림을 장부 값으로. 가축은 한 마리 값(파딩)",
+    "keep": [
+      "bread",
+      "grain",
+      "flour",
+      "ingredients",
+      "vegetables",
+      "preserves",
+      "firewood",
+      "water"
+    ],
+    "animalValue": 24
   }
 }

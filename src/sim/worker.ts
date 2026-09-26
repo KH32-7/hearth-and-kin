@@ -358,6 +358,7 @@ self.onmessage = (ev: MessageEvent<ToWorker>) => {
     if (m.type !== 'init' && m.type !== 'menu' && m.type !== 'menuPerson' && m.type !== 'buildQuery' && m.type !== 'stats') flushDirect();
     switch (m.type) {
       case 'init':
+        treeCache = null;
         data = validateSimData(m.data as Parameters<typeof validateSimData>[0]);
         personsInit = m.persons;
         relationsInit = (m as { relations?: typeof relationsInit }).relations ?? [];
