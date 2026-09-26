@@ -287,7 +287,8 @@
 - [x] 걷기 그리기 일정 속도 (순간이동 0), 인구 122→94, 가로등 깜박임 없음·불 일렁임 느리게 (사용자 요청)
 - [x] 새 게임·커마·문장 편집기·튜토리얼 화면 (UI 작업자 U, `m8-newgame.spec.ts` 12 통과 HMR 끈 서버), 꾸민 가족으로 프리셋 적용
 - [ ] 목업 1:1 대조 + 좌하단 변경(무드렛 칸·설명 카드·생각 풍선·감정 빛·강도 막대) (UI 작업자 V)
-- [ ] 무드렛 설명글 420개 심즈식 재작성 + 원인 줄 (작업자 셋)
+- [ ] 무드렛 설명글 420개 심즈식 재작성 + 원인 줄 (작업자 셋: c 131·b 151 끝, a 138 진행)
+- [ ] 발견: 정의만 있고 붙는 곳이 없는 무드렛 (설명글은 씀) — 날씨·계절(rain_on_roof rainbow snowed_in spring_bloom starry_night sunny_day thick_fog thunder_fear winter_dread) → M10, 동물(petted_animal named_pig_slaughtered) → M12, 유령(saw_ghost) → M11, 그 밖(morning_bell new_friend new_furniture new_idea nightmare old_bones overate pregnant_hope proud_parent quiet_morning restless_night sibling_fight spoiled_food stale_bread starving_family stillbirth_grief studied_hard toothache war_memory warm_food weak_from_hunger window_view witnessed_execution had_guests rough_shift new_clothes theft_victim slept_beside_spouse tax_paid newlywed recovered repaired toddler_clung harsh_master first_love_flutter) → 해당 시스템에서 연결
 - [ ] 새 게임 설정 중 계절 길이·난이도·수위·마법·괴물 빈도: sim 설정이 없음 (M10 달력, M11 난이도, M13 마법·괴물 때 연결). 타이틀 이어 하기·갤러리는 저장(M?)·갤러리(M16) 때
 - [ ] 발견: 5188 dev 서버는 다른 작업이 파일을 저장할 때마다 새로 고침 → E2E 는 HMR 끈 서버(artifacts/qa/newgame/vite.nohmr.config.ts)로
 - [ ] 정책 방향 헤드리스 `tools/sim-policy.ts` 28일 × 50 실행 (도구 있음, 연결 끝남)
