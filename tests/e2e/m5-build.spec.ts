@@ -58,6 +58,7 @@ test('M5 건축: 빈 부지 → 2층 집(방 4) → 가구 → 입주 하루 stu
 
   // ---- 1층: 방 도구로 바깥 벽 + 가운데 벽, 문 2, 창 2
   await page.locator('.mode-btn[data-mode="build"]').click();
+  await page.locator('.sub-tab[data-sub="make"]').click();
   await tool(page, 'floor', 'floor_wood');
   await tool(page, 'room', 'wall_timber');
   await drag(page, [4, R(0, 3)], [14, R(0, 9)]);
@@ -99,7 +100,8 @@ test('M5 건축: 빈 부지 → 2층 집(방 4) → 가구 → 입주 하루 stu
   expect(st.rooms.length).toBeGreaterThanOrEqual(4);
 
   // ---- 가구 (구매 모드)
-  await page.locator('.mode-btn[data-mode="buy"]').click();
+  await page.locator('.mode-btn[data-mode="build"]').click();
+  await page.locator('.sub-tab[data-sub="obj"]').click();
   // 1층 왼쪽 방(부엌): 화로, 식탁 + 걸상, 의자. 문 앞(6,8)에서 오른쪽(7~8)으로 통로
   await buy(page, 'kitchen', 'hearth', 6, R(0, 4));
   await buy(page, 'dining', 'dining_table', 6, R(0, 7));
@@ -124,6 +126,7 @@ test('M5 건축: 빈 부지 → 2층 집(방 4) → 가구 → 입주 하루 stu
 
   // ---- 길 막는 배치 경고: 문 밖을 울타리로 두르면 경고, 되돌리면 사라짐
   await page.locator('.mode-btn[data-mode="build"]').click();
+  await page.locator('.sub-tab[data-sub="make"]').click();
   await tool(page, 'fence', 'fence_wood');
   await drag(page, [5, R(0, 10)], [7, R(0, 10)]);
   await drag(page, [5, R(0, 11)], [7, R(0, 11)]);

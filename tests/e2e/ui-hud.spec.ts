@@ -100,7 +100,8 @@ test('인물 수첩: 모든 탭과 책갈피가 열림', async ({ page }, info) 
 test('건축/구매 모드: 인물 묶음은 숨고 아래 판 3단', async ({ page }, info) => {
   test.skip(info.project.name === 'laptop-125', '두 해상도로 충분');
   const errors = await openGame(page);
-  await page.locator('.mode-btn[data-mode="buy"]').click();
+  await page.locator('.mode-btn[data-mode="build"]').click();
+  await expect(page.locator('.sub-tab[data-sub="obj"].on')).toBeVisible();
   await expect(page.locator('.me')).toBeHidden();
   await expect(page.locator('.speed')).toBeHidden();
   for (const sel of ['.dock-left', '.dock-mid', '.dock-detail']) await expect(page.locator(sel)).toBeVisible();

@@ -3,14 +3,16 @@
    게임필: 누르면 1~2px 눌리고, 올리면 밝아지고, 바뀌면 톡 튀고, 위험하면 흔들림. 움직임은 짧고 계단식(steps). */
 @font-face {
   font-family: 'Warhaven';
-  /* 넥슨 워헤이븐체: 설치된 배포 파일을 그대로 씀 (수정/서브셋 없음). 없으면 폴백 */
+  /* 넥슨 워헤이븐체: 배포 파일(assets/fonts, 수정/서브셋/변환 없음). 설치돼 있으면 설치본, 아니면 파일을 받음 (웹 배포) */
   /* 설치된 폰트의 실제 이름: 'Warhaven OTF Regular' (PostScript WarhavenOTFR) */
-  src: local('Warhaven OTF Regular'), local('WarhavenOTFR'), local('NEXON Warhaven'), local('Warhaven');
+  src: local('Warhaven OTF Regular'), local('WarhavenOTFR'),
+    url('../assets/fonts/NEXON_Warhaven_OTF_Regular.otf') format('opentype');
   font-display: swap;
 }
 @font-face {
   font-family: 'Warhaven';
-  src: local('Warhaven OTF Bold'), local('WarhavenOTFB'), local('NEXON Warhaven Bold');
+  src: local('Warhaven OTF Bold'), local('WarhavenOTFB'),
+    url('../assets/fonts/NEXON_Warhaven_OTF_Bold.otf') format('opentype');
   font-weight: 700;
   font-display: swap;
 }
@@ -595,16 +597,20 @@ button.nb-cell:hover { transform: translateY(-1px); }
 .part .lock, .buy-item .lock { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; background: var(--skin-cute-no) 0 0 / 100% 100%; opacity: 1; }
 .buy-panel { display: none; flex-direction: column; gap: 8px; padding: 0; border: 0 !important; background: none !important; }
 .build-ui[data-mode='buy'] .buy-panel { display: flex; }
+.sub-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.sub-tab { display: flex; align-items: center; gap: 6px; padding: 4px 12px; font-size: 14px; color: var(--text-light); text-shadow: 0 1px 0 var(--outline), 1px 0 var(--outline), -1px 0 var(--outline); }
+.sub-tab.on { background: rgba(255,211,106,.35); }
+.sub-tabs .search { margin-left: auto; width: 96px; display: flex; align-items: center; padding: 4px 8px; }
 .buy-filter { display: flex; gap: 6px; }
 .buy-filter .chip { display: flex; align-items: center; padding: 3px 8px; }
 .buy-filter .search { margin-left: auto; width: 120px; }
-.buy-tabs { display: grid; grid-template-columns: repeat(4, 64px); gap: 8px; }
-.buy-tab { width: 64px; height: 72px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 10px; background: rgba(251,236,210,.08); border: 0; font-size: 12px; padding: 0; color: var(--text-light); text-shadow: 0 1px 0 var(--outline), 1px 0 var(--outline), -1px 0 var(--outline); }
+.buy-tabs { display: grid; grid-template-columns: repeat(5, 52px); gap: 8px; }
+.buy-tab { width: 52px; height: 62px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 10px; background: rgba(251,236,210,.08); border: 0; font-size: 12px; padding: 0; color: var(--text-light); text-shadow: 0 1px 0 var(--outline), 1px 0 var(--outline), -1px 0 var(--outline); }
 .buy-tab:hover { background: rgba(251,236,210,.18); transform: translateY(-1px); }
 .buy-tab.on { background: rgba(255,211,106,.28); box-shadow: 0 0 0 2px var(--gold); }
 .cat-pic { height: 36px; display: flex; align-items: center; justify-content: center; }
 .cat-pic canvas { max-width: 40px; max-height: 36px; width: auto; height: auto; }
-.cat-name { white-space: nowrap; overflow: hidden; max-width: 60px; }
+.cat-name { white-space: nowrap; overflow: hidden; max-width: 50px; }
 .buy-grid { display: none; gap: 8px; flex-wrap: wrap; align-content: flex-start; flex: 1; overflow-y: auto; scrollbar-width: thin; }
 .build-ui[data-mode='buy'] .buy-grid { display: flex; }
 .variants { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }

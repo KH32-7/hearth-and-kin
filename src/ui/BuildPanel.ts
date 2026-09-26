@@ -113,6 +113,7 @@ export class BuildPanel {
   private titleEl!: HTMLElement;
   private moneyEl!: HTMLElement;
   private consEl!: HTMLElement;
+  private subBtns = new Map<GameMode, HTMLElement>();
 
   constructor(parent: HTMLElement, private h: BuildPanelHandlers) {
     this.root = el('div', 'build-ui', parent);
@@ -121,13 +122,15 @@ export class BuildPanel {
     // 모드 버튼은 HUD 우상단 아이콘 띠로 옮겨 붙음 (HearthGame, GDD 27-2)
     const modes = el('div', 'mode-bar', this.root);
     modes.dataset.testid = 'mode-bar';
-    for (const m of ['live', 'buy', 'build'] as GameMode[]) {
+    // 구매는 건축 안의 [물건] 탭 (사용자 결정 2026-09-26). 모드 버튼은 생활 | 건축 둘
+    for (const m of ['live', 'build'] as GameMode[]) {
       const b = el('button', 'mode-btn', modes);
       b.type = 'button';
       b.dataset.mode = m;
-      b.appendChild(iconEl(m === 'live' ? 'rv.house' : m === 'buy' ? 'rv.pouch' : 'cute.wrench', 2));
+      b.appendChild(iconEl(m === 'live' ? 'rv.house' : 'cute.wrench', 2));
       el('span', 'ib-label', b).textContent = t(`build.mode.${m}`);
-      b.addEventListener('click', () => this.h.setMode(m));
+      // 건축을 누르면 물건 탭부터 (이미 건축 중이면 그대로)
+      b.addEventListener('click', () => this.h.setMode(m === 'build' ? (this.mode === 'live' ? 'buy' : this.mode) : m));
       this.modeBtns.set(m, b);
       this.modeBar = modes;
     }
@@ -187,12 +190,19 @@ export class BuildPanel {
     this.picker.dataset.testid = 'part-picker';
     this.buyPanel = el('div', 'buy-panel', left);
     this.buyPanel.dataset.testid = 'buy-panel';
-    const filt = el('div', 'buy-filter', this.buyPanel);
-    const byRoom = el('span', 'chip on', filt);
-    byRoom.appendChild(iconEl('rv.home', 1));
-    const byUse = el('span', 'chip', filt);
-    byUse.appendChild(iconEl('cute.wrench', 1));
-    const search = el('span', 'chip search', filt);
+    // 왼쪽 위 [물건] [짓기] 탭 (물건이 앞) + 찾기
+    const subs = el('div', 'sub-tabs', left);
+    left.insertBefore(subs, this.buyPanel);
+    for (const [sub, m, icon] of [['obj', 'buy', 'cute.bag'], ['make', 'build', 'cute.wrench']] as const) {
+      const b = el('button', 'sub-tab chip', subs);
+      b.type = 'button';
+      b.dataset.sub = sub;
+      b.appendChild(iconEl(icon, 2));
+      el('span', '', b).textContent = t(`build.sub.${sub}`);
+      b.addEventListener('click', () => this.h.setMode(m));
+      this.subBtns.set(m, b);
+    }
+    const search = el('span', 'chip search', subs);
     search.appendChild(iconEl('ui.search', 2));
     const tabs = el('div', 'buy-tabs', this.buyPanel);
     for (const c of BUY_CATEGORIES) {
@@ -236,7 +246,9 @@ export class BuildPanel {
   setMode(m: GameMode): void {
     this.mode = m;
     this.root.dataset.mode = m;
-    for (const [k, b] of this.modeBtns) b.classList.toggle('on', k === m);
+    // 물건/짓기 둘 다 건축 버튼이 켜짐
+    for (const [k, b] of this.modeBtns) b.classList.toggle('on', k === (m === 'buy' ? 'build' : m));
+    for (const [k, b] of this.subBtns) b.classList.toggle('on', k === m);
     if (m === 'build') this.renderPicker();
     if (m === 'buy') this.renderBuy();
     this.consEl.style.display = m === 'build' ? '' : 'none';

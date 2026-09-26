@@ -108,5 +108,7 @@
   "catalog.cat.outdoor.short": "바깥",
   "catalog.cat.religion.short": "신앙",
   "catalog.cat.crafted.short": "손수",
-  "nb.moodSum": "무드렛 합계 {n}"
+  "nb.moodSum": "무드렛 합계 {n}",
+  "build.sub.obj": "물건",
+  "build.sub.make": "짓기"
 }
