@@ -76,6 +76,7 @@ export class Tutorial {
     const recent = (k: string, ms = 1500) => performance.now() - (this.keys.get(k) ?? -1e9) < ms;
     this.steps = [
       { id: 'select', icons: ['mouse.left', 'key.space'], begin: () => (startSel = this.p.selectedId()), done: () => this.p.selectedId() !== startSel },
+      { id: 'usable', icons: ['key.shift'], begin: () => this.keys.delete('shift'), done: () => recent('shift', 60_000) },
       { id: 'pie', icons: ['mouse.left'], done: () => this.p.pieOpen() },
       { id: 'needs', icons: ['cute.bolt'], done: () => this.p.popup() === 'needs' },
       { id: 'speed', icons: ['key.2', 'key.3'], begin: () => (startSpeed = this.p.snap()?.speed ?? 1), done: () => (this.p.snap()?.speed ?? 0) > Math.max(1, startSpeed) },

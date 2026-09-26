@@ -1,0 +1,21 @@
+// 쓸 수 있는 물건 보기: 물건 위 마우스 이름 딱지 + Alt 전체 외곽선 캡처
+import { chromium } from 'playwright';
+const browser = await chromium.launch({ channel: 'msedge' });
+const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
+const errs = [];
+page.on('pageerror', (e) => errs.push(e.message));
+await page.goto('http://127.0.0.1:5188/?town=ashford&new=0');
+await page.waitForFunction(() => window.__game?.ready?.(), null, { timeout: 120_000 });
+await page.evaluate(() => { window.__game.setSpeed?.(0); window.__game.setZoom?.(2); });
+await page.waitForTimeout(1500);
+const t = await page.evaluate(() => { const hk = window.__hk, r = hk.renderer; for (const [uid, n] of hk.world.objs) { if (!/hearth|table|bed|chest/.test(n.defId) || !n.node.mesh.visible) continue; const ref = n.node.ref; const c = r.worldToScreen(n.node.left - ref.anchorX + ref.w / 2, n.node.bottom - ref.anchorY + ref.h * 0.6); if (c.x > 200 && c.y > 200 && c.x < 1400 && c.y < 700) return c; } return null; });
+await page.mouse.move(t.x, t.y);
+await page.waitForTimeout(300);
+const tag = await page.evaluate(() => { const e = document.querySelector('.hover-tag'); return e && e.style.display !== 'none' ? e.textContent : null; });
+await page.keyboard.down('Shift');
+await page.waitForTimeout(300);
+await page.screenshot({ path: 'artifacts/qa/play/usable_alt.png' });
+const n = await page.evaluate(() => window.__hk.world.many.length);
+await page.keyboard.up('Shift');
+console.log(JSON.stringify({ tag, outlined: n, errs }));
+await browser.close();

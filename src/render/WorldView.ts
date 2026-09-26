@@ -1614,6 +1614,32 @@ export class WorldView {
     this.hl = { uid: n.uid, spriteId: n.node.spriteId, mesh, mat };
   }
 
+  /** 여러 물건 외곽선 (Alt: 쓸 수 있는 물건 모두 보기). 은은하게 */
+  private many: { mesh: THREE.Mesh; mat: THREE.ShaderMaterial }[] = [];
+  setHighlightMany(uids: number[]): void {
+    for (const h of this.many) {
+      h.mesh.parent?.remove(h.mesh);
+      h.mat.dispose();
+    }
+    this.many = [];
+    for (const uid of uids) {
+      const n = this.objs.get(uid);
+      if (!n || !n.node.mesh.visible || !this.layers[n.slab].group.visible) continue;
+      const r = n.node.ref;
+      const tex = this.textures.get(r.image);
+      const img = this.imageEls.get(r.image);
+      if (!tex || !img) continue;
+      const mat = makeOutlineMaterial(tex, img.width, img.height, r, WorldView.OUTLINE_COLOR);
+      mat.uniforms.uOpacity.value = 0.75;
+      const mesh = new THREE.Mesh(quad, mat);
+      placeRect(mesh, n.node.left - r.anchorX - OUTLINE_PAD, n.node.bottom - r.anchorY - OUTLINE_PAD, r.w + OUTLINE_PAD * 2, r.h + OUTLINE_PAD * 2);
+      mesh.renderOrder = n.node.mesh.renderOrder + 0.4;
+      if (n.node.mesh.scale.x < 0) mesh.scale.x = -mesh.scale.x;
+      (n.node.mesh.parent ?? this.layers[n.slab].group).add(mesh);
+      this.many.push({ mesh, mat });
+    }
+  }
+
   private clearHighlight(): void {
     if (!this.hl) return;
     this.hl.mesh.parent?.remove(this.hl.mesh);

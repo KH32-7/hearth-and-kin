@@ -339,6 +339,9 @@ button { font: inherit; color: inherit; cursor: pointer; background: none; borde
 .click-fx.on { animation: click-fx .55s steps(5) forwards; }
 @keyframes click-fx { 0% { transform: translate(-50%, -50%) scale(.4); opacity: 1; } 70% { opacity: .9; } 100% { transform: translate(-50%, -50%) scale(1.15); opacity: 0; } }
 .hide-ui .click-fx { display: none; }
+/* 물건 이름 딱지 (커서 옆) */
+.hover-tag { position: absolute; pointer-events: none; z-index: 6; padding: 4px 10px; font-size: 14px; color: var(--text-light); white-space: nowrap; }
+.hide-ui .hover-tag { display: none !important; }
 
 /* 로딩 */
 .loading { position: absolute; inset: 0; display: grid; place-items: center; background: #1b1612; z-index: 50; transition: opacity 0.4s; }

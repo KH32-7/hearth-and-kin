@@ -87,6 +87,7 @@ export class HearthGame {
   build: BuildController | null = null;
   private marker: HTMLElement;
   private clickFx: HTMLElement;
+  private hoverTag: HTMLElement;
   /** 이동 클릭 표시의 세계 위치 (px), 없으면 null */
   private clickAt: { x: number; y: number } | null = null;
   /** 부지: Tiled 지도(.tmj)에서 읽음 (BRIEF 1장 지도 형식). ?lot=empty 는 빈 부지 (M5 건축) */
@@ -130,6 +131,27 @@ export class HearthGame {
     this.clickFx = document.createElement('div');
     this.clickFx.className = 'click-fx';
     app.appendChild(this.clickFx);
+    this.hoverTag = document.createElement('div');
+    this.hoverTag.className = 'hover-tag g';
+    this.hoverTag.style.display = 'none';
+    app.appendChild(this.hoverTag);
+    // Shift 를 누르는 동안: 화면 안 쓸 수 있는 물건 모두 외곽선
+    window.addEventListener('keydown', (e) => {
+      if (e.key !== 'Shift' || e.repeat || !this.ready) return;
+      const objs = this.client.snap?.objects ?? [];
+      const vr = this.renderer.viewRect();
+      const T = this.pack.tilePx;
+      const H1 = this.lotRows();
+      this.world.setHighlightMany(objs.filter((o) => {
+        const x = (o.x + 0.5) * T;
+        const y = ((o.y % H1) + 0.5) * T;
+        return x >= vr.x0 - T && x <= vr.x1 + T && y >= vr.y0 - T && y <= vr.y1 + 2 * T && this.isInteractable(o.defId);
+      }).map((o) => o.uid));
+    });
+    window.addEventListener('keyup', (e) => {
+      if (e.key === 'Shift') this.world.setHighlightMany([]);
+    });
+    window.addEventListener('blur', () => this.world.setHighlightMany([]));
     window.addEventListener('error', (e) => this.errors.push(String(e.message)));
     window.addEventListener('unhandledrejection', (e) => this.errors.push(String(e.reason)));
   }
@@ -1214,7 +1236,10 @@ export class HearthGame {
     });
     window.addEventListener('keyup', (e) => this.direct.keyUp(e));
     window.addEventListener('blur', () => this.direct.reset());
-    canvas.addEventListener('pointerleave', () => this.world.setHighlight(null));
+    canvas.addEventListener('pointerleave', () => {
+      this.world.setHighlight(null);
+      this.hoverTag.style.display = 'none';
+    });
     this.client.onSnapshot((s) => {
       if (s.speed > 0) this.pendingSpeedBeforePause = s.speed;
     });
@@ -1298,7 +1323,15 @@ export class HearthGame {
     const uid = person === null ? this.world.pick(w.x, w.y) : null;
     const obj = uid !== null ? this.client.snap?.objects.find((o) => o.uid === uid) : undefined;
     // 상호작용할 수 있는 물건에 마우스를 올리면 외곽선
-    this.world.setHighlight(obj && this.isInteractable(obj.defId) ? obj.uid : null);
+    const usable = obj && this.isInteractable(obj.defId) ? obj : null;
+    this.world.setHighlight(usable ? usable.uid : null);
+    // 물건 이름 딱지 (커서 옆): 무엇을 누르는지 알 수 있게
+    this.hoverTag.style.display = usable ? '' : 'none';
+    if (usable) {
+      this.hoverTag.textContent = t(`object.${usable.defId}`);
+      this.hoverTag.style.left = `${cx + 16}px`;
+      this.hoverTag.style.top = `${cy + 18}px`;
+    }
     this.renderer.canvas.style.cursor = person !== null || uid !== null ? 'pointer' : 'default';
   }
 
