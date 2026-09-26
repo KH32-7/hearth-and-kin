@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "gdd/18_마을과_NPC.md",
+                "file": "gdd/16_가문과_신분.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "18_마을과_NPC"
+              "title": "16_가문과_신분"
             }
           }
         ]
@@ -190,11 +190,12 @@
   },
   "active": "a9752ae2d1041f6b",
   "lastOpenFiles": [
-    "gdd/16_가문과_신분.md",
-    "gdd/14_관계와_사회.md",
     "gdd/15_가족_임신_육아.md",
     "gdd/10_캐릭터와_생애.md",
     "03_프롬프트.md",
+    "gdd/18_마을과_NPC.md",
+    "gdd/16_가문과_신분.md",
+    "gdd/14_관계와_사회.md",
     "05_기획검토_1차.md",
     "gdd/27_UI_UX.md",
     "gdd/28_아트와_오디오.md",
@@ -223,7 +224,6 @@
     "레퍼런스_이미지/02_Ancient_Ruins",
     "레퍼런스_이미지/01_Village",
     "레퍼런스_이미지",
-    "gdd/18_마을과_NPC.md",
     "00_개요.md",
     "data/epic_rpg_world_files.csv",
     "data",

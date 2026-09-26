@@ -14,6 +14,7 @@ export const FAMILY_FILES: Record<string, string> = {
   events: 'events/family_society.json',
   letters: 'letters.json',
   moodletsM7: 'moodlets_m7.json',
+  moodletsM7b: 'moodlets_m7b.json',
   thoughtsM7: 'thoughts_m7.json',
   wishesM7: 'wishes_m7.json',
   estates: 'estates.json',

@@ -373,6 +373,38 @@ export function mergeObjectDefs(userObjects: Record<string, ObjectDef>, build: B
   return { objects, kindMembers, problems: problemsCat };
 }
 
+/** SimData.family 의 콘텐츠를 기존 원본 묶음에 합침 (검증 전, 원본을 바꾸지 않고 새 객체로) */
+function mergeFamilyContent(raw: { interactions: unknown; social?: unknown; inner?: unknown; family?: FamilyRaw }): void {
+  const f = raw.family;
+  if (!f) return;
+  const cc = f.childcare as { social?: Record<string, unknown>; interactions?: Record<string, unknown> } | undefined;
+  const preg = f.pregnancy as { social?: Record<string, unknown>; interactions?: Record<string, unknown> } | undefined;
+  const addTo = (base: unknown, extra: Record<string, unknown>[]): unknown => {
+    const b = (base as { interactions?: Record<string, unknown> } | undefined) ?? { interactions: {} };
+    const merged: Record<string, unknown> = { ...(b.interactions ?? {}) };
+    for (const e of extra) for (const [k, v] of Object.entries(e)) if (!k.startsWith('$')) merged[k] = v;
+    return { ...b, interactions: merged };
+  };
+  const ia = [cc?.interactions, preg?.interactions].filter((x): x is Record<string, unknown> => !!x);
+  if (ia.length) raw.interactions = addTo(raw.interactions, ia);
+  const so = [cc?.social, preg?.social].filter((x): x is Record<string, unknown> => !!x);
+  if (so.length && raw.social) raw.social = addTo(raw.social, so);
+  const inner = raw.inner as { moodlets?: { moodlets?: Record<string, unknown> }; thoughts?: { thoughts?: unknown[] }; wishes?: { wishes?: unknown[] } } | undefined;
+  if (inner) {
+    const m7 = [f.moodletsM7, f.moodletsM7b] as ({ moodlets?: Record<string, unknown> } | undefined)[];
+    const moods: Record<string, unknown> = { ...(inner.moodlets?.moodlets ?? {}) };
+    for (const m of m7) for (const [k, v] of Object.entries(m?.moodlets ?? {})) if (!k.startsWith('$') && !(k in moods)) moods[k] = v;
+    const th = (f.thoughtsM7 as { thoughts?: unknown[] } | undefined)?.thoughts ?? [];
+    const wi = (f.wishesM7 as { wishes?: unknown[] } | undefined)?.wishes ?? [];
+    raw.inner = {
+      ...inner,
+      moodlets: { ...(inner.moodlets ?? {}), moodlets: moods },
+      ...(inner.thoughts ? { thoughts: { ...inner.thoughts, thoughts: [...(inner.thoughts.thoughts ?? []), ...th] } } : {}),
+      ...(inner.wishes ? { wishes: { ...inner.wishes, wishes: [...(inner.wishes.wishes ?? []), ...wi] } } : {}),
+    };
+  }
+}
+
 export function validateSimData(raw: {
   needs: unknown;
   balance: unknown;
@@ -399,6 +431,8 @@ export function validateSimData(raw: {
 }): SimData {
   const needs = needsSchema.parse(raw.needs);
   const balance = balanceSchema.parse(raw.balance);
+  // 생애와 가족 (M7): 돌봄 사회 상호작용, 장난감·과제 물건 상호작용, M7 무드렛·속마음·소원을 기존 묶음에 합침
+  mergeFamilyContent(raw);
   const interactions = interactionsSchema.parse(raw.interactions).interactions;
   // 직업 근무 = 래빗홀 상호작용으로 합성 (부지 출구로 나가 근무 시간 동안 사라짐, 13-8)
   const careersRaw = (raw.careers as { careers?: Record<string, CareerDef> } | undefined)?.careers ?? null;

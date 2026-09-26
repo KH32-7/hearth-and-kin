@@ -225,6 +225,48 @@ export class Person {
   /** 부모 (가계도, M7 유전 입력) */
   mother = 0;
   father = 0;
+  /** 아기 자리 (15-3): 요람 / 누군가의 품 / 바닥. 아기가 아니면 null */
+  babyPlace: { kind: 'cradle'; uid: number } | { kind: 'held'; by: number } | { kind: 'floor' } | null = null;
+  /** 안고 있는 아기 id (0 없음) */
+  holding = 0;
+  /** 울고 있음 (아기/유아), 유모, 방치 개입이 이미 일어남, 떼쓰는 중 (분) */
+  crying = false;
+  wetNurse = false;
+  neglectHandled = false;
+  tantrumUntil = 0;
+  /** 유아 기술 5 / 아동 스킬 4 (15-4, 15-5): 레벨과 모은 경험치 */
+  childSkills: Record<string, number> = {};
+  childSkillXp: Record<string, number> = {};
+  /** 교육 경로 id, 오늘 과제 (진척 0~1), 성적 평균(0~1)과 날 수, 마지막 성적 무드렛을 준 날 수 */
+  education: string | null = null;
+  homework: { day: number; progress: number } | null = null;
+  gradeScore = 0;
+  gradeDays = 0;
+  gradeWeek = 0;
+  /** 가문에 대한 애정 (15-6, 0~100): 청년이 될 때 정함. 상속 분쟁(16-5)이 읽음 */
+  clanAffection = 50;
+  /** 도제 계약 (15-6): 배우는 직업, 끝나는 날 */
+  apprentice: { career: string; until: number } | null = null;
+  /** 젖을 먹일 수 있는 마지막 날 (출산 뒤 아기 단계 동안, 15-3), 오늘 (sim 이 자정마다 모두에게 씀) */
+  lactatingUntil = -1;
+  today = 0;
+  /** 학교·기숙·시동으로 집에 없음 (15-5), 몰래 나가서 돌아올 분 (15-6 반항) */
+  schoolAway = false;
+  sneakUntil = 0;
+  /** 교회 평판 (16-4, -100~100, 0 쪽으로 하루 0.5 감쇠는 M8) */
+  churchRep = 0;
+  /** 유전자 (10-3, family/genetics.ts). 마을 시작 인물은 처음 자식을 낳을 때 무작위로 붙음 */
+  genome: import('../family/genetics').Genome | null = null;
+  /** 입양아, 대부모 (15-7) */
+  adopted = false;
+  godparent = 0;
+  /** 이번 생일에 축하해 준 사람들 (같은 사람이 되풀이하지 않게, 생일마다 비움) */
+  celebratedBy: number[] = [];
+  /** 생애 (M7, 10-2): 생일 대기(단계 끝에 닿은 날, -1 없음), 미룬 날 수, 마지막 생일, 노화 끄기 */
+  birthdayDay = -1;
+  birthdayDelayed = 0;
+  lastBirthdayDay = -1;
+  agingOff = false;
   /** 직접 조작 (WASD) 중인 방향. null = 조작 안 함. 저장하지 않는 입력 상태 (입력 로그 steer 로 재생) */
   direct: { dx: number; dy: number } | null = null;
   /** 마지막으로 입력 로그에 위치를 남긴 뒤 직접 조작으로 움직였는가 */

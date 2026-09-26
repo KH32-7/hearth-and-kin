@@ -192,6 +192,17 @@ export class Inner {
     p.moodDirty = true;
   }
 
+  /** 인생 목표 다시 고르기 (청소년·청년이 될 때 아동 목표 → 성인 목표, 12-4) */
+  newAspiration(p: Person, rng: Rng): void {
+    const group = p.stage === 'child' ? 'child' : 'adult';
+    if (p.aspiration && (this.d.aspirations[p.aspiration.id]?.group ?? 'adult') === group) return;
+    const asp = Object.entries(this.d.aspirations).filter(([, a]) => {
+      const g = a.group ?? 'adult';
+      return g === group || (g === 'noble' && group === 'adult' && p.estate === 'noble');
+    });
+    p.aspiration = asp.length ? { id: asp[rng.int(asp.length)][0], stage: 0 } : null;
+  }
+
   conflicts(t: string, have: string[]): boolean {
     for (const [a, b] of this.d.traits.conflicts) {
       if ((a === t && have.includes(b)) || (b === t && have.includes(a))) return true;

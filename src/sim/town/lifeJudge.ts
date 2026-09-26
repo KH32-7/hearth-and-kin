@@ -8,6 +8,7 @@ import type { StoryData } from '../data/simData';
 import type { LifeStage, Person } from '../people/person';
 import type { Relations } from '../social/relations';
 import type { Town } from './town';
+import { judgePregnancy } from '../family/pregnancy';
 
 const ORDER: LifeStage[] = ['baby', 'toddler', 'child', 'teen', 'young', 'adult', 'elder'];
 
@@ -28,6 +29,15 @@ export interface JudgeHost {
   immigrate(n: number): Person[];
   emigrate(household: number): void;
   coarse(p: Person): void;
+  /**
+   * 생애 모듈(M7 family/lifecycle.ts)이 나이를 먹이면: 자정마다 인물별로 부름 (단계 전환은 생일 아침에 모듈이).
+   * 없으면 판정기가 예전처럼 자정에 단계를 바꿈
+   */
+  ageDaily?(p: Person): void;
+  /** 수명 설정 배수 (29-0 lifespan): 노환 위험 n 과 확률을 나눔 */
+  lifespan?(): number;
+  /** 노환 위험 배수 (장수 가계 0.7, 병약 가계 1.3, 건강) */
+  elderHazardMult?(p: Person): number;
 }
 
 export class LifeJudge {
@@ -71,17 +81,36 @@ export class LifeJudge {
     this.aging();
     this.deaths(day);
     this.pregnancies(day);
+    // 한 부지 모드(마을 없음, M7): 나이·사망·임신만. 혼인·이주·원한은 마을에서
+    if (!this.host.town) {
+      this.conceive(day);
+      return;
+    }
     this.marriages(day);
     this.conceive(day);
     if (day % this.s.population.migrationCheckDays === 0) this.migration();
     this.grudges();
   }
 
+  /** 단계가 바뀐 뒤 통계 (생애 모듈이 생일에 부름): 29-1 혼인률 모집단 */
+  onStage(p: Person, from: LifeStage, to: LifeStage): void {
+    if (from === 'young' && p.estate !== 'clergy') {
+      this.stats.youngEnded++;
+      if (p.marriedDay >= 0) this.stats.youngEndedMarried++;
+    }
+    void to;
+  }
+
   // ------------------------------------------------------------------ 나이
 
   private aging(): void {
+    const own = this.host.ageDaily;
     for (const p of this.host.persons) {
       this.exposure[p.lifeStage] = (this.exposure[p.lifeStage] ?? 0) + 1;
+      if (own) {
+        own.call(this.host, p);
+        continue;
+      }
       p.ageDays++;
       const len = this.s.stageDays[p.lifeStage] ?? 24;
       if (p.lifeStage !== 'elder' && p.ageDays >= len) {
@@ -123,8 +152,10 @@ export class LifeJudge {
           cause ||= 'illness';
         }
       }
-      if (!cause && p.lifeStage === 'elder') {
-        pd = H.base * Math.exp(H.k * p.ageDays) * (p.weakened ? H.healthPoor : 1);
+      if (!cause && p.lifeStage === 'elder' && !p.agingOff) {
+        // 29-2: h(n) = base × e^(k × n) × 건강 × 가계, n = 노년 경과 ÷ 수명 배수, 확률도 ÷ 수명 배수
+        const L = this.host.lifespan?.() ?? 1;
+        pd = (H.base * Math.exp(H.k * (p.ageDays / L)) * (p.weakened ? H.healthPoor : 1) * (this.host.elderHazardMult?.(p) ?? 1)) / L;
         if (this.host.rng.next() < pd) cause = 'old_age';
       }
       if (!cause) continue;
@@ -150,73 +181,14 @@ export class LifeJudge {
 
   // ------------------------------------------------------------------ 임신과 출산 (15-1)
 
+  /** 임신 단계/위험/진통/출산은 src/sim/family/pregnancy.ts (host.pregnancy 가 없으면 story.json 수치의 기본 시스템) */
   private pregnancies(day: number): void {
-    const P = this.s.pregnancy;
-    for (const p of [...this.host.persons]) {
-      const g = p.pregnancy;
-      if (!g) continue;
-      // 단계당 유산/사산 위험 (29-1: 현실적 기본 임신의 6~12%)
-      if (this.host.rng.next() < P.lossChance / 3) {
-        p.pregnancy = null;
-        this.stats.losses++;
-        const father = this.host.persons.find((q) => q.id === g.father);
-        const mood = g.stage >= 3 ? 'stillbirth_grief' : 'miscarriage_grief';
-        this.host.moodlet(p, mood);
-        if (father) this.host.moodlet(father, mood);
-        this.host.news(g.stage >= 3 ? 'stillbirth' : 'miscarriage', { a: p.name }, [p]);
-        continue;
-      }
-      if (day - g.since < P.stageDays * g.stage) continue;
-      if (g.stage < 3) {
-        g.stage++;
-        continue;
-      }
-      // 출산
-      p.pregnancy = null;
-      this.lastBirth.set(p.id, day);
-      const father = this.host.persons.find((q) => q.id === g.father) ?? null;
-      const n = this.host.rng.next() < P.twins ? 2 : 1;
-      const babies: Person[] = [];
-      for (let k = 0; k < n; k++) {
-        const baby = this.host.birth(p, father);
-        if (baby) {
-          this.stats.births++;
-          babies.push(baby);
-        }
-      }
-      this.host.moodlet(p, 'newborn_joy');
-      if (father) this.host.moodlet(father, 'newborn_joy');
-      this.host.news(n > 1 ? 'twins' : 'birth', { a: n > 1 && father ? father.name : p.name, b: babies[0]?.name ?? '' }, [p]);
-      if (this.host.rng.next() < P.maternalDeath) {
-        this.stats.deaths++;
-        this.stats.deathsByCause.childbirth = (this.stats.deathsByCause.childbirth ?? 0) + 1;
-        if (father) this.host.moodlet(father, 'lost_in_childbirth');
-        this.host.news('death_childbirth', { a: p.name, b: father?.name ?? p.name }, [p]);
-        this.host.kill(p, 'childbirth');
-      }
-    }
+    judgePregnancy(this.host, this.s, { stats: this.stats, lastBirth: this.lastBirth, stageDeaths: this.stageDeaths, age: (p: Person) => this.age(p) }).daily(day);
   }
 
+  /** 수태 (15-1): src/sim/family/pregnancy.ts */
   private conceive(day: number): void {
-    const P = this.s.pregnancy;
-    const fb = this.feedback();
-    for (const w of this.host.persons) {
-      if (w.sex !== 'female' || !w.spouse || w.pregnancy || w.infant) continue;
-      const age = this.age(w);
-      if (age < P.fertileAge[0] || age > P.fertileAge[1]) continue;
-      if (day - (this.lastBirth.get(w.id) ?? -1e9) < P.birthCooldownDays) continue;
-      const h = this.host.persons.find((q) => q.id === w.spouse);
-      if (!h || h.household !== w.household) continue;
-      const times = P.coitusPerDay[w.wantsKids] ?? P.coitusPerDay.any;
-      let pr = 1 - Math.pow(1 - P.perCoitus, times);
-      if (age >= P.declineFromAge) pr *= Math.max(P.declineFloor, 1 - (age - P.declineFromAge) / P.declineYears);
-      // 조작 가문은 피드백 없음 (플레이어 선택 존중)
-      if (w.household !== 1) pr *= fb;
-      if (this.host.rng.next() < pr) {
-        w.pregnancy = { since: day, stage: 1, father: h.id };
-        this.stats.pregnancies++;
-      }
-    }
+    judgePregnancy(this.host, this.s, { stats: this.stats, lastBirth: this.lastBirth, stageDeaths: this.stageDeaths, age: (p: Person) => this.age(p) }).conceive(day, this.feedback());
   }
 
   // ------------------------------------------------------------------ 약혼과 혼인 (14-4, 18-3)

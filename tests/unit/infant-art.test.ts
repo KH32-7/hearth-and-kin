@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { existsSync } from 'node:fs';
 import packJson from '../../src/data/artpacks/lpc.json';
 import outfitsJson from '../../src/data/outfits.json';
-import { planInfant, infantFrameRect, infantLookFromSpec, type InfantLook } from '../../src/render/lpc/infant';
+import { planInfant, infantFrameRect, infantLookFromSpec, toddlerAnim, SWADDLE_DEFAULT, type InfantLook } from '../../src/render/lpc/infant';
 import { randomSpecWith } from '../../src/render/lpc/plan';
 import type { LpcPack, OutfitsData } from '../../src/render/lpc/types';
 import { readPng } from '../../tools/lpc/png';
@@ -27,7 +27,7 @@ describe('infant artpack', () => {
     expect(b.held.dirs).toHaveLength(4);
     expect(b.held_cry.dirs).toHaveLength(4);
     const t = inf.toddler.anims;
-    expect(t.crawl.frames).toBeGreaterThanOrEqual(4);
+    expect(t.crawl.frames).toBeGreaterThanOrEqual(6);
     expect(t.walk.frames).toBeGreaterThanOrEqual(6);
     expect(t.fall.frames).toBeGreaterThanOrEqual(3);
     expect(t.sit.frames).toBeGreaterThanOrEqual(1);
@@ -68,7 +68,10 @@ describe('infant artpack', () => {
     expect(hair.recolor!.to).toEqual(expect.arrayContaining(pack.palettes.hair.colors.blonde.slice(2)));
     expect(plan.sources.some((s) => s.path.endsWith('toddler/gown.png'))).toBe(true);
     const baby = planInfant('baby', look, pack);
-    expect(baby.sources.map((s) => s.path.split('/').pop())).toEqual(['mat.png', 'body.png', 'swaddle.png', 'hair.png', 'tears.png']);
+    expect(baby.sources.map((s) => s.path.split('/').pop())).toEqual(['body.png', 'swaddle.png', 'mat.png', 'hair.png', 'tears.png']);
+    // 강보는 염료가 아니라 생성(표백 안 한 리넨) 색
+    const sw = baby.sources.find((s) => s.path.endsWith('swaddle.png'))!;
+    expect(sw.recolor!.to).toEqual(expect.arrayContaining(pack.palettes.cloth.colors[SWADDLE_DEFAULT].slice(1)));
   });
 
   it('looks follow the person spec (estate garment, deterministic)', () => {
@@ -98,5 +101,20 @@ describe('infant artpack', () => {
         }
       }
     }
+  });
+
+  it('toddler animation choice: crawl / walk / fall / sit / idle / sleep', () => {
+    const base = { anim: 'idle', pose: 'stand', sleeping: false, underBlanket: false, collapsed: false };
+    expect(toddlerAnim({ ...base, anim: 'crawl' }, true)).toEqual({ anim: 'crawl', fixedFrame: null });
+    // 스냅샷 사이 보간이 끝나도 crawl 은 계속 재생 (sim 이 멈추면 anim 을 바꿈)
+    expect(toddlerAnim({ ...base, anim: 'crawl' }, false).anim).toBe('crawl');
+    expect(toddlerAnim({ ...base, anim: 'walk' }, true).anim).toBe('walk');
+    expect(toddlerAnim({ ...base, anim: 'walk' }, false).anim).toBe('idle');
+    expect(toddlerAnim({ ...base, anim: 'idle' }, false).anim).toBe('idle');
+    expect(toddlerAnim({ ...base, anim: 'fall' }, false).anim).toBe('fall');
+    expect(toddlerAnim({ ...base, anim: 'sit' }, false).anim).toBe('sit');
+    expect(toddlerAnim({ ...base, sleeping: true, anim: 'crawl' }, true).anim).toBe('sleep');
+    expect(toddlerAnim({ ...base, pose: 'lie', underBlanket: true }, false).anim).toBe('sleep');
+    expect(toddlerAnim({ ...base, collapsed: true }, false)).toEqual({ anim: 'fall', fixedFrame: 3 });
   });
 });

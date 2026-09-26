@@ -1,0 +1,241 @@
+{
+  "$comment": "임신과 출산 (GDD 15-1, 15-2, 29-1, 29-2). src/sim/family/pregnancy.ts 가 읽음. 기간은 {value, scale}. 확률은 0~1. 돈은 파딩",
+  "conception": {
+    "$comment": "동침 1회당 18% (29-2). 전체 세밀도는 오늘 실제 동침 횟수, 간이/요약은 기대 횟수 (원함 설정별). 가임 16~45세, 40세부터 감소. 조작 가문은 인구 피드백 없음",
+    "perCoitus": 0.18,
+    "coitusPerDay": { "yes": 1, "any": 0.8, "no": 0.08 },
+    "actualCountWantsMult": { "yes": 1, "any": 1, "no": 0.1 },
+    "fertileAge": [16, 45],
+    "declineFromAge": 40,
+    "declineYears": 8,
+    "declineFloor": 0.2,
+    "birthCooldown": { "value": 3, "scale": "lifespan" },
+    "seasonMult": { "spring": 1.15, "summer": 1, "autumn": 1, "winter": 0.95 },
+    "healthTraitKey": "health",
+    "healthMultRange": [0.8, 1.15],
+    "weakenedMult": 0.5,
+    "wishes": ["wish_have_child", "wish_second_child"],
+    "wishMult": 1.3
+  },
+  "stage": { "value": 1, "scale": "lifespan" },
+  "stages": [
+    {
+      "$comment": "초기: 변화 없음, 입덧 (아침에 방광/배고픔 급변 + 속 울렁임), 산파나 증상으로 알게 됨",
+      "belly": 0,
+      "needDecay": {},
+      "moveMult": 1,
+      "canWork": true,
+      "enterMoodlets": [],
+      "wake": { "chance": 0.8, "needs": { "bladder": -25, "hunger": -20 }, "moodlet": "morning_sickness" },
+      "knownOnEnter": false
+    },
+    {
+      "$comment": "중기: 배 레이어 1, 에너지 감소 1.2배, 이상한 음식 당김 (무작위 음식 소원)",
+      "belly": 1,
+      "needDecay": { "energy": 1.2 },
+      "moveMult": 1,
+      "canWork": true,
+      "enterMoodlets": ["pregnancy_glow"],
+      "craving": { "chance": 0.6, "moodlet": "pregnancy_craving", "wishes": ["wish_eat_hot_meal", "wish_snack_bread", "wish_eat_full", "wish_feast"] },
+      "knownOnEnter": true
+    },
+    {
+      "$comment": "후기: 배 레이어 2, 이동 -30%, 노동 불가, 편안함 감소 2배 (에너지 1.2배는 이어짐)",
+      "belly": 2,
+      "needDecay": { "energy": 1.2, "comfort": 2 },
+      "moveMult": 0.7,
+      "canWork": false,
+      "enterMoodlets": ["heavy_belly"],
+      "dailyMoodlets": ["heavy_belly"],
+      "knownOnEnter": true
+    }
+  ],
+  "twins": { "base": 0.03, "traitKey": "twinsBonus" },
+  "risk": {
+    "$comment": "위험 판정 (15-1). background 는 단계마다 한 번 (단계 길이로 나눠 하루씩) 유산/사산 확률. 사건 위험은 위험 요인이 생길 때마다. 35세 이상 가중, 16세 미만 없음. 결과: 합병증 / 조산 (초기는 합병증으로) / 유산·사산. 사망 설정 출산 칸의 loss 가 꺼지면 합병증까지만",
+    "background": [0.035, 0.025, 0.016],
+    "ageFrom": 35,
+    "ageMult": 1.5,
+    "noRiskBelowAge": 16,
+    "presetLossMult": { "realistic": 1, "normal": 0.5, "lenient": 0, "custom": 1 },
+    "events": {
+      "hunger": { "complication": 0.15, "premature": 0.04, "loss": 0.05 },
+      "illness": { "complication": 0.2, "premature": 0.08, "loss": 0.1 },
+      "shock": { "complication": 0.2, "premature": 0.06, "loss": 0.05 },
+      "fall": { "complication": 0.2, "premature": 0.1, "loss": 0.08 },
+      "overwork": { "complication": 0.12, "premature": 0.04, "loss": 0.03 }
+    },
+    "hungerBelow": 10,
+    "complicationMoodlet": "uneasy_kicks",
+    "prematureMoodlet": "premature_worry",
+    "prematureFrailChance": 0.35,
+    "prematureFrailTrait": "frail"
+  },
+  "loss": {
+    "moodlet": "lost_child_grief",
+    "memory": { "kind": "lost_child", "importance": 5, "valence": -1 },
+    "traumaChance": 0.15,
+    "news": { "early": "miscarriage", "late": "stillbirth" }
+  },
+  "labor": {
+    "timeout": { "value": 120, "scale": "absolute" },
+    "moodlet": "labor_pains",
+    "card": "labor_starts",
+    "cardOptions": ["midwife", "family", "alone"],
+    "spouseCard": "labor_call_spouse_home",
+    "letter": "birth_news",
+    "quarantineFeeMult": 2,
+    "familyMinAge": 14
+  },
+  "delivery": {
+    "$comment": "결과 판정 (15-2): 받는 사람 의술, 위생 (깨끗한 천, 끓인 물), 산모 건강, 합병증, 사망 설정. dangerous 에서 산모/아기 사망 판정. 출산 칸이 꺼진 사람은 20-7 대체 결과 (난산 + 합병증 무드렛 + 회복 2배)",
+    "danger": { "midwife": 0.04, "family": 0.08, "alone": 0.14 },
+    "difficult": { "midwife": 0.15, "family": 0.22, "alone": 0.3 },
+    "skill": "medicine",
+    "skillPerLevel": 0.06,
+    "skillFloor": 0.4,
+    "prepMult": { "cloth": 0.85, "water": 0.85 },
+    "mult": { "weakened": 1.6, "hungry": 1.3, "complication": 1.8, "premature": 1.5, "age": 1.4, "twins": 1.5 },
+    "healthTraitKey": "health",
+    "maternalDeath": 0.45,
+    "infantDeath": 0.15,
+    "recovery": { "value": 2, "scale": "lifespan" },
+    "recoveryEnergyCap": 60,
+    "memory": { "kind": "birth", "importance": 5, "valence": 1 },
+    "moodlets": {
+      "mother": "newborn_joy",
+      "father": "newborn_joy",
+      "difficult": "difficult_birth_recovery",
+      "twins": "twins_overwhelmed",
+      "grandparent": "grandchild_born",
+      "widower": "lost_in_childbirth",
+      "healthy": "baby_healthy_relief",
+      "cramped": "cramped_house"
+    }
+  },
+  "motherDeath": { "miracleWithHealer": 0.5, "miracleAlone": 0.2 },
+  "corvee": { "lordFavorDelta": -2 },
+  "chronicle": {
+    "birth": "birth",
+    "miscarriage": "miscarriage",
+    "stillbirth": "stillbirth",
+    "infantDeath": "child_death",
+    "motherDeath": "death_childbirth",
+    "miracle": "miracle_birth"
+  },
+  "prep": {
+    "$comment": "상호작용 → 준비물/상태 표시. cloth/water 는 위생 배수, midwifeBooked 는 진통 때 자동 산파, known/announced 는 알게 됨/알림",
+    "preg.sew_baby_clothes": ["clothes"],
+    "preg.make_cradle": ["cradle"],
+    "preg.prepare_birth": ["cloth", "water"],
+    "social.visit_midwife": ["known", "midwifeVisited"],
+    "social.book_midwife": ["midwifeBooked"],
+    "social.tell_pregnancy": ["announced"]
+  },
+  "cradleObject": "baby_basket",
+  "midwifeRoles": ["midwife", "herbalist"],
+  "gates": {
+    "$comment": "상호작용을 보일 조건. who: self = 하는 사람이 임신, target = 상대가 임신, household = 식구 중 임신. stages 는 임신 단계, known/announced 는 상태 조건, targetRoles 는 상대 NPC 역할",
+    "preg.sew_baby_clothes": { "who": "household", "stages": [2, 3] },
+    "preg.make_cradle": { "who": "household", "stages": [2, 3] },
+    "preg.prepare_birth": { "who": "household", "stages": [3] },
+    "social.visit_midwife": { "who": "self", "stages": [1, 2, 3], "targetRoles": ["midwife", "herbalist"] },
+    "social.book_midwife": { "who": "household", "stages": [3], "targetRoles": ["midwife", "herbalist"] },
+    "social.tell_pregnancy": { "who": "self", "stages": [1, 2, 3], "known": true, "announced": false },
+    "social.rub_belly": { "who": "target", "stages": [2, 3] }
+  },
+  "interactions": {
+    "preg.sew_baby_clothes": {
+      "nameKey": "ia.preg_sew_baby_clothes",
+      "icon": "yarn",
+      "objects": ["spinning_wheel", "loom"],
+      "tags": ["craft", "sew", "family"],
+      "requires": {},
+      "hours": [7, 21],
+      "steps": [{ "at": "target", "slot": "front", "anim": "work", "minutes": 90, "needs": { "fun": 0.3 } }],
+      "ads": { "fun": 12 },
+      "moodlets": [{ "id": "baby_things_ready" }]
+    },
+    "preg.make_cradle": {
+      "nameKey": "ia.preg_make_cradle",
+      "icon": "axe",
+      "objects": ["workbench"],
+      "tags": ["craft", "woodwork", "family"],
+      "requires": { "stock": { "timber": 1 } },
+      "hours": [7, 20],
+      "steps": [{ "at": "target", "slot": "front", "anim": "work", "minutes": 120, "needs": { "fun": 0.2 } }],
+      "effects": { "stock": { "timber": -1 } },
+      "ads": { "fun": 10 },
+      "moodlets": [{ "id": "cradle_made" }]
+    },
+    "preg.prepare_birth": {
+      "nameKey": "ia.preg_prepare_birth",
+      "icon": "water",
+      "objects": ["hearth"],
+      "tags": ["duty", "family"],
+      "requires": { "targetState": { "lit": true }, "stock": { "water": 1 } },
+      "steps": [
+        { "at": "target", "slot": "front", "anim": "work", "minutes": 20, "needs": { "warmth": 0.2 } },
+        { "at": { "object": "chest_clothes" }, "slot": "front", "anim": "work", "minutes": 10 }
+      ],
+      "effects": { "stock": { "water": -1 } },
+      "ads": {},
+      "moodlets": [{ "id": "baby_things_ready" }]
+    }
+  },
+  "social": {
+    "social.visit_midwife": {
+      "nameKey": "ia.social_visit_midwife",
+      "icon": "goto",
+      "category": "special",
+      "tags": ["social", "family", "heal"],
+      "minutes": 20,
+      "needs": { "social": 0.8 },
+      "targetNeeds": { "social": 0.5 },
+      "base": 95,
+      "requires": { "met": true },
+      "success": { "friendship": 3, "moodlets": ["pregnancy_glow"], "events": ["midwife_visited"] },
+      "failure": { "friendship": 0, "moodlets": ["uneasy_kicks"], "events": ["midwife_visited"] }
+    },
+    "social.book_midwife": {
+      "nameKey": "ia.social_book_midwife",
+      "icon": "ui.coin",
+      "category": "trade",
+      "tags": ["social", "family", "trade"],
+      "minutes": 10,
+      "needs": { "social": 0.5 },
+      "base": 90,
+      "requires": { "met": true },
+      "success": { "friendship": 2, "moodlets": ["baby_things_ready"], "events": ["midwife_booked"] },
+      "failure": { "friendship": -1, "moodlets": ["awkward_moment"] }
+    },
+    "social.tell_pregnancy": {
+      "nameKey": "ia.social_tell_pregnancy",
+      "icon": "social",
+      "category": "friendly",
+      "tags": ["social", "family"],
+      "minutes": 10,
+      "needs": { "social": 1 },
+      "targetNeeds": { "social": 1 },
+      "ads": { "social": 20 },
+      "base": 95,
+      "requires": { "met": true, "household": true },
+      "success": { "friendship": 5, "romance": 2, "moodlets": ["pregnancy_announced"], "targetMoodlets": ["pregnancy_announced"], "events": ["pregnancy_announced"] },
+      "failure": { "friendship": 0, "moodlets": ["pregnancy_announced"] }
+    },
+    "social.rub_belly": {
+      "nameKey": "ia.social_rub_belly",
+      "icon": "comfort",
+      "category": "romance",
+      "tags": ["social", "romance", "family"],
+      "minutes": 8,
+      "needs": { "social": 1, "comfort": 0.5 },
+      "targetNeeds": { "social": 1, "comfort": 1 },
+      "ads": { "social": 12, "comfort": 6 },
+      "base": 90,
+      "requires": { "met": true, "relAny": ["spouse"] },
+      "success": { "friendship": 2, "romance": 3, "moodlets": ["belly_rubbed"], "targetMoodlets": ["belly_rubbed"] },
+      "failure": { "friendship": -1, "moodlets": ["awkward_moment"] }
+    }
+  }
+}

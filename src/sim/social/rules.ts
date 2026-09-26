@@ -51,11 +51,31 @@ function emo(p: Person): string | null {
 }
 
 /** 상호작용 요구조건 (메뉴 회색 표시 + 자율 후보 거르기) */
+const DEPENDENT_STAGES = new Set(['baby', 'toddler']);
+/** 젖 먹이는 기간 판정용 오늘 (Person.lactatingDay 기준 날짜: 사람 필드에 담긴 오늘 값) */
+function nowDay(p: Person): number {
+  return p.today;
+}
+
 export function checkSocialRequires(rel: Relations, p: Person, t: Person, def: SocialDef, stock: Record<string, number>): Availability {
   const q = def.requires;
   const r = rel.get(p.id, t.id);
   const met = !!r?.met;
   const no = (reasonKey: string, reasonArgs?: Record<string, string | number>): Availability => ({ ok: false, reasonKey, reasonArgs });
+  // 아기·유아 (15-3, 15-4): 돌봄 행동만 받고, 스스로 사회 상호작용을 하지 않음
+  const care = def.category === 'care';
+  if (!care && (DEPENDENT_STAGES.has(t.lifeStage) || DEPENDENT_STAGES.has(p.lifeStage))) return no('reason.target_infant');
+  if (care && DEPENDENT_STAGES.has(p.lifeStage)) return no('reason.target_infant');
+  if (q.targetStageAny && !q.targetStageAny.includes(t.lifeStage)) return no('reason.stage');
+  if (q.actorStageAny && !q.actorStageAny.includes(p.lifeStage)) return no('reason.stage');
+  if (q.actorIsMother && t.mother !== p.id) return no('reason.not_mother');
+  if (q.actorLactating && !(p.lactatingUntil > nowDay(p))) return no('reason.not_lactating');
+  if (q.targetInCradle && t.babyPlace?.kind !== 'cradle') return no('reason.not_in_cradle');
+  if (q.targetNotPottyTrained && t.lifeStage === 'toddler' && (t.childSkills.potty ?? 0) >= 5) return no('reason.potty_trained');
+  if (q.targetSkillBelow) for (const [k, v] of Object.entries(q.targetSkillBelow)) if ((t.childSkills[k] ?? 0) >= v) return no('reason.skill_done');
+  if (q.targetHasHomework && !t.homework) return no('reason.no_homework');
+  if (q.targetBirthday && !(t.lastBirthdayDay === t.today && !t.celebratedBy.includes(p.id))) return no('reason.no_birthday');
+  if (care && p.household !== t.household && !q.targetBirthday) return no('reason.household');
   // 로맨스: 17세 이용가 원칙. 성인끼리만, 가족(같은 가구) 사이에는 연인/배우자일 때만.
   // 분류와 상관없이 로맨스 태그가 있거나 로맨스를 올리는 것 전부 (유혹하기 등 특수 분류 포함)
   if (isRomantic(def)) {

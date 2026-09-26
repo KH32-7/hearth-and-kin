@@ -97,6 +97,8 @@ export function compile(
     for (let i = 0; i < 8; i++) {
       if (ads[i] > 0 || supportAds[i] > 0 || steps.some((s) => s.needs[i] > 0)) serves[i] = 1;
       if (def.adBonusWhen && (def.adBonusWhen.ads as Record<string, number>)[NEED_IDS[i]] > 0) serves[i] = 1;
+      // 고치기는 고장 난 물건이 채우던 욕구를 대신 광고 (autonomy.repairAds): 급한 욕구 거름에서 빠지지 않게
+      if (id === 'obj.repair') serves[i] = 1;
     }
     const c: CompiledIA = { id, def, ads, supportAds, supportWhen: (def.supportWhen ?? []).map(compilePredicate), serves, steps };
     list.push(c);

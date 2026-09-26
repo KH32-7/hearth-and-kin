@@ -205,23 +205,25 @@ function walkFrames(): Pose[] {
 }
 
 function crawlFrames(): Pose[] {
+  // 6프레임 대각선 걸음: 오른손+왼무릎 → 왼손+오른무릎. 앞으로 나가는 손/무릎은 들림, 팔다리가 들린 동안 몸이 1px 올라감
   const out: Pose[] = [];
-  for (let f = 0; f < 4; f++) {
-    const ph = (f / 4) * Math.PI * 2;
-    const a = Math.cos(ph) * 1.3;
-    const liftR = Math.max(0, -Math.sin(ph)) * 0.9;
-    const liftL = Math.max(0, Math.sin(ph)) * 0.9;
-    const bob = Math.round(Math.sin(ph * 2) * 0.5);
+  const N = 6;
+  for (let f = 0; f < N; f++) {
+    const ph = (f / N) * Math.PI * 2;
+    const a = Math.cos(ph) * 1.9;
+    const liftR = Math.max(0, -Math.sin(ph)) * 1.5;
+    const liftL = Math.max(0, Math.sin(ph)) * 1.5;
+    const bob = Math.abs(Math.sin(ph)) > 0.5 ? -1 : 0;
     const p: Pose = {
       torso: { c: [0, 6.9, 0], r: [5.3, 3.7, 6.3] },
       neck: [0, 8.8, 6.3],
       shoulder: sym([4.2, 7.2, 4.6]),
-      elbow: [[5.0, 4.0, 5.6 + a / 2], [-5.0, 4.0, 5.6 - a / 2]],
-      hand: [[4.8, 1.3 + liftR, 6.9 + a], [-4.8, 1.3 + liftL, 6.9 - a]],
-      hip: sym([2.9, 6.6, -4.3]),
-      // 대각선 걸음: 오른손과 왼무릎이 같이
-      knee: [[3.3, 1.5 + liftL * 0.6, -3.4 - a], [-3.3, 1.5 + liftR * 0.6, -3.4 + a]],
-      ankle: [[3.1, 1.4, -8.2 - a], [-3.1, 1.4, -8.2 + a]],
+      elbow: [[6.0, 4.4 + liftR * 0.5, 5.8 + a / 2], [-6.0, 4.4 + liftL * 0.5, 5.8 - a / 2]],
+      hand: [[6.6, 1.3 + liftR, 7.0 + a], [-6.6, 1.3 + liftL, 7.0 - a]],
+      hip: sym([3.0, 6.6, -4.3]),
+      // 대각선 걸음: 오른손과 왼무릎이 같이. 무릎은 벌리고 발은 안쪽으로 (뒤에서 봐도 네 발로 기는 모양)
+      knee: [[4.3, 1.5 + liftL * 0.7, -3.4 - a], [-4.3, 1.5 + liftR * 0.7, -3.4 + a]],
+      ankle: [[2.4, 1.6 + liftL * 0.4, -8.0 - a], [-2.4, 1.6 + liftR * 0.4, -8.0 + a]],
       foot: 'sole',
       shift: [0, bob],
     };
@@ -301,7 +303,7 @@ interface TAnim { name: string; row: number; frames: Pose[]; fps: number; loop: 
 const TODDLER: TAnim[] = [
   { name: 'idle', row: 0, frames: idleFrames(), fps: 2, loop: true, dirs: DIRS },
   { name: 'walk', row: 4, frames: walkFrames(), fps: 12, loop: true, dirs: DIRS },
-  { name: 'crawl', row: 8, frames: crawlFrames(), fps: 6, loop: true, dirs: DIRS },
+  { name: 'crawl', row: 8, frames: crawlFrames(), fps: 9, loop: true, dirs: DIRS },
   { name: 'sit', row: 12, frames: [sitPose(0), sitPose(1)], fps: 2, loop: true, dirs: DIRS },
   { name: 'fall', row: 16, frames: fallFrames(), fps: 8, loop: false, dirs: DIRS },
 ];
@@ -388,147 +390,154 @@ function genToddler(): { heads: HeadPlace[]; anims: Record<string, unknown> } {
 }
 
 // ====================================================================== 아기
+//
+// 사람 아기로 읽히게 (2차, 사용자 피드백: "양처럼 보임"):
+//  - 두건은 이마에 붙는 둥근 테두리만 (위로 솟는 혹/귀 모양 없음), 얼굴을 크게 (강보 길이의 약 40~50%)
+//  - 강보는 생성(표백 안 한 리넨) 색이 기본 (게임에서 cloth "tan" 램프), 접힌 선 2개 + 두르는 띠(깔개와 같은 accent 색)
+//  - 바닥: 깔개 위에 앉아 팔을 흔듦 (엎드린 자세는 귀처럼 보여서 버림)
 
-/** 얼굴 무늬 (px, 윤곽선 없음). cx, cy = 머리 중심 (화면), look = 옆을 보는 정도 (-1 왼쪽 ~ 1 오른쪽) */
-function babyFace(cx: number, cy: number, mood: 'awake' | 'sleep' | 'cry0' | 'cry1', z: number, look = 0): Prim[] {
+type BabyMood = 'awake' | 'sleep' | 'cry0' | 'cry1';
+
+/** 얼굴 무늬 (px, 윤곽선 없음). cx, cy = 머리 중심 (화면), look = 고개 돌림 (-1 왼쪽 ~ 1 오른쪽, 0.5 정도면 3/4 얼굴) */
+function babyFace(cx: number, cy: number, mood: BabyMood, z: number, look = 0): Prim[] {
   const x = Math.round(cx - 0.5), y = Math.round(cy - 0.5);
-  const o = Math.round(look * 1.5);
+  const o = Math.round(look * 1.6);
   const prims: Prim[] = [];
   const P = (pts: Array<[number, number]>, shade: number, mat: Mat = 'skin'): Prim => ({ kind: 'px', pts, shade, z, group: 99, mat, noEdge: true });
-  const side = Math.abs(look) > 0.6;
-  const eyesX = side ? [x + o + (look < 0 ? -1 : 1)] : [x - 2 + o, x + 2 + o];
+  const eyes = [x - 2 + o, x + 2 + o];
+  // 볼 (발그레, 2px), 고개 돌린 쪽 볼은 가려짐
+  const cheeks: Array<[number, number]> = [];
+  if (look > -0.3) cheeks.push([x + 3 + o, y + 2], [x + 4 + o, y + 2]);
+  if (look < 0.3) cheeks.push([x - 4 + o, y + 2], [x - 3 + o, y + 2]);
   if (mood === 'awake') {
-    for (const ex of eyesX) prims.push(P([[ex, y], [ex, y + 1]], 0));
+    for (const ex of eyes) prims.push(P([[ex, y], [ex, y + 1]], 0));
     prims.push(P([[x + o, y + 3]], 1));
-    if (!side) prims.push(P([[x - 3 + o, y + 2], [x + 3 + o, y + 2]], 2));
+    prims.push(P(cheeks, 2));
   } else if (mood === 'sleep') {
-    for (const ex of eyesX) prims.push(P([[ex - 1, y + 1], [ex, y + 1]], 1));
+    prims.push(P([[eyes[0] - 1, y + 1], [eyes[0], y + 1], [eyes[1], y + 1], [eyes[1] + 1, y + 1]], 1));
     prims.push(P([[x + o, y + 3]], 2));
-    if (!side) prims.push(P([[x - 3 + o, y + 2], [x + 3 + o, y + 2]], 2));
+    prims.push(P(cheeks, 2));
   } else {
     // 울음: 꼭 감은 눈 (> <), 벌린 입, 눈물
     const wide = mood === 'cry1';
-    for (const [k, ex] of eyesX.entries()) {
-      const inward = side ? 0 : k === 0 ? 1 : -1;
-      prims.push(P([[ex - (inward > 0 ? 1 : 0), y], [ex + (inward < 0 ? 1 : 0), y], [ex, y + 1]], 1));
-    }
-    const mouth: Array<[number, number]> = wide ? [[x - 1 + o, y + 3], [x + o, y + 3], [x + 1 + o, y + 3], [x + o, y + 4]] : [[x + o, y + 3], [x + o, y + 4]];
-    if (side) mouth.splice(0, mouth.length, [x + o + (look < 0 ? -1 : 1), y + 3], [x + o + (look < 0 ? -1 : 1), y + 4]);
+    prims.push(P([[eyes[0] - 1, y], [eyes[0], y + 1], [eyes[0] - 1, y + 1]], 0));
+    prims.push(P([[eyes[1] + 1, y], [eyes[1], y + 1], [eyes[1] + 1, y + 1]], 0));
+    const mouth: Array<[number, number]> = wide
+      ? [[x - 1 + o, y + 3], [x + o, y + 3], [x + 1 + o, y + 3], [x - 1 + o, y + 4], [x + o, y + 4], [x + 1 + o, y + 4]]
+      : [[x + o, y + 3], [x + 1 + o, y + 3], [x + o, y + 4], [x + 1 + o, y + 4]];
     prims.push(P(mouth, 0));
     prims.push(P([[x + o, y + 3]], 1));
-    if (!side) prims.push(P([[x - 3 + o, y + 2], [x + 3 + o, y + 2]], 2));
+    prims.push(P(cheeks, 2));
     const t = wide ? 1 : 0;
     const tears: Array<[number, number]> = [];
-    for (const [k, ex] of eyesX.entries()) {
-      const out = side ? (look < 0 ? 1 : -1) : k === 0 ? -1 : 1;
-      tears.push([ex + out, y + 1 + t], [ex + out, y + 2 + t]);
-    }
+    if (look < 0.3) tears.push([eyes[0] - 2, y + 1 + t], [eyes[0] - 2, y + 2 + t]);
+    if (look > -0.3) tears.push([eyes[1] + 2, y + 1 + t], [eyes[1] + 2, y + 2 + t]);
     prims.push(P(tears, 3, 'tear'));
   }
   return prims;
 }
 
-type BabyMood = 'awake' | 'sleep' | 'cry0' | 'cry1';
-
-/** 강보 두건 앞자락: 이마를 덮는 천 (머리 중심 기준) → 헬멧처럼 보이지 않게 */
-function hoodBrim(cx: number, cy: number, rx = 5.0): Prim[] {
-  return [{ kind: 'ellipse', cx, cy: cy - 4.4, rx: rx - 0.4, ry: 2.1, z: 4, group: 1, mat: 'cloth', bias: 0.9, edgeShade: 2 }];
+/** 두건 두른 머리: 두건(머리보다 조금 큰 타원, 뒤) + 얼굴 + 이마 머리카락 한 줌. 두건 위쪽은 둥근 테두리뿐 */
+function hoodedHead(cx: number, cy: number, r: number, mood: BabyMood, look = 0): Prim[] {
+  const x = Math.round(cx - 0.5), y = Math.round(cy - 0.5);
+  const o = Math.round(look * 1.6);
+  return [
+    { kind: 'ellipse', cx: cx - look * 0.6, cy: cy - 0.7, rx: r + 1.5, ry: r + 1.4, z: 2, group: 1, mat: 'cloth', bias: -0.2 },
+    { kind: 'ellipse', cx, cy, rx: r, ry: r * 0.96, z: 3, group: 2, mat: 'skin', bias: 0.5 },
+    { kind: 'px', pts: [[x - 1 + o, y - 4], [x + o, y - 4], [x + o, y - 5], [x + 1 + o, y - 4]], shade: 3, z: 3.5, group: 2, mat: 'hair', noEdge: true },
+    ...babyFace(cx, cy, mood, 10, look),
+  ];
 }
 
-/** 누운 강보 (요람): 머리 왼쪽. breath 0/1 */
-function babyCradle(breath: number, mood: BabyMood): Prim[] {
-  const cry = mood.startsWith('cry');
-  const hy = 54 - (cry && mood === 'cry1' ? 1 : 0);
-  const pr: Prim[] = [
-    { kind: 'ellipse', cx: 35.5, cy: 55.2 - breath * 0.4, rx: 9.2, ry: 4.9 + breath * 0.45, z: 1, group: 1, mat: 'cloth' },
-    // 강보 접힌 자락
-    { kind: 'capsule', ax: 31, ay: 52.6 - breath * 0.3, bx: 39.5, by: 57.5, ra: 1.0, rb: 1.0, z: 1.5, group: 1, mat: 'cloth', bias: 1.2 },
-    { kind: 'ellipse', cx: 26.8, cy: hy + 0.2, rx: 6.2, ry: 5.8, z: 2, group: 1, mat: 'cloth', bias: -0.3 },
-    { kind: 'ellipse', cx: 26.3, cy: hy + 0.8, rx: 4.8, ry: 4.6, z: 3, group: 2, mat: 'skin', bias: 0.4 },
-    ...hoodBrim(26.3, hy + 0.8),
+/** 강보 몸통: 타원 + 접힌 선 2개(천 어두운 단) + 두르는 띠 (accent 색, mat 레이어) */
+function swaddle(cx: number, cy: number, rx: number, ry: number, bandX: number, z = 1): Prim[] {
+  return [
+    { kind: 'ellipse', cx, cy, rx, ry, z, group: 1, mat: 'cloth' },
+    { kind: 'capsule', ax: cx - rx * 0.55, ay: cy - ry * 0.75, bx: cx - rx * 0.1, by: cy + ry * 0.8, ra: 0.5, rb: 0.5, z: z + 0.1, group: 1, mat: 'cloth', shade: 2, noEdge: true },
+    { kind: 'capsule', ax: cx + rx * 0.45, ay: cy - ry * 0.7, bx: cx + rx * 0.8, by: cy + ry * 0.3, ra: 0.5, rb: 0.5, z: z + 0.1, group: 1, mat: 'cloth', shade: 2, noEdge: true },
+    { kind: 'capsule', ax: bandX + 0.6, ay: cy - ry + 0.9, bx: bandX - 0.6, by: cy + ry - 0.9, ra: 1.25, rb: 1.25, z: z + 0.2, group: 3, mat: 'mat', edgeShade: 1 },
   ];
-  if (cry) {
-    // 강보 밖으로 나온 주먹
-    pr.push({ kind: 'ellipse', cx: 32.6, cy: 51.8 - (mood === 'cry1' ? 1 : 0), rx: 1.7, ry: 1.6, z: 4, group: 3, mat: 'skin' });
-  }
-  pr.push(...babyFace(26.3, hy + 0.2, mood, 10));
+}
+
+/** 누운 강보 (요람): 머리 왼쪽 */
+function babyCradle(breath: number, mood: BabyMood): Prim[] {
+  const up = mood === 'cry1' ? 1 : 0;
+  const pr: Prim[] = [
+    ...swaddle(35.2, 55.4 - breath * 0.4, 10, 5.1 + breath * 0.45, 38.5),
+    ...hoodedHead(24.6, 53.8 - up, 5.4, mood),
+  ];
+  // 울 때 강보 밖으로 나온 주먹
+  if (mood.startsWith('cry')) pr.push({ kind: 'ellipse', cx: 31.4, cy: 50.6 - up, rx: 1.7, ry: 1.6, z: 4, group: 4, mat: 'skin' });
   return pr;
 }
 
-/** 바닥 깔개 위 (6~12개월, 배내옷): 엎드려 고개 들기. 얼굴은 앞(화면 아래), 등과 발은 뒤(화면 위), 발을 번갈아 버둥 */
+/** 바닥 깔개 (6~12개월, 배내옷): 앉아서 팔 흔들고 발 까딱. 앞모습 */
 function babyFloor(f: number, mood: BabyMood): Prim[] {
   const cry = mood.startsWith('cry');
-  const k = f === 0 ? 1 : -1;
-  const amp = cry ? 1.5 : 1.0;
-  const hu = mood === 'cry1' ? 1 : 0;
+  const up = mood === 'cry1' ? 1 : 0;
   const pr: Prim[] = [
-    // 깔개 (누빈 천)
-    { kind: 'poly', pts: [[19, 50], [45, 50], [48, 61], [16, 61]], z: 0, group: 0, mat: 'mat', shade: 4 },
-    { kind: 'poly', pts: [[16.2, 59.6], [47.8, 59.6], [48, 61], [16, 61]], z: 0.02, group: 0, mat: 'mat', shade: 3, noEdge: true },
-    { kind: 'px', pts: [[20, 54], [21, 54], [23, 54], [24, 54], [40, 54], [41, 54], [43, 54], [44, 54], [19, 57], [20, 57], [22, 57], [43, 57], [44, 57], [46, 57]], z: 0.05, group: 0, mat: 'mat', shade: 3 },
-    // 등 (배내옷)
-    { kind: 'ellipse', cx: 32, cy: 50.6, rx: 5.8, ry: 4.2, z: 1, group: 1, mat: 'cloth', bias: 0.4 },
-    // 머리
-    { kind: 'ellipse', cx: 32, cy: 55.8 - hu, rx: 4.9, ry: 4.6, z: 3, group: 2, mat: 'skin', bias: 0.4 },
-    // 머리카락 한 줌
-    { kind: 'px', pts: [[31, 52 - hu], [32, 52 - hu], [33, 52 - hu], [32, 51 - hu], [34, 53 - hu]], z: 3.5, group: 2, mat: 'hair', shade: 3 },
+    // 깔개 (누빈 천, accent 색)
+    { kind: 'poly', pts: [[18, 54], [46, 54], [48, 61], [16, 61]], z: 0, group: 0, mat: 'mat', shade: 4 },
+    { kind: 'poly', pts: [[16.2, 59.8], [47.8, 59.8], [48, 61], [16, 61]], z: 0.02, group: 0, mat: 'mat', shade: 3, noEdge: true },
+    { kind: 'px', pts: [[19, 57], [20, 57], [22, 57], [23, 57], [41, 57], [42, 57], [44, 57], [45, 57]], z: 0.05, group: 0, mat: 'mat', shade: 3 },
+    // 몸 (배내옷)
+    { kind: 'ellipse', cx: 32, cy: 53.4, rx: 5.4, ry: 4.7, z: 2, group: 1, mat: 'cloth' },
+    { kind: 'capsule', ax: 29.6, ay: 51.2, bx: 30.4, by: 57.2, ra: 0.5, rb: 0.5, z: 2.1, group: 1, mat: 'cloth', shade: 2, noEdge: true },
   ];
-  // 발: 등 뒤로 들림 (몸 뒤에 그림)
+  // 다리: 앞으로 뻗고 발끝이 위 (한 발씩 까딱)
   for (let i = 0; i < 2; i++) {
     const sg = i === 0 ? -1 : 1;
-    const l = (i === 0 ? k : -k) > 0 ? amp : 0;
-    const bx = 32 + sg * 2.8, by = 48.6;
-    const fx = 32 + sg * 4.4, fy = 46.8 - l * 1.0;
-    pr.push({ kind: 'capsule', ax: bx, ay: by, bx: fx, by: fy, ra: 1.7, rb: 1.5, z: 0.5, group: 20 + i, mat: 'skin', bias: -0.4 });
-    pr.push({ kind: 'ellipse', cx: fx + sg * 0.4, cy: fy - 0.3, rx: 1.8, ry: 1.3, z: 0.51, group: 20 + i, mat: 'skin', bias: -0.2 });
+    const kick = (f === i ? 1 : 0) * (cry ? 1.4 : 0.9);
+    const hx = 32 + sg * 2.4, hy = 57;
+    const fx = 32 + sg * 5.6, fy = 59.4 - kick;
+    pr.push({ kind: 'capsule', ax: hx, ay: hy, bx: fx, by: fy, ra: 2.0, rb: 1.7, z: 2.5, group: 20 + i, mat: 'skin', bias: 0.2 });
+    pr.push({ kind: 'ellipse', cx: fx + sg * 0.8, cy: fy - 0.8, rx: 1.5, ry: 1.8, z: 2.6, group: 20 + i, mat: 'skin', bias: 0.4 });
   }
-  // 팔: 턱 양옆으로 짚음 (울 땐 팔을 뻗어 버팀)
+  // 팔: 짧은 소매 → 손. 한 손씩 흔듦 (울 땐 둘 다 위로)
   for (let i = 0; i < 2; i++) {
     const sg = i === 0 ? -1 : 1;
-    const push = cry ? 0.8 : 0;
-    const ax = 32 + sg * 4.6, ay = 53.8;
-    const hx = 32 + sg * (5.6 + push), hy = 59.4 + (f === i ? -0.4 : 0);
-    pr.push({ kind: 'capsule', ax, ay, bx: hx, by: hy, ra: 1.5, rb: 1.3, z: 2.5, group: 10 + i, mat: 'cloth' });
-    pr.push({ kind: 'ellipse', cx: hx, cy: hy + 0.6, rx: 1.6, ry: 1.3, z: 2.6, group: 10 + i, mat: 'skin' });
+    const wave = cry ? (f === i ? 1 : 0.6) : f === i ? 1 : 0;
+    const sx = 32 + sg * 4.4, sy = 50.6;
+    const hx = 32 + sg * (5.8 + wave * 0.4), hy = 55.4 - wave * 4.4;
+    const mx = (sx + hx) / 2, my = (sy + hy) / 2;
+    pr.push({ kind: 'capsule', ax: sx, ay: sy, bx: mx, by: my, ra: 1.7, rb: 1.5, z: 3, group: 10 + i, mat: 'cloth' });
+    pr.push({ kind: 'capsule', ax: mx, ay: my, bx: hx, by: hy, ra: 1.4, rb: 1.3, z: 3.01, group: 10 + i, mat: 'skin' });
+    pr.push({ kind: 'ellipse', cx: hx, cy: hy, rx: 1.6, ry: 1.5, z: 3.02, group: 10 + i, mat: 'skin' });
   }
-  pr.push(...babyFace(32, 55.2 - hu, mood, 10));
+  // 머리: 두건 없음, 정수리 머리카락 한 가닥
+  const hx = 32, hy = 45.3 - up;
+  const y = Math.round(hy - 0.5);
+  pr.push({ kind: 'ellipse', cx: hx, cy: hy, rx: 5.8, ry: 5.5, z: 4, group: 2, mat: 'skin', bias: 0.5 });
+  pr.push({ kind: 'px', pts: [[30, y - 4], [31, y - 4], [32, y - 4], [33, y - 4], [31, y - 5], [32, y - 5], [32, y - 6]], shade: 3, z: 4.5, group: 2, mat: 'hair', noEdge: true });
+  pr.push(...babyFace(hx, hy + 0.4, mood, 10));
   return pr;
 }
 
 /** 품 안 (어른 칸 좌표, 안는 자세 팔 높이 38~45 에 맞춤) */
 function babyHeld(dir: Facing, breath: number, mood: BabyMood): Prim[] {
   const b = breath;
-  const cry = mood.startsWith('cry');
   const up = mood === 'cry1' ? 1 : 0;
+  const cry = mood.startsWith('cry');
   if (dir === 'down') {
     return [
-      { kind: 'ellipse', cx: 34.5, cy: 40.6 - b * 0.4, rx: 8.8, ry: 4.6 + b * 0.4, z: 1, group: 1, mat: 'cloth' },
-      { kind: 'capsule', ax: 30.5, ay: 38.2 - b * 0.3, bx: 38.5, by: 43.2, ra: 1.0, rb: 1.0, z: 1.5, group: 1, mat: 'cloth', bias: 1.2 },
-      { kind: 'ellipse', cx: 25.6, cy: 39.4 - up, rx: 6.2, ry: 5.8, z: 2, group: 1, mat: 'cloth', bias: -0.3 },
-      { kind: 'ellipse', cx: 25.1, cy: 40.0 - up, rx: 4.6, ry: 4.4, z: 3, group: 2, mat: 'skin', bias: 0.4 },
-      ...hoodBrim(25.1, 40.0 - up, 4.8),
-      ...(cry ? [{ kind: 'ellipse', cx: 31.4, cy: 37.0 - up, rx: 1.6, ry: 1.5, z: 4, group: 3, mat: 'skin' } as Prim] : []),
-      ...babyFace(25.1, 39.5 - up, mood === 'sleep' ? 'sleep' : mood, 10),
+      ...swaddle(35.2, 41.2 - b * 0.4, 9.4, 4.8 + b * 0.4, 38.8),
+      ...hoodedHead(25.2, 39.8 - up, 5.2, mood),
+      ...(cry ? [{ kind: 'ellipse', cx: 31.8, cy: 36.8 - up, rx: 1.6, ry: 1.5, z: 4, group: 4, mat: 'skin' } as Prim] : []),
     ];
   }
   if (dir === 'left' || dir === 'right') {
     const m = dir === 'left' ? 1 : -1;
-    const X = (x: number) => (m > 0 ? x : 64 - x);
+    const X = (x: number) => (m > 0 ? x : 63 - x);
     return [
-      { kind: 'ellipse', cx: X(26.8), cy: 41.2 - b * 0.4, rx: 6.4, ry: 4.4 + b * 0.4, z: 1, group: 1, mat: 'cloth' },
-      { kind: 'ellipse', cx: X(21.6), cy: 39.6 - up, rx: 5.3, ry: 5.4, z: 2, group: 1, mat: 'cloth', bias: -0.3 },
-      { kind: 'ellipse', cx: X(21.0), cy: 40.1 - up, rx: 4.2, ry: 4.2, z: 3, group: 2, mat: 'skin', bias: 0.4 },
-      ...hoodBrim(X(21.6), 40.1 - up, 4.4),
-      ...babyFace(X(21.0), 39.6 - up, mood, 10, m > 0 ? -1 : 1),
+      ...swaddle(X(28.8), 41.6 - b * 0.4, 6.6, 4.5 + b * 0.4, X(30.8)),
+      ...hoodedHead(X(22.0), 39.6 - up, 5.0, mood, m > 0 ? -0.45 : 0.45),
     ];
   }
-  // up: 어깨 너머로 얼굴만 (어른 뒤에 그림, 머리 오른쪽 어깨 위)
+  // up: 어깨 너머 뒤통수 (어른 뒤에 그림)
   return [
-    { kind: 'ellipse', cx: 44.2, cy: 33.2 - b * 0.3, rx: 4.6, ry: 3.4, z: 1, group: 1, mat: 'cloth' },
-    { kind: 'ellipse', cx: 44.6, cy: 27.4 - up, rx: 5.0, ry: 5.0, z: 2, group: 1, mat: 'cloth', bias: -0.3 },
-    { kind: 'ellipse', cx: 44.4, cy: 28.0 - up, rx: 4.1, ry: 4.0, z: 3, group: 2, mat: 'skin', bias: 0.4 },
-    ...hoodBrim(44.4, 28.0 - up, 4.3),
-    ...babyFace(44.4, 27.5 - up, mood, 10, 0.4),
+    { kind: 'ellipse', cx: 44.2, cy: 34.0 - b * 0.3, rx: 4.8, ry: 3.4, z: 1, group: 1, mat: 'cloth' },
+    { kind: 'ellipse', cx: 44.4, cy: 28.2 - up, rx: 5.4, ry: 5.2, z: 2, group: 1, mat: 'cloth', bias: -0.2 },
+    { kind: 'ellipse', cx: 44.4, cy: 29.0 - up, rx: 3.6, ry: 3.4, z: 3, group: 2, mat: 'hair', bias: 0.3 },
   ];
 }
 
@@ -581,9 +590,9 @@ function main() {
     baby: {
       cols: B_COLS, rows: B_ROWS,
       layers: [
-        { id: 'baby_mat', path: 'infant/baby/mat.png', z: 5, recolor: [{ material: 'cloth', source: cloth, role: 'accent' }] },
+        { id: 'baby_mat', path: 'infant/baby/mat.png', z: 35, recolor: [{ material: 'cloth', source: cloth, role: 'accent' }] },
         { id: 'baby_body', path: 'infant/baby/body.png', z: 10, recolor: [{ material: 'body', source: skin, role: 'skin' }] },
-        { id: 'baby_swaddle', path: 'infant/baby/swaddle.png', z: 30, recolor: [{ material: 'cloth', source: cloth, role: 'main' }] },
+        { id: 'baby_swaddle', path: 'infant/baby/swaddle.png', z: 30, recolor: [{ material: 'cloth', source: cloth, role: 'swaddle' }] },
         { id: 'baby_hair', path: 'infant/baby/hair.png', z: 40, recolor: [{ material: 'hair', source: pack.palettes.hair.source, role: 'hair' }] },
         { id: 'baby_tears', path: 'infant/baby/tears.png', z: 50 },
       ],

@@ -14,7 +14,7 @@ import grading from '../data/grading.json';
 import { applyGrade, PaletteIndex, type Grade } from './color';
 import { LPC_PACK, OUTFITS, renderPlan } from './lpc/compose';
 import { bodyTypeFor, randomSpecWith } from './lpc/plan';
-import { infantFrameRect, infantLookFromSpec, planInfant, type InfantKind, type InfantLook, type InfantPlan } from './lpc/infant';
+import { infantFrameRect, infantLookFromSpec, planInfant, toddlerAnim, type InfantKind, type InfantLook, type InfantPlan } from './lpc/infant';
 import type { CharacterSpec, Stage } from './lpc/types';
 import { Rng } from '../sim/core/rng';
 
@@ -532,16 +532,11 @@ export class CharacterView {
         const bedBottom = bedUid >= 0 ? this.world.objectBottom(bedUid) : null;
         order = bedBottom !== null ? bedBottom * ORDER_SCALE + 1 : base + (footY + yo + 16) * ORDER_SCALE + 1;
         blanketBed = bedUid;
-      } else if (p.collapsed) {
-        anim = 'fall';
-        fixedFrame = 3;
-      } else if (moving) {
-        anim = p.anim === 'crawl' ? 'crawl' : 'walk';
-      } else if (p.anim === 'crawl') {
-        anim = 'crawl';
-        fixedFrame = 0;
-      } else if (p.anim === 'fall' || p.anim === 'sit' || p.pose === 'sit') {
-        anim = p.anim === 'fall' ? 'fall' : 'sit';
+      } else {
+        // crawl(걷기 2단계 전) / walk / fall(떼쓰기) / sit / idle: src/render/lpc/infant.ts toddlerAnim
+        const pick = toddlerAnim(p, moving);
+        anim = pick.anim;
+        fixedFrame = pick.fixedFrame;
       }
       if (anim === 'sit' && p.pose === 'sit' && !moving) {
         // 의자/걸상 위 (어른과 같은 발 위치 규칙)

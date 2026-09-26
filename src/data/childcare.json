@@ -1,0 +1,1323 @@
+{
+  "$comment": "아기·유아·아동·청소년 돌봄과 교육, 입양·후견, 가정 인원 (GDD 15-3 ~ 15-8). 기간 필드는 {value, scale}. 돌봄 상호작용은 사회 상호작용 형식(category care) → data.social 에 합침. 장난감 등 물건 상호작용은 interactions 에 합침",
+  "baby": {
+    "$needs": "아기 욕구 (15-3): 배고픔, 기력, 위생(기저귀), 교류, 온기. 나머지(방광·재미·편안)는 100 고정. 감소는 시간당 (absolute)",
+    "decayPerHour": {
+      "hunger": 9,
+      "energy": 6,
+      "hygiene": 7,
+      "social": 6
+    },
+    "sleepEnergyPerHour": 14,
+    "sleepBelowEnergy": 35,
+    "wakeAboveEnergy": 95,
+    "cryBelow": 30,
+    "$cry": "울음: 집 안(같은 부지·층, 반경 안) 깬 식구는 시끄러움 무드렛, 자는 식구는 깸 확률",
+    "cryRadiusTiles": 12,
+    "cryWakeChancePerHour": 0.5,
+    "neglect": {
+      "$comment": "욕구 0 이 이어진 분 누적 → 질병/저체온/쇠약 위험 (사망 설정 행렬 '아이' 칸). 그 전에 친척/교회 개입 사건이 대안 결과로 (15-3)",
+      "startMinutes": {
+        "value": 180,
+        "scale": "absolute"
+      },
+      "interveneMinutes": {
+        "value": 480,
+        "scale": "absolute"
+      },
+      "deathChancePerHour": 0.02,
+      "parentMemoryImportance": 5,
+      "fameLoss": 40,
+      "churchLoss": 15
+    },
+    "places": [
+      "cradle",
+      "held",
+      "floor"
+    ],
+    "cradleObjects": [
+      "baby_basket"
+    ],
+    "wetNurse": {
+      "estates": [
+        "noble",
+        "knight",
+        "merchant"
+      ],
+      "pricePerDay": 24,
+      "hungerFloor": 60
+    },
+    "starveMinutes": {
+      "value": 2880,
+      "scale": "absolute"
+    },
+    "$starve": "배고픔 0 이 이틀 이어지면 굶어 죽음 (사용자 2026-09-26, 사망 설정 '굶주림' 아이 칸이 켜져 있을 때)",
+    "swaddleWarmth": {
+      "cradle": 0.3,
+      "floor": 0.5
+    }
+  },
+  "toddler": {
+    "$skills": "유아 기술 5 × 5레벨 (15-4). 레벨 n → n+1 필요 경험치 = base × n^exp. 분당 경험치는 가르치기/놀기 상호작용이 줌",
+    "skills": [
+      "walking",
+      "talking",
+      "potty",
+      "thinking",
+      "communication"
+    ],
+    "xpBase": 40,
+    "xpExp": 1.3,
+    "crawlSpeedMult": 0.4,
+    "walkSpeedMult": 0.6,
+    "walkFromLevel": 2,
+    "talkBubbleFromLevel": 3,
+    "pottyDoneLevel": 5,
+    "selfPlayXpPerMinute": 0.25,
+    "decayPerHour": {
+      "hunger": 6,
+      "energy": 4.5,
+      "hygiene": 3.5,
+      "bladder": 8,
+      "fun": 5,
+      "social": 4.5,
+      "comfort": 2
+    },
+    "cryBelow": 25,
+    "$hazard": "화로(불 켠)·우물·계단 가까이(2칸)에 어른(청소년 이상)이 반경 6칸 안에 없으면 시간당 사고 확률 (사망 설정 '사고' 아이 칸, 꺼져 있으면 부상)",
+    "hazardObjects": [
+      "hearth",
+      "oven",
+      "well",
+      "stairs_wood",
+      "stairs_stone",
+      "forge",
+      "campfire"
+    ],
+    "hazardRadiusTiles": 2,
+    "guardRadiusTiles": 6,
+    "hazardChancePerHour": 0.004,
+    "tantrumChancePerHour": 0.08,
+    "tantrumFunBelow": 30,
+    "clothingWarmth": 0.4,
+    "$clothingWarmth": "유아는 껴입혀 추위를 덜 탐 (온기 감소 배수)"
+  },
+  "child": {
+    "skills": [
+      "imagination",
+      "motor",
+      "social_skill",
+      "manners"
+    ],
+    "xpBase": 60,
+    "xpExp": 1.35,
+    "$education": "교육 경로 (15-5): 가장이 결정. 경로별 대상 신분, 수업 방식, 오르는 스킬, 비용",
+    "education": {
+      "home_help": {
+        "estates": [
+          "serf",
+          "freeman"
+        ],
+        "kind": "home",
+        "skills": {
+          "farming": 0.2,
+          "animal_care": 0.15,
+          "fitness": 0.1
+        },
+        "childSkills": {
+          "motor": 0.2
+        },
+        "cost": 0,
+        "literate": false
+      },
+      "parish_school": {
+        "estates": [
+          "freeman",
+          "artisan",
+          "merchant",
+          "knight",
+          "noble",
+          "clergy"
+        ],
+        "kind": "rabbithole",
+        "hours": [
+          8,
+          12
+        ],
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "skills": {
+          "reading": 0.4,
+          "reckoning": 0.3
+        },
+        "childSkills": {
+          "manners": 0.1,
+          "social_skill": 0.2
+        },
+        "cost": 2,
+        "church": 1,
+        "literate": true
+      },
+      "monastery_school": {
+        "estates": [
+          "serf",
+          "freeman",
+          "artisan",
+          "merchant",
+          "knight",
+          "noble",
+          "clergy"
+        ],
+        "kind": "boarding",
+        "awayDays": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "skills": {
+          "reading": 0.5,
+          "latin": 0.4,
+          "faith": 0.3
+        },
+        "childSkills": {
+          "manners": 0.2
+        },
+        "cost": 48,
+        "costOnce": true,
+        "literate": true,
+        "homesickMoodlet": "homesick_boarding"
+      },
+      "tutor": {
+        "estates": [
+          "merchant",
+          "noble"
+        ],
+        "kind": "tutor",
+        "hours": [
+          9,
+          12
+        ],
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "skills": {
+          "reading": 0.5,
+          "music": 0.2,
+          "martial": 0.2
+        },
+        "childSkills": {
+          "manners": 0.4
+        },
+        "cost": 12,
+        "literate": true
+      },
+      "page": {
+        "estates": [
+          "knight",
+          "noble"
+        ],
+        "kind": "boarding",
+        "awayDays": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "skills": {
+          "martial": 0.5,
+          "riding": 0.3
+        },
+        "childSkills": {
+          "manners": 0.5,
+          "motor": 0.2
+        },
+        "cost": 0,
+        "literate": false,
+        "homesickMoodlet": "homesick_boarding"
+      }
+    },
+    "defaultEducation": {
+      "serf": "home_help",
+      "freeman": "home_help",
+      "artisan": "parish_school",
+      "merchant": "tutor",
+      "clergy": "parish_school",
+      "knight": "page",
+      "noble": "tutor"
+    },
+    "homework": {
+      "$comment": "학교 경로면 과제 (15-5). 수업 날 저녁까지 과제 상호작용(책상/식탁)으로 채움. 하루 결과를 모아 성적 A~F",
+      "minutes": 40,
+      "gradeScale": [
+        [
+          "A",
+          0.9
+        ],
+        [
+          "B",
+          0.75
+        ],
+        [
+          "C",
+          0.55
+        ],
+        [
+          "D",
+          0.35
+        ],
+        [
+          "E",
+          0.2
+        ],
+        [
+          "F",
+          0
+        ]
+      ],
+      "proudGrades": [
+        "A",
+        "B"
+      ],
+      "ashamedGrades": [
+        "E",
+        "F"
+      ]
+    },
+    "$conversion": "청년이 될 때 아동 스킬 → 성인 스킬 보너스 레벨 (15-5 예절 → 이야기(화술))",
+    "conversion": {
+      "imagination": {
+        "storytelling": 0.5
+      },
+      "motor": {
+        "fitness": 0.5
+      },
+      "social_skill": {
+        "storytelling": 0.3
+      },
+      "manners": {
+        "storytelling": 0.5
+      }
+    }
+  },
+  "teen": {
+    "apprentice": {
+      "$comment": "도제 계약 (15-6, 17장): 장인 집에 살거나(live-in, 집을 떠남) 매일 다님. 도제 기간 동안 스킬 빠르게, 급여 없음",
+      "duration": {
+        "value": 10,
+        "scale": "lifespan"
+      },
+      "xpMult": 2.0,
+      "careers": [
+        "blacksmith",
+        "baker",
+        "brewer",
+        "tailor",
+        "carpenter",
+        "healer",
+        "minstrel",
+        "clerk",
+        "trader"
+      ],
+      "moodlet": "apprenticed_excited"
+    },
+    "rebellion": {
+      "$comment": "스트레스와 부모 관계가 나쁘면 반항 자율 (15-6): 몰래 여관 가기, 밤에 몰래 나가기, 가출",
+      "stressAbove": 45,
+      "parentBondBelow": 25,
+      "sneakChancePerNight": 0.25,
+      "runawayChancePerDay": 0.03,
+      "runawayDays": {
+        "value": 2,
+        "scale": "absolute"
+      },
+      "moodlet": "rebellious_mood",
+      "sneakMoodlet": "sneaked_out_thrill"
+    },
+    "$affection": "가문에 대한 애정 (15-6): 청년이 될 때 부모와의 우정 평균으로 정함 (0~100). 상속 분쟁 확률(16-5)이 읽음"
+  },
+  "adoption": {
+    "$comment": "입양, 양자, 후견 (15-7)",
+    "orphanageStages": [
+      "baby",
+      "toddler",
+      "child"
+    ],
+    "fame": 15,
+    "church": 5,
+    "moodlet": "adopted_joy",
+    "orphanMoodlet": "orphaned_grief",
+    "godparentMoodlet": "godparent_honored"
+  },
+  "household": {
+    "$comment": "가정 인원 (15-8): 가정 12명(하인·도제·유모 포함), 조작 가능 8명. 출생·쌍둥이는 늘 허용하고 비좁음 무드렛 + 분가/해고 알림. 혼인으로 들어오기·입양·하인 고용은 막음",
+    "cap": 12,
+    "controllableCap": 8,
+    "crampedMoodlet": "cramped_house"
+  },
+  "social": {
+    "care.nurse": {
+      "nameKey": "ia.care_nurse",
+      "icon": "hunger",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "baby"
+      ],
+      "minutes": 20,
+      "targetNeeds": {
+        "hunger": 3.5,
+        "social": 0.6
+      },
+      "needs": {
+        "social": 0.3
+      },
+      "base": 95,
+      "requires": {
+        "targetStageAny": [
+          "baby"
+        ],
+        "actorIsMother": true,
+        "actorLactating": true
+      },
+      "careAds": {
+        "hunger": 1.6
+      },
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "held_baby_joy"
+        ],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "care_nurse"
+        ]
+      }
+    },
+    "care.porridge": {
+      "nameKey": "ia.care_porridge",
+      "icon": "stew",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "baby"
+      ],
+      "minutes": 20,
+      "targetNeeds": {
+        "hunger": 3.2
+      },
+      "base": 95,
+      "requires": {
+        "targetStageAny": [
+          "baby",
+          "toddler"
+        ],
+        "actorStageAny": [
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ],
+        "stock": {
+          "ingredients": 1
+        }
+      },
+      "careAds": {
+        "hunger": 1.3
+      },
+      "success": {
+        "friendship": 1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "care_feed"
+        ]
+      }
+    },
+    "care.diaper": {
+      "nameKey": "ia.care_diaper",
+      "icon": "hygiene",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "clean"
+      ],
+      "minutes": 8,
+      "targetNeeds": {
+        "hygiene": 11
+      },
+      "needs": {
+        "hygiene": -0.5
+      },
+      "base": 95,
+      "requires": {
+        "targetStageAny": [
+          "baby",
+          "toddler"
+        ],
+        "actorStageAny": [
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ],
+        "targetNotPottyTrained": true
+      },
+      "careAds": {
+        "hygiene": 1.4
+      },
+      "success": {
+        "friendship": 1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "care_diaper"
+        ]
+      }
+    },
+    "care.soothe": {
+      "nameKey": "ia.care_soothe",
+      "icon": "social",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "kind"
+      ],
+      "minutes": 20,
+      "targetNeeds": {
+        "social": 3,
+        "comfort": 2,
+        "warmth": 1.5
+      },
+      "needs": {
+        "social": 0.5
+      },
+      "base": 90,
+      "requires": {
+        "targetStageAny": [
+          "baby",
+          "toddler"
+        ],
+        "actorStageAny": [
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "careAds": {
+        "social": 1.2,
+        "comfort": 0.4,
+        "warmth": 1.0
+      },
+      "holds": true,
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [
+          "held_baby_joy"
+        ],
+        "targetMoodlets": [
+          "baby_soothed"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "care_soothe"
+        ]
+      }
+    },
+    "care.lullaby": {
+      "nameKey": "ia.care_lullaby",
+      "icon": "fun",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "music"
+      ],
+      "minutes": 20,
+      "targetNeeds": {
+        "energy": 2.5,
+        "social": 1.2,
+        "warmth": 1.5
+      },
+      "needs": {
+        "fun": 0.8
+      },
+      "base": 90,
+      "requires": {
+        "targetStageAny": [
+          "baby",
+          "toddler"
+        ],
+        "actorStageAny": [
+          "child",
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "careAds": {
+        "energy": 1.1,
+        "social": 0.4
+      },
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [
+          "baby_soothed"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "care_lullaby"
+        ]
+      }
+    },
+    "care.rock": {
+      "nameKey": "ia.care_rock",
+      "icon": "sleep",
+      "category": "care",
+      "tags": [
+        "care",
+        "family"
+      ],
+      "minutes": 15,
+      "targetNeeds": {
+        "energy": 3,
+        "comfort": 2
+      },
+      "base": 95,
+      "requires": {
+        "targetStageAny": [
+          "baby"
+        ],
+        "targetInCradle": true,
+        "actorStageAny": [
+          "child",
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "careAds": {
+        "energy": 1.3
+      },
+      "success": {
+        "friendship": 1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "care_rock"
+        ]
+      }
+    },
+    "care.peekaboo": {
+      "nameKey": "ia.care_peekaboo",
+      "icon": "fun",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "play"
+      ],
+      "minutes": 10,
+      "targetNeeds": {
+        "social": 3.5,
+        "fun": 3
+      },
+      "needs": {
+        "fun": 1.5,
+        "social": 0.5
+      },
+      "ads": {
+        "fun": 6
+      },
+      "base": 90,
+      "requires": {
+        "targetStageAny": [
+          "baby",
+          "toddler"
+        ]
+      },
+      "careAds": {
+        "social": 0.8
+      },
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "care_play"
+        ]
+      }
+    },
+    "care.story": {
+      "nameKey": "ia.care_story",
+      "icon": "book",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "story"
+      ],
+      "minutes": 20,
+      "targetNeeds": {
+        "social": 2,
+        "fun": 2
+      },
+      "needs": {
+        "fun": 0.8
+      },
+      "base": 90,
+      "requires": {
+        "targetStageAny": [
+          "toddler",
+          "child"
+        ],
+        "actorStageAny": [
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "careAds": {
+        "social": 0.6,
+        "fun": 0.5
+      },
+      "teach": {
+        "talking": 1.2,
+        "imagination": 1.0
+      },
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "care_story"
+        ]
+      }
+    },
+    "care.bathe": {
+      "nameKey": "ia.care_bathe",
+      "icon": "hygiene",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "clean"
+      ],
+      "minutes": 15,
+      "targetNeeds": {
+        "hygiene": 5,
+        "comfort": 1
+      },
+      "base": 90,
+      "requires": {
+        "targetStageAny": [
+          "baby",
+          "toddler"
+        ],
+        "actorStageAny": [
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "careAds": {
+        "hygiene": 0.6
+      },
+      "success": {
+        "friendship": 1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "care_bathe"
+        ]
+      }
+    },
+    "care.teach_walk": {
+      "nameKey": "ia.care_teach_walk",
+      "icon": "goto",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "teach"
+      ],
+      "minutes": 30,
+      "targetNeeds": {
+        "social": 1,
+        "fun": 1
+      },
+      "needs": {
+        "fun": 0.4
+      },
+      "base": 90,
+      "requires": {
+        "targetStageAny": [
+          "toddler"
+        ],
+        "targetSkillBelow": {
+          "walking": 5
+        },
+        "actorStageAny": [
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "careAds": {
+        "teach": 0.5
+      },
+      "teach": {
+        "walking": 1.5
+      },
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "care_teach"
+        ]
+      }
+    },
+    "care.teach_talk": {
+      "nameKey": "ia.care_teach_talk",
+      "icon": "social",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "teach"
+      ],
+      "minutes": 30,
+      "targetNeeds": {
+        "social": 1.5
+      },
+      "needs": {
+        "social": 0.5
+      },
+      "base": 90,
+      "requires": {
+        "targetStageAny": [
+          "toddler"
+        ],
+        "targetSkillBelow": {
+          "talking": 5
+        },
+        "actorStageAny": [
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "careAds": {
+        "teach": 0.5
+      },
+      "teach": {
+        "talking": 1.5,
+        "communication": 0.8
+      },
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "care_teach"
+        ]
+      }
+    },
+    "care.potty": {
+      "nameKey": "ia.care_potty",
+      "icon": "bladder",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "teach"
+      ],
+      "minutes": 20,
+      "targetNeeds": {
+        "bladder": 4
+      },
+      "base": 85,
+      "requires": {
+        "targetStageAny": [
+          "toddler"
+        ],
+        "targetSkillBelow": {
+          "potty": 5
+        },
+        "actorStageAny": [
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "careAds": {
+        "teach": 0.4,
+        "bladder": 0.6
+      },
+      "teach": {
+        "potty": 1.6
+      },
+      "success": {
+        "friendship": 1,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "care_teach"
+        ]
+      }
+    },
+    "care.play": {
+      "nameKey": "ia.care_play",
+      "icon": "fun",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "play"
+      ],
+      "minutes": 25,
+      "targetNeeds": {
+        "fun": 3,
+        "social": 2
+      },
+      "needs": {
+        "fun": 1.5,
+        "social": 1
+      },
+      "ads": {
+        "fun": 8,
+        "social": 4
+      },
+      "base": 90,
+      "requires": {
+        "targetStageAny": [
+          "toddler",
+          "child"
+        ]
+      },
+      "careAds": {
+        "fun": 0.6,
+        "social": 0.5
+      },
+      "teach": {
+        "thinking": 0.8,
+        "motor": 0.8,
+        "communication": 0.6
+      },
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "care_play"
+        ]
+      }
+    },
+    "care.help_homework": {
+      "nameKey": "ia.care_help_homework",
+      "icon": "book",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "study"
+      ],
+      "minutes": 30,
+      "targetNeeds": {
+        "social": 1
+      },
+      "base": 90,
+      "requires": {
+        "targetStageAny": [
+          "child",
+          "teen"
+        ],
+        "targetHasHomework": true,
+        "actorStageAny": [
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ]
+      },
+      "careAds": {
+        "homework": 0.8
+      },
+      "homework": 0.6,
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 1,
+        "moodlets": [],
+        "targetMoodlets": [],
+        "flagsAdd": [],
+        "events": [
+          "care_homework"
+        ]
+      }
+    },
+    "care.celebrate_birthday": {
+      "nameKey": "ia.care_celebrate_birthday",
+      "icon": "social",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "celebrate"
+      ],
+      "minutes": 10,
+      "targetNeeds": {
+        "social": 3
+      },
+      "needs": {
+        "social": 2,
+        "fun": 1
+      },
+      "ads": {
+        "social": 10,
+        "fun": 4
+      },
+      "base": 95,
+      "requires": {
+        "targetBirthday": true
+      },
+      "careAds": {
+        "birthday": 1.2
+      },
+      "success": {
+        "friendship": 3,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [
+          "birthday_celebrated"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "birthday_celebrated"
+        ]
+      }
+    },
+    "care.feed_child": {
+      "nameKey": "ia.care_feed_child",
+      "icon": "stew",
+      "category": "care",
+      "tags": [
+        "care",
+        "family",
+        "cook"
+      ],
+      "minutes": 25,
+      "targetNeeds": {
+        "hunger": 2.8
+      },
+      "needs": {
+        "hunger": 0.6
+      },
+      "base": 95,
+      "requires": {
+        "targetStageAny": [
+          "child",
+          "toddler"
+        ],
+        "actorStageAny": [
+          "teen",
+          "young",
+          "adult",
+          "elder"
+        ],
+        "stock": {
+          "ingredients": 1
+        }
+      },
+      "careAds": {
+        "hunger": 1.4
+      },
+      "success": {
+        "friendship": 2,
+        "romance": 0,
+        "respect": 0,
+        "moodlets": [],
+        "targetMoodlets": [
+          "good_meal"
+        ],
+        "flagsAdd": [],
+        "events": [
+          "care_feed"
+        ]
+      },
+      "$comment": "아이 끼니 챙기기 (심즈처럼 부모가 아이 밥을 차려 줌): 재료 하나로 같이 먹음"
+    }
+  },
+  "interactions": {
+    "toy_chest.play_blocks": {
+      "nameKey": "ia.toy_blocks",
+      "icon": "fun",
+      "objects": [
+        "toy_chest"
+      ],
+      "requires": {},
+      "tags": [
+        "toddler",
+        "child_play",
+        "play"
+      ],
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "sit"
+          },
+          "anim": "sit",
+          "minutes": 30,
+          "needs": {
+            "fun": 1.6
+          }
+        }
+      ],
+      "ads": {
+        "fun": 40
+      },
+      "teach": {
+        "thinking": 0.6,
+        "imagination": 0.6
+      }
+    },
+    "wooden_sword.play": {
+      "nameKey": "ia.toy_sword",
+      "icon": "fun",
+      "objects": [
+        "wooden_sword",
+        "toy_shield"
+      ],
+      "requires": {},
+      "tags": [
+        "child_play",
+        "play",
+        "active"
+      ],
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "stand"
+          },
+          "anim": "work",
+          "minutes": 25,
+          "needs": {
+            "fun": 1.8,
+            "energy": -0.3
+          }
+        }
+      ],
+      "ads": {
+        "fun": 45
+      },
+      "teach": {
+        "motor": 1.0
+      }
+    },
+    "game_board.play_kids": {
+      "nameKey": "ia.toy_board",
+      "icon": "fun",
+      "objects": [
+        "game_board"
+      ],
+      "requires": {},
+      "tags": [
+        "child_play",
+        "play"
+      ],
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "sit"
+          },
+          "anim": "sit",
+          "minutes": 30,
+          "needs": {
+            "fun": 1.4
+          }
+        }
+      ],
+      "ads": {
+        "fun": 35
+      },
+      "teach": {
+        "imagination": 0.6,
+        "thinking": 0.4
+      }
+    },
+    "archery_target.practice_kid": {
+      "nameKey": "ia.toy_archery",
+      "icon": "fun",
+      "objects": [
+        "archery_target"
+      ],
+      "requires": {},
+      "tags": [
+        "child_play",
+        "play",
+        "active"
+      ],
+      "steps": [
+        {
+          "at": "target",
+          "slot": {
+            "pose": "stand"
+          },
+          "anim": "work",
+          "minutes": 25,
+          "needs": {
+            "fun": 1.5,
+            "energy": -0.3
+          }
+        }
+      ],
+      "ads": {
+        "fun": 35
+      },
+      "teach": {
+        "motor": 1.0
+      }
+    },
+    "desk.homework": {
+      "nameKey": "ia.homework",
+      "icon": "book",
+      "objects": [
+        "dining_table",
+        "writing_desk",
+        "scribe_desk"
+      ],
+      "requires": {},
+      "tags": [
+        "study",
+        "homework"
+      ],
+      "steps": [
+        {
+          "at": {
+            "seatAt": "target"
+          },
+          "anim": "sit",
+          "minutes": 40,
+          "needs": {
+            "fun": -0.2
+          }
+        }
+      ],
+      "ads": {
+        "fun": 0
+      },
+      "homework": 1.0,
+      "hoursWeight": [
+        [
+          15,
+          20,
+          2
+        ]
+      ]
+    }
+  },
+  "stages": {
+    "$comment": "생애 단계별 자율 허용: 아기 = 자율 없음, 유아 = 이 태그가 붙은 상호작용과 잠·먹기만, 아동 = adultOnly 태그 빼고 전부",
+    "toddlerTags": [
+      "toddler",
+      "sleep"
+    ],
+    "toddlerInteractions": [
+      "bed.sleep",
+      "bed.nap",
+      "cupboard.snack_bread",
+      "chamber_pot.use",
+      "outhouse.use",
+      "barrel.wash_hands"
+    ],
+    "adultOnlyTags": [
+      "alcohol",
+      "work_only"
+    ],
+    "adultOnlyInteractions": [
+      "cupboard.drink_ale",
+      "counter.buy_ale",
+      "keg.drink",
+      "hearth.cook_stew",
+      "hearth.light_fire"
+    ]
+  },
+  "awayNeeds": {
+    "hunger": 0.2,
+    "energy": 0.6,
+    "hygiene": 0.4,
+    "bladder": 0,
+    "fun": 0.5,
+    "social": 0.3,
+    "warmth": 0,
+    "comfort": 0.5
+  },
+  "$awayNeeds": "학교·기숙·시동·몰래 나감 동안 욕구 감소 배수 (밖에서 먹고 볼일 봄, 래빗홀과 같은 방식)"
+}

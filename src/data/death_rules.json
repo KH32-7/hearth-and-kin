@@ -1,0 +1,293 @@
+{
+  "$comment": "사망 설정 행렬 (GDD 20-7). 원인 8 × 나이 그룹 3 (아이 = 아기~청소년, 성인 = 청년~장년, 노년). cells 값은 [아이, 성인, 노년] 켬/끔. subs 는 한 원인 안의 세부 (출산: 산모/아기/유산·사산, 전투: 결투/전쟁/산적/괴물/주먹다짐) 의 발생 배수 (0 = 끔, 1 = 그대로, 0.2 = 드물게). fallback 은 꺼진 칸의 대체 결과 (20-7 표). 29-1 사망 목표는 realistic 에서 잼",
+  "causes": [
+    "old_age",
+    "illness",
+    "hunger",
+    "cold",
+    "accident",
+    "childbirth",
+    "combat",
+    "execution"
+  ],
+  "ageGroups": [
+    "child",
+    "adult",
+    "elder"
+  ],
+  "stageGroup": {
+    "baby": "child",
+    "toddler": "child",
+    "child": "child",
+    "teen": "child",
+    "young": "adult",
+    "adult": "adult",
+    "elder": "elder"
+  },
+  "childBelowAge": 18,
+  "causeAliases": {
+    "cold_hunger": "hunger",
+    "starved": "hunger",
+    "starvation": "hunger",
+    "hypothermia": "cold",
+    "fire": "accident",
+    "drowning": "accident",
+    "fall": "accident",
+    "work_accident": "accident",
+    "plague": "illness",
+    "fever": "illness",
+    "dysentery": "illness",
+    "duel": "combat",
+    "war": "combat",
+    "bandit": "combat",
+    "monster": "combat",
+    "brawl": "combat",
+    "maternal": "childbirth",
+    "stillbirth": "childbirth",
+    "miscarriage": "childbirth"
+  },
+  "defaultPreset": "realistic",
+  "presets": {
+    "lenient": {
+      "nameKey": "death.preset.lenient",
+      "cells": {
+        "old_age": [
+          false,
+          false,
+          true
+        ],
+        "illness": [
+          false,
+          false,
+          false
+        ],
+        "hunger": [
+          false,
+          false,
+          false
+        ],
+        "cold": [
+          false,
+          false,
+          false
+        ],
+        "accident": [
+          false,
+          false,
+          false
+        ],
+        "childbirth": [
+          false,
+          false,
+          false
+        ],
+        "combat": [
+          false,
+          false,
+          false
+        ],
+        "execution": [
+          false,
+          false,
+          false
+        ]
+      },
+      "subs": {
+        "childbirth": {
+          "maternal": 0,
+          "infant": 0,
+          "loss": 0
+        },
+        "combat": {
+          "duel": 0,
+          "war": 0,
+          "bandit": 0,
+          "monster": 0,
+          "brawl": 0
+        }
+      }
+    },
+    "normal": {
+      "nameKey": "death.preset.normal",
+      "cells": {
+        "old_age": [
+          false,
+          false,
+          true
+        ],
+        "illness": [
+          true,
+          true,
+          true
+        ],
+        "hunger": [
+          false,
+          false,
+          true
+        ],
+        "cold": [
+          false,
+          false,
+          true
+        ],
+        "accident": [
+          false,
+          true,
+          true
+        ],
+        "childbirth": [
+          true,
+          true,
+          true
+        ],
+        "combat": [
+          true,
+          true,
+          true
+        ],
+        "execution": [
+          false,
+          false,
+          false
+        ]
+      },
+      "subs": {
+        "childbirth": {
+          "maternal": 0,
+          "infant": 0,
+          "loss": 1
+        },
+        "combat": {
+          "duel": 1,
+          "war": 1,
+          "bandit": 0,
+          "monster": 0,
+          "brawl": 0
+        }
+      }
+    },
+    "realistic": {
+      "nameKey": "death.preset.realistic",
+      "cells": {
+        "old_age": [
+          false,
+          false,
+          true
+        ],
+        "illness": [
+          true,
+          true,
+          true
+        ],
+        "hunger": [
+          true,
+          true,
+          true
+        ],
+        "cold": [
+          true,
+          true,
+          true
+        ],
+        "accident": [
+          true,
+          true,
+          true
+        ],
+        "childbirth": [
+          true,
+          true,
+          true
+        ],
+        "combat": [
+          true,
+          true,
+          true
+        ],
+        "execution": [
+          true,
+          true,
+          true
+        ]
+      },
+      "subs": {
+        "childbirth": {
+          "maternal": 1,
+          "infant": 1,
+          "loss": 1
+        },
+        "combat": {
+          "duel": 1,
+          "war": 1,
+          "bandit": 1,
+          "monster": 1,
+          "brawl": 0.2
+        }
+      }
+    }
+  },
+  "fallback": {
+    "old_age": {
+      "kind": "no_aging_end",
+      "textKey": "death.fallback.old_age"
+    },
+    "illness": {
+      "kind": "critical_then_recover",
+      "textKey": "death.fallback.illness",
+      "incapacitatedMin": {
+        "value": 1,
+        "scale": "lifespan"
+      },
+      "incapacitatedMax": {
+        "value": 2,
+        "scale": "lifespan"
+      },
+      "memory": {
+        "kind": "near_death",
+        "importance": 4,
+        "valence": -1
+      }
+    },
+    "hunger": {
+      "kind": "weakened_relief",
+      "textKey": "death.fallback.hunger",
+      "weakened": true,
+      "churchRelief": true
+    },
+    "cold": {
+      "kind": "faint_rescued",
+      "textKey": "death.fallback.cold",
+      "faint": true,
+      "rescued": true,
+      "condition": "chills"
+    },
+    "accident": {
+      "kind": "injury",
+      "textKey": "death.fallback.accident",
+      "severeInjury": true,
+      "permanentInjuryRoll": true
+    },
+    "childbirth": {
+      "kind": "difficult_birth",
+      "textKey": "death.fallback.childbirth",
+      "outcome": "difficult",
+      "moodlet": "uneasy_kicks",
+      "recoveryMult": 2
+    },
+    "combat": {
+      "kind": "knocked_out",
+      "textKey": "death.fallback.combat",
+      "faint": true,
+      "severeInjury": true,
+      "scarOrInjuryRoll": true
+    },
+    "execution": {
+      "kind": "exile_or_prison",
+      "textKey": "death.fallback.execution",
+      "options": [
+        "exile",
+        "long_prison"
+      ]
+    }
+  }
+}

@@ -80,11 +80,16 @@ function snapshot(): Snapshot {
     autoAccel: s.shouldAutoAccelerate(),
     tickMs: mps > 0 ? 1000 / mps : 1000,
     // 마을(M6): 전체 세밀도 인물만 그림 (간이/요약/아기는 화면 밖)
-    persons: s.persons.filter((p) => p.lod === 'full' && !p.infant).map((p) => ({
+    // 조작 가문 아기·유아(M7)는 실제로 집에 있어 그림. 마을 NPC 아기는 요약 세밀도로 엄마 곁(숨김)
+    persons: s.persons.filter((p) => p.lod === 'full' && (!p.infant || !p.hidden)).map((p) => ({
       id: p.id, name: p.name, x: p.x, y: p.y, trail: takeTrail(p.trail, p.x, p.y),
       ...(p.riding && p.action?.phase === 'walk' ? { riding: p.horse } : {}),
       facing: p.facing, pose: p.pose, anim: p.anim, outfit: p.outfit, carry: p.carry,
       ...(p.direct ? { direct: true } : {}),
+      lifeStage: p.lifeStage,
+      ...(p.lifeStage === 'baby'
+        ? { infant: { place: p.babyPlace?.kind ?? 'floor', heldBy: p.babyPlace?.kind === 'held' ? p.babyPlace.by : -1, crying: p.crying } }
+        : {}),
       hidden: p.hidden, underBlanket: p.underBlanket, sleeping: p.sleeping,
       needs: p.needsObject(),
       queue: p.queue.map((q) => ({ ...q })),

@@ -25,7 +25,12 @@ export interface InfantLook {
   accent: string;
   /** 유아 옷: smock | gown | tunic */
   garment: string;
+  /** 아기 강보/배내옷 색 (cloth 램프 이름). 기본 "tan" = 표백 안 한 리넨(생성) */
+  swaddle?: string;
 }
+
+/** 강보 기본 색: 표백 안 한 리넨 (신분과 관계없이. 띠와 깔개는 accent 염료) */
+export const SWADDLE_DEFAULT = 'tan';
 
 export interface InfantPlan extends Pick<Plan, 'width' | 'height' | 'sources' | 'ops'> {
   kind: InfantKind;
@@ -53,6 +58,7 @@ export function infantLookFromSpec(spec: CharacterSpec, outfits: OutfitsData, pa
     main: spec.layers?.$main ?? pick(dyes.main, 'main'),
     accent: spec.layers?.$accent ?? pick(dyes.accent, 'accent'),
     garment,
+    swaddle: SWADDLE_DEFAULT,
   };
 }
 
@@ -62,6 +68,7 @@ function colorFor(role: string, look: InfantLook): string {
     case 'eye': return look.eyes;
     case 'hair': return look.hairColor;
     case 'accent': return look.accent;
+    case 'swaddle': return look.swaddle ?? SWADDLE_DEFAULT;
     default: return look.main;
   }
 }
@@ -131,4 +138,31 @@ export function infantFrameRect(plan: Pick<InfantPlan, 'anims' | 'frameW' | 'fra
   const di = Math.max(0, a.dirs.indexOf(dir as never));
   const f = Math.max(0, Math.min(a.frames - 1, frame));
   return { x: (a.col + f) * plan.frameW, y: (a.row + (a.dirs.length > 1 ? di : 0)) * plan.frameH, w: plan.frameW, h: plan.frameH };
+}
+
+/** 유아 동작 고르기 (CharacterView 가 씀). 입력: 스냅샷 일부 + 지금 움직이는 중인지 */
+export interface ToddlerAnimInput {
+  anim: string;
+  pose: string;
+  sleeping: boolean;
+  underBlanket: boolean;
+  collapsed: boolean;
+}
+/**
+ * - 잠(침대, 이불 아래 누움) → sleep (머리만, 베개 위)
+ * - 쓰러짐 → fall 마지막 프레임 (주저앉은 모습)
+ * - anim 'crawl' (걷기 2단계 전 이동) → crawl 재생 (스냅샷 사이 보간이 잠깐 끝나도 멈추지 않게, sim 이 멈추면 anim 을 바꿈)
+ * - anim 'fall' (떼쓰기, 넘어짐) → fall 한 번 재생 후 마지막 프레임 유지
+ * - 그 밖에 움직이는 중 → walk
+ * - anim 'sit' 또는 앉은 자세 → sit (놀이 2프레임)
+ * - 가만히 서 있음 (anim 'walk' 인데 도착했거나 'idle' 등) → idle
+ */
+export function toddlerAnim(p: ToddlerAnimInput, moving: boolean): { anim: 'idle' | 'walk' | 'crawl' | 'sit' | 'fall' | 'sleep'; fixedFrame: number | null } {
+  if (p.sleeping || (p.pose === 'lie' && p.underBlanket)) return { anim: 'sleep', fixedFrame: null };
+  if (p.collapsed) return { anim: 'fall', fixedFrame: 3 };
+  if (p.anim === 'crawl') return { anim: 'crawl', fixedFrame: null };
+  if (p.anim === 'fall') return { anim: 'fall', fixedFrame: null };
+  if (moving) return { anim: 'walk', fixedFrame: null };
+  if (p.anim === 'sit' || p.pose === 'sit') return { anim: 'sit', fixedFrame: null };
+  return { anim: 'idle', fixedFrame: null };
 }

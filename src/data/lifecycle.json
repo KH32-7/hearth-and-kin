@@ -1,0 +1,48 @@
+{
+  "$comment": "생애 단계와 생일 (GDD 10-2, 12-1 특성 칸, 29-2). 단계 일수와 표시 나이는 story.json stageDays/displayAge 를 그대로 쓰고, 여기서는 수명 설정·생일·특성 칸·노년 규칙. 기간 필드는 {value, scale}",
+  "lifespan": {
+    "$comment": "수명 설정 배수 (10-2): 단계 일수 × 배수, 노년 위험·표시 나이 속도 ÷ 배수 (29-0 lifespan)",
+    "presets": { "short": 0.5, "normal": 1, "long": 2, "very_long": 4 },
+    "default": "normal"
+  },
+  "birthday": {
+    "$comment": "생일(명명 축일)은 단계가 바뀌는 날 아침 (10-2). 가족이 축하하기, 잔치를 열면 기분·관계 보너스, 하루씩 최대 3일 미루기",
+    "hour": 7,
+    "delayMax": { "value": 3, "scale": "absolute" },
+    "celebrateFriendship": 3,
+    "feastFriendship": 6,
+    "feastGuestsMin": 2,
+    "grewUpMoodlet": "grew_up",
+    "celebratedMoodlet": "birthday_celebrated",
+    "feastMoodlet": "birthday_feast"
+  },
+  "traits": {
+    "$comment": "특성 칸 (12-1): 아기·유아 기질 1, 아동 1, 청소년 2, 청년·장년 3, 노년 3 + 노년 특성 1 (확률)",
+    "temperaments": ["temper_easy", "temper_fussy", "temper_smiley", "temper_timid"],
+    "slots": { "baby": 0, "toddler": 0, "child": 1, "teen": 2, "young": 3, "adult": 3, "elder": 3 },
+    "$temperamentLeads": "아동이 될 때 기질이 이어지는 성격 특성 (leadChance 확률로 이 중 하나)",
+    "temperamentLeads": {
+      "temper_easy": ["calm", "kind", "humble"],
+      "temper_fussy": ["hot_tempered", "suspicious", "ambitious"],
+      "temper_smiley": ["cheerful", "sociable", "romantic"],
+      "temper_timid": ["coward", "introvert", "bookworm"]
+    },
+    "leadChance": 0.5,
+    "$careQuality": "유아기 돌봄 질 (15-4: 유아 기술 평균 / 5 와 부모 우정 / 100 의 평균)이 아동 특성 선택지에 영향: 좋은 특성 가중 = 1 + goodWeight × 질, 나쁜 특성 가중 = 1 + badWeight × (1 - 질)",
+    "goodTraits": ["kind", "cheerful", "calm", "brave", "sociable", "diligent", "just"],
+    "badTraits": ["mean", "hot_tempered", "lazy", "suspicious", "coward", "cunning"],
+    "goodWeight": 2.0,
+    "badWeight": 2.0,
+    "parentTraitChance": 0.3,
+    "elderTraits": ["wise", "stubborn", "senile", "mellowed", "greedy_old", "storyteller"],
+    "elderTraitChance": 0.6
+  },
+  "elder": {
+    "$comment": "노년 (10-2): 느린 걸음, 기력 감소 빠름, 은퇴",
+    "walkMult": 0.8,
+    "energyDecayMult": 1.2,
+    "retire": true,
+    "retiredMoodlet": "retired_elder"
+  },
+  "comingOfAgeNews": "coming_of_age"
+}

@@ -32,8 +32,36 @@ function supportActive(world: World, c: CompiledIA): boolean {
   return true;
 }
 
+/**
+ * 고장 난 물건 고치기 (23-4): 그 물건의 다른 상호작용이 채우는 욕구를 대신 광고 (고장 난 변소 = 방광, 침대 = 기력).
+ * 물건 종류별로 한 번 계산해 둠
+ */
+const repairServes = new WeakMap<object, Map<string, Float64Array>>();
+export function repairAds(data: SimData, defId: string): Float64Array {
+  let m = repairServes.get(data.compiled);
+  if (!m) repairServes.set(data.compiled, (m = new Map()));
+  let a = m.get(defId);
+  if (!a) {
+    a = new Float64Array(8);
+    for (const c of data.compiled.byDef.get(defId) ?? []) {
+      if (c.id === 'obj.repair') continue;
+      for (let i = 0; i < 8; i++) a[i] = Math.max(a[i], c.ads[i], c.supportAds[i], ...c.steps.map((st) => (st.needs[i] > 0 ? 40 : 0)));
+    }
+    for (let i = 0; i < 8; i++) a[i] *= REPAIR_AD_SHARE;
+    m.set(defId, a);
+  }
+  return a;
+}
+/** 고치기가 물려받는 광고 비율 (직접 쓰는 것보다 조금 낮게) */
+const REPAIR_AD_SHARE = 0.8;
+let repairData: SimData | null = null;
+
 /** 이 상호작용이 지금 대상에 대해 광고하는 욕구 i 의 값 */
 export function adFor(c: CompiledIA, target: ObjectInstance, i: number, support: boolean): number {
+  if (c.id === 'obj.repair' && target.state.broken && repairData) {
+    const r = repairAds(repairData, target.defId)[i];
+    if (r > 0) return r;
+  }
   let v = c.ads[i];
   if (support) v += c.supportAds[i];
   const ia = c.def;
@@ -101,6 +129,7 @@ export function scoreCandidates(
   allowTarget?: (o: ObjectInstance) => boolean,
 ): void {
   out.length = 0;
+  repairData = data;
   const b = data.balance.autonomy;
   for (let i = 0; i < 8; i++) urgBuf[i] = urgency(data, NEED_IDS[i], person.needs[i]);
   const hour = world.hour();
@@ -198,8 +227,10 @@ export function needSolvable(
     // 마을: 쓸 수 없는 물건(남의 집, 사는 사람 전용)은 해결 수단이 아님 (자율 선택과 같은 거름)
     if (allowTarget && !allowTarget(target)) continue;
     for (const c of list) {
-      if (!c.serves[needIdx]) continue;
-      const direct = c.ads[needIdx] > 0 || c.steps.some((s) => s.needs[needIdx] > 0) || (c.supportAds[needIdx] > 0 && supportActive(world, c));
+      // 고장 난 물건 고치기는 그 물건이 채우는 욕구의 해결 수단 (23-4)
+      const repair = c.id === 'obj.repair' && !!target.state.broken && repairAds(data, target.defId)[needIdx] > 0;
+      if (!c.serves[needIdx] && !repair) continue;
+      const direct = repair || c.ads[needIdx] > 0 || c.steps.some((s) => s.needs[needIdx] > 0) || (c.supportAds[needIdx] > 0 && supportActive(world, c));
       if (!direct) continue;
       if (!checkRequires(world, c.def, target).ok) continue;
       const r = resolveStep(world, person.id, person.x, person.y, c.def.steps[0], target);

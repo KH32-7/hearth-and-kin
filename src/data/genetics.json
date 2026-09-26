@@ -1,0 +1,123 @@
+{
+  "$comment": "유전과 외형 (GDD 10-1, 10-3), 인물 만들기 규칙 (10-1), 옷 염료 허용 (16-2 사치 금지법 표의 염료 칸), 복장 자동 전환 수치 (10-1). 읽는 곳: src/sim/family/genetics.ts, creation.ts, src/sim/people/outfits.ts. 한국어 이름은 src/i18n/ko/genetics.json 의 genetics.* 키. art 칸은 LPC 렌더러 이름 대응 (src/data/outfits.json, artpacks/lpc.json 과 같은 문자열)",
+  "version": 1,
+  "skin": {
+    "$comment": "피부 12단계, 밝은 쪽 → 어두운 쪽. 값은 LPC 피부 팔레트 이름 (outfits.json skins 와 같은 순서). 자식 = 부모 두 값 사이 무작위 + drift 단계 변이",
+    "steps": ["lpcr.porcelain", "lpcr.ivory", "light", "lpcr.peach", "amber", "lpcr.tan", "olive", "lpcr.honey", "taupe", "bronze", "brown", "lpcr.coffee"],
+    "drift": 1,
+    "randomWeights": [1, 2, 3, 3, 2, 2, 1.5, 1.5, 1, 0.8, 0.6, 0.4]
+  },
+  "hair": {
+    "$comment": "자연색 10. dominance 는 우성 순서 (짙은 색 우성, 앞이 이김). freq 는 무작위 유전자 뽑기 가중치. elder 는 노년 표현형 (백발/회색), elderChance 는 노년에 흰머리가 나는 사람 비율",
+    "natural": ["raven", "black", "dark_brown", "chestnut", "light_brown", "sandy", "redhead", "ginger", "strawberry", "blonde"],
+    "dominance": ["raven", "black", "dark_brown", "chestnut", "light_brown", "sandy", "redhead", "ginger", "strawberry", "blonde"],
+    "freq": { "raven": 0.8, "black": 1.5, "dark_brown": 3, "chestnut": 3, "light_brown": 2.5, "sandy": 1.5, "redhead": 1, "ginger": 1, "strawberry": 0.8, "blonde": 2.5 },
+    "elder": ["gray", "white"],
+    "elderChance": 0.8
+  },
+  "eyes": {
+    "$comment": "눈 색 우성 순서: 갈색 > 초록 > 파랑 > 회색 (10-3). 값은 LPC 눈 팔레트 이름",
+    "colors": ["brown", "green", "blue", "gray"],
+    "dominance": ["brown", "green", "blue", "gray"],
+    "freq": { "brown": 4, "green": 1.5, "blue": 3.5, "gray": 1.5 }
+  },
+  "parts": {
+    "$comment": "부위마다 한쪽 부모 것을 50:50, mutation 확률로 목록에서 무작위 (10-3)",
+    "eyeShape": ["round", "almond", "narrow", "droopy"],
+    "brows": ["thin", "straight", "arched", "thick"],
+    "build": ["thin", "average", "plump", "stocky"],
+    "height": ["short", "average", "tall"]
+  },
+  "mutation": 0.1,
+  "congenital": {
+    "$comment": "선천 특성 (traits.json category congenital). 부모 한 사람마다 inherit 확률로 물려받음. conflicts 는 같이 가질 수 없는 쌍 (먼저 물려받은 쪽을 남김). randomChance 는 무작위 인물 한 특성당 확률",
+    "ids": ["robust", "frail", "left_handed", "twin_blood", "comely", "homely", "long_lived", "sickly_line", "witch_blood"],
+    "inherit": 0.25,
+    "randomChance": 0.04,
+    "conflicts": [["robust", "frail"], ["comely", "homely"], ["long_lived", "sickly_line"]]
+  },
+  "art": {
+    "$comment": "렌더러 대응 이름 (LPC). 머리 모양은 유전하지 않고 생애 단계별 목록에서 고름 (outfits.json hair.styles 와 같아야 함, 테스트가 검사). heads 는 체형 → 성별.단계별 머리 레이어 (없으면 렌더러 기본). 수염은 성인 남성만, beardChance 는 단계별",
+    "hairStyles": {
+      "male": {
+        "child": ["parted_side_bangs", "swoop_side", "relm_short", "topknot_short"],
+        "teen": ["plain", "parted", "page", "bedhead", "messy1", "mop", "bangsshort", "curly_short"],
+        "adult": ["plain", "parted", "page", "page2", "bedhead", "messy1", "unkempt", "buzzcut", "curly_short", "long_messy"],
+        "elder": ["balding", "buzzcut", "plain", "page", "unkempt", "long_messy"]
+      },
+      "female": {
+        "child": ["wavy_child", "parted_side_bangs2", "relm_short", "topknot_short2"],
+        "teen": ["long", "long_straight", "braid", "ponytail", "pigtails_bangs", "loose", "wavy", "half_up"],
+        "adult": ["long", "long_straight", "braid", "braid2", "ponytail", "bangs_bun", "long_tied", "princess", "loose", "wavy", "half_up", "shoulderl"],
+        "elder": ["bangs_bun", "long_tied", "braid", "loose", "half_up"]
+      }
+    },
+    "beards": ["beards_beard", "beards_medium", "beards_trimmed", "beards_5oclock_shadow", "beards_mustache"],
+    "beardChance": { "child": 0, "teen": 0, "adult": 0.45, "elder": 0.7 },
+    "heads": {
+      "thin": { "male.adult": "heads_human_male_gaunt" },
+      "average": { "male.adult": "heads_human_male" },
+      "plump": { "male.adult": "heads_human_male_plump" },
+      "stocky": { "male.adult": "heads_human_male" }
+    }
+  },
+  "marks": {
+    "$comment": "유전하지 않는 얼굴 표시 (10-1 피부/얼굴): 주근깨, 흉터, 점, 볼 홍조. 무작위 인물의 확률",
+    "ids": ["freckles", "scar", "mole", "blush"],
+    "chance": { "freckles": 0.15, "scar": 0.05, "mole": 0.12, "blush": 0.2 }
+  },
+  "gaits": {
+    "$comment": "걸음걸이 4 (10-1): walk = 이동 속도 배수, anim = 걷기 애니메이션 재생 속도 배수",
+    "easy": { "walk": 0.9, "anim": 0.85 },
+    "proud": { "walk": 1.0, "anim": 0.95 },
+    "quick": { "walk": 1.08, "anim": 1.3 },
+    "sneak": { "walk": 0.95, "anim": 0.8 }
+  },
+  "voice": {
+    "$comment": "목소리 (10-1): 높낮이 3 → 웅얼거림 효과음 피치 배수, 웅얼거림 유형 3 → 샘플 세트 id",
+    "pitch": { "low": 0.85, "mid": 1.0, "high": 1.18 },
+    "mumble": { "soft": "mumble_soft", "nasal": "mumble_nasal", "gruff": "mumble_gruff" }
+  },
+  "dyes": {
+    "$comment": "16-2 사치 금지법 표의 염료 칸. tier = 공공 착용 최소 신분. colors = 그 염료로 고를 수 있는 옷 색 (LPC 옷 팔레트 이름, 옷 색 $main/$accent/$trim 값). 만들기 화면은 신분 등급(rank) 이하 염료의 색만 허용. clergy 는 16-2 등급표에 없어서 자유민 등급 + 수도복 색(extra)",
+    "rank": { "serf": 0, "freeman": 1, "artisan": 2, "merchant": 3, "clergy": 1, "knight": 4, "noble": 5 },
+    "list": [
+      { "id": "undyed", "tier": "serf", "colors": ["white", "tan"] },
+      { "id": "brown", "tier": "serf", "colors": ["brown", "walnut", "leather"] },
+      { "id": "gray", "tier": "serf", "colors": ["gray", "charcoal"] },
+      { "id": "blue", "tier": "freeman", "colors": ["blue", "bluegray", "sky"] },
+      { "id": "green", "tier": "freeman", "colors": ["green", "forest"] },
+      { "id": "red", "tier": "artisan", "colors": ["red", "rose", "orange"] },
+      { "id": "dark_blue", "tier": "merchant", "colors": ["navy", "teal", "slate"] },
+      { "id": "heraldic", "tier": "knight", "colors": ["yellow", "black"] },
+      { "id": "crimson", "tier": "noble", "colors": ["maroon"] },
+      { "id": "purple", "tier": "noble", "colors": ["purple", "lavender", "pink"] }
+    ],
+    "extra": { "clergy": ["black"] }
+  },
+  "creation": {
+    "$comment": "가족 만들기 (10-1, 15-8): 조작 가능 인원 상한, 하인 포함 가정 상한, 단계별 표시 나이 범위 [최소, 최대] (10-2), 부모-자식 나이 차, 배우자 최소 나이, 혼인 금지 촌수(이 값 이하), 하인이 될 수 있는 최소 단계",
+    "maxMembers": 8,
+    "maxHousehold": 12,
+    "stageAges": {
+      "baby": [0, 1],
+      "toddler": [1, 4],
+      "child": [4, 11],
+      "teen": [12, 17],
+      "young": [18, 29],
+      "adult": [30, 54],
+      "elder": [55, 90]
+    },
+    "parentGapMin": 16,
+    "motherGapMax": 45,
+    "grandparentGapMin": 32,
+    "spouseMinAge": 16,
+    "kinBanDegree": 4,
+    "servantMinStage": "teen",
+    "outfitKinds": ["everyday", "work", "formal", "sleep", "winter", "bath"]
+  },
+  "outfits": {
+    "$comment": "복장 자동 전환 (10-1): 체감 기온이 이 값(섭씨) 이하일 때 바깥에 나가면 겨울옷",
+    "winterAtOrBelow": 5
+  }
+}

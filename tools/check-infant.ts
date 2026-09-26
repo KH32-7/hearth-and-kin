@@ -42,7 +42,7 @@ const NEED: Record<InfantKind, Record<string, { minFrames: number; maxFrames?: n
   toddler: {
     idle: { minFrames: 1, dirs: 4, moving: true, foot: 'ground' },
     walk: { minFrames: 6, dirs: 4, moving: true, foot: 'ground' },
-    crawl: { minFrames: 4, dirs: 4, moving: true, foot: 'ground' },
+    crawl: { minFrames: 6, dirs: 4, moving: true, foot: 'ground' },
     sit: { minFrames: 1, maxFrames: 2, dirs: 4, moving: false, foot: 'ground' },
     fall: { minFrames: 3, dirs: 4, moving: true, foot: 'ground' },
     sleep: { minFrames: 1, dirs: 1, moving: false, foot: 'head' },
@@ -71,7 +71,7 @@ function look(i: number): InfantLook {
     garment: garments[i % garments.length],
   };
 }
-const REF: InfantLook = { skin: 'light', eyes: 'blue', hairStyle: 'parted_side_bangs', hairColor: 'chestnut', main: 'white', accent: 'tan', garment: 'smock' };
+const REF: InfantLook = { skin: 'light', eyes: 'blue', hairStyle: 'parted_side_bangs', hairColor: 'chestnut', main: 'white', accent: 'red', garment: 'smock', swaddle: 'tan' };
 
 interface Row { kind: string; anim: string; frames: number; dirs: number; empty: number; frozen: boolean; foot: string; footOk: boolean; p95: number; pass: boolean; note: string }
 const rows: Row[] = [];
@@ -222,6 +222,9 @@ writePng(`${OUT}/toddler.png`, scaleNearest(onBg(toddlerSheet), 4));
   blit(out, tod, tfr.x, tfr.y, F, F, 6 * F, 2 * F);
   cell(child.img, 'walk', child.plan, 'right', 2, 7, 2);
   writePng(`${OUT}/scale-compare.png`, scaleNearest(out, 4));
+  // 게임 배율 그대로 (1배, 2배): 작은 크기에서도 사람 아기로 읽히는지 보는 용도
+  writePng(`${OUT}/scale-compare-1x.png`, out);
+  writePng(`${OUT}/scale-compare-2x.png`, scaleNearest(out, 2));
 }
 
 // 키 비교 (불투명 픽셀 세로 길이, 아래 보기 idle)
@@ -250,7 +253,7 @@ const md = [
   '',
   '확대 캡처 (4배): `artifacts/infant/baby.png` (0행 요람, 1행 바닥, 2~5행 품 안 위/왼/아래/오른; 0~1열 보통, 2~3열 울음)',
   '`artifacts/infant/toddler.png` (idle / walk / crawl / sit / fall 각 4방향 + 잠), `artifacts/infant/toddler-looks.png` (옷 3종 × 머리 모양)',
-  '`artifacts/infant/scale-compare.png` (같은 배율: 어른 남 / 어른 여+아기 / 청소년 / 아동 / 유아 / 기는 유아 / 요람 / 바닥; 2줄 품 안 4방향 여·남; 3줄 청소년+우는 아기, 유아 걷기/앉기/엉덩방아, 아동 걷기)',
+  '`artifacts/infant/scale-compare.png` (4배, 게임 배율 그대로는 `scale-compare-1x.png`/`-2x.png`; 같은 배율: 어른 남 / 어른 여+아기 / 청소년 / 아동 / 유아 / 기는 유아 / 요람 / 바닥; 2줄 품 안 4방향 여·남; 3줄 청소년+우는 아기, 유아 걷기/앉기/엉덩방아, 아동 걷기)',
 ];
 writeFileSync(`${OUT}/checklist.md`, md.join('\n') + '\n');
 const fails = rows.filter((r) => !r.pass);

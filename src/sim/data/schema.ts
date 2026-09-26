@@ -28,6 +28,8 @@ export const needsSchema = z.object({
     hungerZeroWeakenMinutes: z.number(),
     /** 배고픔 0 이 이만큼 이어지면 굶어 죽음 (사용자: 3일) */
     hungerZeroDeathMinutes: z.number().optional(),
+    /** 아기·유아·아동은 더 빨리 (사용자: 2일) */
+    hungerZeroDeathMinutesChild: z.number().optional(),
   }),
   warmth: z.object({
     comfortableFeltC: z.number(),
@@ -175,7 +177,7 @@ const socialOutcome = z.object({
   flagsRemove: z.array(z.string()).optional(),
   events: z.array(z.string()).optional(),
 }).loose();
-export const SOCIAL_CATEGORIES = ['basic', 'friendly', 'romance', 'mean', 'status', 'trade', 'special'] as const;
+export const SOCIAL_CATEGORIES = ['basic', 'friendly', 'romance', 'mean', 'status', 'trade', 'special', 'care'] as const;
 const socialRequires = z.object({
   met: z.boolean().optional(),
   relAny: z.array(z.string()).optional(),
@@ -200,6 +202,16 @@ const socialRequires = z.object({
   household: z.boolean().optional(),
   adult: z.boolean().optional(),
   stock: numRecord.optional(),
+  // M7 돌봄 (15-3~15-5): 생애 단계, 엄마·젖, 요람, 배변 훈련, 유아 기술, 과제, 생일
+  targetStageAny: z.array(z.string()).optional(),
+  actorStageAny: z.array(z.string()).optional(),
+  actorIsMother: z.boolean().optional(),
+  actorLactating: z.boolean().optional(),
+  targetInCradle: z.boolean().optional(),
+  targetNotPottyTrained: z.boolean().optional(),
+  targetSkillBelow: numRecord.optional(),
+  targetHasHomework: z.boolean().optional(),
+  targetBirthday: z.boolean().optional(),
 }).loose();
 /**
  * 사회 상호작용 (M3 계약 artifacts/contracts-m3.md). M2 형식(friendship, requiresTarget, requiresActor, moodlets[{id}])도 받음 → normalizeSocial 로 통일
@@ -252,6 +264,11 @@ export interface SocialOutcome {
 export type SocialRequires = z.infer<typeof socialRequires>;
 /** 통일된 사회 상호작용 정의 (sim 이 쓰는 형태) */
 export interface SocialDef {
+  /** M7 돌봄: 아이 욕구별 광고 가중, 안기, 가르치기(스킬 → 분당 경험치), 과제 진척 */
+  careAds?: Record<string, number>;
+  holds?: boolean;
+  teach?: Record<string, number>;
+  homework?: number;
   nameKey: string;
   icon: string;
   category: (typeof SOCIAL_CATEGORIES)[number];
@@ -304,6 +321,11 @@ export function normalizeSocial(r: SocialRaw): SocialDef {
     base: r.base ?? 70, requires: req, traitMods: r.traitMods ?? {}, targetTraitMods: r.targetTraitMods ?? {},
     topics: r.topics ?? [], estateRule: r.estateRule, success, failure,
     removeMoodlets: r.removeMoodlets ?? [], targetRemoveMoodlets: r.targetRemoveMoodlets ?? [],
+    // M7 돌봄 (category care): 아이 욕구 광고, 안기, 가르치기, 과제 진척
+    ...(r.careAds ? { careAds: r.careAds as Record<string, number> } : {}),
+    ...(r.holds ? { holds: true } : {}),
+    ...(r.teach ? { teach: r.teach as Record<string, number> } : {}),
+    ...(r.homework ? { homework: r.homework as number } : {}),
   };
 }
 

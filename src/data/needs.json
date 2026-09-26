@@ -102,7 +102,8 @@
   "collapse": {
     "energyFloorSleepMinutes": 240,
     "hungerZeroWeakenMinutes": 1440,
-    "hungerZeroDeathMinutes": 4320
+    "hungerZeroDeathMinutes": 4320,
+    "hungerZeroDeathMinutesChild": 2880
   },
   "warmth": {
     "comfortableFeltC": 15,
@@ -120,5 +121,5 @@
     "nearHearthTiles": 2,
     "nearHearthBonusC": 8
   },
-  "$tempo": "2026-09-26 사용자: 욕구가 너무 빨리 떨어짐. 한 끼로 하루 버팀(배고픔 4/시간), 용변 하루 몇 번(방광 7), 3일 굶어야 사망"
+  "$tempo": "2026-09-26 사용자: 욕구가 너무 빨리 떨어짐. 한 끼로 하루 버팀(배고픔 4/시간), 용변 하루 몇 번(방광 7), 굶어 죽음: 어른 3일, 아기·유아·아동 2일"
 }
