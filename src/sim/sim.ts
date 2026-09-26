@@ -285,6 +285,14 @@ export class Simulation {
         })
       : null;
     if (this.builder && data.build?.construction.defaultOn) this.builder.construction = true;
+    if (data.town) {
+      this.world.stepAllow = (pid, o) => {
+        const owner = this.town?.ownerOf(o.x, o.y) ?? 0;
+        if (owner <= 0) return true;
+        const p = this.persons.find((q) => q.id === pid);
+        return !p || p.household === owner || this.mayEnter(p, owner);
+      };
+    }
     this.town = data.town
       ? new Town({
           world: this.world, data, persons: this.persons, rng: this.rng,
@@ -908,6 +916,9 @@ export class Simulation {
     return out;
   }
 
+  /** 진단용: 길 못 찾음 기록 (도구가 켜면 쌓임) */
+  pathFailLog: { minute: number; person: number; ia: string; target: number; autonomous: boolean }[] | null = null;
+
   menuFor(personId: number, targetUid: number): MenuEntry[] {
     const p = this.person(personId);
     const obj = this.world.byUid.get(targetUid);
@@ -1479,7 +1490,9 @@ export class Simulation {
         if (a.stepObj >= 0 && a.stepObj !== uid) p.excludedUntil.set(a.stepObj, until);
         p.pathFails.delete(uid);
       }
-      this.notice(p, 'no_path');
+      // 심즈처럼 길 못 찾음 알림은 플레이어가 시킨 일만 (자율 행동은 조용히 다른 일을 고름)
+      if (!a.item.autonomous) this.notice(p, 'no_path');
+      this.pathFailLog?.push({ minute: this.world.minute, person: p.id, ia: a.item.interactionId, target: a.item.targetUid, autonomous: !!a.item.autonomous });
       this.finishAction(p, false, 'path');
       return;
     }
@@ -2638,6 +2651,9 @@ export class Simulation {
     } else {
       if (t.engagedWith && t.engagedWith !== p.id) return { ok: false, reasonKey: 'reason.target_busy' };
       if (t.action && (!t.action.item.autonomous || this.data.social[t.action.item.interactionId])) return { ok: false, reasonKey: 'reason.target_busy' };
+      // 남의 집 안에 있는 사람에게는 자율로 말 걸러 가지 않음 (들어갈 수 없어 길을 못 찾던 것)
+      const owner = this.town?.ownerOf(t.x, t.y) ?? 0;
+      if (owner > 0 && owner !== p.household && !this.mayEnter(p, owner)) return { ok: false, reasonKey: 'reason.target_busy' };
     }
     // 자율로 거는 말은 상대가 한가하거나 쉬는 중일 때만 (하던 일을 끊는 것은 플레이어 명령만)
     if (autonomous && t.action) {

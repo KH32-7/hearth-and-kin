@@ -223,7 +223,7 @@ function townPart(s: Simulation): NonNullable<Snapshot['town']> {
     lod: counts,
     news: s.news.slice(-12),
     people: s.persons.filter((p) => !p.infant).map((p) => ({ id: p.id, name: p.name, household: p.household, lod: p.lod, x: Math.round(p.x), y: Math.round(p.y), stage: p.lifeStage })),
-    freeLots: s.town!.lots.filter((l) => !s.town!.lotHousehold.has(l.id)).map((l) => l.id),
+    freeLots: s.town!.lots.filter((l) => !s.town!.lotHousehold.has(l.id) && !s.town!.sealed.has(l.id)).map((l) => l.id),
     playerLot: s.town!.playerLot()?.id ?? null,
   };
 }

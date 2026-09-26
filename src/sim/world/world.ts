@@ -10,6 +10,11 @@ import { outsideTemp, roomTargetTemp } from './temperature';
 
 export class World {
   readonly grid: Grid;
+  /**
+   * 단계 물건 고르기 거르개 (마을): 그 사람이 들어갈 수 없는 남의 집 물건은 고르지 않음.
+   * 주점 식탁에서 먹으려다 가장 가까운 화덕이 남의 집 안이라 길을 못 찾던 것 (resolveStep 의 같은 종류 물건 찾기)
+   */
+  stepAllow: ((personId: number, o: ObjectInstance) => boolean) | null = null;
   readonly objects: ObjectInstance[] = [];
   readonly byUid = new Map<number, ObjectInstance>();
   /** 저장고 (조작 가문). 마을 모드에서 NPC 가 행동하는 동안은 sim 이 NPC 공용 창고로 잠시 바꿔 끼움 */

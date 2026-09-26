@@ -200,6 +200,7 @@ export function resolveStep(
   let bestD = Infinity;
   for (const o of world.objects) {
     if ((o.defId !== at.object && world.kindOf(o.defId) !== at.object) || !matchQuery(o, at)) continue;
+    if (world.stepAllow && o !== target && !world.stepAllow(personId, o)) continue;
     const d = Math.abs(world.centerX(o) - cx) + Math.abs(world.centerY(o) - cy);
     if (d >= bestD) continue;
     const slot = pickSlot(world, o, step.slot, personId);
