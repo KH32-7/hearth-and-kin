@@ -284,6 +284,8 @@ function loop(): void {
 self.onmessage = (ev: MessageEvent<ToWorker>) => {
   const m = ev.data;
   try {
+    // 직접 조작으로 그동안 움직인 위치를 먼저 입력 로그에 (이 뒤에 오는 의도가 같은 위치를 보게: 재생 결정론)
+    if (m.type !== 'init' && m.type !== 'menu' && m.type !== 'menuPerson' && m.type !== 'buildQuery' && m.type !== 'stats') flushDirect();
     switch (m.type) {
       case 'init':
         data = validateSimData(m.data as Parameters<typeof validateSimData>[0]);

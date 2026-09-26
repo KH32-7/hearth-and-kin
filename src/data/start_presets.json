@@ -1,0 +1,95 @@
+{
+  "$comment": "시작 신분 7 × 형편 3 = 21 프리셋 (GDD 16-2 시작 신분 선택, 17-4 시작 자금, 29-1 생존 목표). src/sim/house/presets.ts 의 applyPreset 이 Host 창구로 조작 가문을 꾸림. 현금 = 그 신분 S × cashS (S 는 lifespan), 몰락은 빚(상환일 loanTerm). 명성은 형편별. 필수 자산은 estates.<신분> (모든 형편 공통), 형편별 차이는 presets[].override",
+  "wealth": {
+    "poor": { "cashS": -0.5, "scale": "lifespan", "loanTerm": { "value": 28, "scale": "absolute" }, "lender": "moneylender", "fame": 200 },
+    "normal": { "cashS": 0.3, "scale": "lifespan", "fame": 300 },
+    "rich": { "cashS": 1.5, "scale": "lifespan", "fame": 400 }
+  },
+  "families": {
+    "$comment": "기본 가족 구성: 청년 부부(가장 표시 나이 22세 안팎) + 아동. 성직자는 본인 + 같은 가문 형제 부부 + 아동 1. sex: male/female/any/opposite(가장의 반대), estate 가 없으면 가정 대표 신분",
+    "couple": [
+      { "role": "head", "sex": "any", "stage": "young", "displayAge": 22 },
+      { "role": "spouse", "sex": "opposite", "stage": "young", "displayAge": 20 }
+    ],
+    "clergy": [
+      { "role": "head", "sex": "any", "stage": "young", "displayAge": 24, "estate": "clergy" },
+      { "role": "sibling", "sex": "any", "stage": "young", "displayAge": 22, "estate": "freeman" },
+      { "role": "sibling_spouse", "sex": "opposite", "stage": "young", "displayAge": 21, "estate": "freeman" }
+    ],
+    "child": { "role": "child", "sex": "any", "stage": "child", "displayAge": [4, 9] }
+  },
+  "estates": {
+    "$comment": "필수 자산 (16-2 표, 모든 형편 공통). house.tenure: owned 소유 / lord 영주가 준 경작권 / church 교회 소유. careers: 역할 → 직업 id (careers.json). servants: 하인 역할 (servants.ts). fief: 영지 (fief.ts). capital: 교역 자본 (S 배수, 현금과 따로). guild: 길드 회원 자격. apprentice/squire: 데리고 있는 도제/종자 수",
+    "serf": {
+      "family": "couple",
+      "house": { "kind": "hut", "tenure": "lord" },
+      "plots": 2,
+      "animals": { "chicken": 3 },
+      "careers": { "head": "field_hand" }
+    },
+    "freeman": {
+      "family": "couple",
+      "house": { "kind": "farmhouse", "tenure": "owned" },
+      "plots": 3
+    },
+    "artisan": {
+      "family": "couple",
+      "house": { "kind": "workshop_house", "tenure": "owned" },
+      "careers": { "head": "blacksmith" },
+      "tools": true,
+      "guild": true,
+      "apprentice": 1
+    },
+    "merchant": {
+      "family": "couple",
+      "house": { "kind": "merchant_house", "tenure": "owned" },
+      "careers": { "head": "trader" },
+      "capital": { "of": "artisan", "mult": 0.8333, "scale": "lifespan" },
+      "servants": ["maid"]
+    },
+    "clergy": {
+      "family": "clergy",
+      "house": { "kind": "rectory", "tenure": "church" },
+      "careers": { "head": "priest", "sibling": "field_hand" }
+    },
+    "knight": {
+      "family": "couple",
+      "house": { "kind": "manor", "tenure": "owned" },
+      "careers": { "head": "knight" },
+      "animals": { "warhorse": 1 },
+      "items": { "armor_plate": 1, "sword": 1 },
+      "squire": 1,
+      "fief": { "manors": 2, "tenants": 4, "lord": false, "policy": false }
+    },
+    "noble": {
+      "family": "couple",
+      "house": { "kind": "castle_hall", "tenure": "owned" },
+      "animals": { "horse": 2 },
+      "servants": ["steward", "maid", "cook", "guard"],
+      "fief": { "manors": 12, "tenants": 12, "lord": true, "policy": true }
+    }
+  },
+  "presets": [
+    { "id": "serf_poor", "estate": "serf", "wealth": "poor", "children": 2 },
+    { "id": "serf_normal", "estate": "serf", "wealth": "normal", "children": 2 },
+    { "id": "serf_rich", "estate": "serf", "wealth": "rich", "children": 1 },
+    { "id": "freeman_poor", "estate": "freeman", "wealth": "poor", "children": 2, "override": { "house": { "kind": "hut", "tenure": "owned" }, "plots": 0, "careers": { "head": "field_hand" } } },
+    { "id": "freeman_normal", "estate": "freeman", "wealth": "normal", "children": 2 },
+    { "id": "freeman_rich", "estate": "freeman", "wealth": "rich", "children": 1, "override": { "animals": { "chicken": 4 } } },
+    { "id": "artisan_poor", "estate": "artisan", "wealth": "poor", "children": 2, "override": { "careers": { "head": "carpenter" } } },
+    { "id": "artisan_normal", "estate": "artisan", "wealth": "normal", "children": 2 },
+    { "id": "artisan_rich", "estate": "artisan", "wealth": "rich", "children": 1, "override": { "careers": { "head": "tailor" } } },
+    { "id": "merchant_poor", "estate": "merchant", "wealth": "poor", "children": 2 },
+    { "id": "merchant_normal", "estate": "merchant", "wealth": "normal", "children": 1 },
+    { "id": "merchant_rich", "estate": "merchant", "wealth": "rich", "children": 2, "override": { "servants": ["maid", "cook"] } },
+    { "id": "clergy_poor", "estate": "clergy", "wealth": "poor", "children": 1, "override": { "house": { "kind": "monastery_cell", "tenure": "church" } } },
+    { "id": "clergy_normal", "estate": "clergy", "wealth": "normal", "children": 1 },
+    { "id": "clergy_rich", "estate": "clergy", "wealth": "rich", "children": 1 },
+    { "id": "knight_poor", "estate": "knight", "wealth": "poor", "children": 2 },
+    { "id": "knight_normal", "estate": "knight", "wealth": "normal", "children": 2 },
+    { "id": "knight_rich", "estate": "knight", "wealth": "rich", "children": 1, "override": { "servants": ["groom"] } },
+    { "id": "noble_poor", "estate": "noble", "wealth": "poor", "children": 2 },
+    { "id": "noble_normal", "estate": "noble", "wealth": "normal", "children": 2 },
+    { "id": "noble_rich", "estate": "noble", "wealth": "rich", "children": 1, "override": { "servants": ["steward", "maid", "cook", "guard", "nurse", "groom"] } }
+  ]
+}

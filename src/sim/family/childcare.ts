@@ -94,6 +94,8 @@ export interface ChildcareHost {
   day(): number;
   /** 요일 0 월 ~ 6 일 */
   weekday(): number;
+  /** 층 판 한 장의 행 수 (lot.h + 1): 다른 층 사람 구분 */
+  slabRows(): number;
   moodlet(p: Person, id: string): void;
   memory(p: Person, kind: string, importance: number, valence: number, withPerson: number): void;
   notice(p: Person, kind: string, args?: Record<string, string | number>): void;
@@ -330,7 +332,7 @@ export class Childcare {
     const m = this.host.minute();
     if (m % 10 !== 0) return;
     const B = this.d.baby;
-    const H1 = 151;
+    const H1 = this.host.slabRows();
     for (const q of this.host.persons) {
       if (q === p || q.household !== p.household || DEPENDENT.has(q.lifeStage)) continue;
       if (Math.floor(q.y / H1) !== Math.floor(p.y / H1) || Math.abs(q.x - p.x) > B.cryRadiusTiles || Math.abs(q.y - p.y) > B.cryRadiusTiles) continue;
@@ -381,7 +383,7 @@ export class Childcare {
   intervene(p: Person): void {
     const N = this.d.baby.neglect;
     const parents = this.host.persons.filter((q) => q.id === p.mother || q.id === p.father);
-    const grand = this.host.persons.find((q) => q.household !== p.household && parents.some((par) => q.id === par.mother || q.id === par.father) && !DEPENDENT.has(q.lifeStage));
+    const grand = this.host.persons.find((q) => q.household !== p.household && parents.some((par) => q.id === par.mother || q.id === par.father) && !DEPENDENT.has(q.lifeStage) && this.canJoin(q.household));
     const to = grand ? grand.household : this.host.churchHousehold();
     for (const q of parents) {
       this.host.memory(q, grand ? 'child_taken_relatives' : 'child_taken_convent', N.parentMemoryImportance, -1, p.id);
@@ -481,7 +483,8 @@ export class Childcare {
       if (t === p || t.household !== p.household) continue;
       const dep = DEPENDENT.has(t.lifeStage);
       if (!dep && !t.homework && t.lastBirthdayDay !== this.host.day()) continue;
-      const dist = Math.hypot(t.x - p.x, (t.y % 151) - (p.y % 151));
+      const H1 = this.host.slabRows();
+      const dist = Math.hypot(t.x - p.x, (t.y % H1) - (p.y % H1)) + (Math.floor(t.y / H1) !== Math.floor(p.y / H1) ? 6 : 0);
       if (dist > 48) continue;
       let best = 0;
       let bestId = '';
@@ -616,7 +619,8 @@ export class Childcare {
     if (teen.lifeStage !== 'teen') return { ok: false, reason: 'stage' };
     if (!A.careers.includes(careerId)) return { ok: false, reason: 'career' };
     if (!this.host.setCareer(teen, careerId)) return { ok: false, reason: 'career' };
-    teen.apprentice = { career: careerId, until: this.host.day() + A.duration.value * lifespan };
+    const scale = (A.duration as { scale?: string }).scale;
+    teen.apprentice = { career: careerId, until: this.host.day() + A.duration.value * (scale === 'lifespan' ? lifespan : 1) };
     this.host.moodlet(teen, A.moodlet);
     return { ok: true };
   }

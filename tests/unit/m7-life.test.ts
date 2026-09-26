@@ -257,3 +257,58 @@ describe('M7 캐릭터 만들기 → 조작 가문 (10-1 createFamily)', () => {
     expect((s.apply({ kind: 'createFamily', spec: { v: 1, clan: 'X', estate: 'freeman', members: many, relations: [] } }) as { ok: boolean }).ok).toBe(false);
   });
 });
+
+describe('M7 리뷰 회귀', () => {
+  it('1. 조작 가문 부부도 동침하면 자정 판정에서 임신할 수 있음 (어제 동침을 셈)', () => {
+    let pregnant = 0;
+    for (let seed = 1; seed <= 12; seed++) {
+      const { s, mom, dad } = family(seed);
+      (s as unknown as { coitus: Map<number, { day: number; n: number }> }).coitus.set(mom.id, { day: s.world.day(), n: 3 });
+      void dad;
+      const d0 = s.world.day();
+      while (s.world.day() === d0) s.tick();
+      for (let i = 0; i < 5; i++) s.tick();
+      if (mom.pregnancy) pregnant++;
+    }
+    expect(pregnant).toBeGreaterThan(0);
+  });
+
+  it('3. 사망 설정이 관대하면 굶어도 죽지 않음', () => {
+    const { s, dad } = family(13);
+    s.apply({ kind: 'setDeathRules', preset: 'lenient' } as never);
+    s.autonomyEnabled = false;
+    dad.setNeed('hunger', 0);
+    dad.hungerZeroMinutes = 5000;
+    for (let i = 0; i < 30; i++) s.tick();
+    expect(s.persons.includes(dad)).toBe(true);
+  });
+
+  it('5. 몰래 나간 청소년은 정한 시간이 지나야 돌아옴', () => {
+    const { s, baby } = family(14);
+    baby.lifeStage = 'teen';
+    (s as unknown as { coarseStage(p: Person): void }).coarseStage(baby);
+    (s as unknown as { sneakOut(p: Person, m: number): void }).sneakOut(baby, 3 * 60);
+    for (let i = 0; i < 90; i++) s.tick();
+    expect(baby.schoolAway).toBe(true);
+    for (let i = 0; i < 3 * 60; i++) s.tick();
+    expect(baby.schoolAway).toBe(false);
+  });
+
+  it('8. 유아에게 요리를 시킬 수 없고, 아기는 WASD 로 못 움직임', () => {
+    const { s, baby } = family(15);
+    expect(s.apply({ kind: 'steer', personId: baby.id, dx: 1, dy: 0 })).toMatchObject({ ok: false });
+    baby.lifeStage = 'toddler';
+    (s as unknown as { coarseStage(p: Person): void }).coarseStage(baby);
+    const hearth = s.world.objects.find((o) => o.defId === 'hearth')!;
+    expect(s.apply({ kind: 'queue', personId: baby.id, interactionId: 'hearth.cook_stew', targetUid: hearth.uid })).toMatchObject({ ok: false });
+    expect(s.menuFor(baby.id, hearth.uid).some((e) => e.interactionId === 'hearth.cook_stew')).toBe(false);
+  });
+
+  it('14. 같은 분에 태어난 쌍둥이도 유전자가 다름', () => {
+    const { s, mom, dad } = family(16);
+    const born = (s as unknown as { bornTo(m: Person, f: Person | null): Person });
+    const a = born.bornTo(mom, dad);
+    const b = born.bornTo(mom, dad);
+    expect(JSON.stringify(a.genome)).not.toBe(JSON.stringify(b.genome));
+  });
+});

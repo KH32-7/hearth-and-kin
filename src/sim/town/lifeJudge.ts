@@ -38,6 +38,10 @@ export interface JudgeHost {
   lifespan?(): number;
   /** 노환 위험 배수 (장수 가계 0.7, 병약 가계 1.3, 건강) */
   elderHazardMult?(p: Person): number;
+  /** 사망 설정 행렬 (20-7): 이 원인이 이 사람 나이 그룹에서 켜져 있는가 */
+  deathAllowed?(p: Person, cause: string): boolean;
+  /** 노화 끄기 (인물 또는 가구) */
+  agingOff?(p: Person): boolean;
 }
 
 export class LifeJudge {
@@ -152,7 +156,9 @@ export class LifeJudge {
           cause ||= 'illness';
         }
       }
-      if (!cause && p.lifeStage === 'elder' && !p.agingOff) {
+      // 사망 설정에서 꺼진 원인은 죽지 않음 (대체 결과는 M11 부상 체계)
+      if (cause && this.host.deathAllowed && !this.host.deathAllowed(p, cause)) cause = '';
+      if (!cause && p.lifeStage === 'elder' && !(this.host.agingOff?.(p) ?? p.agingOff) && (this.host.deathAllowed?.(p, 'old_age') ?? true)) {
         // 29-2: h(n) = base × e^(k × n) × 건강 × 가계, n = 노년 경과 ÷ 수명 배수, 확률도 ÷ 수명 배수
         const L = this.host.lifespan?.() ?? 1;
         pd = (H.base * Math.exp(H.k * (p.ageDays / L)) * (p.weakened ? H.healthPoor : 1) * (this.host.elderHazardMult?.(p) ?? 1)) / L;
@@ -176,7 +182,8 @@ export class LifeJudge {
     this.stageDeaths[p.lifeStage] = (this.stageDeaths[p.lifeStage] ?? 0) + 1;
     this.stats.deaths++;
     this.stats.deathsByCause[cause] = (this.stats.deathsByCause[cause] ?? 0) + 1;
-    this.host.news('death_starved', { a: p.name }, [p]);
+    const kind = cause === 'starvation' ? 'death_starved' : this.age(p) < 18 ? 'death_child' : cause === 'illness' ? 'death_ill' : cause === 'accident' ? 'death_accident' : 'death_cold';
+    this.host.news(kind, { a: p.name }, [p]);
   }
 
   // ------------------------------------------------------------------ 임신과 출산 (15-1)

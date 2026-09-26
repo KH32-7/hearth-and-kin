@@ -6,7 +6,7 @@ import { Rng } from './core/rng';
 import type { NeedId, ObjectInstance, QueueItem } from './core/types';
 import { NEED_IDS } from './core/types';
 import type { SimData } from './data/simData';
-import { chooseAutonomous, needSolvable, urgency, type Candidate } from './action/autonomy';
+import { chooseAutonomous, needSolvable, repairAds, urgency, type Candidate } from './action/autonomy';
 import type { SocialDef } from './data/schema';
 import { EMOTION_IDS } from './inner/emotion';
 import {
@@ -674,10 +674,19 @@ export class Simulation {
     return sim;
   }
 
+  /** 생애 단계·임신 조건 (15-4, 15-5, 15-1): 플레이어 명령과 자율에 같은 규칙 */
+  stageAllows(p: Person, interactionId: string, tags: readonly string[]): boolean {
+    if (p.lifeStage === 'baby') return false;
+    if (this.childcare && !this.childcare.allowInteraction(p, interactionId, tags)) return false;
+    if (this.pregnancy && !this.data.social[interactionId] && !this.pregnancy.interactionAllowed(p, interactionId, null)) return false;
+    return true;
+  }
+
   queueInteraction(personId: number, interactionId: string, targetUid: number, autonomous = false): { ok: boolean; reason?: string } {
     const p = this.person(personId);
     if (interactionId !== GOTO_ID && !this.data.interactions[interactionId] && !this.data.social[interactionId]) return { ok: false, reason: 'unknown' };
     if (!autonomous && p.queue.length >= this.data.balance.queue.maxLength) return { ok: false, reason: 'queue_full' };
+    if (!autonomous && interactionId !== GOTO_ID && !this.data.social[interactionId] && !this.stageAllows(p, interactionId, this.data.interactions[interactionId]?.tags ?? [])) return { ok: false, reason: 'stage' };
     if (!autonomous) {
       // 플레이어 명령은 자율 행동을 밀어냄 (심즈와 같음). 남이 자율로 건 대화에 붙잡혀 있으면 풀려남
       this.releaseEngaged(p);
@@ -704,7 +713,7 @@ export class Simulation {
    */
   steer(personId: number, dx: number, dy: number): { ok: boolean } {
     const p = this.persons.find((q) => q.id === personId);
-    if (!p || p.collapse || p.status !== 'available') return { ok: false };
+    if (!p || p.collapse || p.status !== 'available' || p.lifeStage === 'baby') return { ok: false };
     const M = this.data.balance.movement as { steerHoldMinutes?: number };
     const dxs = Math.sign(dx);
     const dys = Math.sign(dy);
@@ -819,6 +828,8 @@ export class Simulation {
     const out: MenuEntry[] = [];
     for (const c of this.data.compiled.byDef.get(obj.defId) ?? []) {
       const ia = c.def;
+      // 생애 단계(유아·아동은 할 수 있는 것만)와 임신 준비 상호작용 조건: 메뉴에서 뺌
+      if (!this.stageAllows(p, c.id, ia.tags ?? [])) continue;
       let av: Availability = checkRequires(this.world, ia, obj);
       // 밭 작업: 지금 밭 상태에 맞지 않는 작업(가뭄 아닐 때 물 대기, 익기 전 수확 …)은 메뉴에서 뺌
       if (!av.ok && c.id.startsWith('farm.') && /^reason\.(min|max)\./.test(av.reasonKey ?? '')) continue;
@@ -1060,7 +1071,7 @@ export class Simulation {
       // 사흘 내리 굶으면 죽음 (틱이 끝난 뒤 처리: 인물 목록을 도는 중에 빼지 않음)
       const young = p.lifeStage === 'baby' || p.lifeStage === 'toddler' || p.lifeStage === 'child';
       const die = young ? nd.collapse.hungerZeroDeathMinutesChild ?? nd.collapse.hungerZeroDeathMinutes : nd.collapse.hungerZeroDeathMinutes;
-      if (die && p.hungerZeroMinutes >= die && !this.pendingDeaths.some((d) => d.p === p)) this.pendingDeaths.push({ p, cause: 'starvation' });
+      if (die && p.hungerZeroMinutes >= die && !this.pendingDeaths.some((d) => d.p === p) && this.deathAllowed('starvation', p)) this.pendingDeaths.push({ p, cause: 'starvation' });
     } else p.hungerZeroMinutes = 0;
   }
 
@@ -1152,14 +1163,15 @@ export class Simulation {
     if (p.needs[NEED_INDEX.energy] < 15) noSleep = false;
     const allow = urgentNeed >= 0 || ex || noSleep
       ? (ci: { id: string; serves: Uint8Array | number[]; def: { tags?: string[]; steps: { sleep?: boolean }[] } }) =>
-          (urgentNeed < 0 || ci.serves[urgentNeed] === 1 || ((ci as { supportAds?: Float64Array }).supportAds?.[urgentNeed] ?? 0) > 0) &&
+          (urgentNeed < 0 || ci.serves[urgentNeed] === 1 || ((ci as { supportAds?: Float64Array }).supportAds?.[urgentNeed] ?? 0) > 0 || (ci as { id?: string }).id === 'obj.repair') &&
           !(ex && !ex.includes(ci.id)) &&
           !(noSleep && ci.def.steps[0]?.sleep)
       : undefined;
     // 생애 단계 (15-4, 15-5): 유아는 유아 행동만, 아동은 어른 전용 빼고
     const cc = this.childcare;
-    const stageAllow = cc && (p.lifeStage === 'toddler' || p.lifeStage === 'child')
-      ? (ci: { id: string; def: { tags?: string[] } }) => cc.allowInteraction(p, ci.id, ci.def.tags ?? [])
+    const preg = this.pregnancy;
+    const stageAllow = (cc && (p.lifeStage === 'toddler' || p.lifeStage === 'child')) || preg
+      ? (ci: { id: string; def: { tags?: string[] } }) => (!cc || cc.allowInteraction(p, ci.id, ci.def.tags ?? [])) && (!preg || preg.interactionAllowed(p, ci.id, null))
       : null;
     const allow2 = stageAllow || allow
       ? (ci: never) => (!stageAllow || stageAllow(ci)) && (!allow || (allow as (x: never) => boolean)(ci))
@@ -1175,7 +1187,7 @@ export class Simulation {
         this.careCandidates(p, buf);
       },
       allow2 as never,
-      this.town ? (o) => this.canUse(p, o) : undefined,
+      this.town || urgentNeed >= 0 ? (o) => (!this.town || this.canUse(p, o)) && (urgentNeed < 0 || !o.state.broken || repairAds(this.data, o.defId)[urgentNeed] > 0) : undefined,
     );
     if (!c && urgentNeed >= 0 && !ex) {
       // 풀 수 있다고 봤는데 실제 후보가 없음 (조건·자리·점수): 이 욕구는 잠시 못 푸는 것으로 두고
@@ -1706,6 +1718,8 @@ export class Simulation {
         for (const [lot, h] of this.town!.lotHousehold) if (h === hh) this.town!.lotHousehold.delete(lot);
       },
       coarse: (p) => this.coarseStage(p),
+      deathAllowed: (p, cause) => this.deathAllowed(cause === 'cold_hunger' ? 'cold' : cause, p),
+      agingOff: (p) => p.agingOff || this.settings.agingOffHouseholds.has(p.household),
       ...(this.lifecycle ? { ageDaily: (p: Person) => this.lifecycle!.dailyAge(p) } : {}),
       lifespan: () => this.settings.lifespan,
       elderHazardMult: (p) => {
@@ -1760,7 +1774,7 @@ export class Simulation {
     // 임신 중 사망 (15-1 교차 표 1행): 기적의 출산 판정은 죽기 전에
     if (p.pregnancy && this.pregnancy && cause !== 'moved_away') this.pregnancy.onMotherDeath(p, cause);
     // 가족 사망 = 큰 충격 (임신 위험 판정)
-    if (this.pregnancy && cause !== 'moved_away') for (const q of this.persons) if (q !== p && q.pregnancy && q.household === p.household) this.pregnancy.riskEvent(q, 'shock');
+    if (this.pregnancy && cause !== 'moved_away') for (const q of [...this.persons]) if (q !== p && q.pregnancy && q.household === p.household && this.persons.includes(q)) this.pregnancy.riskEvent(q, 'shock');
     if (p.action) this.abortAction(p, 'gone');
     this.world.release(p.id);
     for (const q of this.persons) {
@@ -1811,7 +1825,7 @@ export class Simulation {
    */
   private bornTo(mother: Person, father: Person | null): Person | null {
     const sex: 'male' | 'female' = this.rng.next() < 0.5 ? 'male' : 'female';
-    const brng = new Rng((this.seed * 2654435761 + this.world.minute * 97 + mother.id * 31) >>> 0);
+    const brng = new Rng((this.seed * 2654435761 + this.world.minute * 97 + mother.id * 31 + ++this.birthSeq * 7919) >>> 0);
     const name = this.newName(sex, mother.estate, mother.household, brng);
     const baby = this.addPerson(name, mother.x, mother.y, { estate: mother.estate, sex, stage: 'child', household: mother.household });
     baby.lifeStage = 'baby';
@@ -1844,6 +1858,7 @@ export class Simulation {
     return baby;
   }
 
+  private birthSeq = 0;
   /** 신분·성별 이름 (10-4): 같은 가구에서 겹치지 않게. 이름 풀이 없으면 마을 이름 풀 */
   private newName(sex: 'male' | 'female', estate: string, household: number, rng: Rng): string {
     const taken = this.persons.filter((q) => q.household === household).map((q) => q.name);
@@ -3650,6 +3665,18 @@ export class Simulation {
   private newDay(day: number): void {
     this.fire?.newDay();
     for (const p of this.persons) p.today = day;
+    // 아이 하루 끝 (15-5): 과제 정산·성적 무드렛·기숙 향수·수업료, 유모 일당 (못 내면 유모가 그만둠)
+    const cc = this.childcare;
+    if (cc && day > 0) {
+      for (const p of [...this.persons]) {
+        if (p.lifeStage === 'child') cc.dayEnd(p);
+        if (p.wetNurse && p.lifeStage === 'baby') {
+          const a = this.econ?.account(p.household);
+          if (a && a.money >= cc.d.baby.wetNurse.pricePerDay) this.econ!.spend(a, cc.d.baby.wetNurse.pricePerDay, 'servants');
+          else if (a) p.wetNurse = false;
+        } else if (p.wetNurse) p.wetNurse = false;
+      }
+    }
     if (this.judge) {
       this.judge.daily();
       this.rumors?.daily(day);
@@ -3846,9 +3873,7 @@ export class Simulation {
     if (this.pregnancy) {
       this.pregnancy.tick();
       // 입덧 (15-1 초기): 아침에 깨면
-      if (hour === 7) for (const q of this.persons) if (q.pregnancy && !q.sleeping) this.pregnancy.onWake(q);
-      // 위험 요인: 굶주림 (배고픔 10 미만 또는 쇠약)
-      if (hour === 12) for (const q of this.persons) if (q.pregnancy && (q.need('hunger') < 10 || q.weakened)) this.pregnancy.riskEvent(q, 'hunger');
+      if (hour === 7) for (const q of [...this.persons]) if (q.pregnancy && !q.sleeping) this.pregnancy.onWake(q);
     }
     if (!cc) return;
     for (const p of [...this.persons]) {
@@ -3863,11 +3888,11 @@ export class Simulation {
         if (away && !p.schoolAway && p.status === 'available' && !p.direct) this.leaveForSchool(p);
         else if (!away && p.schoolAway) this.backFromSchool(p);
         cc.lessonHour(p);
-      } else if (p.schoolAway) this.backFromSchool(p);
+      } else if (p.schoolAway && !p.sneakUntil) this.backFromSchool(p);
       if (hour === 22 && p.lifeStage === 'teen' && p.household === 1 && p.status === 'available') {
         const r = cc.rebellionCheck(p);
         if (r === 'sneak') this.sneakOut(p, 3 * 60);
-        else if (r === 'runaway') this.sneakOut(p, cc.d.teen.rebellion.runawayDays.value * 1440, true);
+        else if (r === 'runaway') this.sneakOut(p, this.durDays(cc.d.teen.rebellion.runawayDays as { value: number; scale?: string }) * 1440, true);
       }
       if (p.sneakUntil && this.world.minute >= p.sneakUntil) this.backFromSchool(p);
     }
@@ -3897,6 +3922,13 @@ export class Simulation {
       p.x = (goal % g.w) + 0.5;
       p.y = Math.floor(goal / g.w) + 0.5;
     }
+  }
+
+  /** 기간 필드 → 일 (29-0 scale: lifespan 은 수명 배수, season 은 계절 길이, 그 밖 그대로) */
+  durDays(d: { value: number; scale?: string }): number {
+    if (d.scale === 'lifespan') return d.value * this.settings.lifespan;
+    if (d.scale === 'season') return d.value * (((this.data.economy as { calendar?: { seasonDays: number } } | null)?.calendar?.seasonDays ?? 7) / 7);
+    return d.value;
   }
 
   /** 청소년 반항 (15-6): 몰래 나감 / 가출. 부모는 걱정 */
@@ -3967,8 +3999,9 @@ export class Simulation {
       chooses: (q) => q.household === 1 && !!this.town,
       coitusToday: (w) => {
         if (w.lod !== 'full') return null;
+        // 수태 판정은 자정(날이 바뀐 뒤)에 돌아 "오늘"은 방금 끝난 어제
         const e = this.coitus.get(w.id);
-        return e && e.day === this.world.day() ? e.n : 0;
+        return e && e.day >= this.world.day() - 1 ? e.n : 0;
       },
       hasWish: (q, id) => q.wishes.some((x) => x.id === id),
       addWish: (q, id) => {
@@ -4117,6 +4150,7 @@ export class Simulation {
       hour: () => this.world.hour(),
       day: () => this.world.day(),
       weekday: () => this.world.day() % 7,
+      slabRows: () => this.world.lot.h + 1,
       moodlet: (p, id) => this.addEngineMoodlet(p, id),
       memory: (p, kind, importance, valence, withPerson) => {
         p.memories.push({ kind, minute: this.world.minute, valence, importance, withPerson, objectUid: 0 });
@@ -4125,8 +4159,7 @@ export class Simulation {
       notice: (p, kind, args) => this.notice(p, kind, args),
       news: (kind, args, subjects) => this.townNews(kind, args, subjects),
       kill: (p, cause) => {
-        this.judge?.recordDeath(p, cause);
-        this.pendingDeaths.push({ p, cause });
+        if (!this.pendingDeaths.some((d) => d.p === p)) this.pendingDeaths.push({ p, cause });
       },
       deathAllowed: (cause, p) => this.deathAllowed(cause, p),
       feltTemp: (p) => this.feltTemp(p),
@@ -4168,8 +4201,13 @@ export class Simulation {
       moveChild: (child, hh, reason) => {
         const lot = this.persons.find((q) => q.household === hh)?.homeLot ?? null;
         this.moveHousehold(child, hh, lot);
-        child.hidden = !(hh === 1 || !this.town) && child.infant;
-        if (child.hidden) child.lod = 'summary';
+        if (child.infant && (hh === 1 || !this.town)) this.showInfant(child);
+        else if (child.infant) {
+          this.childcare?.putDown(child);
+          child.babyPlace = null;
+          child.hidden = true;
+          child.lod = 'summary';
+        }
         this.townNews(`child_moved_${reason}`, { a: child.name }, [child]);
       },
       churchHousehold: () => {
@@ -4407,7 +4445,7 @@ export class Simulation {
 
   /** 새 아이 (입양·이주): 단계·신분·가구, 유전자 무작위 */
   private createChild(stage: LifeStage, estate: string, household: number): Person | null {
-    const rng = new Rng((this.seed * 104729 + this.world.minute * 31 + household * 7 + this.persons.length * 131) >>> 0);
+    const rng = new Rng((this.seed * 104729 + this.world.minute * 31 + household * 7 + ++this.birthSeq * 131) >>> 0);
     const sex: 'male' | 'female' = rng.next() < 0.5 ? 'male' : 'female';
     const coarse: Person['stage'] = stage === 'teen' ? 'teen' : 'child';
     const host = this.persons.find((q) => q.household === household);
@@ -4463,6 +4501,13 @@ export class Simulation {
     }
     for (const k of Object.keys(this.world.quality).sort()) parts.push(k, this.world.quality[k].toFixed(4));
     for (const k of [...this.world.batches.keys()].sort()) for (const b of this.world.batches.get(k)!) parts.push(k, b.qty, b.day);
+    // M7 생애와 가족: 단계·나이·생일·아기 자리·임신·학교·아이 기술·직접 조작
+    for (const p of this.persons) {
+      parts.push(p.lifeStage, p.ageDays, p.birthdayDay, p.birthdayDelayed, p.babyPlace ? `${p.babyPlace.kind}:${'uid' in p.babyPlace ? p.babyPlace.uid : 'by' in p.babyPlace ? p.babyPlace.by : 0}` : '-', p.holding);
+      parts.push(p.pregnancy ? `${p.pregnancy.stage}:${p.pregnancy.since}` : '-', p.schoolAway ? 1 : 0, p.sneakUntil, p.crying ? 1 : 0, p.hungerZeroMinutes);
+      for (const k of Object.keys(p.childSkills).sort()) parts.push(k, p.childSkills[k], (p.childSkillXp[k] ?? 0).toFixed(3));
+      if (p.direct) parts.push(`d${p.direct.dx},${p.direct.dy}`);
+    }
     this.rel.hashParts(parts);
     this.econ?.hashParts(parts);
     let h = 0x811c9dc5;

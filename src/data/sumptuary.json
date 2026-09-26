@@ -1,0 +1,121 @@
+{
+  "$comment": "사치 금지법 (GDD 16-2). 등급 = 공공 장소에서 착용/휴대할 수 있는 최소 신분. 소유는 합법, 집과 자기 부지 안은 판정 없음. src/sim/house/sumptuary.ts 가 읽음",
+  "tiers": ["serf", "freeman", "artisan", "merchant", "knight", "noble"],
+  "estateTier": {
+    "$comment": "개인 신분 → 등급 순번. 성직자는 표에 없어 상인 등급으로 봄 (검은 법의 = 짙은 염료)",
+    "serf": 0,
+    "freeman": 1,
+    "artisan": 2,
+    "merchant": 3,
+    "clergy": 3,
+    "knight": 4,
+    "noble": 5
+  },
+  "items": {
+    "cloth": {
+      "coarse_wool": "serf",
+      "hemp": "serf",
+      "fine_wool": "freeman",
+      "fine_linen": "artisan",
+      "silk_trim": "merchant",
+      "fox_fur_trim": "merchant",
+      "silk": "knight",
+      "velvet": "noble",
+      "ermine": "noble"
+    },
+    "dye": {
+      "undyed": "serf",
+      "brown": "serf",
+      "gray": "serf",
+      "blue": "freeman",
+      "green": "freeman",
+      "red": "artisan",
+      "deep_blue": "merchant",
+      "heraldic": "knight",
+      "crimson": "noble",
+      "purple": "noble"
+    },
+    "weapon": {
+      "dagger": "serf",
+      "club": "serf",
+      "axe": "serf",
+      "spear": "serf",
+      "bow": "serf",
+      "staff": "serf",
+      "sword": "freeman",
+      "crossbow": "freeman"
+    },
+    "armor": {
+      "gambeson": "serf",
+      "leather": "freeman",
+      "mail": "merchant",
+      "plate": "knight"
+    }
+  },
+  "lpcDyes": {
+    "$comment": "LPC 옷 염료 이름 (outfits.json dyes) → 사치 금지법 염료 등급. 렌더러 옷 사양에서 착용 염료를 뽑을 때 씀",
+    "white": "undyed",
+    "tan": "undyed",
+    "leather": "undyed",
+    "brown": "brown",
+    "walnut": "brown",
+    "gray": "gray",
+    "charcoal": "gray",
+    "blue": "blue",
+    "bluegray": "blue",
+    "sky": "blue",
+    "green": "green",
+    "forest": "green",
+    "yellow": "green",
+    "red": "red",
+    "rose": "red",
+    "orange": "red",
+    "navy": "deep_blue",
+    "teal": "deep_blue",
+    "slate": "deep_blue",
+    "black": "deep_blue",
+    "maroon": "crimson",
+    "pink": "crimson",
+    "purple": "purple",
+    "lavender": "purple"
+  },
+  "detection": {
+    "$comment": "집행관(NPC 역할) 또는 사제 시야 안에서만. 확률 = base × 등급 격차 × 명성 보정, 게임 1시간마다",
+    "every": { "value": 60, "scale": "absolute" },
+    "base": 0.2,
+    "watcherRoles": ["bailiff", "priest"],
+    "fameMult": {
+      "disgrace": 1.5,
+      "suspect": 1,
+      "plain": 1,
+      "respected": 1,
+      "renowned": 0.5,
+      "legend": 0.5
+    }
+  },
+  "penalty": {
+    "$comment": "벌금 = 격차 × finePerGap 동화 (2은화), 가문 명성 하락 = 격차 × famePerGap. 전에 걸린 적이 있으면(repeatAfter 번째부터) 그 물건 몰수",
+    "finePerGap": 24,
+    "famePerGap": -10,
+    "repeatAfter": 2,
+    "moodlet": "sumptuary_fined",
+    "flag": "wearing_above_station",
+    "card": "sumptuary_caught",
+    "rumor": "above_station"
+  },
+  "exceptions": {
+    "$comment": "사육제 기간 전체 / 혼례 당일 본인 예복 +1 등급 / 하인 제복 주인 신분 −1 등급까지 / 신분 하락 후 달력 1계절 유예 (전 신분까지) / 직무 장비 (직업이 지급한 무기와 갑옷)",
+    "weddingBonus": 1,
+    "liveryBelowMaster": 1,
+    "fallGrace": { "value": 7, "scale": "season" },
+    "dutyCategories": ["weapon", "armor"]
+  },
+  "shabby": {
+    "$comment": "귀족이 공공 장소에서 옷(옷감·염료) 최고 등급이 minTier 보다 낮으면 체면 손상. 하루 한 번까지",
+    "estates": ["noble"],
+    "minTier": "merchant",
+    "fame": -5,
+    "moodlet": "shabby_noble_shame",
+    "cooldown": { "value": 1440, "scale": "absolute" }
+  }
+}

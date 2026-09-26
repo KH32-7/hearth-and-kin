@@ -1,0 +1,194 @@
+{
+  "$comment": "신분 7단계 규칙 (GDD 16-2, 16-3, 17-4 큰 비용 역산표, 17-6, 17-7, 18-4). src/sim/house/estates.ts, fief.ts 가 읽음. 돈은 S(한 인생 저축 목표, economy.json) 배수 {of, mult, scale: lifespan} 로 적고 코드가 동화로 반올림한 뒤 파딩으로 바꿈. 기간 필드는 {value, scale} (29-0)",
+  "order": ["serf", "freeman", "artisan", "merchant", "clergy", "knight", "noble"],
+  "estates": {
+    "$comment": "rank: 결혼 범위·한 단계 위 판정용 순위 (GDD 16-2 표 순서). inherit: 이 신분이 이어받는 '가능한 것'. can/limits 는 i18n estate.can.* / estate.limit.* 키. houseKind: 이 신분 가정의 기본 집 종류 (프리셋·사치 요구). familyName: 가문명을 가짐 (16-1)",
+    "serf": {
+      "rank": 0,
+      "familyName": false,
+      "can": ["lord_field_labor", "home_production", "market_retail"],
+      "limits": ["move_needs_permission", "corvee", "marriage_needs_permission", "no_family_name"],
+      "corveeDaysPerWeek": { "value": 1, "scale": "absolute" },
+      "houseKind": "hut"
+    },
+    "freeman": {
+      "rank": 1,
+      "familyName": true,
+      "inherit": ["serf"],
+      "can": ["move", "free_career", "apprenticeship"],
+      "limits": ["taxed"],
+      "houseKind": "farmhouse"
+    },
+    "artisan": {
+      "rank": 2,
+      "familyName": true,
+      "inherit": ["freeman"],
+      "can": ["run_shop", "take_apprentices", "guild_meeting"],
+      "limits": ["guild_rules", "taxed"],
+      "houseKind": "workshop_house"
+    },
+    "merchant": {
+      "rank": 3,
+      "familyName": true,
+      "inherit": ["artisan"],
+      "can": ["long_trade", "lend", "multi_shop", "hire_servants"],
+      "limits": ["usury_censure", "taxed"],
+      "houseKind": "merchant_house"
+    },
+    "clergy": {
+      "rank": 4,
+      "familyName": true,
+      "personalOnly": true,
+      "inherit": ["freeman"],
+      "can": ["sacraments", "teach", "church_property"],
+      "limits": ["celibate", "child_scandal"],
+      "houseKind": "rectory"
+    },
+    "knight": {
+      "rank": 5,
+      "familyName": true,
+      "inherit": ["freeman"],
+      "can": ["tournament", "war_summons", "court_access", "hire_servants", "fief_income"],
+      "limits": ["military_service", "taxed"],
+      "houseKind": "manor"
+    },
+    "noble": {
+      "rank": 6,
+      "familyName": true,
+      "inherit": ["knight"],
+      "can": ["judge", "levy_tax", "town_policy"],
+      "limits": ["honor_burden", "luxury_demand"],
+      "houseKind": "castle_hall"
+    }
+  },
+  "minorAge": 18,
+  "marriage": {
+    "$comment": "16-2: 결혼 가능 범위. 순위 차가 penaltyFromGap 이상이면 승낙 판정에 acceptMod 를 더함 (크게 불리). 성직자는 혼인 불가",
+    "penaltyFromGap": 2,
+    "acceptMod": -0.4,
+    "lordPermissionFavorMin": 0,
+    "upDowryMult": 1.5
+  },
+  "costs": {
+    "$comment": "17-4 큰 비용 역산표. 금액 = round(S(of) × mult × 수명 배수) 동화 → × 4 파딩. dowryBase 의 of 는 신부 가문 신분",
+    "emancipation": { "of": "serf", "mult": 0.6667, "scale": "lifespan" },
+    "spouseEmancipation": { "of": "serf", "mult": 0.3333, "scale": "lifespan" },
+    "guildFee": { "of": "freeman", "mult": 0.25, "scale": "lifespan" },
+    "merchantCapital": { "of": "artisan", "mult": 0.8333, "scale": "lifespan" },
+    "titlePurchase": { "of": "merchant", "mult": 2.5, "scale": "lifespan" },
+    "dowryBase": { "of": "bride", "mult": 0.25, "scale": "lifespan" }
+  },
+  "paths": {
+    "flight": {
+      "$comment": "도시 1년 + 1일 도망 (16-3): 기간 = min(달력 1년 + 1일, 29일 × 수명 배수). 하루마다 들킬 확률, 들키면 처벌 훅 + 영주 호의 하락",
+      "calendarYear": { "value": 28, "scale": "season" },
+      "plusDays": { "value": 1, "scale": "absolute" },
+      "cap": { "value": 29, "scale": "lifespan" },
+      "detectPerDay": 0.02,
+      "caughtLordFavor": -15,
+      "from": ["serf"]
+    },
+    "grace": {
+      "$comment": "영주 은혜 사건: 해방금 없이 가정 전체 해방",
+      "lordFavorGain": 10
+    },
+    "guild": {
+      "$comment": "자유민 → 장인: 도제 → 직인 → 걸작 → 장인 인정. 가입비 6은화 (costs.guildFee)",
+      "from": ["freeman"],
+      "apprenticeDays": { "value": 10, "scale": "lifespan" },
+      "journeymanMinDays": { "value": 8, "scale": "lifespan" },
+      "masterpieceMinQuality": 3,
+      "masterpieceFame": 15
+    },
+    "merchant": {
+      "$comment": "자유민/장인 → 상인: 자본 3금화 이상 (쓰지 않고 가지고 있으면 됨) + 상인 조합 가입",
+      "from": ["freeman", "artisan"],
+      "joinFee": { "of": "artisan", "mult": 0, "scale": "lifespan" }
+    },
+    "knighting": {
+      "$comment": "종자 → 기사: 무예 + 영주 추천(호의) + 마상시합 우승 또는 전공",
+      "skill": "martial",
+      "minLevel": 5,
+      "minLordFavor": 20,
+      "fame": 40
+    },
+    "title": {
+      "$comment": "상인 → 귀족: 왕실 헌금 20금화 + 가문 명성 명망 이상. 귀족들의 멸시 (존중 낮게 시작)",
+      "from": ["merchant"],
+      "minFameTier": "renowned",
+      "nobleRespect": -30
+    },
+    "vows": {
+      "$comment": "누구나 → 개인 성직자. 미혼 청소년 이상. 주교가 되면 가문 명성 크게 상승",
+      "minStages": ["teen", "young", "adult", "elder"],
+      "bishopFame": 150
+    },
+    "marryUp": {
+      "$comment": "한 단계 위 가문과 혼인: 지참금 = 상대 신분 지참금 기준 × 1.5 (marriage.upDowryMult)",
+      "rankStep": 1
+    }
+  },
+  "falls": {
+    "$comment": "16-3 하락. stepDown: 파산 하락 한 단계 (성직자는 개인 신분이라 그대로). felony: 중죄 신분 박탈 뒤 신분. knightRevoke: 기사 자격 박탈",
+    "stepDown": {
+      "noble": "knight",
+      "knight": "merchant",
+      "merchant": "artisan",
+      "artisan": "freeman",
+      "freeman": "serf",
+      "serf": "serf",
+      "clergy": "clergy"
+    },
+    "guildExpulsion": { "from": "artisan", "to": "freeman" },
+    "felony": { "to": "serf", "keepIf": ["clergy"] },
+    "knightRevoke": { "from": "knight", "to": "freeman" },
+    "fame": { "bankruptcy": -60, "felony": -120, "guildExpulsion": -40, "knightRevoke": -100 }
+  },
+  "fameTiers": ["disgrace", "suspect", "plain", "respected", "renowned", "legend"],
+  "effects": {
+    "$comment": "무드렛(moodlets_m7.json), 연대기 삽화 트리거, 마을 소식 종류, 사건 카드",
+    "riseMoodlet": "estate_risen",
+    "fallMoodlet": "estate_fallen",
+    "freedMoodlet": "freed_from_serfdom",
+    "knightedMoodlet": "knighted_pride",
+    "ennobledMoodlet": "ennobled_pride",
+    "chronicleUp": "estate_up",
+    "chronicleDown": "estate_down",
+    "newsUp": "estate_up",
+    "newsDown": "estate_down",
+    "familyNameCard": "family_name_choice",
+    "knightingCard": "knighting_eve"
+  },
+  "fief": {
+    "$comment": "17-7 영지 수입 (동화/일) + 18-4 영주 금고. 소작 지대는 매일 쌓았다가 계절 마지막 날 정산 (가을은 autumnInKind 비율을 곡물 현물로). 장원은 추상 수입 (매일). 녹봉은 기사만. 사용료 50% 와 재판 벌금은 영주 가문만",
+    "tenantPerDay": 1.5,
+    "manorPerDay": 25,
+    "stipend": { "knight": 40 },
+    "feeShare": 0.5,
+    "finesTo": "family",
+    "autumnInKind": 0.5,
+    "inKindItem": "wheat",
+    "inKindPrice": 2,
+    "defaults": {
+      "knight": { "manors": 2, "tenants": 4, "lord": false, "policy": false },
+      "noble": { "manors": 12, "tenants": 12, "lord": true, "policy": true }
+    },
+    "embezzle": {
+      "$comment": "영주 금고 → 가문 재산 = 사적 유용: 민심 −10, 가문 명성 −30, 발각되면 소문",
+      "morale": -10,
+      "fame": -30,
+      "discoverChance": 0.35,
+      "rumor": "embezzlement"
+    },
+    "luxury": {
+      "$comment": "귀족 사치 요구 (16-2): 신분에 맞는 저택/옷/연회를 안 하면 명예 하락. checkEvery 마다 판정",
+      "estates": ["noble"],
+      "checkEvery": { "value": 7, "scale": "absolute" },
+      "houseTierMin": 5,
+      "feastWithin": { "value": 14, "scale": "season" },
+      "outfitTierMin": "merchant",
+      "fame": { "house": -15, "outfit": -10, "feast": -10 },
+      "moodlet": "shabby_noble_shame"
+    }
+  }
+}
