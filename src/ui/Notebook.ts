@@ -92,6 +92,7 @@ export class Notebook {
         { id: 'fame', icon: 'cute.star_blue', when: (p, s) => estateOf(p, s) !== 'serf' },
         { id: 'freedom', icon: 'cute.star_blue', when: (p, s) => estateOf(p, s) === 'serf' || !!s.house?.rise.length },
         { id: 'servants', icon: 'cute.bag', when: (p, s) => ['merchant', 'knight', 'noble'].includes(estateOf(p, s)) },
+        { id: 'match', icon: 'cute.heart', when: (_p, s) => s.persons.some((q) => q.household === 1 && ['teen', 'young', 'adult'].includes(q.inner?.stage_life ?? '') && !s.relations.some((r) => (r.a === q.id || r.b === q.id) && (r.flags ?? []).includes('spouse'))) },
       ],
     },
     work: {
@@ -214,7 +215,7 @@ export class Notebook {
     const p = this.p;
     const s = this.s;
     if (!p || !s) return this.TABS[tab].pages.filter((pg) => !pg.when);
-    return this.TABS[tab].pages.filter((pg) => !pg.when || pg.when(p, s)).slice(0, 5);
+    return this.TABS[tab].pages.filter((pg) => !pg.when || pg.when(p, s)).slice(0, 6);
   }
 
   private render(): void {
@@ -629,6 +630,42 @@ export class Notebook {
           el('b', 'nb-grow', l3, t('nb.fame.shop'));
           el('b', '', l3, String(Math.round(s.econ.shop.reputation)));
         }
+        break;
+      }
+      case 'match': {
+        // 혼처 찾기 (14-4 중매혼): 왼쪽 = 혼인할 나이의 독신 식구, 오른쪽 = 후보 (받기 / 거절)
+        const singles = family.filter((q) => ['teen', 'young', 'adult'].includes(q.inner?.stage_life ?? '') && !s.relations.some((r) => (r.a === q.id || r.b === q.id) && (r.flags ?? []).includes('spouse')));
+        const cur = singles.find((q) => String(q.id) === this.book.dataset.seeker) ?? singles[0];
+        this.cells(L, singles.slice(0, 8).map((q) => ({
+          canvas: this.hooks.portrait(q.id, 'head'), label: q.name, on: q.id === cur?.id, data: { seeker: String(q.id) },
+          onClick: () => {
+            this.book.dataset.seeker = String(q.id);
+            this.sig = '';
+            this.render();
+          },
+        })), 4, 4);
+        const btns = el('div', 'nb-btns', L);
+        if (cur) this.button(btns, t('nb.btn.find_match'), () => void this.hooks.intent?.({ kind: 'society', op: 'findMatch', args: { household: 1, personId: cur.id } }));
+        this.ribbon(R, cur?.name ?? t('nb.page.match'));
+        const cand = (s.house?.matches ?? []).filter((m) => !cur || m.seeker === cur.id);
+        if (!cand.length) {
+          this.empty(R, 'cute.heart');
+          break;
+        }
+        this.rows(R, cand.slice(0, 5).map((m) => ({
+          canvas: this.hooks.portrait(m.personId, 'head'),
+          title: `${m.name} · ${m.age}`,
+          sub: `${t(`estate.${m.estate}`)} · ${t(`fame.tier.${m.fame >= 800 ? 'legendary' : m.fame >= 600 ? 'renowned' : m.fame >= 400 ? 'respected' : m.fame >= 200 ? 'ordinary' : 'suspect'}`)}`,
+          right: `${m.wePay ? '−' : '+'}${money(m.dowry)}`,
+          cls: m.incoming ? 'incoming' : '',
+          data: { match: String(m.matchId) },
+        })));
+        R.querySelectorAll<HTMLElement>('.nb-row').forEach((r) => {
+          const id = Number(r.dataset.match);
+          const row = el('div', 'nb-row-act', r);
+          this.button(row, t('nb.btn.accept'), () => void this.hooks.intent?.({ kind: 'society', op: 'acceptProposal', args: { matchId: id } }));
+          this.button(row, t('nb.btn.refuse'), () => void this.hooks.intent?.({ kind: 'society', op: 'refuseMatch', args: { matchId: id } }));
+        });
         break;
       }
       case 'freedom': {

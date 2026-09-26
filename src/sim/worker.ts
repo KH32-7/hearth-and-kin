@@ -169,6 +169,14 @@ function houseSnap(s: Simulation): import('./protocol').HouseSnap | null {
     tree: treeCache.tree,
     rumors: (s.rumors?.knownToHousehold(1) ?? []).slice(-12).map((r) => ({ id: r.id, kind: r.kind, args: r.args, known: r.knownBy.size, good: r.good, strength: Math.round(r.strength * 100) / 100 })),
     letters: (s.society?.letters?.householdInbox(1) ?? []).slice(-16).map((l) => ({ id: l.id, kind: l.kind, fromName: l.fromName, to: l.to, read: !!(l as { read?: boolean }).read, sentDay: l.sentDay })),
+    matches: (() => {
+      if (!C) return [];
+      const list = C.offers(1);
+      return list.slice(0, 12).map((m) => {
+        const o = C.state.offers.find((x) => x.id === m.matchId);
+        return { matchId: m.matchId, seeker: o?.personId ?? 0, personId: m.personId, name: m.name, sex: m.sex, estate: m.estate, age: Math.round(m.age), dowry: m.dowry, wePay: m.wePay, fame: m.fame, traits: m.traits.slice(0, 2), clan: m.clan, incoming: !!o?.incoming };
+      });
+    })(),
     rise: (() => {
       if (!head) return [];
       const E = L.estates;

@@ -190,6 +190,8 @@ export interface HouseSnap {
   betrothed: { a: number; b: number; weddingDay: number; path: string }[];
   /** 영지 (18-4): 정책 단계, 민심, 금고, 폭동, 최근 7일 범죄, 조작 가문이 영주인가 */
   domain: { levels: Record<string, string>; morale: number; treasury: number; riots: number; crimes7: number; lord: boolean; plague: boolean } | null;
+  /** 혼처 (14-4 중매혼): 찾는 사람별 후보 (지참금 파딩, 우리가 내는가) */
+  matches: { matchId: number; seeker: number; personId: number; name: string; sex: string; estate: string; age: number; dowry: number; wePay: boolean; fame: number; traits: string[]; clan: number; incoming: boolean }[];
   /** 신분 오르기 (16-3): 가장이 지금 할 수 있는 길 (op = house 의도 이름, 못 하면 이유 키) */
   rise: { op: string; ok: boolean; reason?: string; cost?: number; personId: number }[];
   /** 조작 가문에게 온 사건 카드 (24-1: 고르기 대기) */

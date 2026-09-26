@@ -127,5 +127,9 @@
   "nb.rise.becomeMerchant": "상인 되기",
   "nb.rise.knight": "기사 서임",
   "nb.rise.buyTitle": "작위 사기",
-  "nb.rise.takeVows": "성직에 들기"
+  "nb.rise.takeVows": "성직에 들기",
+  "nb.page.match": "혼처",
+  "nb.btn.find_match": "혼처 찾기",
+  "nb.btn.accept": "받기",
+  "nb.btn.refuse": "거절"
 }
