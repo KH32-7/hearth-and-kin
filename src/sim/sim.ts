@@ -1911,6 +1911,12 @@ export class Simulation {
     if (this.lifecycle) mother.lactatingUntil = this.world.day() + Math.ceil(this.lifecycle.stageDays('baby')) + 1;
     if (this.childcare && (baby.household === 1 || !this.town)) this.showInfant(baby);
     this.childcare?.afterBirth(baby.household);
+    // 부모는 이름을 지어 준 뿌듯함, 어린 형·누나는 동생 샘 (15-2)
+    for (const q of this.persons) {
+      if (q === baby || q.household !== baby.household || q.hidden) continue;
+      if (q.id === mother.id || q.id === father?.id) this.addEngineMoodlet(q, 'named_the_baby');
+      else if ((q.mother === mother.id || (father && q.father === father.id)) && (q.lifeStage === 'toddler' || q.lifeStage === 'child') && this.rng.next() < 0.5) this.addEngineMoodlet(q, 'new_sibling_jealous');
+    }
     const bastard = this.society?.onBirth(baby, mother, father);
     this.house?.onBirth(baby, mother, father, bastard);
     return baby;
@@ -4269,7 +4275,9 @@ export class Simulation {
   private sneakOut(p: Person, minutes: number, runaway = false): void {
     this.leaveForSchool(p);
     p.sneakUntil = this.world.minute + minutes;
-    for (const q of this.persons) if (q.id === p.mother || q.id === p.father) this.addEngineMoodlet(q, runaway ? 'kin_on_trial_worry' : 'rebellious_mood');
+    // 청소년 본인은 반항심·몰래 나간 짜릿함, 가출이면 부모는 걱정
+    this.addEngineMoodlet(p, runaway ? 'rebellious_mood' : 'sneaked_out_thrill');
+    if (runaway) for (const q of this.persons) if (q.id === p.mother || q.id === p.father) this.addEngineMoodlet(q, 'kin_on_trial_worry');
     if (runaway) this.townNews('teen_runaway', { a: p.name }, [p]);
   }
 
