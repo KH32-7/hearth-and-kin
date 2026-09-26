@@ -18,3 +18,5 @@ assets/generated/ui/
 
 # 레퍼런스 스크린샷 (남의 유료 에셋 목업, 참고용 전용)
 docs/레퍼런스_이미지/**/*.jpg
+docs/레퍼런스_이미지/**/*.webp
+docs/레퍼런스_이미지/**/*.png
