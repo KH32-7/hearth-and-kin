@@ -304,7 +304,15 @@ export class HearthGame {
       persons,
       relations: start.relations ?? [],
     });
-    const snap = await first;
+    let snap = await first;
+    // 시작 신분·형편 프리셋 (16-2, 21종): ?preset=serf_normal. 새 게임 화면이 같은 의도를 씀
+    const preset = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('preset') : null;
+    if (preset) {
+      await this.client.intent({ kind: 'house', op: 'applyPreset', args: { preset } });
+      snap = await this.client.nextSnapshot();
+      const me = snap.persons.find((p) => p.household === 1);
+      if (me) this.renderer.centerOn(me.x * T, me.y * T);
+    }
     // 빈 부지에서 시작: 작은 집 값만큼 건축 자금 (23-1 빈 부지 구입 + 집 짓기). 의도로 → 입력 로그
     const fund = (opt('build') as BuildData | undefined)?.emptyLotFund ?? 0;
     if (fund > 0 && !this.lot.walls.some(Boolean)) await this.client.intent({ kind: 'grant', amount: fund, reason: 'lot_fund' });

@@ -30,7 +30,8 @@
     "freeman": {
       "family": "couple",
       "house": { "kind": "farmhouse", "tenure": "owned" },
-      "plots": 3
+      "plots": 3,
+      "careers": { "head": "field_hand" }
     },
     "artisan": {
       "family": "couple",

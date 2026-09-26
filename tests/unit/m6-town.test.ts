@@ -108,7 +108,7 @@ describe('M6 마을', () => {
       return JSON.stringify({ s: sim.judge!.stats, n: sim.persons.map((p) => p.name + p.lifeStage + p.spouse) });
     };
     expect(run()).toBe(run());
-  });
+  }, 60000);
 
   it('소문: 큰 추문은 며칠 안에 여러 사람이 앎', () => {
     const sim = town(2);

@@ -12,6 +12,14 @@ import { judgePregnancy } from '../family/pregnancy';
 
 const ORDER: LifeStage[] = ['baby', 'toddler', 'child', 'teen', 'young', 'adult', 'elder'];
 
+/** 구애·혼인 모듈 (M9 society/courtship.ts): 약혼·혼례를 그 규칙으로 */
+export interface JudgeCourtship {
+  managed(p: Person): boolean;
+  decidedToday(p: Person): boolean;
+  npcMatchScore(a: Person, b: Person): number;
+  arrangeNpcWedding(a: Person, b: Person): boolean;
+}
+
 export interface JudgeHost {
   readonly persons: Person[];
   readonly rng: Rng;
@@ -26,6 +34,8 @@ export interface JudgeHost {
   moveTo(p: Person, household: number, lot: string | null): void;
   /** 혼인 뒤 (16-2 신분 두 층, 16-6 가문 동맹): stay = 집에 남는 쪽, incoming = 들어온 쪽 */
   onMarried?(stay: Person, incoming: Person): void;
+  /** 구애 모듈이 있으면 약혼·혼례를 넘김 (14-4) */
+  courtship?: JudgeCourtship;
   newHousehold(): number;
   emptyLot(size: string): string | null;
   immigrate(n: number): Person[];
@@ -211,8 +221,10 @@ export class LifeJudge {
   private marriages(day: number): void {
     const M = this.s.marriage;
     // 약혼 기간이 지난 쌍은 혼인
+    const C = this.host.courtship;
     for (const p of [...this.host.persons]) {
       if (!p.betrothed || p.sex !== 'female' || day - p.betrothedDay < M.betrothalDays) continue;
+      if (C?.managed(p)) continue;
       const h = this.host.persons.find((q) => q.id === p.betrothed);
       if (!h) {
         p.betrothed = 0;
@@ -225,11 +237,23 @@ export class LifeJudge {
     const women = this.host.persons.filter((p) => p.sex === 'female' && this.eligible(p));
     const men = this.host.persons.filter((p) => p.sex === 'male' && this.eligible(p));
     for (const w of women) {
-      if (w.betrothed) continue;
+      if (w.betrothed || C?.decidedToday(w)) continue;
       let best: Person | null = null;
       let bestP = 0;
       for (const m of men) {
         if (m.betrothed || m.household === w.household) continue;
+        if (C) {
+          // 구애 모듈의 짝 점수 (신분 차·가문 관계·혼사 방해·우정·로맨스·근친·나이 차를 한 식으로)
+          if (C.decidedToday(m)) continue;
+          const sc = C.npcMatchScore(w, m);
+          if (sc <= 0) continue;
+          const pr = M.baseDaily * fb * sc;
+          if (pr > bestP) {
+            bestP = pr;
+            best = m;
+          }
+          continue;
+        }
         if (this.related(w, m)) continue;
         const gap = Math.abs(this.age(w) - this.age(m));
         if (gap > M.ageGapYears) continue;
@@ -247,6 +271,14 @@ export class LifeJudge {
       }
       // 후보 중 가장 잘 맞는 한 사람과 하루 확률
       if (best && this.host.rng.next() < Math.min(M.dailyCap, bestP * Math.min(M.poolDivisor, men.length / M.poolDivisor))) {
+        if (C) {
+          if (C.arrangeNpcWedding(w, best)) {
+            this.stats.engagements++;
+            const i = men.indexOf(best);
+            if (i >= 0) men.splice(i, 1);
+          }
+          continue;
+        }
         w.betrothed = best.id;
         best.betrothed = w.id;
         w.betrothedDay = day;

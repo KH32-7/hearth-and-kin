@@ -574,8 +574,8 @@ export class HouseLink {
   }
 
   /** 출생 (15-2 + 16-2 자녀 신분): 가정 대표 신분, 사생아 */
-  onBirth(baby: Person, mother: Person, father: Person | null): void {
-    const illegitimate = !!father && mother.spouse !== father.id;
+  onBirth(baby: Person, mother: Person, father: Person | null, bastard?: boolean): void {
+    const illegitimate = bastard ?? (!!father && mother.spouse !== father.id);
     const r = this.estates.born(baby, mother, father, { illegitimate });
     baby.estate = r.estate;
     (baby.appearance as Record<string, unknown>).estate = r.estate;

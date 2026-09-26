@@ -33,6 +33,7 @@ import { namesFrom, pickName, type NamesData } from './family/names';
 import { memberRuntime, validateFamily, type FamilySpec } from './family/creation';
 import { Cards } from './story/cards';
 import { HouseLink } from './houseLink';
+import { SocietyLink } from './societyLink';
 import { Rumors } from './town/rumors';
 import type { LifeStage } from './people/person';
 import { NEED_INDEX, Person } from './people/person';
@@ -121,6 +122,8 @@ export type SimIntent =
   | { kind: 'cardChoice'; seq: number; option: number }
   /** 가문과 신분 (M8, houseLink.ts intent): applyPreset, payEmancipation, knight, designateHeirloom, writeWill, setMotto, setHeraldry, hireServant … */
   | { kind: 'house'; op: string; args?: Record<string, unknown> }
+  /** 사회 구조 (M9, societyLink.ts intent): findMatch, negotiate, acceptProposal, elope, petitionAnnulment, separate, sendLetter, readLetter … */
+  | { kind: 'society'; op: string; args?: Record<string, unknown> }
   /** 캐릭터 만들기 (10-1): 만들기 사양으로 조작 가문을 새로 꾸림 (검증 실패면 거부). 기존 조작 가문 식구는 떠남 */
   | { kind: 'createFamily'; spec: FamilySpec }
   /** 진통 선택 (15-2): 산파 부르기 / 가족이 받기 / 혼자 */
@@ -262,7 +265,8 @@ export class Simulation {
     this.skills = data.skills ? new Skills(data.skills) : null;
     this.farm = data.crops ? new Farming(data.crops) : null;
     if (this.farm) for (const o of this.world.objects) if (this.isFarmObj(o)) this.farm.initState(o, (this.world.def(o.defId).tags ?? []).includes('orchard') ? 'apples' : undefined);
-    if (this.econ) this.world.money = () => this.econ!.account(1)?.money ?? 0;
+    // 쓸 수 있는 돈: 가진 돈 + 식량이 떨어졌을 때만 외상 여유 (17-6 대출 한도까지, 자정에 빚으로 정리)
+    if (this.econ) this.world.money = () => (this.econ!.account(1)?.money ?? 0) + this.foodCredit(1);
     this.rel = new Relations(relationRules(this.relData));
     this.builder = data.build
       ? new Builder({
@@ -338,6 +342,10 @@ export class Simulation {
     if (this.rumors) this.registerRumorGates();
     // 가문과 신분 (M8): 가문 레지스트리·명성·신분 두 층·사치 금지법·영지·상속·가보·하인
     this.house = HouseLink.create(this);
+    // 사회 구조 (M9): 구애·혼인·편지 (+ 재판·정책)
+    this.society = SocietyLink.create(this);
+    for (const [k, f] of Object.entries(this.society.gates())) this.gates.set(k, f);
+    if (this.judgeHostRef) (this.judgeHostRef as { courtship?: unknown }).courtship = this.society.judgeCourtship();
     for (const h of data.town?.people?.households ?? []) for (const m of h.members) this.namePool[m.sex].push(m.name);
     this.fire = data.build
       ? new Fire({
@@ -508,6 +516,8 @@ export class Simulation {
         this.deathRules.apply(rest as SetDeathRulesIntent);
         return { ok: true };
       }
+      case 'society':
+        return this.society?.intent(intent.op, intent.args ?? {}) ?? { ok: false, reason: 'no_society' };
       case 'house': {
         const r = this.house?.intent(intent.op, intent.args ?? {});
         return r ?? { ok: false, reason: 'no_house' };
@@ -1648,6 +1658,7 @@ export class Simulation {
     if (iaId.startsWith('service.')) this.serviceDone(p, iaId);
     if (iaId.startsWith('farm.') && target) this.farmDone(p, iaId, target);
     if (iaId === 'altar.public_penance') this.publicPenance(p);
+    this.society?.onInteraction(p, iaId, a.item.targetUid);
     const wasSleep = !!step.sleep;
     const bed = this.world.byUid.get(a.stepObj)?.defId;
     this.finishAction(p, true, 'done');
@@ -1791,6 +1802,8 @@ export class Simulation {
 
   /** 죽음/떠남: 행동을 끊고 목록에서 빼고, 식구에게 슬픔 (20장 장례는 M11) */
   private killPerson(p: Person, cause: string): void {
+    // 구애·혼인 (애도, 약혼·불륜 정리): 배우자 표시를 지우기 전에
+    if (cause !== 'moved_away') this.society?.onDeath(p);
     // 임신 중 사망 (15-1 교차 표 1행): 기적의 출산 판정은 죽기 전에
     if (p.pregnancy && this.pregnancy && cause !== 'moved_away') this.pregnancy.onMotherDeath(p, cause);
     // 가족 사망 = 큰 충격 (임신 위험 판정)
@@ -1877,7 +1890,8 @@ export class Simulation {
     if (this.lifecycle) mother.lactatingUntil = this.world.day() + Math.ceil(this.lifecycle.stageDays('baby')) + 1;
     if (this.childcare && (baby.household === 1 || !this.town)) this.showInfant(baby);
     this.childcare?.afterBirth(baby.household);
-    this.house?.onBirth(baby, mother, father);
+    const bastard = this.society?.onBirth(baby, mother, father);
+    this.house?.onBirth(baby, mother, father, bastard);
     return baby;
   }
 
@@ -2464,6 +2478,7 @@ export class Simulation {
     const subjectsOf = (r: import('./town/rumors').Rumor): Person[] => r.subjects.map((id) => this.persons.find((q) => q.id === id)).filter((q): q is Person => !!q);
     return {
       onHear: (r, listener, sign) => {
+        if (sign > 0) this.society?.onRumorHeard(r.kind, r.subjects, listener);
         if (!r.rep) return;
         const h = H();
         const k = r.rep * Math.min(1, r.strength) * (r.good ? 1 : -1) * sign;
@@ -2483,6 +2498,7 @@ export class Simulation {
         if (!r.rep) return;
         if (p.household === 1) this.notice(p, 'rumor_heard', { kind: `rumor.kind.${r.kind}`, n: r.knownBy.size, ...r.args });
         this.inner?.event(p, 'rumor_heard');
+        this.society?.onRumorHeard(r.kind, r.subjects, p);
         if (this.inner && !p.hidden && p.lifeStage !== 'baby' && p.lifeStage !== 'toddler') this.inner.addMoodlet(p, r.good ? 'fame_proud' : 'heard_rumor_about_me', {});
       },
     };
@@ -2854,6 +2870,7 @@ export class Simulation {
       inner.thought(t, `action_done:${id}`);
     }
     this.rumorSocial(p, t, id, ok, def.tags);
+    this.society?.onSocial(p, t, id, ok);
   }
 
   /** 처음 만남: 첫인상 (14-2). 이미 만났으면 아무 일 없음 */
@@ -3754,6 +3771,22 @@ export class Simulation {
   }
 
   /** 장터에서 사고팔기 (상호작용 효과 buy/sell). 파는 수 -1 = 가진 만큼 다 */
+  /**
+   * 식량 외상 (17-6): 조작 가정의 식량이 식구 하루치도 안 되면, 대출 한도 안에서 사흘치 식비까지 외상으로 삼.
+   * 외상은 자정 정산에서 빚이 되고, 못 갚으면 압류·파산 (16-3 하락)
+   */
+  foodCredit(household: number): number {
+    const e = this.econ;
+    const a = e?.account(household);
+    if (!e || !a || household !== 1) return 0;
+    const members = this.persons.filter((q) => q.household === household && !q.visitor).length;
+    let food = 0;
+    for (const [k, v] of Object.entries(this.world.stock)) if (this.item(k)?.food || k === 'bread' || k === 'preserves' || k === 'ingredients') food += v;
+    if (food >= members) return 0;
+    const room = e.loanLimit(a) - e.debt(a) - Math.max(0, -a.money);
+    return Math.max(0, Math.min(room, members * 6 * 3));
+  }
+
   private trade(p: Person, buy?: Record<string, number>, sell?: Record<string, number>): void {
     const e = this.econ;
     const a = this.account(p);
@@ -3781,7 +3814,8 @@ export class Simulation {
         const n = Math.max(0, want - (this.world.stock[k] ?? 0));
         if (!def || n <= 0) continue;
         const before = a.money;
-        const k2 = e.buy(a, def, n, def.food || def.ledger === 'vegetables' || def.ledger === 'grain' ? 'food' : k === 'firewood' ? 'fuel' : 'goods');
+        const isFood = !!def.food || def.ledger === 'vegetables' || def.ledger === 'grain' || k === 'bread' || k === 'ingredients' || k === 'flour';
+        const k2 = e.buy(a, def, n, isFood ? 'food' : k === 'firewood' ? 'fuel' : 'goods', isFood ? this.foodCredit(p.household) : 0);
         spent += before - a.money;
         if (k2 > 0) {
           this.world.stock[k] = (this.world.stock[k] ?? 0) + k2;
@@ -3813,6 +3847,7 @@ export class Simulation {
       this.rumors?.daily(day, this.persons);
     }
     if (day > 0) this.house?.daily(day);
+    if (day > 0) this.society?.daily();
     const w = this.world;
     if (day > 0) {
       this.careerEndOfDay(day - 1);
@@ -3858,6 +3893,7 @@ export class Simulation {
         const q = this.persons.find((x) => x.household === h);
         if (q) this.notice(q, kind, args);
       },
+      seize: (acct, owe) => this.seize(acct.household, owe),
     });
     // 조작 가정 구휼 (17-9): 먹을 것이 식구 하루치도 없고 돈도 없으면 교회 빵
     const a = e.account(1);
@@ -3876,6 +3912,29 @@ export class Simulation {
         this.kinRelief(1, members * 6 * 3);
       } else if (food >= members) a.reliefDays = 0;
     }
+  }
+
+  /**
+   * 압류 (17-6): 조작 가정 살림(식량 뺀 재고)을 장부 값으로 가져감. 식구가 굶지 않게 식량과 땔감은 남김.
+   * 가보는 파산 때 가보 규칙(16-5)이 따로 다룸. 가져간 값(파딩)
+   */
+  private seize(household: number, owe: number): number {
+    if (household !== 1) return 0;
+    const keep = new Set(['bread', 'grain', 'flour', 'ingredients', 'vegetables', 'preserves', 'firewood', 'water']);
+    let got = 0;
+    const st = this.world.stock;
+    for (const k of Object.keys(st).sort()) {
+      if (got >= owe) break;
+      if (keep.has(k) || (st[k] ?? 0) <= 0) continue;
+      const base = this.item(k)?.base ?? (k.startsWith('animal_') ? 24 : 0);
+      if (!base) continue;
+      const n = Math.min(st[k], Math.ceil((owe - got) / base));
+      st[k] -= n;
+      got += n * base;
+    }
+    const host = this.persons.find((q) => q.household === 1);
+    if (host && got > 0) this.notice(host, 'goods_seized', { n: got });
+    return got;
   }
 
   /** 저장고 부패 (17-5): 묶음을 재고에 맞추고, 기간이 지난 묶음은 버림 */
@@ -4433,6 +4492,8 @@ export class Simulation {
 
   /** 가문과 신분 연결 (M8, houseLink.ts) */
   house: HouseLink | null = null;
+  /** 사회 구조 연결 (M9, societyLink.ts) */
+  society: SocietyLink | null = null;
   /** 사건 카드 (24-1 최소 엔진, story/cards.ts): 카드 데이터가 없으면 알림 + 기록만 */
   cards: Cards | null = null;
   readonly cardLog: { day: number; personId: number; cardId: string; vars: Record<string, string | number> }[] = [];
@@ -4456,6 +4517,7 @@ export class Simulation {
       return Math.round((est?.target?.net ?? 6 * 4) * 48 * this.settings.lifespan);
     };
     return {
+      onChosen: (p, cardId, option, ok, other) => this.society?.onCard(p, cardId, option, ok, other),
       get persons() {
         return sim.persons;
       },
@@ -4468,6 +4530,7 @@ export class Simulation {
         const f = new Set(this.familyFlags(q));
         for (const x of this.householdFlags.get(q.household) ?? []) f.add(x);
         if (this.house) for (const x of this.house.flags(q)) f.add(x);
+        if (this.society) for (const x of this.society.flags(q)) f.add(x);
         return f;
       },
       fame: (q) => (this.house ? this.house.fameOf(q.household) : 300 + (this.fame.get(q.household) ?? 0)),
@@ -4658,6 +4721,7 @@ export class Simulation {
     }
     this.rumors?.hashParts(parts);
     this.house?.hashParts(parts);
+    this.society?.hashParts(parts);
     this.rel.hashParts(parts);
     this.econ?.hashParts(parts);
     let h = 0x811c9dc5;

@@ -103,4 +103,24 @@ describe('M8 가문과 신분 연결', () => {
     expect(sim.house!.householdEstate(1)).toBe('freeman');
     expect(fam(sim).every((p) => p.estate !== 'serf' || p.lifeStage === 'baby')).toBe(true);
   });
+
+  it('빚 (17-6): 상환일 뒤 가진 만큼 갚고, 유예 끝에 살림 압류가 빚을 덮으면 파산이 아님 / 못 덮으면 파산 → 한 단계 하락', () => {
+    for (const covered of [true, false]) {
+      const sim = town(11);
+      sim.apply({ kind: 'house', op: 'applyPreset', args: { preset: 'artisan_normal' } });
+      const e = sim.econ!;
+      const a = e.account(1)!;
+      a.money = 0;
+      a.loans = [];
+      const loan = e.borrow(a, 400, 'moneylender', 1, 0);
+      a.money = 150;
+      for (const k of Object.keys(sim.world.stock)) if (!['bread', 'firewood'].includes(k)) sim.world.stock[k] = 0;
+      if (covered) sim.world.stock.wool = 200;
+      let bankrupt = 0;
+      for (let day = 0; day < 12; day++) e.endOfDay(day, { notice: (_h, k) => { if (k === 'bankrupt') bankrupt++; }, seize: (acct, owe) => (sim as unknown as { seize(h: number, o: number): number }).seize(acct.household, owe) });
+      // 원래 빚은 정리됨 (그 뒤 외상으로 새로 빌린 작은 빚은 따로)
+      expect(a.loans.includes(loan)).toBe(false);
+      expect(bankrupt, `압류로 덮음=${covered}`).toBe(covered ? 0 : 1);
+    }
+  });
 });

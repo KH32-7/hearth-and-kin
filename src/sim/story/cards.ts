@@ -110,6 +110,8 @@ export interface CardResult {
 }
 
 export interface CardsHost {
+  /** 카드 선택이 끝난 뒤 (M9 구애 모듈 등이 선택지 번호로 월드 행동) */
+  onChosen?(p: Person, cardId: string, option: number, ok: boolean, other: Person | null): void;
   readonly persons: readonly Person[];
   readonly rng: Rng;
   minute(): number;
@@ -272,6 +274,7 @@ export class Cards {
     const out = ok ? o.success : o.failure ?? o.success;
     const res: CardResult = { cardId: pc.cardId, option, ok, textKey: out.textKey, personId: pc.personId };
     if (p) this.apply(p, other, out, 0);
+    if (p) this.host.onChosen?.(p, pc.cardId, option, ok, other);
     this.log.push(res);
     if (this.log.length > 300) this.log.shift();
     return res;

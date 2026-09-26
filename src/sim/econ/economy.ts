@@ -195,9 +195,10 @@ export class Economy {
   }
 
   /** 장부에서 사기: 가격 × n 을 내고 장부 재고가 줄어듦. 돈이 모자라면 살 수 있는 만큼만. 산 개수를 돌려줌 */
-  buy(a: Account, item: { base: number; ledger?: string | null; bundle?: { n: number; price: number }; ration?: number | null }, n: number, kind = 'food'): number {
+  /** credit = 외상으로 더 쓸 수 있는 돈 (파딩, 17-6: 자정 정산에서 빚이 됨) */
+  buy(a: Account, item: { base: number; ledger?: string | null; bundle?: { n: number; price: number }; ration?: number | null }, n: number, kind = 'food', credit = 0): number {
     const p = this.itemPrice(item);
-    const afford = Math.max(0, Math.floor(a.money / Math.max(1, p)));
+    const afford = Math.max(0, Math.floor((a.money + credit) / Math.max(1, p)));
     const k = Math.min(n, afford);
     if (k <= 0) return 0;
     this.spend(a, Math.round(p * k), kind);
@@ -241,7 +242,7 @@ export class Economy {
    * @param day 방금 끝난 날 (0부터)
    * @param playerFood 조작 가정의 오늘 식량 부족분 계산기 (가정 id → 부족 ration). 조작 가정은 실제로 먹은 것이 이미 저장고에서 빠졌으므로 부족분만 (17-9)
    */
-  endOfDay(day: number, hooks: { playerShortfall?: (a: Account) => number; notice?: (household: number, kind: string, args?: Record<string, string | number>) => void } = {}): void {
+  endOfDay(day: number, hooks: { playerShortfall?: (a: Account) => number; notice?: (household: number, kind: string, args?: Record<string, string | number>) => void; /** 압류 (17-6): 빚(파딩)만큼 살림을 가져가고 가져간 값을 돌려줌 */ seize?: (a: Account, owe: number) => number } = {}): void {
     const d = this.d;
     const SD = d.calendar.seasonDays;
     const YEAR = SD * 4;
@@ -331,12 +332,28 @@ export class Economy {
           this.spend(a, owe, 'repay');
           a.loans.splice(a.loans.indexOf(l), 1);
           hooks.notice?.(a.household, 'loan_repaid', { n: owe });
-        } else if (day >= l.due + d.loans.graceDays) {
-          // 유예 끝: 압류 (M9 신분 하락 절차가 이어받음). 지금은 파산 기록
-          this.bankrupt++;
-          hooks.notice?.(a.household, 'bankrupt', { n: owe });
+          continue;
+        }
+        // 상환일이 지남 (17-6): 가진 돈만큼 먼저 갚음 (이자부터)
+        if (a.money > 0) {
+          const pay = a.money;
+          this.spend(a, pay, 'repay');
+          const fromInterest = Math.min(Math.floor(l.interest), pay);
+          l.interest -= fromInterest;
+          l.principal -= pay - fromInterest;
+        }
+        if (day >= l.due + d.loans.graceDays) {
+          // 유예 끝: 압류 → 압류한 재산이 빚보다 작으면 파산 (16-3 하락)
+          const left = l.principal + Math.floor(l.interest);
+          const seized = Math.min(left, hooks.seize?.(a, left) ?? 0);
           a.loans.splice(a.loans.indexOf(l), 1);
-          a.money = Math.min(a.money, 0);
+          if (seized >= left) {
+            hooks.notice?.(a.household, 'seized', { n: seized });
+          } else {
+            this.bankrupt++;
+            hooks.notice?.(a.household, 'bankrupt', { n: left - seized });
+            a.money = Math.min(a.money, 0);
+          }
         }
       }
       a.today.day = day;

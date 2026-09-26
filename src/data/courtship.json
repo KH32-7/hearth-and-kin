@@ -1,0 +1,579 @@
+{
+  "$comment": "M9 구애와 혼인 (GDD 14-4), 편지 (14-7). 수치는 여기에만. 기간 필드는 {value, scale} (29-0). 돈은 파딩, moneyS 는 가정 대표 신분의 한 인생 저축 S 대비 비율. social / interactions 묶음은 simData mergeFamilyContent 가 social.json / interactions 에 합침. requires.gate = sim.gates 에 등록된 조건 (courtship.ts gates(), letters.ts gates()). dialogue 묶음은 새 사회 상호작용의 대사창 문장 (리드가 dialogue.json 에 합침)",
+  "rules": {
+    "$comment": "혼인 가능 조건. kinDegreeMax 촌 이내 혼인 금지 (4촌). allowSameSex: 교회 혼례를 이성끼리만 (생애 판정기 기존 동작과 같게, 결정 필요 항목)",
+    "minAge": 16,
+    "kinDegreeMax": 4,
+    "ageGapYears": 12,
+    "allowSameSex": false,
+    "betrothal": { "value": 2, "scale": "absolute" },
+    "weddingDayMax": { "value": 14, "scale": "absolute" },
+    "recentWed": { "value": 2, "scale": "absolute" },
+    "mourning": { "value": 7, "scale": "lifespan" },
+    "priestPostponeMax": 3,
+    "decidedMemory": { "value": 1, "scale": "absolute" }
+  },
+  "consent": {
+    "$comment": "부모(가장) 승낙 판정 (14-4). 확률 = base + 신분 단계 차 × estateStep (+ 두 단계 이상이면 estates.marriageAcceptMod 또는 gapPenalty) + 지참금 부족 + 가문 관계(clans.matchModifier) + (상대 가문 명성 − fameMid) / fameDiv + 가장→상대 우정·존중 + 가장 특성 + 축복 청하기. min~max 로 자름",
+    "base": 0.62,
+    "estateStep": -0.06,
+    "gapFrom": 2,
+    "gapPenalty": -0.4,
+    "dowryShort": -0.2,
+    "fameMid": 300,
+    "fameDiv": 1200,
+    "friendship": 0.003,
+    "respect": 0.002,
+    "blessing": 0.15,
+    "matchBlocked": -0.5,
+    "min": 0.05,
+    "max": 0.95,
+    "traits": {
+      "family_oriented": 0.05,
+      "kind": 0.08,
+      "romantic": 0.12,
+      "humble": 0.05,
+      "just": 0.03,
+      "mean": -0.1,
+      "stubborn": -0.08,
+      "cynical": -0.05,
+      "suspicious": -0.05,
+      "ambitious": -0.12
+    },
+    "ambitiousOnlyIfLower": true,
+    "$controlledHeadAuto": "조작 가문 가장은 플레이어가 직접 정하므로 자동 승낙 (거절하려면 헤어지기)",
+    "controlledHeadAuto": true,
+    "$jilted": "청혼을 거절당하면 jiltedRumorChance 확률로 소문 jilted",
+    "jiltedRumorChance": 0.5,
+    "jiltedStrength": 0.4
+  },
+  "match": {
+    "$comment": "중매 후보 목록 (14-4): 점수 = 신분 가까움 + 가문 명성 + 지참금 + 가문 관계 + 나이 가까움. 명성 보상(matchQuality)이 있으면 qualityExtra 명 더. 제안은 offerDays 뒤 사라짐",
+    "candidates": 5,
+    "qualityExtra": 2,
+    "goodExtra": 2,
+    "traitsShown": 2,
+    "offerDays": { "value": 7, "scale": "absolute" },
+    "estateWeight": 1.0,
+    "fameWeight": 0.8,
+    "dowryWeight": 0.4,
+    "clanWeight": 1.0,
+    "ageWeight": 0.05,
+    "npcProposalChance": 0.04,
+    "matchmakerCardChance": 0.08,
+    "matchmakerCooldown": { "value": 10, "scale": "absolute" }
+  },
+  "negotiate": {
+    "$comment": "협상 (지참금, 거주지, 성씨). 상대 가장 승낙 = 승낙 판정 + (제안 지참금 ÷ 기준 − 1) × dowryRatioWeight (내는 쪽이 우리면 +, 받는 쪽이면 −) + 거주지·성씨 보정. 같은 제안은 retry 뒤 다시",
+    "base": 0.05,
+    "dowryRatioWeight": 0.6,
+    "dowryRatioMax": 3,
+    "uxorilocal": -0.25,
+    "uxorilocalNoSon": 0.3,
+    "newHouse": -0.05,
+    "surnameChange": -0.1,
+    "retry": { "value": 1, "scale": "absolute" },
+    "uneasyRomanceBelow": 20,
+    "discussBonus": 0.1,
+    "dowryTalkDiscount": 0.1
+  },
+  "dowry": {
+    "$comment": "지참금/신부값 (14-4, 17-4): 기준 = 신부 가문 신분 S × baseMult, 한 단계 위 가문과 혼인하면 상대 기준 × upMult (estates.dowry 가 있으면 그것). 들어가는 사람 가정이 받는 가정에 냄 (데릴사위면 신랑 쪽이 냄). 모자라면 빚/땅/가보, 못 채우면 명성 shortFame",
+    "baseMult": 0.25,
+    "upMult": 1.5,
+    "rankStep": 1,
+    "shortFame": -10,
+    "shortFriendship": -15,
+    "estateRank": ["serf", "freeman", "artisan", "merchant", "clergy", "knight", "noble"]
+  },
+  "wedding": {
+    "$comment": "혼례 (14-4): 교회 예식 → 잔치. 하객 = 두 사람과 우정 guestFriendship 이상이거나 두 가정 식구 (maxGuests). 명성 = fameBase + 하객 × famePerGuest + 잔치 단계 fame (카드로 고르면 카드가 이미 반영). 잔치 점수 = 하객 × 단계 score 가 generousScore 이상이면 좋은 소문 generous_feast. 연애혼이고 로맨스 loveMatchRomance 이상이면 love_match",
+    "guestFriendship": 30,
+    "maxGuests": 30,
+    "fameBase": 5,
+    "famePerGuest": 0.5,
+    "generousScore": 24,
+    "generousStrength": 0.8,
+    "loveMatchRomance": 60,
+    "loveMatchStrength": 0.6,
+    "spouseFriendship": 30,
+    "spouseRomance": 40,
+    "tiers": {
+      "grand": { "moneyS": 0.08, "fame": 25, "score": 2.0 },
+      "modest": { "moneyS": 0.02, "fame": 5, "score": 1.2 },
+      "church": { "moneyS": 0, "fame": 0, "score": 0.5 }
+    },
+    "npcGrandMoneyS": 0.4,
+    "npcModestMoneyS": 0.06
+  },
+  "residence": {
+    "$comment": "기본은 신부가 신랑 집으로 (groom). 조작 가문 식구가 끼면 조작 가문 집으로. 들어가는 가정이 인원 상한(15-8)이면 분가",
+    "default": "groom",
+    "controlledStays": true
+  },
+  "elopement": {
+    "$comment": "사랑의 도피 (14-4): 거절된 뒤 선택. 두 가문 명성 크게 하락, 교회 평판, 식구와 우정, 소문 elopement, 연대기 삽화",
+    "fame": -60,
+    "church": -5,
+    "familyFriendship": -20,
+    "rumorStrength": 0.8
+  },
+  "affair": {
+    "$comment": "불륜 (14-4): 기혼자가 다른 사람과 연인. 둘 사이 로맨스 상호작용마다 발각 확률 exposeChance (공공 장소 publicMult 배). 발각되면 배우자 배신 기억 (우정 −60, 로맨스 −50), 가문 명예·교회 평판 하락, 소문 affair. 스스로 고백하면 confessFactor 배. 조작 가문 기혼자에게 유혹 카드 temptationChance (상대 로맨스 temptationRomance 이상)",
+    "exposeChance": 0.05,
+    "publicMult": 2,
+    "betrayFriendship": -60,
+    "betrayRomance": -50,
+    "fame": -40,
+    "church": -15,
+    "confessFactor": 0.5,
+    "rumorStrength": 0.8,
+    "guiltSkipTraits": ["cunning", "flirt"],
+    "temptationChance": 0.03,
+    "temptationRomance": 30,
+    "proposalRomance": 40
+  },
+  "bastard": {
+    "$comment": "사생아 (14-4, 16장): 어머니가 혼인하지 않았거나 배우자가 아버지가 아님, 성직자의 자녀. 약혼한 사이의 아이는 betrothedLegit 이면 적자",
+    "betrothedLegit": true,
+    "rumorStrength": 0.6
+  },
+  "annulment": {
+    "$comment": "혼인 무효 청원 (14-4): 돈(feeS × S) + 교회 평판 churchMin 이상 + 사유. 판정 = chanceBase + (교회 평판 − churchMin) × churchPer. 실패해도 돈은 냄",
+    "feeS": 0.15,
+    "churchMin": 10,
+    "chanceBase": 0.45,
+    "churchPer": 0.006,
+    "failChurch": -5,
+    "rumorStrength": 0.7,
+    "reasons": {
+      "consanguinity": { "kinDegreeMax": 6 },
+      "childless": { "marriedDays": { "value": 14, "scale": "lifespan" } },
+      "coerced": { "romanceBelow": 20, "within": { "value": 7, "scale": "absolute" } },
+      "abandonment": { "separated": { "value": 7, "scale": "absolute" } }
+    }
+  },
+  "separation": {
+    "friendship": -10,
+    "rumorStrength": 0.6,
+    "reconcileFriendship": 10
+  },
+  "widow": {
+    "$comment": "사별과 재혼: 애도 기간(rules.mourning) 안에 혼인하면 소문 hasty_remarriage. 조작 가문 과부/홀아비에게 재혼 제안 카드 proposalChance",
+    "rumorStrength": 0.5,
+    "church": -3,
+    "proposalChance": 0.1,
+    "proposalFriendship": 20
+  },
+  "npc": {
+    "$comment": "생애 판정기(18-3) 점수: npcMatchScore = 신분 배수 × 가문 관계 배수 × (1 + 우정 보너스) + 로맨스 × romanceBonus / baseDaily. 기존 판정기 식(story.json marriage)과 같은 크기 (1 = 같은 신분 초면)",
+    "baseDaily": 0.12,
+    "estateGapFrom": 2,
+    "estateGapMult": 0.45,
+    "friendshipBonus": 0.012,
+    "friendshipFloor": -0.5,
+    "romanceBonus": 0.002,
+    "blockedMult": 0.3,
+    "engagedRomance": 40,
+    "engagedFriendship": 20
+  },
+  "cards": {
+    "$comment": "카드 선택지 번호(0부터) → 이 모듈이 할 일. 문자열이면 성공/실패 같음, {ok, fail} 이면 나눔. 카드가 이미 적용한 명성·소문은 다시 넣지 않음",
+    "elopement_offer": { "0": "elope", "1": { "ok": "allow_match" }, "2": "give_up" },
+    "matchmaker_visit": { "0": "find_match", "1": { "ok": "find_match_good", "fail": "find_match" } },
+    "wedding_feast_budget": { "0": "feast_grand", "1": "feast_modest", "2": "feast_church" },
+    "dowry_short": { "0": "dowry_debt", "1": "dowry_heirloom", "2": "dowry_waive" },
+    "affair_temptation": { "0": "affair_start" },
+    "affair_discovered": { "0": { "ok": "affair_end", "fail": "affair_exposed" }, "1": "affair_exposed", "2": "affair_end" },
+    "widow_remarriage_proposal": { "0": "betroth_other" },
+    "servant_romance_scandal": { "1": "betroth_other" }
+  },
+  "letters": {
+    "$comment": "편지 (14-7): 읽기 스킬 minReading 이상이면 직접 쓰고 읽음. 아니면 사제·서기에게 scribeFee(대필)/readerFee(대독). 전령 messengerFee, delivery 뒤 도착. 먼 친척 답장 farReplyDays 사이. 효과 = kind 별 무드렛 + 관계 + 훅",
+    "skill": "reading",
+    "minReading": 1,
+    "scribeFee": 3,
+    "readerFee": 1,
+    "messengerFee": 1,
+    "delivery": { "value": 1, "scale": "absolute" },
+    "farReplyDays": [2, 4],
+    "keepPerPerson": 30,
+    "minStage": ["teen", "young", "adult", "elder"],
+    "bodyParts": [1, 2],
+    "effects": {
+      "kin_greeting": { "moodlet": "letter_joy", "friendship": 3 },
+      "invitation": { "moodlet": "letter_joy", "friendship": 2 },
+      "love": { "moodlet": "love_letter_flutter", "friendship": 1, "romance": 4 },
+      "matchmaking": { "hook": "match" },
+      "petition": { "hook": "petition" },
+      "threat": { "moodlet": "threat_letter_fear", "friendship": -10, "hook": "threat" },
+      "birth_news": { "moodlet": "letter_joy", "friendship": 2 },
+      "obituary": { "moodlet": "far_from_kin" },
+      "manumission": { "moodlet": "letter_joy" },
+      "match_refusal": { "moodlet": "proposal_rejected", "friendship": -3 }
+    },
+    "writeKinds": ["kin_greeting", "invitation", "love", "matchmaking", "petition", "threat", "birth_news", "obituary", "match_refusal"]
+  },
+  "social": {
+    "social.ask_consent": {
+      "nameKey": "ia.social_ask_consent",
+      "icon": "ui.crest",
+      "category": "status",
+      "tags": ["social", "romance_talk", "family"],
+      "minutes": 25,
+      "needs": { "social": 0.6 },
+      "targetNeeds": { "social": 0.4 },
+      "ads": { "social": 12 },
+      "base": 45,
+      "requires": { "met": true, "gate": "ask_consent" },
+      "traitMods": { "sociable": 10, "brave": 5, "coward": -10, "romantic": 5 },
+      "targetTraitMods": { "stubborn": -15, "kind": 10, "family_oriented": 5, "suspicious": -10 },
+      "topics": ["family", "love"],
+      "success": { "friendship": 4, "romance": 0, "respect": 4, "moodlets": ["courted_flattered"], "targetMoodlets": [], "flagsAdd": [], "events": ["event:blessing_asked"] },
+      "failure": { "friendship": -3, "romance": 0, "respect": -2, "moodlets": ["scolded"], "targetMoodlets": [], "flagsAdd": [], "events": [] }
+    },
+    "social.discuss_match": {
+      "nameKey": "ia.social_discuss_match",
+      "icon": "ui.coin",
+      "category": "trade",
+      "tags": ["social", "family", "trade"],
+      "minutes": 30,
+      "needs": { "social": 0.6 },
+      "targetNeeds": { "social": 0.5 },
+      "ads": { "social": 10 },
+      "base": 50,
+      "requires": { "met": true, "gate": "match_talk" },
+      "traitMods": { "sociable": 10, "cunning": 5, "ambitious": 5, "introvert": -10 },
+      "targetTraitMods": { "family_oriented": 10, "suspicious": -10 },
+      "topics": ["family", "work"],
+      "success": { "friendship": 3, "romance": 0, "respect": 3, "moodlets": ["pleasant_chat"], "targetMoodlets": ["pleasant_chat"], "flagsAdd": [], "events": ["event:match_discussed"] },
+      "failure": { "friendship": -2, "romance": 0, "respect": -1, "moodlets": [], "targetMoodlets": [], "flagsAdd": [], "events": [] }
+    },
+    "social.negotiate_dowry": {
+      "nameKey": "ia.social_negotiate_dowry",
+      "icon": "ui.coin",
+      "category": "trade",
+      "tags": ["social", "trade", "family"],
+      "minutes": 30,
+      "needs": { "social": 0.4 },
+      "targetNeeds": { "social": 0.3 },
+      "ads": { "social": 8 },
+      "base": 45,
+      "requires": { "met": true, "gate": "dowry_talk" },
+      "traitMods": { "cunning": 15, "ambitious": 5, "kind": -5, "coward": -5 },
+      "targetTraitMods": { "cunning": -10, "kind": 10, "stubborn": -10 },
+      "topics": ["family", "work"],
+      "success": { "friendship": 1, "romance": 0, "respect": 2, "moodlets": [], "targetMoodlets": [], "flagsAdd": [], "events": ["event:dowry_negotiated"] },
+      "failure": { "friendship": -4, "romance": 0, "respect": -2, "moodlets": ["argued"], "targetMoodlets": [], "flagsAdd": [], "events": [] }
+    },
+    "social.congratulate_wedding": {
+      "nameKey": "ia.social_congratulate_wedding",
+      "icon": "emo.happy",
+      "category": "friendly",
+      "tags": ["social", "talk", "celebrate"],
+      "minutes": 10,
+      "needs": { "social": 0.8, "fun": 0.2 },
+      "targetNeeds": { "social": 0.8 },
+      "ads": { "social": 12, "fun": 4 },
+      "base": 80,
+      "requires": { "met": true, "gate": "recently_wed" },
+      "traitMods": { "sociable": 10, "kind": 10, "mean": -20, "cynical": -10 },
+      "targetTraitMods": {},
+      "topics": ["love", "family"],
+      "success": { "friendship": 5, "romance": 0, "respect": 1, "moodlets": ["wedding_guest_merry"], "targetMoodlets": ["praised"], "flagsAdd": [], "events": [] },
+      "failure": { "friendship": 0, "romance": 0, "respect": 0, "moodlets": [], "targetMoodlets": [], "flagsAdd": [], "events": [] }
+    },
+    "social.affair_proposal": {
+      "nameKey": "ia.social_affair_proposal",
+      "icon": "eye",
+      "category": "romance",
+      "tags": ["social", "romance", "affair"],
+      "minutes": 15,
+      "needs": { "social": 0.6, "fun": 0.4 },
+      "targetNeeds": { "social": 0.4 },
+      "ads": { "social": 6, "fun": 6 },
+      "base": 30,
+      "requires": { "met": true, "gate": "affair_possible", "relNone": ["spouse"] },
+      "traitMods": { "flirt": 20, "cunning": 10, "romantic": 5, "just": -25, "family_oriented": -20 },
+      "targetTraitMods": { "flirt": 15, "just": -25, "family_oriented": -20, "kind": -5 },
+      "topics": ["love"],
+      "success": { "friendship": 3, "romance": 10, "respect": -2, "moodlets": ["affair_thrill"], "targetMoodlets": ["affair_thrill"], "flagsAdd": ["lover"], "events": ["event:affair_started"] },
+      "failure": { "friendship": -10, "romance": -10, "respect": -8, "moodlets": ["gift_spurned"], "targetMoodlets": [], "flagsAdd": [], "events": [] }
+    },
+    "social.end_affair": {
+      "nameKey": "ia.social_end_affair",
+      "icon": "emo.sad",
+      "category": "romance",
+      "tags": ["social", "romance", "affair"],
+      "minutes": 15,
+      "needs": { "social": 0.3 },
+      "targetNeeds": { "social": 0.2 },
+      "ads": { "social": 2 },
+      "base": 70,
+      "requires": { "met": true, "gate": "in_affair" },
+      "traitMods": { "just": 10, "family_oriented": 10, "flirt": -10 },
+      "targetTraitMods": { "hot_tempered": -15, "calm": 10 },
+      "topics": ["love", "family"],
+      "success": { "friendship": -5, "romance": -30, "respect": 2, "moodlets": ["cleared_name_relief"], "targetMoodlets": ["heartbroken"], "flagsAdd": [], "flagsRemove": ["lover"], "events": ["event:affair_ended"] },
+      "failure": { "friendship": -15, "romance": -10, "respect": -5, "moodlets": ["argued"], "targetMoodlets": ["argued"], "flagsAdd": [], "events": [] }
+    },
+    "social.confess_affair": {
+      "nameKey": "ia.social_confess_affair",
+      "icon": "emo.sad",
+      "category": "special",
+      "tags": ["social", "affair", "humble"],
+      "minutes": 20,
+      "needs": { "social": 0.3 },
+      "targetNeeds": { "social": 0.2 },
+      "ads": { "social": 2 },
+      "base": 40,
+      "requires": { "met": true, "gate": "confess_affair" },
+      "traitMods": { "just": 15, "brave": 10, "humble": 10, "cunning": -10 },
+      "targetTraitMods": { "kind": 15, "calm": 10, "hot_tempered": -20, "romantic": -5 },
+      "topics": ["love", "family"],
+      "success": { "friendship": 0, "romance": 0, "respect": 2, "moodlets": ["public_penance_relief"], "targetMoodlets": [], "flagsAdd": [], "events": ["event:affair_confessed"] },
+      "failure": { "friendship": 0, "romance": 0, "respect": -5, "moodlets": ["affair_guilt"], "targetMoodlets": [], "flagsAdd": [], "events": ["event:affair_confessed"] }
+    },
+    "social.console_widow": {
+      "nameKey": "ia.social_console_widow",
+      "icon": "candle",
+      "category": "friendly",
+      "tags": ["social", "talk", "comfort"],
+      "minutes": 20,
+      "needs": { "social": 0.8 },
+      "targetNeeds": { "social": 1.0 },
+      "ads": { "social": 12 },
+      "base": 70,
+      "requires": { "met": true, "gate": "mourning_target" },
+      "traitMods": { "kind": 15, "family_oriented": 5, "mean": -25, "cynical": -10 },
+      "targetTraitMods": { "introvert": -10, "sociable": 5 },
+      "topics": ["family", "faith"],
+      "success": { "friendship": 6, "romance": 0, "respect": 2, "moodlets": ["heartfelt_talk"], "targetMoodlets": ["was_comforted"], "flagsAdd": [], "events": ["event:consoled"] },
+      "failure": { "friendship": -2, "romance": 0, "respect": 0, "moodlets": [], "targetMoodlets": ["lonely_heart"], "flagsAdd": [], "events": [] }
+    },
+    "social.ask_reconcile": {
+      "nameKey": "ia.social_ask_reconcile",
+      "icon": "comfort",
+      "category": "friendly",
+      "tags": ["social", "family", "talk"],
+      "minutes": 25,
+      "needs": { "social": 0.6 },
+      "targetNeeds": { "social": 0.5 },
+      "ads": { "social": 8 },
+      "base": 35,
+      "requires": { "met": true, "gate": "separated_spouse" },
+      "traitMods": { "kind": 10, "humble": 10, "family_oriented": 15, "stubborn": -15 },
+      "targetTraitMods": { "stubborn": -20, "kind": 10, "family_oriented": 10, "hot_tempered": -10 },
+      "topics": ["family", "love"],
+      "success": { "friendship": 10, "romance": 5, "respect": 3, "moodlets": ["heartfelt_talk"], "targetMoodlets": ["heartfelt_talk"], "flagsAdd": [], "events": ["event:reconciled"] },
+      "failure": { "friendship": -5, "romance": 0, "respect": -2, "moodlets": ["separated_lonely"], "targetMoodlets": [], "flagsAdd": [], "events": [] }
+    }
+  },
+  "interactions": {
+    "altar.wedding_rite": {
+      "nameKey": "ia.altar_wedding_rite",
+      "icon": "emo.pious",
+      "objects": ["church_altar"],
+      "tags": ["pray", "celebrate", "wedding"],
+      "requires": { "gate": "wedding_today" },
+      "hours": [8, 18],
+      "skill": "faith",
+      "steps": [
+        { "at": "target", "slot": "front", "anim": "idle", "minutes": 60, "needs": { "social": 0.3, "fun": 0.2 } }
+      ],
+      "ads": { "social": 10, "fun": 10 },
+      "moodlets": []
+    },
+    "altar.petition_annulment": {
+      "nameKey": "ia.altar_petition_annulment",
+      "icon": "emo.pious",
+      "objects": ["church_altar"],
+      "tags": ["pray", "humble", "annulment"],
+      "requires": { "gate": "can_annul" },
+      "hours": [8, 18],
+      "skill": "faith",
+      "steps": [
+        { "at": "target", "slot": "front", "anim": "idle", "minutes": 45, "needs": { "social": 0.1 } }
+      ],
+      "ads": { "social": 2 },
+      "moodlets": []
+    },
+    "altar.mourn_spouse": {
+      "nameKey": "ia.altar_mourn_spouse",
+      "icon": "candle",
+      "objects": ["church_altar"],
+      "tags": ["pray", "solitary", "mourn"],
+      "requires": { "gate": "mourning" },
+      "hours": [5, 22],
+      "skill": "faith",
+      "steps": [
+        { "at": "target", "slot": "front", "anim": "idle", "minutes": 30, "needs": { "fun": 0.1, "social": 0.1 } }
+      ],
+      "ads": { "social": 6, "fun": 4 },
+      "moodlets": [{ "id": "prayer_calm" }]
+    },
+    "inn_counter.ask_matchmaker": {
+      "nameKey": "ia.inn_ask_matchmaker",
+      "icon": "social",
+      "objects": ["inn_counter"],
+      "tags": ["social", "family", "trade"],
+      "requires": { "gate": "can_seek_match" },
+      "hours": [9, 21],
+      "steps": [
+        { "at": "target", "slot": "front", "anim": "idle", "minutes": 30, "needs": { "social": 0.5 } }
+      ],
+      "ads": { "social": 6 },
+      "moodlets": []
+    },
+    "table.write_letter": {
+      "nameKey": "ia.table_write_letter",
+      "icon": "book",
+      "objects": ["dining_table"],
+      "tags": ["read", "solitary", "letter"],
+      "requires": { "gate": "can_write_letter" },
+      "hours": [7, 22],
+      "skill": "reading",
+      "steps": [
+        { "at": { "seatAt": "target" }, "anim": "sit", "minutes": 30, "needs": { "fun": 0.3, "social": 0.3 } }
+      ],
+      "ads": { "social": 8, "fun": 4 },
+      "moodlets": []
+    },
+    "table.read_letters": {
+      "nameKey": "ia.table_read_letters",
+      "icon": "book",
+      "objects": ["dining_table"],
+      "tags": ["read", "solitary", "letter"],
+      "requires": { "gate": "has_unread_letter" },
+      "hours": [6, 23],
+      "skill": "reading",
+      "steps": [
+        { "at": { "seatAt": "target" }, "anim": "sit", "minutes": 15, "needs": { "fun": 0.4, "social": 0.4 } }
+      ],
+      "ads": { "social": 10, "fun": 6 },
+      "moodlets": []
+    }
+  },
+  "dialogue": {
+    "$comment": "새 사회 상호작용의 대사창 문장 (dialogue.json interactions 형식). 키는 src/i18n/ko/courtship_m9.json",
+    "social.ask_consent": {
+      "category": "status",
+      "ok": [
+        { "act": "dlg.ask_consent.ok.1.act", "say": "dlg.ask_consent.ok.1.say", "reply": "dlg.ask_consent.ok.1.reply" },
+        { "act": "dlg.ask_consent.ok.2.act", "say": "dlg.ask_consent.ok.2.say", "reply": "dlg.ask_consent.ok.2.reply" },
+        { "act": "dlg.ask_consent.ok.3.act", "say": "dlg.ask_consent.ok.3.say", "reply": "dlg.ask_consent.ok.3.reply" }
+      ],
+      "fail": [
+        { "act": "dlg.ask_consent.fail.1.act", "say": "dlg.ask_consent.fail.1.say", "reply": "dlg.ask_consent.fail.1.reply" },
+        { "act": "dlg.ask_consent.fail.2.act", "say": "dlg.ask_consent.fail.2.say", "reply": "dlg.ask_consent.fail.2.reply" },
+        { "act": "dlg.ask_consent.fail.3.act", "say": "dlg.ask_consent.fail.3.say", "reply": "dlg.ask_consent.fail.3.reply" }
+      ]
+    },
+    "social.discuss_match": {
+      "category": "trade",
+      "ok": [
+        { "act": "dlg.discuss_match.ok.1.act", "say": "dlg.discuss_match.ok.1.say", "reply": "dlg.discuss_match.ok.1.reply" },
+        { "act": "dlg.discuss_match.ok.2.act", "say": "dlg.discuss_match.ok.2.say", "reply": "dlg.discuss_match.ok.2.reply" },
+        { "act": "dlg.discuss_match.ok.3.act", "say": "dlg.discuss_match.ok.3.say", "reply": "dlg.discuss_match.ok.3.reply" }
+      ],
+      "fail": [
+        { "act": "dlg.discuss_match.fail.1.act", "say": "dlg.discuss_match.fail.1.say", "reply": "dlg.discuss_match.fail.1.reply" },
+        { "act": "dlg.discuss_match.fail.2.act", "say": "dlg.discuss_match.fail.2.say", "reply": "dlg.discuss_match.fail.2.reply" },
+        { "act": "dlg.discuss_match.fail.3.act", "say": "dlg.discuss_match.fail.3.say", "reply": "dlg.discuss_match.fail.3.reply" }
+      ]
+    },
+    "social.negotiate_dowry": {
+      "category": "trade",
+      "ok": [
+        { "act": "dlg.negotiate_dowry.ok.1.act", "say": "dlg.negotiate_dowry.ok.1.say", "reply": "dlg.negotiate_dowry.ok.1.reply" },
+        { "act": "dlg.negotiate_dowry.ok.2.act", "say": "dlg.negotiate_dowry.ok.2.say", "reply": "dlg.negotiate_dowry.ok.2.reply" },
+        { "act": "dlg.negotiate_dowry.ok.3.act", "say": "dlg.negotiate_dowry.ok.3.say", "reply": "dlg.negotiate_dowry.ok.3.reply" }
+      ],
+      "fail": [
+        { "act": "dlg.negotiate_dowry.fail.1.act", "say": "dlg.negotiate_dowry.fail.1.say", "reply": "dlg.negotiate_dowry.fail.1.reply" },
+        { "act": "dlg.negotiate_dowry.fail.2.act", "say": "dlg.negotiate_dowry.fail.2.say", "reply": "dlg.negotiate_dowry.fail.2.reply" },
+        { "act": "dlg.negotiate_dowry.fail.3.act", "say": "dlg.negotiate_dowry.fail.3.say", "reply": "dlg.negotiate_dowry.fail.3.reply" }
+      ]
+    },
+    "social.congratulate_wedding": {
+      "category": "friendly",
+      "ok": [
+        { "act": "dlg.congratulate_wedding.ok.1.act", "say": "dlg.congratulate_wedding.ok.1.say", "reply": "dlg.congratulate_wedding.ok.1.reply" },
+        { "act": "dlg.congratulate_wedding.ok.2.act", "say": "dlg.congratulate_wedding.ok.2.say", "reply": "dlg.congratulate_wedding.ok.2.reply" },
+        { "act": "dlg.congratulate_wedding.ok.3.act", "say": "dlg.congratulate_wedding.ok.3.say", "reply": "dlg.congratulate_wedding.ok.3.reply" }
+      ],
+      "fail": [
+        { "act": "dlg.congratulate_wedding.fail.1.act", "say": "dlg.congratulate_wedding.fail.1.say", "reply": "dlg.congratulate_wedding.fail.1.reply" },
+        { "act": "dlg.congratulate_wedding.fail.2.act", "say": "dlg.congratulate_wedding.fail.2.say", "reply": "dlg.congratulate_wedding.fail.2.reply" },
+        { "act": "dlg.congratulate_wedding.fail.3.act", "say": "dlg.congratulate_wedding.fail.3.say", "reply": "dlg.congratulate_wedding.fail.3.reply" }
+      ]
+    },
+    "social.affair_proposal": {
+      "category": "romance",
+      "ok": [
+        { "act": "dlg.affair_proposal.ok.1.act", "say": "dlg.affair_proposal.ok.1.say", "reply": "dlg.affair_proposal.ok.1.reply" },
+        { "act": "dlg.affair_proposal.ok.2.act", "say": "dlg.affair_proposal.ok.2.say", "reply": "dlg.affair_proposal.ok.2.reply" },
+        { "act": "dlg.affair_proposal.ok.3.act", "say": "dlg.affair_proposal.ok.3.say", "reply": "dlg.affair_proposal.ok.3.reply" },
+        { "act": "dlg.affair_proposal.ok.4.act", "say": "dlg.affair_proposal.ok.4.say", "reply": "dlg.affair_proposal.ok.4.reply", "when": { "speakerTraits": ["flirt"] } }
+      ],
+      "fail": [
+        { "act": "dlg.affair_proposal.fail.1.act", "say": "dlg.affair_proposal.fail.1.say", "reply": "dlg.affair_proposal.fail.1.reply" },
+        { "act": "dlg.affair_proposal.fail.2.act", "say": "dlg.affair_proposal.fail.2.say", "reply": "dlg.affair_proposal.fail.2.reply" },
+        { "act": "dlg.affair_proposal.fail.3.act", "say": "dlg.affair_proposal.fail.3.say", "reply": "dlg.affair_proposal.fail.3.reply" },
+        { "act": "dlg.affair_proposal.fail.4.act", "say": "dlg.affair_proposal.fail.4.say", "reply": "dlg.affair_proposal.fail.4.reply", "when": { "listenerTraits": ["just"] } }
+      ]
+    },
+    "social.end_affair": {
+      "category": "romance",
+      "ok": [
+        { "act": "dlg.end_affair.ok.1.act", "say": "dlg.end_affair.ok.1.say", "reply": "dlg.end_affair.ok.1.reply" },
+        { "act": "dlg.end_affair.ok.2.act", "say": "dlg.end_affair.ok.2.say", "reply": "dlg.end_affair.ok.2.reply" },
+        { "act": "dlg.end_affair.ok.3.act", "say": "dlg.end_affair.ok.3.say", "reply": "dlg.end_affair.ok.3.reply" }
+      ],
+      "fail": [
+        { "act": "dlg.end_affair.fail.1.act", "say": "dlg.end_affair.fail.1.say", "reply": "dlg.end_affair.fail.1.reply" },
+        { "act": "dlg.end_affair.fail.2.act", "say": "dlg.end_affair.fail.2.say", "reply": "dlg.end_affair.fail.2.reply" },
+        { "act": "dlg.end_affair.fail.3.act", "say": "dlg.end_affair.fail.3.say", "reply": "dlg.end_affair.fail.3.reply" }
+      ]
+    },
+    "social.confess_affair": {
+      "category": "special",
+      "ok": [
+        { "act": "dlg.confess_affair.ok.1.act", "say": "dlg.confess_affair.ok.1.say", "reply": "dlg.confess_affair.ok.1.reply" },
+        { "act": "dlg.confess_affair.ok.2.act", "say": "dlg.confess_affair.ok.2.say", "reply": "dlg.confess_affair.ok.2.reply" },
+        { "act": "dlg.confess_affair.ok.3.act", "say": "dlg.confess_affair.ok.3.say", "reply": "dlg.confess_affair.ok.3.reply" }
+      ],
+      "fail": [
+        { "act": "dlg.confess_affair.fail.1.act", "say": "dlg.confess_affair.fail.1.say", "reply": "dlg.confess_affair.fail.1.reply" },
+        { "act": "dlg.confess_affair.fail.2.act", "say": "dlg.confess_affair.fail.2.say", "reply": "dlg.confess_affair.fail.2.reply" },
+        { "act": "dlg.confess_affair.fail.3.act", "say": "dlg.confess_affair.fail.3.say", "reply": "dlg.confess_affair.fail.3.reply" }
+      ]
+    },
+    "social.console_widow": {
+      "category": "friendly",
+      "ok": [
+        { "act": "dlg.console_widow.ok.1.act", "say": "dlg.console_widow.ok.1.say", "reply": "dlg.console_widow.ok.1.reply" },
+        { "act": "dlg.console_widow.ok.2.act", "say": "dlg.console_widow.ok.2.say", "reply": "dlg.console_widow.ok.2.reply" },
+        { "act": "dlg.console_widow.ok.3.act", "say": "dlg.console_widow.ok.3.say", "reply": "dlg.console_widow.ok.3.reply" }
+      ],
+      "fail": [
+        { "act": "dlg.console_widow.fail.1.act", "say": "dlg.console_widow.fail.1.say", "reply": "dlg.console_widow.fail.1.reply" },
+        { "act": "dlg.console_widow.fail.2.act", "say": "dlg.console_widow.fail.2.say", "reply": "dlg.console_widow.fail.2.reply" },
+        { "act": "dlg.console_widow.fail.3.act", "say": "dlg.console_widow.fail.3.say", "reply": "dlg.console_widow.fail.3.reply" }
+      ]
+    },
+    "social.ask_reconcile": {
+      "category": "friendly",
+      "ok": [
+        { "act": "dlg.ask_reconcile.ok.1.act", "say": "dlg.ask_reconcile.ok.1.say", "reply": "dlg.ask_reconcile.ok.1.reply" },
+        { "act": "dlg.ask_reconcile.ok.2.act", "say": "dlg.ask_reconcile.ok.2.say", "reply": "dlg.ask_reconcile.ok.2.reply" },
+        { "act": "dlg.ask_reconcile.ok.3.act", "say": "dlg.ask_reconcile.ok.3.say", "reply": "dlg.ask_reconcile.ok.3.reply" }
+      ],
+      "fail": [
+        { "act": "dlg.ask_reconcile.fail.1.act", "say": "dlg.ask_reconcile.fail.1.say", "reply": "dlg.ask_reconcile.fail.1.reply" },
+        { "act": "dlg.ask_reconcile.fail.2.act", "say": "dlg.ask_reconcile.fail.2.say", "reply": "dlg.ask_reconcile.fail.2.reply" },
+        { "act": "dlg.ask_reconcile.fail.3.act", "say": "dlg.ask_reconcile.fail.3.say", "reply": "dlg.ask_reconcile.fail.3.reply" }
+      ]
+    }
+  }
+}
