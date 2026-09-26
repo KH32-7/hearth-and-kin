@@ -169,6 +169,39 @@ function houseSnap(s: Simulation): import('./protocol').HouseSnap | null {
     tree: treeCache.tree,
     rumors: (s.rumors?.knownToHousehold(1) ?? []).slice(-12).map((r) => ({ id: r.id, kind: r.kind, args: r.args, known: r.knownBy.size, good: r.good, strength: Math.round(r.strength * 100) / 100 })),
     letters: (s.society?.letters?.householdInbox(1) ?? []).slice(-16).map((l) => ({ id: l.id, kind: l.kind, fromName: l.fromName, to: l.to, read: !!(l as { read?: boolean }).read, sentDay: l.sentDay })),
+    rise: (() => {
+      if (!head) return [];
+      const E = L.estates;
+      const RELEVANT = new Set(['reason.estate.money', 'reason.estate.capital', 'reason.estate.days', 'reason.estate.skill', 'reason.estate.fame_tier', 'reason.estate.lord_favor', 'reason.estate.no_feat', 'reason.estate.guild_stage', 'reason.estate.quality', 'reason.estate.stage', 'reason.estate.lord_permission', 'reason.estate.not_squire']);
+      const st = E.guildStage(head);
+      const list: [string, import('./house/estates').CheckResult][] = [
+        ['payEmancipation', E.canPayEmancipation(1)],
+        ['startApprenticeship', E.canApprentice(head)],
+        ...(st === 'journeyman' ? [['submitMasterpiece', { ok: true }] as [string, import('./house/estates').CheckResult]] : []),
+        ['joinGuild', E.canJoinGuild(head)],
+        ['becomeMerchant', E.canBecomeMerchant(head)],
+        ['knight', E.canKnight(head)],
+        ['buyTitle', E.canBuyTitle(1)],
+        ['takeVows', E.canTakeVows(head)],
+      ];
+      return list.filter(([, c]) => c.ok || RELEVANT.has(c.reason ?? '')).map(([op, c]) => ({ op, ok: c.ok, reason: c.reason, cost: c.cost, personId: head.id }));
+    })(),
+    cards: (s.cards?.pending ?? []).filter((c) => s.persons.some((q) => q.id === c.personId && q.household === 1)).slice(0, 3).map((c) => {
+      const def = s.cards!.defs.get(c.cardId)!;
+      return { seq: c.seq, cardId: c.cardId, titleKey: def.titleKey, bodyKey: (def as { bodyKey?: string }).bodyKey ?? '', personId: c.personId, otherId: c.otherId, vars: c.vars, options: c.options.map((n) => ({ n, textKey: def.options[n].textKey })) };
+    }),
+    domain: (() => {
+      const P = s.society?.policy;
+      if (!P) return null;
+      const lh = L.fief?.lordHousehold();
+      return { levels: { ...P.state.levels }, morale: Math.round(L.house.honor.morale), treasury: L.fief?.treasury.money ?? 0, riots: P.stats.riots, crimes7: Math.round((s.society?.justice?.crimesPerDay() ?? 0) * 7), lord: lh === 1, plague: !!s.society?.plague?.active };
+    })(),
+    trial: (() => {
+      const J = s.society?.justice;
+      const t = J?.state.trials.find((x) => !x.verdict && s.persons.some((q) => q.id === x.accused && q.household === 1)) ?? J?.state.trials.slice().reverse().find((x) => x.verdict && x.controlled && s.world.minute - x.stageAt < 120);
+      if (!t) return null;
+      return { id: t.id, crime: t.crime, accused: t.accused, accuser: t.accuser, judge: t.judge, stage: t.stage, witnesses: t.witnesses.map((w) => ({ ...w })), lines: t.lines.slice(-8), verdict: t.verdict ? { guilty: t.verdict.guilty, punish: t.verdict.punish, amount: t.verdict.amount, days: t.verdict.days } : null };
+    })(),
     betrothed: (C?.state.betrothals ?? []).filter((b) => s.persons.some((q) => q.household === 1 && (q.id === b.a || q.id === b.b))).map((b) => ({ a: b.a, b: b.b, weddingDay: b.weddingDay, path: b.path })),
   };
 }

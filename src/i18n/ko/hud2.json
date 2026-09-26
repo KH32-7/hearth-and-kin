@@ -115,5 +115,17 @@
   "nb.page.hire": "하인 들이기",
   "nb.btn.emancipate": "해방금 내기",
   "money.sd": "{s}은화 {d}동화",
-  "money.d": "{d}동화"
+  "money.d": "{d}동화",
+  "nb.domain.crimes7": "이번 주 범죄",
+  "nb.domain.riots": "폭동",
+  "nb.btn.petition": "영주에게 탄원",
+  "nb.page.rise": "신분 오르기",
+  "nb.rise.payEmancipation": "해방금 내기",
+  "nb.rise.startApprenticeship": "도제 들어가기",
+  "nb.rise.submitMasterpiece": "걸작 내기",
+  "nb.rise.joinGuild": "길드 가입",
+  "nb.rise.becomeMerchant": "상인 되기",
+  "nb.rise.knight": "기사 서임",
+  "nb.rise.buyTitle": "작위 사기",
+  "nb.rise.takeVows": "성직에 들기"
 }

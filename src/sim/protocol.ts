@@ -188,6 +188,14 @@ export interface HouseSnap {
   rumors: { id: number; kind: string; args: Record<string, string | number>; known: number; good: boolean; strength: number }[];
   letters: { id: number; kind: string; fromName: string; to: number; read: boolean; sentDay: number }[];
   betrothed: { a: number; b: number; weddingDay: number; path: string }[];
+  /** 영지 (18-4): 정책 단계, 민심, 금고, 폭동, 최근 7일 범죄, 조작 가문이 영주인가 */
+  domain: { levels: Record<string, string>; morale: number; treasury: number; riots: number; crimes7: number; lord: boolean; plague: boolean } | null;
+  /** 신분 오르기 (16-3): 가장이 지금 할 수 있는 길 (op = house 의도 이름, 못 하면 이유 키) */
+  rise: { op: string; ok: boolean; reason?: string; cost?: number; personId: number }[];
+  /** 조작 가문에게 온 사건 카드 (24-1: 고르기 대기) */
+  cards: { seq: number; cardId: string; titleKey: string; bodyKey: string; personId: number; otherId: number; vars: Record<string, string | number>; options: { n: number; textKey: string }[] }[];
+  /** 조작 가문이 걸린 재판 (27-7 차단 장면) */
+  trial: { id: number; crime: string; accused: number; accuser: number; judge: number; stage: string; witnesses: { id: number; side: string; persuaded: boolean }[]; lines: { key: string; args: Record<string, string | number> }[]; verdict: { guilty: boolean; punish: string | null; amount: number; days: number } | null } | null;
 }
 
 export type ToWorker =

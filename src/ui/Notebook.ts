@@ -90,7 +90,7 @@ export class Notebook {
       pages: [
         { id: 'family', icon: 'cute.crown' }, { id: 'tree', icon: 'cute.shield' }, { id: 'relations', icon: 'cute.heart_blue' },
         { id: 'fame', icon: 'cute.star_blue', when: (p, s) => estateOf(p, s) !== 'serf' },
-        { id: 'freedom', icon: 'cute.star_blue', when: (p, s) => estateOf(p, s) === 'serf' },
+        { id: 'freedom', icon: 'cute.star_blue', when: (p, s) => estateOf(p, s) === 'serf' || !!s.house?.rise.length },
         { id: 'servants', icon: 'cute.bag', when: (p, s) => ['merchant', 'knight', 'noble'].includes(estateOf(p, s)) },
       ],
     },
@@ -640,12 +640,15 @@ export class Notebook {
         el('b', 'nb-grow', l, em ? money(Math.max(0, em.money)) : '-');
         el('b', '', l, em ? money(em.fee) : '-');
         this.bar(pp, em ? Math.max(0, Math.min(1, em.money / Math.max(1, em.fee))) : 0, 'green');
-        const btns = el('div', 'nb-btns', L);
-        const b = this.button(btns, t('nb.btn.emancipate'), () => void this.hooks.intent?.({ kind: 'house', op: 'payEmancipation', args: {} }));
-        if (!em || em.money < em.fee) b.disabled = true;
-        this.ribbon(R, t('estate.serf'));
-        const pr = this.paper(R);
-        el('p', '', pr, t('estate.serf.desc'));
+        // 신분 오르기 (16-3): 할 수 있는 길마다 버튼 (못 하면 흐리게, 이유는 툴팁)
+        this.ribbon(R, t('nb.page.rise'));
+        const rows = el('div', 'nb-btns nb-wrap', R);
+        for (const r of s.house?.rise ?? []) {
+          const b = this.button(rows, t(`nb.rise.${r.op}`), () => void this.hooks.intent?.({ kind: 'house', op: r.op, args: { personId: r.personId, craft: 'blacksmith', quality: 3 } }));
+          b.disabled = !r.ok;
+          b.title = `${t(`nb.rise.${r.op}`)}${r.cost ? ` · ${money(r.cost)}` : ''}${r.reason ? ` · ${t(r.reason)}` : ''}`;
+        }
+        if (!(s.house?.rise.length)) this.empty(R, 'cute.star_blue');
         break;
       }
       case 'servants': {
@@ -773,16 +776,56 @@ export class Notebook {
         });
         break;
       }
-      case 'journey':
-      case 'clergy':
-      case 'guild':
-      case 'trade':
-      case 'service':
       case 'people':
       case 'justice':
       case 'tax':
       case 'policy':
       case 'treasury': {
+        // 영지 (18-4): 민심, 치안·재판, 세금, 정책(영주면 바꿀 수 있음), 금고
+        const D = s.house?.domain;
+        const LEVELS: Record<string, string[]> = { tax: ['low', 'normal', 'high'], market: ['free', 'guild'], hunting: ['ban', 'license', 'free'], watch: ['lax', 'normal', 'strict'], plague: ['none', 'quarantine', 'lockdown'], festival: ['none', 'normal', 'grand'] };
+        const pol = id === 'policy' ? Object.keys(LEVELS) : id === 'tax' ? ['tax', 'market'] : id === 'justice' ? ['watch', 'hunting'] : id === 'people' ? ['festival', 'plague'] : [];
+        this.ribbon(L, t(`nb.page.${id}`));
+        const pp = this.paper(L);
+        const line = (icon: string, label: string, value: string) => {
+          const l = el('div', 'nb-line', pp);
+          l.appendChild(iconEl(icon, 2));
+          el('b', 'nb-grow', l, label);
+          el('b', '', l, value);
+        };
+        if (!D) {
+          this.empty(L, 'rv.castle');
+          this.empty(R, 'rv.castle');
+          break;
+        }
+        line('cute.heart', t('policy.morale'), String(D.morale));
+        this.bar(pp, D.morale / 100, D.morale < 30 ? 'red' : 'green');
+        line('cute.crown', t('policy.treasury'), money(D.treasury));
+        if (id === 'justice') line('cute.shield', t('nb.domain.crimes7'), String(D.crimes7));
+        if (id === 'people') line('cute.exclaim', t('nb.domain.riots'), String(D.riots));
+        this.ribbon(R, t('nb.page.policy'));
+        const rp = this.paper(R);
+        for (const k of pol) {
+          const l = el('div', 'nb-line', rp);
+          el('b', 'nb-grow', l, t(`policy.${k}`));
+          if (D.lord) {
+            for (const v of LEVELS[k]) {
+              const b = this.button(l, t(`policy.${k}.${v}`), () => void this.hooks.intent?.({ kind: 'society', op: 'setPolicy', args: { policy: k, value: v } }));
+              if (D.levels[k] === v) b.classList.add('on');
+            }
+          } else el('b', '', l, t(`policy.${k}.${D.levels[k] ?? 'normal'}`));
+        }
+        if (!D.lord) {
+          const btns = el('div', 'nb-btns', R);
+          this.button(btns, t('nb.btn.petition'), () => void this.hooks.intent?.({ kind: 'society', op: 'petitionLord', args: { personId: p.id } }));
+        }
+        break;
+      }
+      case 'journey':
+      case 'clergy':
+      case 'guild':
+      case 'trade':
+      case 'service': {
         const def = Object.values(this.TABS).flatMap((x) => x.pages).find((x) => x.id === id);
         this.ribbon(L, t(`nb.page.${id}`));
         this.empty(L, def?.icon ?? 'cute.book_red');

@@ -1569,7 +1569,9 @@ export class WorldView {
         n.node.mat.uniforms.uEmissive.value = on ? 0.15 : 0;
       }
       if (n.light && n.lit) {
-        const flicker = 0.85 + 0.15 * Math.sin(timeMs / 90 + n.uid) * Math.sin(timeMs / 230 + n.uid * 3);
+        // 가로등·등불은 깜박이지 않음, 화로·횃불·초는 천천히 일렁임 (사용자 요청 2026-09-27)
+        const steady = /^(lantern|street_lamp|lamp_post|wall_lamp|hanging_lamp|chandelier)/.test(n.defId);
+        const flicker = steady ? 1 : 0.88 + 0.12 * Math.sin(timeMs / 170 + n.uid) * Math.sin(timeMs / 430 + n.uid * 3);
         // 낮에는 빛 번짐 없음 (픽셀 흐림 검사 대상 화면을 깨끗하게), 어두울수록 강해짐
         const op = Math.min(1, darkness * flicker);
         (n.light.material as THREE.MeshBasicMaterial).opacity = op;
