@@ -82,6 +82,11 @@ export class SimClient {
     return this.request((reqId) => ({ type: 'menuPerson', personId, targetPersonId, reqId }));
   }
 
+  /** 소원 길잡이: 그 소원을 이루는 상호작용과 가까운 물건·사람 */
+  wishHint(personId: number, wishId: string): Promise<{ interactionIds: string[]; uids: number[]; persons: number[] }> {
+    return this.request((reqId) => ({ type: 'wishHint', personId, wishId, reqId }));
+  }
+
   /** 상태를 바꾸는 의도 (Simulation.apply) */
   intent<T = unknown>(intent: Record<string, unknown>): Promise<T> {
     return this.request((reqId) => ({ type: 'intent', intent, reqId }));

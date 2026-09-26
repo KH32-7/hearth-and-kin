@@ -457,6 +457,9 @@ self.onmessage = (ev: MessageEvent<ToWorker>) => {
       case 'menuPerson':
         post({ type: 'menu', reqId: m.reqId, entries: sim!.menuForPerson(m.personId, m.targetPersonId) });
         break;
+      case 'wishHint':
+        post({ type: 'reply', reqId: m.reqId, result: sim!.wishHint(m.personId, m.wishId) });
+        break;
       case 'inputLog':
         post({ type: 'reply', reqId: m.reqId, result: { seed: seedValue, persons: personsInit.map((q) => ({ name: q.name, estate: q.estate, sex: q.sex, stage: q.stage })), log: sim!.inputLog, ticks: sim!.stats.ticks, hash: sim!.worldHash() } });
         break;

@@ -227,6 +227,7 @@ export class HearthGame {
       openWindow: (w) => this.openWindow(w),
       toggleBook: (page) => this.notebook.toggle(page),
       lockWish: (personId, wish, locked) => void this.client.intent({ kind: 'lockWish', personId, wish, locked }),
+      wishHint: (personId, wish) => this.showWishHint(personId, wish),
       menu: (a) => this.menuAction(a),
     });
     this.hud.inner = new InnerPanel(innerDefs(), {
@@ -1364,6 +1365,34 @@ export class HearthGame {
     }
     void this.client.goto(this.selectedId, tx, ty);
     this.showClickFx(w.x, w.y);
+  }
+
+  private hintTimer = 0;
+  /** 소원 길잡이: 이룰 수 있는 가까운 물건(외곽선 5초) 또는 사람으로 카메라를 옮김 */
+  private async showWishHint(personId: number, wish: string): Promise<boolean> {
+    const r = await this.client.wishHint(personId, wish);
+    const s = this.client.snap;
+    if (!s) return false;
+    const T = this.pack.tilePx;
+    const H1 = this.lotRows();
+    const o = s.objects.find((q) => q.uid === r.uids[0]);
+    if (o) {
+      this.followSelected = false;
+      const x = (o.x + 0.5) * T;
+      const y = ((o.y % H1) + 0.5) * T;
+      this.renderer.centerOn(x, y);
+      this.world.setHighlightMany(r.uids);
+      this.showClickFx(x, y);
+      clearTimeout(this.hintTimer);
+      this.hintTimer = window.setTimeout(() => this.world.setHighlightMany([]), 5000);
+      return true;
+    }
+    if (r.persons.length) {
+      this.followSelected = false;
+      this.focus(r.persons[0]);
+      return true;
+    }
+    return false;
   }
 
   /** 이동 클릭 표시: 앞의 것을 지우고 누른 자리(세계 px)에 하나만 */

@@ -1066,3 +1066,7 @@ button.nb-cell:hover { transform: translateY(-1px); }
   .ng-stage { zoom: 1.5; width: max(1600px, 66.66vw); height: max(900px, 66.66vh); }
   .tut { zoom: 1.5; }
 }
+
+/* 소원 줄: 누르면 이룰 곳을 비춤 */
+.hud-pop .wishes .wish { cursor: pointer; }
+.hud-pop .wishes .wish:hover { filter: brightness(1.08); }

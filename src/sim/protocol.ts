@@ -219,6 +219,7 @@ export type ToWorker =
   | { type: 'inputLog'; reqId: number }
   | { type: 'intent'; intent: Record<string, unknown>; reqId: number }
   | { type: 'menuPerson'; personId: number; targetPersonId: number; reqId: number }
+  | { type: 'wishHint'; personId: number; wishId: string; reqId: number }
   /** 건축 미리보기: 물건을 놓을 수 있는가 (입력 로그에 남지 않는 조회) */
   | { type: 'buildQuery'; defId: string; x: number; y: number; rot: number; except?: number; reqId: number };
 

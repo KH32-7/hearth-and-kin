@@ -39,6 +39,8 @@ export interface HudHandlers {
   /** 수첩 (Tab) */
   toggleBook?(page?: string): void;
   lockWish?(personId: number, wish: string, locked: boolean): void;
+  /** 소원 길잡이: 이룰 수 있는 물건·사람을 비추고 카메라를 옮김. 찾지 못하면 false */
+  wishHint?(personId: number, wish: string): Promise<boolean>;
   menu?(action: 'save' | 'load' | 'settings' | 'gallery' | 'help' | 'hideUi' | 'title'): void;
 }
 
@@ -855,6 +857,11 @@ export class Hud {
         const ps = el('span', 'wish-pts', row);
         ps.append(iconEl('cute.star', 1), document.createTextNode(String(pts)));
       }
+      row.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('.lock')) return;
+        pop(row, 'press');
+        void this.h.wishHint?.(p.id, w.id);
+      });
       const lock = el('button', `lock ${w.locked ? 'on' : ''}`, row);
       lock.type = 'button';
       lock.appendChild(pieceImg('book.mark0', 1));

@@ -111,6 +111,11 @@ export class Inner {
     this.extremeRiskEnabled = d.extremeRisk.enabled;
   }
 
+  /** 소원이 이뤄지는 사건 ("done:hearth.cook_stew", "tag:clean" …): 소원 길잡이용 */
+  wishEvent(id: string): string | null {
+    return this.wishById.get(id)?.fulfill ?? null;
+  }
+
   /** 인물이 빠질 때 (방문객이 돌아감): 인물별 캐시 정리. id 는 재사용되지 않음 */
   forget(p: Person): void {
     this.fxCache.delete(p.id);

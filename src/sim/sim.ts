@@ -856,6 +856,58 @@ export class Simulation {
     p.queue = p.queue.filter((q) => q.id !== queueItemId);
   }
 
+  /**
+   * 소원 길잡이 (플레이어가 소원을 누름): 그 소원을 이루는 상호작용과, 그걸 할 수 있는 가까운 물건(자기 집·공공 장소) 또는 사람.
+   * 상태를 바꾸지 않음
+   */
+  wishHint(personId: number, wishId: string): { interactionIds: string[]; uids: number[]; persons: number[] } {
+    const out = { interactionIds: [] as string[], uids: [] as number[], persons: [] as number[] };
+    const p = this.persons.find((q) => q.id === personId);
+    const ev = p && this.inner?.wishEvent(wishId);
+    if (!p || !ev) return out;
+    const [kind, arg] = [ev.slice(0, ev.indexOf(':')), ev.slice(ev.indexOf(':') + 1)];
+    if (kind === 'social') {
+      const g = this.world.grid;
+      const slab = g.slabOf(g.idx(Math.floor(p.x), Math.floor(p.y)));
+      out.interactionIds.push(arg);
+      out.persons = this.persons
+        .filter((q) => q !== p && !q.hidden && q.lod === 'full' && !q.sleeping && g.slabOf(g.idx(Math.floor(q.x), Math.floor(q.y))) === slab)
+        .map((q) => ({ id: q.id, d: Math.hypot(q.x - p.x, q.y - p.y) - (q.household === p.household ? 6 : 0) }))
+        .sort((a, b) => a.d - b.d)
+        .slice(0, 3)
+        .map((e) => e.id);
+      return out;
+    }
+    const ids = new Set<string>();
+    for (const c of this.data.compiled.list) {
+      const ia = c.def;
+      const hit =
+        (kind === 'done' && c.id === arg) ||
+        (kind === 'tag' && (ia.tags ?? []).includes(arg)) ||
+        (kind === 'moodlet' && ((ia as { moodlets?: { id: string }[] }).moodlets ?? []).some((m) => m.id === arg)) ||
+        (kind === 'need_high' && (ia.ads as Record<string, number> | undefined)?.[arg] !== undefined);
+      if (hit && this.stageAllows(p, c.id, ia.tags ?? [])) ids.add(c.id);
+    }
+    out.interactionIds = [...ids];
+    if (!ids.size) return out;
+    const t = this.town;
+    const cand: { uid: number; d: number }[] = [];
+    for (const o of this.world.objects) {
+      const list = this.data.compiled.byDef.get(o.defId);
+      if (!list || !list.some((c) => ids.has(c.id))) continue;
+      if (t) {
+        const owner = t.ownerOf(o.x, o.y);
+        if (owner !== p.household && (owner !== 0 || o.defId === 'window_opening' || o.defId === 'lot_exit')) continue;
+      }
+      // 자기 집 물건 먼저 (같은 거리면)
+      const home = t ? t.ownerOf(o.x, o.y) === p.household : true;
+      cand.push({ uid: o.uid, d: Math.hypot(o.x - p.x, o.y - p.y) - (home ? 20 : 0) });
+    }
+    cand.sort((a, b) => a.d - b.d);
+    out.uids = cand.slice(0, 3).map((c) => c.uid);
+    return out;
+  }
+
   menuFor(personId: number, targetUid: number): MenuEntry[] {
     const p = this.person(personId);
     const obj = this.world.byUid.get(targetUid);
