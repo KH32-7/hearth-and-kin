@@ -820,7 +820,18 @@ export class Simulation {
       const bx = p.x;
       const by = p.y;
       if (vx && ok(p.x + vx, p.y)) p.x += vx;
+      else if (vx && !vy) {
+        // 모서리 비켜 가기: 문틀 · 가구 모서리에 살짝 걸리면 가던 칸 한가운데 쪽으로 밀어 줌 (스타듀식)
+        const c = Math.floor(p.y) + 0.5;
+        const dy = Math.sign(c - p.y) * Math.min(Math.abs(vx), Math.abs(c - p.y));
+        if (dy && ok(p.x, p.y + dy)) p.y += dy;
+      }
       if (vy && ok(p.x, p.y + vy)) p.y += vy;
+      else if (vy && !vx) {
+        const c = Math.floor(p.x) + 0.5;
+        const dx = Math.sign(c - p.x) * Math.min(Math.abs(vy), Math.abs(c - p.x));
+        if (dx && ok(p.x + dx, p.y)) p.x += dx;
+      }
       if (p.x === bx && p.y === by) break;
     }
     if (p.x === x0 && p.y === y0) {
