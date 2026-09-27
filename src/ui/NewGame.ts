@@ -416,9 +416,11 @@ export class NewGameFlow {
       }
       go.disabled = !afford(l);
       drawMap();
-      if (look) this.game.lookAtTile((l.rect[0] + l.rect[2] + 1) / 2, (l.rect[1] + l.rect[3] + 1) / 2, 2, 300);
+      if (look) this.game.lookAtTile((l.rect[0] + l.rect[2] + 1) / 2, (l.rect[1] + l.rect[3] + 1) / 2, 2, Math.max(0, (panel.getBoundingClientRect().right + window.innerWidth) / 2 - window.innerWidth / 2));
       // 집 안 들여다보기 (지붕을 걷어 가구 배치가 보이게)
-      this.game.peekLot(l.rect);
+      // 왼쪽 판 오른쪽 빈 곳 가운데로
+      const off = Math.max(0, (panel.getBoundingClientRect().right + window.innerWidth) / 2 - window.innerWidth / 2);
+      this.game.peekLot(l.rect, off);
       this.pickRect = l.rect;
     };
     for (const l of lots) {
@@ -483,7 +485,8 @@ export class NewGameFlow {
     const frame = () => {
       const minX = panelRight() + 20;
       if (this.pickRect) {
-        const a = this.game.tileScreen(this.pickRect[0], this.pickRect[1]);
+        // 벽 높이(80px = 2.5칸)만큼 위까지: 집 그림 전체를 감싸게
+        const a = this.game.tileScreen(this.pickRect[0], this.pickRect[1] - 2.5);
         const b = this.game.tileScreen(this.pickRect[2] + 1, this.pickRect[3] + 1);
         box.style.display = '';
         box.style.transform = `translate(${Math.round(a.x)}px, ${Math.round(a.y)}px)`;

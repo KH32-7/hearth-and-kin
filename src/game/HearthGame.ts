@@ -1401,7 +1401,7 @@ export class HearthGame {
   }
 
   /** 집 고르기: 그 부지 집 안을 들여다봄 (지붕 걷기), null = 닫기 */
-  peekLot(rect: [number, number, number, number] | null): void {
+  peekLot(rect: [number, number, number, number] | null, dx = 0): void {
     if (!rect) {
       if (this.interior >= 0 && this.interiorOwner < 0) this.switchView(-1);
       return;
@@ -1412,6 +1412,8 @@ export class HearthGame {
     this.interiorOwner = -1;
     if (k >= 0 && k !== this.interior) this.switchView(k);
     else if (k < 0 && this.interior >= 0) this.switchView(-1);
+    // 왼쪽 판에 가리지 않게 화면 가운데에서 dx 만큼 오른쪽에 (지붕 들기 카메라 목표도)
+    if (this.camGlide && dx) this.camGlide.x -= dx / Math.max(1, this.renderer.zoom);
   }
 
   /** 칸 좌표 → 화면 CSS 좌표 */
