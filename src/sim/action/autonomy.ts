@@ -91,6 +91,10 @@ const nearBuf: ObjectInstance[] = [];
  * 물건 목록이 바뀔 때만 다시 셈
  */
 let errandCache: { world: World | null; version: number; list: ObjectInstance[] } = { world: null, version: -1, list: [] };
+/** 불러오기 뒤: 같은 World 객체에 저장본을 덮어써 버전 번호가 같아도 목록이 달라짐 */
+export function resetAutonomyCaches(): void {
+  errandCache = { world: null, version: -1, list: [] };
+}
 function errandObjects(data: SimData, world: World): ObjectInstance[] {
   if (errandCache.world === world && errandCache.version === world.objectsVersion) return errandCache.list;
   const list: ObjectInstance[] = [];

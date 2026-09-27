@@ -221,7 +221,24 @@ export type ToWorker =
   | { type: 'menuPerson'; personId: number; targetPersonId: number; reqId: number }
   | { type: 'wishHint'; personId: number; wishId: string; reqId: number }
   /** 건축 미리보기: 물건을 놓을 수 있는가 (입력 로그에 남지 않는 조회) */
-  | { type: 'buildQuery'; defId: string; x: number; y: number; rot: number; except?: number; reqId: number };
+  | { type: 'buildQuery'; defId: string; x: number; y: number; rot: number; except?: number; reqId: number }
+  /** 저장 (27-5): 틱 경계에서 sim 전체를 적어 돌려줌 → reply { save: SimSave, meta: SaveMeta } */
+  | { type: 'save'; reqId: number }
+  /** 불러오기: 같은 데이터로 새 sim 을 만들어 저장본을 덮어씀. 멈춘 채로 → reply { ok, error? } */
+  | { type: 'load'; save: import('./save/save').SimSave; reqId: number };
+
+/** 저장 목록에 보일 요약 (불러오지 않고 보여 줌) */
+export interface SaveMeta {
+  day: number;
+  minuteOfDay: number;
+  season: string;
+  clan: string;
+  estate: string;
+  money: number;
+  /** 가장(없으면 첫 식구) 이름 */
+  head: string;
+  members: number;
+}
 
 export type FromWorker =
   | { type: 'snapshot'; snap: Snapshot }

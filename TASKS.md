@@ -306,6 +306,16 @@
 - [x] 마을에서 건축 되돌리기 기록이 칸 전체를 복사하던 것 → 바뀐 칸·물건만 (60단계 233MB→약 20MB, 한 번 12→5ms)
 - [ ] 설계 확인: 성관(castle_hall) 예산으로 작은 집을 사서 차액을 챙길 수 있음 (신분별 최소 집 크기를 둘지)
 - [ ] 발견: lot_22 는 성벽에 막혀 길이 없음 (집 고르기에서 빠짐). 지도 수정은 사용자 결정
+- [x] 제대로 된 튜토리얼 (사용자 요청 2026-09-27): 27-4 "첫 하루" (시작 직후 멈춤 · 가장 → 집 카메라 → 기상 ▼ → 원형 메뉴 → 대기열 → 욕구 → (화로 놓기) → (불 피우기) → 그 집에서 되는 요리 → 먹기 → 이웃과 대화 → 잠 → 첫 자정 하루 정산 → 신분별 첫 과제), 처음 마주칠 때 카드 6종, 조작 키캡은 필요한 단계에 곁들임, `hk.tutorial.v2`, `state()/restore()`. 판정 `src/ui/tutorialFlow.ts`, 유닛 `tests/unit/tutorial-flow.test.ts`, E2E `tests/e2e/tutorial.spec.ts`
+- [ ] 튜토리얼 발견: 꾸민 성직자 가장이 사제(priest) 일을 못 받음 (글 모름 → setCareer 실패 추정). 첫 과제는 미사 참석(pew.attend_mass)으로 대신
+- [ ] 튜토리얼 발견: 귀족 프리셋(fief lord:true)인데 영주 가문은 먼저 등록된 NPC 영지라 domain.lord=false → 정책을 못 바꿈. 첫 과제는 성에서 탄원 올리기(throne.petition)로 대신
+- [ ] 튜토리얼 발견: 집 고르기 첫 줄 집(lot [49,39]–[54,44])에 화로가 없어 첫날 요리를 못 함 → 튜토리얼이 구매 모드 화로 놓기로 대신. 시작 집 기본 가구 확인
+- [ ] 튜토리얼 발견: 타이틀로 돌아가 새 게임을 다시 시작하면 이전 게임 재고(tools_blacksmith, rented_plots …)가 남음
+- [ ] 건축 화면 빠진 문구 키 `room.type.bathhouse`
+- [x] 저장/불러오기 (27-5, 사용자 요청 2026-09-27): sim 그래프 전체 → gzip → IndexedDB (`src/sim/save/`, `src/game/SaveStore.ts`), 자동 저장 하루마다 슬롯 3 순환(차단 장면 뒤로 미룸), 메뉴 저장 · Ctrl+S, 타이틀 이어 하기(최근) · 불러오기 목록, 튜토리얼 진행도 함께. 유닛 `tests/unit/save.test.ts`, `npm run check:save` (신분 4 × 6일 통과: 저장 ≤0.3초, 불러오기 ≤0.4초, 압축 전 8MB · 압축 뒤 약 250KB)
+- [ ] 저장: 데스크톱(Electron) 파일 저장(BRIEF 1장)은 M17 패키징 때. 저장본 지우기 · 이름 붙이기 UI
+- [ ] 저장 형식 유지: 클래스에 새 필드가 생기면 옛 저장본은 생성자 기본값으로 남음(자동). 필드 이름을 바꾸거나 뜻을 바꾸면 SAVE_VERSION 을 올리고 `src/sim/save/save.ts` MIGRATIONS 에 옮기기
+- [ ] 첫 20분 (M9 범위, 2026-09-27 점검): 첫날에 나올 무드렛(new_friend·warm_food·new_furniture·had_guests·tax_paid·newlywed 등) 미연결, 21 프리셋 중 직업 있는 건 9개뿐(나머지는 돈 버는 길을 모름)
 
 ## M4 ~ M17
 - (각 세션 시작 때 BRIEF 5장에서 옮겨 적음)

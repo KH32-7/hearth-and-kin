@@ -15,6 +15,7 @@
     "sim:day": "tsx tools/sim-day.ts",
     "typecheck": "tsc --noEmit",
     "check:data": "tsx tools/check-data.ts",
+    "check:save": "tsx tools/save/check-save.ts",
     "check:palette": "tsx tools/check-palette.ts",
     "check:supplement": "tsx tools/check-supplement.ts",
     "check:infant": "tsx tools/check-infant.ts",

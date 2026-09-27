@@ -4,7 +4,7 @@
  * 1) 7 신분을 골라 시작 → 조작 인물 신분이 맞고, 소유 신분은 고른 집에 들어가 집값을 냄, 오류 0 (메뉴 › 타이틀로 돌아가 다음 신분)
  * 2) 문장 편집기로 문장을 바꾸고 시작 → sim setHeraldry 성공 + 입력 로그에 같은 문장
  * 3) 가문 만들기에서 이름을 고치고 시작 → 조작 가족 이름에 반영
- * 4) 튜토리얼 첫 단계가 뜨고, 그 조작(Space 로 식구 바꾸기)을 하면 다음 단계. 건너뛰기 · 메뉴 › 설정에서 다시 보기
+ * 4) 튜토리얼 첫 단계(기상, 멈춤)가 뜨고 ▼ 로 다음 단계. 건너뛰기 · 메뉴 › 설정에서 다시 보기
  */
 import { expect, test, type Page } from '@playwright/test';
 import { game } from './helpers';
@@ -173,23 +173,23 @@ test('튜토리얼: 첫 단계가 뜨고 해낸 조작으로 넘어감, 건너�
   await toCreate(page);
   await buyAndStart(page);
   await waitStarted(page);
-  const card = page.locator('.tut');
+  const card = page.locator('.tut:not(.tut-once)');
+  // 첫 하루 (27-4): 멈춘 채 기상 카드 → ▼ 를 누르면 1배속, 원형 메뉴 단계
+  await expect(card).toHaveAttribute('data-step', 'wake', { timeout: 15_000 });
   await expect(card).toBeVisible();
-  // 혼자 사는 가족: 식구 바꾸기 단계는 건너뜀 → 쓸 수 있는 물건 보기(Shift)부터
-  await expect(card).toHaveAttribute('data-step', 'usable');
-  await page.keyboard.down('Shift');
-  await page.keyboard.up('Shift');
+  expect(await game<number>(page, 'return g.getState().speed;')).toBe(0);
+  await card.click();
   await expect(card).toHaveAttribute('data-step', 'pie', { timeout: 5000 });
   // 건너뛰기 → 기억됨
   await card.locator('.tut-skip').click();
   await expect(card).toBeHidden();
-  expect(await page.evaluate(() => localStorage.getItem('hk.tutorial.v1'))).toBe('done');
+  expect(await page.evaluate(() => localStorage.getItem('hk.tutorial.v2'))).toBe('done');
   // 메뉴 › 설정 › 튜토리얼 다시 보기
   await page.locator('[data-win="menu"]').click();
   await page.locator('.menu-row[data-menu="settings"]').click();
   await expect(page.locator('.ng[data-page="settings"]')).toBeVisible();
   await page.locator('[data-act="tutorial"]').click();
   expect(await ngPage(page)).toBe('closed');
-  await expect(card).toHaveAttribute('data-step', 'usable');
+  await expect(card).toHaveAttribute('data-step', 'wake', { timeout: 15_000 });
   await expectClean(page, errors);
 });

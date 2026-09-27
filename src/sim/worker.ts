@@ -7,6 +7,8 @@ import { validateSimData, type SimData } from './data/simData';
 import type { EconSnap, FromWorker, RelationSnap, Snapshot, ToWorker } from './protocol';
 import { Simulation } from './sim';
 import { EMOTION_IDS } from './inner/emotion';
+import { loadSimInto, saveSim } from './save/save';
+import type { SaveMeta } from './protocol';
 
 declare const self: DedicatedWorkerGlobalScope;
 
@@ -54,6 +56,31 @@ function build(seed: number): void {
     }
     for (const r of relationsInit) sim.apply({ kind: 'setRelation', met: true, ...r });
   }
+}
+
+/** 저장 목록 요약 (27-5) */
+function saveMeta(s: Simulation): SaveMeta {
+  const L = s.house;
+  const sum = L ? (L.summary(1) as { clan: { name: string | null } | null; estate: string }) : null;
+  const members = s.persons.filter((p) => p.household === 1 && !p.visitor);
+  const head = L?.headOf(1) ?? members[0];
+  return {
+    day: s.world.day(), minuteOfDay: s.world.minuteOfDay(), season: s.world.season,
+    clan: sum?.clan?.name ?? '', estate: sum?.estate ?? members[0]?.estate ?? '',
+    money: s.econ?.account(1)?.money ?? 0, head: head?.name ?? '', members: members.length,
+  };
+}
+
+/** 불러오기: 같은 데이터·저장본 seed 로 새로 만들고 덮어씀. 워커 쪽 캐시는 비우고 부지·방은 다시 보냄 */
+function loadSave(save: import('./save/save').SimSave): void {
+  seedValue = save.seed;
+  build(seedValue);
+  loadSimInto(sim!, save);
+  treeCache = null;
+  priceDay = -1;
+  acc = 0;
+  paused = false;
+  speed = 0;
 }
 
 /** 지난 스냅샷 이후 지나간 좌표를 넘기고, 다음 구간은 현재 위치에서 시작 */
@@ -372,7 +399,7 @@ self.onmessage = (ev: MessageEvent<ToWorker>) => {
   const m = ev.data;
   try {
     // 직접 조작으로 그동안 움직인 위치를 먼저 입력 로그에 (이 뒤에 오는 의도가 같은 위치를 보게: 재생 결정론)
-    if (m.type !== 'init' && m.type !== 'menu' && m.type !== 'menuPerson' && m.type !== 'buildQuery' && m.type !== 'stats') flushDirect();
+    if (m.type !== 'init' && m.type !== 'menu' && m.type !== 'menuPerson' && m.type !== 'buildQuery' && m.type !== 'stats' && m.type !== 'load') flushDirect();
     switch (m.type) {
       case 'init':
         treeCache = null;
@@ -463,6 +490,29 @@ self.onmessage = (ev: MessageEvent<ToWorker>) => {
       case 'inputLog':
         post({ type: 'reply', reqId: m.reqId, result: { seed: seedValue, persons: personsInit.map((q) => ({ name: q.name, estate: q.estate, sex: q.sex, stage: q.stage })), log: sim!.inputLog, ticks: sim!.stats.ticks, hash: sim!.worldHash() } });
         break;
+      case 'save': {
+        // 틱 사이(메시지 처리 중)라 틱 경계. 직접 조작 위치는 위 flushDirect 로 이미 입력 로그에
+        const t0 = performance.now();
+        const save = saveSim(sim!, seedValue);
+        post({ type: 'reply', reqId: m.reqId, result: { save, meta: saveMeta(sim!), ms: Math.round(performance.now() - t0) } });
+        break;
+      }
+      case 'load': {
+        const prev = sim;
+        const prevSeed = seedValue;
+        try {
+          loadSave(m.save);
+          post({ type: 'snapshot', snap: snapshot() });
+          post({ type: 'reply', reqId: m.reqId, result: { ok: true } });
+        } catch (err) {
+          sim = prev;
+          seedValue = prevSeed;
+          sentLotVersion = -1;
+          sentRoomsAt = -1;
+          post({ type: 'reply', reqId: m.reqId, result: { ok: false, error: err instanceof Error ? err.message : String(err) } });
+        }
+        break;
+      }
       case 'stats':
         post({ type: 'reply', reqId: m.reqId, result: { stats: sim!.stats, hash: sim!.worldHash(), minute: sim!.world.minute } });
         break;

@@ -24,7 +24,7 @@ import { heraldryCanvas } from './HeraldryEditor';
 import { draftFromPreset, draftToSpec, ESTATES, estateTab, FamilyCreator, PRESETS, WEALTHS, type Estate, type FamilyDraft } from './FamilyCreator';
 import { Tutorial, tutorialDone } from './Tutorial';
 
-type Page = 'title' | 'setup' | 'family' | 'create' | 'house' | 'credits' | 'settings' | 'starting' | 'closed';
+type Page = 'title' | 'setup' | 'family' | 'create' | 'house' | 'credits' | 'settings' | 'load' | 'starting' | 'closed';
 type Step = 'rules' | 'family' | 'create' | 'house';
 
 const LIFESPANS = Object.keys((lifecycle as { lifespan: { presets: Record<string, number> } }).lifespan.presets);
@@ -93,6 +93,8 @@ export class NewGameFlow {
     window.addEventListener('keyup', (e) => {
       if (this.page !== 'closed') e.stopPropagation();
     }, true);
+    // 저장할 때 sim 밖 상태 (튜토리얼 진행)
+    game.uiState = () => ({ tutorial: this.tutorial?.active ? this.tutorial.state() : null });
     const w = window as unknown as Record<string, unknown>;
     w.__newGame = {
       page: () => this.page,
@@ -126,6 +128,7 @@ export class NewGameFlow {
     if (this.page === 'create' && this.creator?.editingHeraldry) return this.creator.closeHeraldry();
     if (this.page === 'setup' || this.page === 'credits') return this.showTitle();
     if (this.page === 'settings') return this.closeSettings();
+    if (this.page === 'load') return this.closeLoad();
     if (this.page === 'family') return this.showSetup();
     if (this.page === 'create') return this.showFamily();
     if (this.page === 'house') return void this.openCreator();
@@ -184,7 +187,19 @@ export class NewGameFlow {
       return b;
     };
     row('new', 'cute.star', t('ng.menu.new'), () => this.showSetup());
-    row('continue', 'cute.book_blue', t('ng.menu.continue'), this.started ? () => this.close() : null, this.started ? '' : t('ng.menu.no_save'));
+    const cont = row('continue', 'cute.book_blue', t('ng.menu.continue'), this.started ? () => this.close() : null, this.started ? '' : t('ng.menu.no_save'));
+    const load = row('load', 'cute.save', t('hud2.menu.load'), null, t('ng.menu.no_save'));
+    // 저장본이 있으면: 이어 하기 = 가장 최근 저장, 불러오기 = 목록
+    void this.game.saves.list().then((list) => {
+      if (this.page !== 'title' || !list.length) return;
+      load.disabled = false;
+      load.title = '';
+      load.addEventListener('click', () => this.showLoad());
+      if (this.started) return;
+      cont.disabled = false;
+      cont.title = '';
+      cont.addEventListener('click', () => void this.loadSave(list[0].id));
+    }).catch(() => undefined);
     row('gallery', 'cute.trophy', t('ng.menu.gallery'), null, t('ng.menu.no_gallery'));
     row('settings', 'cute.gear', t('ng.menu.settings'), () => this.showSettings());
     row('credits', 'cute.book_red', t('ng.menu.credits'), () => this.showCredits());
@@ -557,16 +572,20 @@ export class NewGameFlow {
     this.started = true;
     this.draft = null;
     this.close();
-    this.game.setSpeed(1);
+    // 첫 하루 튜토리얼 (27-4): 멈춘 채 가장 → 집을 비추고 첫 카드, ▼ 로 1배속. 처음 마주치는 카드 감시는 늘
+    this.ensureTutorial().watch();
     if (!tutorialDone()) this.startTutorial();
+    else this.game.setSpeed(1);
   }
 
   close(): void {
     this.show('closed');
+    if (this.started && !this.game.saveEnabled) this.game.armAutoSave();
     if (this.started && this.game.ready && (this.game.client.snap?.speed ?? 1) === 0) this.game.setSpeed(1);
   }
 
-  startTutorial(): void {
+  /** 튜토리얼 (한 번 만들고 계속 씀) */
+  ensureTutorial(): Tutorial {
     if (!this.tutorial) {
       const g = this.game;
       this.tutorial = new Tutorial(this.app, {
@@ -577,9 +596,23 @@ export class NewGameFlow {
         bookOpen: () => g.notebook.open,
         buildMode: () => g.build?.mode,
         dialogOpen: () => g.dialog.open,
+        choiceOpen: () => g.choice.open,
+        cancels: () => g.queueCancels,
+        setSpeed: (sp) => g.setSpeed(sp),
+        focusPerson: (id) => g.focus(id),
+        glideTo: (x, y) => g.glideToTile(x, y),
+        homeRect: () => g.homeRect(),
+        objectDef: (d) => g.objectDef(d),
       });
     }
-    this.tutorial.start();
+    return this.tutorial;
+  }
+
+  /** 첫 하루 튜토리얼을 처음부터 (새 게임 직후, 설정 › 다시 보기): 멈추고 ▼ 로 시작 */
+  startTutorial(): void {
+    const tut = this.ensureTutorial();
+    this.game.setSpeed(0);
+    tut.start();
   }
 
   // ------------------------------------------------------------------ 설정 (타이틀 · 게임 메뉴)
@@ -610,6 +643,54 @@ export class NewGameFlow {
   menu(a: string): void {
     if (a === 'title') this.showTitle();
     else if (a === 'settings') this.showSettings();
+    else if (a === 'save') void this.game.saveGame('manual');
+    else if (a === 'load') this.showLoad();
+  }
+
+  // ------------------------------------------------------------------ 불러오기 (27-5)
+
+  private loadFrom: Page = 'title';
+
+  showLoad(): void {
+    this.loadFrom = this.page === 'closed' ? 'closed' : 'title';
+    if (this.loadFrom === 'closed' && this.game.ready) this.game.setSpeed(0);
+    this.show('load');
+    const panel = el('div', 'ng-panel g ng-load ng-scroll', this.stage);
+    this.corner('l', 'cute.left', t('ng.back'), 'back', () => this.closeLoad());
+    void this.game.saves.list().then((list) => {
+      if (this.page !== 'load') return;
+      if (!list.length) el('div', 'ng-load-empty fl s', panel, t('ng.menu.no_save'));
+      for (const r of list) {
+        const m = r.meta;
+        const b = btn(panel, 'ng-save s', '', `load-${r.id}`, r.kind === 'auto' ? 'ui.clock' : 'cute.save', '');
+        b.textContent = '';
+        b.appendChild(iconEl(r.kind === 'auto' ? 'ui.clock' : 'cute.save', 2));
+        const tx = el('div', 'ng-save-t', b);
+        el('b', 'fl', tx, m.clan ? t('save.row.clan', { clan: m.clan }) : m.head);
+        el('span', '', tx, t('save.row.info', { estate: m.estate ? t(`estate.${m.estate}`) : '', day: m.day + 1, season: t(`hud.season.${m.season}`), n: m.members, money: formatMoney(m.money) }));
+        el('small', '', tx, `${r.kind === 'auto' ? t('save.row.auto') : t('save.row.manual')} · ${new Date(r.savedAt).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`);
+        b.addEventListener('click', () => void this.loadSave(r.id));
+      }
+    }).catch(() => undefined);
+  }
+
+  private closeLoad(): void {
+    if (this.loadFrom === 'closed') this.close();
+    else this.showTitle();
+  }
+
+  /** 저장본을 불러와 게임으로. 튜토리얼 진행도 저장 때 그대로 */
+  private async loadSave(id: string): Promise<void> {
+    this.tutorial?.stop();
+    this.show('starting');
+    const ui = await this.game.loadGame(id);
+    if (!ui) return this.showTitle();
+    this.started = true;
+    this.draft = null;
+    this.close();
+    this.game.setSpeed(1);
+    // 진행 중이던 첫 하루 단계로, 없으면 처음 마주칠 때 카드 감시만
+    this.ensureTutorial().restore((ui as { tutorial?: unknown }).tutorial ?? null);
   }
 
   // ------------------------------------------------------------------ 크레딧

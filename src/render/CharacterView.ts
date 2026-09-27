@@ -239,6 +239,11 @@ export class CharacterView {
     }
   }
 
+  /** 불러오기 뒤: 같은 번호의 다른 인물이 있을 수 있으니 전부 새로 (보간 기준도) */
+  reset(): void {
+    this.sync([], -1, this.tickMs, performance.now());
+  }
+
   /** 틱 사이 걷는 사람의 예측 위치 (칸 좌표) */
   motion(ids: number[], xy: number[], nowMs: number): void {
     for (let i = 0; i < ids.length; i++) {

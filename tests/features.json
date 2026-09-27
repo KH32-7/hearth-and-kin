@@ -1031,7 +1031,12 @@
    "name": "튜토리얼",
    "doc": "27",
    "milestone": "M17",
-   "tests": [],
+   "tests": [
+    "tests/unit/tutorial-flow.test.ts::원형 메뉴: 플레이어가 새로 넣은 할 일이 생기면 완료",
+    "tests/unit/tutorial-flow.test.ts::신분마다 과제 종류",
+    "tests/e2e/tutorial.spec.ts::첫 하루: 멈춘 채 기상",
+    "tests/e2e/tutorial.spec.ts::신분별 첫 과제와 요리"
+   ],
    "lastPass": null
   },
   "ui.chronicle_screen": {

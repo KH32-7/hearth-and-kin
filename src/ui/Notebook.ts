@@ -943,7 +943,7 @@ export class Notebook {
             { icon: 'cute.coins', title: wage(def.ranks[c.rank] ?? {}) },
           ]);
           const shop = s.econ?.shop;
-          if (shop && (def.type === 'onsite' || shop.open)) {
+          if (shop && (def.type === 'onsite' || shop.open || s.house?.estate === 'merchant')) {
             el('div', 'nb-subhead', R, `${t('ui.shop.title')} · ${t('ui.shop.stats', { rep: Math.round(shop.reputation), n: shop.sales })}`);
             const sb = el('div', 'nb-btns multi', R);
             const tog = this.button(sb, t(shop.open ? 'ui.shop.close' : 'ui.shop.open'), () => W.setShop(!shop.open, shop.priceMult), true);

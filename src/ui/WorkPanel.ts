@@ -147,9 +147,9 @@ export class WorkPanel {
       }
     }
 
-    // 가게 (17-3): 제작하는 사람이 있는 집만
+    // 가게 (17-3): 제작하는 사람이 있는 집, 상인 집 (상인 첫 과제 = 가게 열기)
     const shop = _s.econ?.shop;
-    if (shop && (p.career && this.careers[p.career.id]?.type === 'onsite' || shop.open)) {
+    if (shop && (p.career && this.careers[p.career.id]?.type === 'onsite' || shop.open || _s.house?.estate === 'merchant')) {
       el('div', 'rel-head', root).textContent = t('ui.shop.title');
       const box = el('div', 'work-job', root);
       const row = el('div', 'work-att', box);

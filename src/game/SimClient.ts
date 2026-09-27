@@ -2,7 +2,8 @@
  * 메인 스레드 쪽 워커 창구. 의도(intent)를 보내고 스냅샷을 받음.
  */
 import type { MenuEntry } from '../sim/sim';
-import type { FromWorker, Snapshot, ToWorker } from '../sim/protocol';
+import type { FromWorker, SaveMeta, Snapshot, ToWorker } from '../sim/protocol';
+import type { SimSave } from '../sim/save/save';
 
 type Pending = { resolve: (v: unknown) => void };
 
@@ -68,6 +69,16 @@ export class SimClient {
       this.pending.set(reqId, { resolve: resolve as (v: unknown) => void });
       this.worker.postMessage(build(reqId));
     });
+  }
+
+  /** 저장 (27-5): 틱 경계에서 sim 전체 */
+  save(): Promise<{ save: SimSave; meta: SaveMeta; ms: number }> {
+    return this.request((reqId) => ({ type: 'save', reqId }));
+  }
+
+  /** 불러오기: 성공하면 워커는 멈춘 채 (속도 0) */
+  load(save: SimSave): Promise<{ ok: boolean; error?: string }> {
+    return this.request((reqId) => ({ type: 'load', save, reqId }));
   }
 
   menu(personId: number, targetUid: number): Promise<MenuEntry[]> {

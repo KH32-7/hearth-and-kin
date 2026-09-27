@@ -1,0 +1,10 @@
+{
+  "save.toast.auto": "자동 저장했어요",
+  "save.toast.manual": "저장했어요",
+  "save.toast.fail": "저장하지 못했어요",
+  "save.toast.load_fail": "불러오지 못했어요",
+  "save.row.clan": "{clan} 가문",
+  "save.row.info": "{estate} · {day}일째 ({season}) · 식구 {n}명 · {money}",
+  "save.row.auto": "자동 저장",
+  "save.row.manual": "직접 저장"
+}

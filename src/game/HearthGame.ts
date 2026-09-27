@@ -49,7 +49,8 @@ import { Bubbles, type BubbleRules } from '../render/Bubbles';
 import fx from '../data/fx.json';
 import uiAtlas from '../data/ui/atlas.json';
 import { PieMenu } from '../ui/PieMenu';
-import { loadSkin } from '../ui/skin';
+import { iconEl, loadSkin } from '../ui/skin';
+import { SaveStore, type SaveRecord } from './SaveStore';
 import { missing as missingI18n, t } from '../i18n';
 import { SimClient } from './SimClient';
 import { BuildController } from './BuildController';
@@ -217,7 +218,10 @@ export class HearthGame {
     this.hud = new Hud(this.app, {
       selectPerson: (id) => this.select(id, true),
       setSpeed: (s) => this.setSpeed(s),
-      cancel: (pid, qid) => this.client.send({ type: 'cancel', personId: pid, queueItemId: qid }),
+      cancel: (pid, qid) => {
+        this.queueCancels++;
+        this.client.send({ type: 'cancel', personId: pid, queueItemId: qid });
+      },
       focusPerson: (id) => this.focus(id),
       followPerson: (id) => {
         if (id !== this.selectedId) this.select(id, false);
@@ -618,6 +622,7 @@ export class HearthGame {
     this.build?.update(s);
     if (s.econ) this.build?.panel.setMoney(formatMoney(s.econ.money));
     this.townUi?.update(s);
+    this.maybeAutoSave(s);
   }
 
   private frame(): void {
@@ -724,6 +729,28 @@ export class HearthGame {
     if (center) this.focus(id);
   }
 
+  /** 대기열 아이콘을 눌러 취소한 횟수 (튜토리얼 대기열 단계 판정) */
+  queueCancels = 0;
+
+  /** 칸 좌표로 카메라를 부드럽게 옮김 (튜토리얼 첫 화면: 가장 → 집) */
+  glideToTile(x: number, y: number): void {
+    const T = this.pack.tilePx;
+    this.followSelected = false;
+    this.camGlide = { x: x * T, y: y * T };
+  }
+
+  /** 물건 정의 (종류·태그): sim 과 같은 합치기 결과 */
+  objectDef(defId: string): { kind?: string; tags?: string[]; price?: number } | undefined {
+    return this.defs[defId] as { kind?: string; tags?: string[]; price?: number } | undefined;
+  }
+
+  /** 조작 가문 집 부지 [x0, y0, x1, y1] (칸, 끝 포함). 마을이 아니면 null (부지 전체가 집) */
+  homeRect(): [number, number, number, number] | null {
+    const id = this.client.snap?.town?.playerLot;
+    const lot = id ? this.town?.def.lots.find((l) => l.id === id) : undefined;
+    return lot ? (lot.rect as [number, number, number, number]) : null;
+  }
+
   focus(id: number): void {
     const pos = this.chars.drawnPosition(id);
     if (pos) this.renderer.centerOn(pos.x, pos.y - 16);
@@ -791,6 +818,87 @@ export class HearthGame {
 
   /** 메뉴 중 새 게임 화면이 맡는 것 (설정 · 타이틀로, src/ui/NewGame.ts) */
   onMenu: ((a: string) => void) | null = null;
+
+  // ------------------------------------------------------------------ 저장 (27-5)
+
+  readonly saves = new SaveStore();
+  /** 게임이 시작된 뒤에만 (타이틀·새 게임 화면 뒤 마을은 저장하지 않음) */
+  saveEnabled = false;
+  /** sim 밖에서 함께 저장할 것 (튜토리얼 진행 …), 새 게임 흐름이 채움 */
+  uiState: (() => Record<string, unknown>) | null = null;
+  private autoSaveDay = -1;
+  private saving = false;
+  private toastEl: HTMLElement | null = null;
+
+  /** 게임 시작·불러오기 직후: 오늘은 이미 저장된 것으로 (다음 날부터 자동 저장) */
+  armAutoSave(): void {
+    this.saveEnabled = true;
+    this.autoSaveDay = this.client.snap?.day ?? -1;
+  }
+
+  async saveGame(kind: 'auto' | 'manual'): Promise<SaveRecord | null> {
+    if (!this.ready || !this.saveEnabled || this.saving) return null;
+    this.saving = true;
+    try {
+      const r = await this.client.save();
+      const rec = await this.saves.put(kind, r.meta, { sim: r.save, ui: { selected: this.selectedId, ...(this.uiState?.() ?? {}) } });
+      this.toast(kind === 'auto' ? 'save.toast.auto' : 'save.toast.manual');
+      return rec;
+    } catch (e) {
+      console.error('save failed', e);
+      this.errors.push(`save: ${String(e)}`);
+      this.toast('save.toast.fail');
+      return null;
+    } finally {
+      this.saving = false;
+    }
+  }
+
+  /** 불러오기. 성공하면 멈춘 상태, 저장 때 함께 적은 ui 상태를 돌려줌 */
+  async loadGame(id: string): Promise<Record<string, unknown> | null> {
+    const bundle = await this.saves.read(id);
+    if (!bundle) return null;
+    const r = await this.client.load(bundle.sim);
+    if (!r.ok) {
+      console.error('load failed', r.error);
+      this.errors.push(`load: ${r.error}`);
+      this.toast('save.toast.load_fail');
+      return null;
+    }
+    this.chars.reset();
+    const snap = this.client.snap;
+    const sel = Number(bundle.ui.selected);
+    const pick = snap?.persons.find((p) => p.id === sel) ?? snap?.persons.find((p) => p.household === 1 && !p.visitor);
+    if (pick) this.select(pick.id, true);
+    this.armAutoSave();
+    return bundle.ui;
+  }
+
+  private toast(key: string): void {
+    if (!this.toastEl) {
+      this.toastEl = document.createElement('div');
+      this.toastEl.className = 'save-toast g';
+      this.app.appendChild(this.toastEl);
+    }
+    const el = this.toastEl;
+    el.textContent = '';
+    el.appendChild(iconEl('cute.save', 2));
+    const span = document.createElement('span');
+    span.className = 'fl s';
+    span.textContent = t(key);
+    el.appendChild(span);
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+  }
+
+  /** 하루가 바뀌면 자동 저장. 선택 카드·재판 같은 차단 장면이 떠 있으면 닫힌 뒤로 미룸 */
+  private maybeAutoSave(s: Snapshot): void {
+    if (!this.saveEnabled || this.saving || this.autoSaveDay < 0 || s.day === this.autoSaveDay) return;
+    if (this.choice.open || s.house?.trial || s.house?.cards?.length) return;
+    this.autoSaveDay = s.day;
+    void this.saveGame('auto');
+  }
 
   private menuAction(a: 'save' | 'load' | 'settings' | 'gallery' | 'help' | 'hideUi' | 'title'): void {
     if (a === 'hideUi') this.setUiHidden(true);
@@ -1251,6 +1359,12 @@ export class HearthGame {
     window.addEventListener('resize', () => this.renderer.resize());
     window.addEventListener('keydown', (e) => {
       if (e.target instanceof HTMLInputElement) return;
+      // Ctrl+S 저장 (27-5). WASD 의 S 보다 먼저
+      if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        void this.saveGame('manual');
+        return;
+      }
       if (this.build?.key(e)) {
         e.preventDefault();
         return;
