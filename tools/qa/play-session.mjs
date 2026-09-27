@@ -30,7 +30,7 @@ if (h) {
   else await page.keyboard.press('Escape');
 }
 // 가까운 마을 사람에게 말 걸기
-const npc = await page.evaluate(() => { const hk = window.__hk; const me = hk.client.snap.persons.find((p) => p.id === hk.selectedId); let best = null, bd = 1e9; for (const p of hk.client.snap.persons) { if (p.household === 1 || p.hidden || p.lod !== 'full') continue; const d = Math.hypot(p.x - me.x, p.y - me.y); if (d < bd) { bd = d; best = p; } } return best && { id: best.id, name: best.name, d: bd }; });
+const npc = await page.evaluate(() => { const hk = window.__hk; const me = hk.client.snap.persons.find((p) => p.id === hk.selectedId); let best = null, bd = 1e9; for (const p of hk.client.snap.persons) { if (p.household === 1 || p.hidden) continue; const d = Math.hypot(p.x - me.x, p.y - me.y); if (d < bd) { bd = d; best = p; } } return best && { id: best.id, name: best.name, d: bd }; });
 log.push({ npc });
 if (npc) {
   await page.evaluate((id) => window.__hk.focus(id), npc.id); await page.waitForTimeout(700);
@@ -44,7 +44,7 @@ if (npc) {
   await shot('4_talk');
 }
 await page.evaluate(() => window.__game.setSpeed(2));
-await page.waitForTimeout(60000);
+await page.waitForTimeout(20000);
 await shot('5_after60s');
 log.push({ notices: await notices() });
 console.log(JSON.stringify({ log, errs }, null, 1));
