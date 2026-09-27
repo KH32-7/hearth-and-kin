@@ -61,7 +61,6 @@
   "trait.cunning.desc": "골탕 먹일 궁리가 늘 머릿속에 있다.",
   "trait.alcoholic": "알코올 의존",
   "trait.alcoholic.desc": "술 없이는 하루를 버티기 힘들다.",
-
   "virtue.chastity": "정절",
   "virtue.chastity.desc": "유혹을 뿌리치고 한 사람만을 지킨다.",
   "virtue.temperance": "절제",
@@ -90,7 +89,6 @@
   "sin.envy.desc": "남 잘되는 꼴을 못 본다.",
   "sin.pride": "교만",
   "sin.pride.desc": "자기 자랑을 멈추지 못한다.",
-
   "emotion.happy.basic": "흐뭇함",
   "emotion.happy.strong": "매우 행복",
   "emotion.happy.extreme": "환희",
@@ -122,7 +120,6 @@
   "emotion.ashamed.strong": "창피함",
   "emotion.ashamed.extreme": "치욕",
   "emotion.neutral": "무난",
-
   "breakdown.title": "{name}이(가) 무너지기 직전이다",
   "breakdown.body": "더는 참을 수가 없다. 어떻게 할까?",
   "breakdown.binge": "술로 잊는다",
@@ -134,15 +131,13 @@
   "breakdown.smash": "물건을 부순다",
   "breakdown.smash.desc": "손에 잡히는 대로 내던진다.",
   "breakdown.auto": "고르지 않으면 곧 스스로 고릅니다",
-
   "notice.thought": "{text}",
-  "notice.breakdown": "{name}이(가) 스트레스를 못 이기고 무너지려 한다.",
+  "notice.breakdown": "{name}이(가) 스트레스를 못 이기고 무너지려 합니다.",
   "notice.breakdown_done": "{name}: {option}",
-  "notice.gained_trait": "{name}에게 새 성격이 생겼다: {trait}",
-  "notice.wish_done": "{name}의 소원이 이루어졌다: {wish}",
-  "notice.fear_real": "{name}의 걱정이 현실이 되었다: {wish}",
-  "notice.aspiration_stage": "{name}: {aspiration} {stage}단계를 이루었다",
-
+  "notice.gained_trait": "{name}에게 새 성격이 생겼습니다: {trait}",
+  "notice.wish_done": "{name}의 소원이 이루어졌습니다: {wish}",
+  "notice.fear_real": "{name}의 걱정이 현실이 됐습니다: {wish}",
+  "notice.aspiration_stage": "{name}이(가) {aspiration} {stage}단계를 이뤘습니다.",
   "panel.needs": "욕구",
   "panel.mood": "기분",
   "panel.persona": "성격",
