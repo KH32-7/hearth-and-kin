@@ -75,8 +75,17 @@ export interface BuildHost {
   onConstruction?(p: PendingWork, ok: boolean): void;
 }
 
+/** 되돌리기 기록의 칸 배열: 전부(적용 중 실패 되돌림용) 또는 바뀐 칸만(쌓아 두는 기록, 마을 판 12만 칸을 매번 두지 않게) */
+type CellArrays = Pick<LotDef, 'ground' | 'floor' | 'walls'>;
+interface CellDiff {
+  idx: number[];
+  vals: (string | null)[];
+}
 interface Snapshot {
   lot: LotDef;
+  diff?: Record<keyof CellArrays, CellDiff>;
+  /** 물건도 바뀐 것만: 편집 전 모습(없어지거나 바뀐 것), 새로 생긴 uid */
+  objDiff?: { old: ObjectInstance[]; added: number[] };
   objects: ObjectInstance[];
   cost: number;
   /** 직접 만든 가구를 놓은 편집: 되돌리면 저장고/만든 사람도 */
@@ -267,7 +276,7 @@ export class Builder {
   apply(op: BuildOp, fromRedo = false): BuildResult {
     if (!this.host.data.build) return { ok: false, reason: 'disabled', cost: 0, warnings: [] };
     if (!this.inArea(op)) return { ok: false, reason: 'outside_lot', cost: 0, warnings: [] };
-    const before: Snapshot = { lot: cloneLot(this.lot), objects: this.cloneObjects(), cost: 0 };
+    const before: Snapshot = { lot: this.lightClone(), objects: this.cloneObjects(), cost: 0 };
     const r = this.run(op);
     if (!r.ok) {
       // 여러 칸 편집이 중간에 실패해도 아무것도 바뀌지 않게 (리뷰 M5-2)
@@ -287,7 +296,7 @@ export class Builder {
       const at = this.siteCell(op);
       const site = this.host.world.addSite(at.x, at.y);
       this.pending.push({ id, op, cost: r.cost, work: Math.max(30, r.cost * c.workPerFarthing), done: 0, familyDone: 0, siteUid: site.uid });
-      this.undoStack.push({ ...before, cost: r.cost, pendingId: id });
+      this.undoStack.push(this.compress({ ...before, cost: r.cost, pendingId: id }));
       if (this.undoStack.length > this.b.undoDepth) this.undoStack.shift();
       if (!fromRedo) this.redoStack.length = 0;
       (this.undoStack[this.undoStack.length - 1] as Snapshot & { op?: BuildOp }).op = op;
@@ -298,7 +307,7 @@ export class Builder {
     before.cost = r.cost;
     if (op.op === 'placeCrafted' && this.lastCrafted) before.stock = this.lastCrafted;
     if (r.uid !== undefined) (before as Snapshot & { uid?: number }).uid = r.uid;
-    this.undoStack.push(before);
+    this.undoStack.push(this.compress(before));
     if (this.undoStack.length > this.b.undoDepth) this.undoStack.shift();
     if (!fromRedo) this.redoStack.length = 0;
     (before as Snapshot & { op?: BuildOp }).op = op;
@@ -363,6 +372,46 @@ export class Builder {
     this.lastWarnings = this.checkPaths();
   }
 
+  /** 되돌리기용 부지 복사 (restore 가 쓰는 것만, JSON 전체 복사보다 빠름) */
+  private lightClone(): LotDef {
+    const l = this.lot;
+    return { ...l, ground: l.ground.slice(), floor: l.floor.slice(), walls: l.walls.slice(), openings: l.openings.map((o) => ({ ...o })), roomNames: l.roomNames?.map((r) => ({ ...r })), roof: l.roof ? { ...l.roof } : l.roof };
+  }
+
+  /** 쌓아 둘 기록: 칸 배열은 지금과 다른 칸만 남김 */
+  private compress(s: Snapshot): Snapshot {
+    const cur = this.lot;
+    const diff = {} as Record<keyof CellArrays, CellDiff>;
+    for (const k of ['ground', 'floor', 'walls'] as const) {
+      const a = s.lot[k] as (string | null)[];
+      const b = cur[k] as (string | null)[];
+      const d: CellDiff = { idx: [], vals: [] };
+      for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) {
+        d.idx.push(i);
+        d.vals.push(a[i]);
+      }
+      diff[k] = d;
+    }
+    s.diff = diff;
+    s.lot = { ...s.lot, ground: [], floor: [], walls: [] };
+    const w = this.host.world;
+    const old: ObjectInstance[] = [];
+    const seen = new Set<number>();
+    for (const o of s.objects) {
+      seen.add(o.uid);
+      const now = w.byUid.get(o.uid);
+      if (!now || now.x !== o.x || now.y !== o.y || (now.rot ?? 0) !== (o.rot ?? 0) || (now.variant ?? '') !== (o.variant ?? '')) old.push(o);
+    }
+    const added: number[] = [];
+    for (const o of w.objects) {
+      if (seen.has(o.uid) || o.defId === WINDOW_OBJECT_ID || o.defId === EXIT_OBJECT_ID || o.defId === FIRE_OBJECT_ID || o.defId === SITE_OBJECT_ID) continue;
+      added.push(o.uid);
+    }
+    s.objDiff = { old, added };
+    s.objects = [];
+    return s;
+  }
+
   private cloneObjects(): ObjectInstance[] {
     return this.host.world.objects
       .filter((o) => o.defId !== WINDOW_OBJECT_ID && o.defId !== EXIT_OBJECT_ID && o.defId !== FIRE_OBJECT_ID && o.defId !== SITE_OBJECT_ID)
@@ -377,12 +426,44 @@ export class Builder {
       dst.length = src.length;
       for (let i = 0; i < src.length; i++) dst[i] = src[i];
     };
-    copy(lot.ground, s.lot.ground);
-    copy(lot.floor, s.lot.floor);
-    copy(lot.walls, s.lot.walls);
+    if (s.diff) {
+      for (const k of ['ground', 'floor', 'walls'] as const) {
+        const arr = lot[k] as (string | null)[];
+        const d = s.diff[k];
+        for (let j = 0; j < d.idx.length; j++) arr[d.idx[j]] = d.vals[j];
+      }
+    } else {
+      copy(lot.ground, s.lot.ground);
+      copy(lot.floor, s.lot.floor);
+      copy(lot.walls, s.lot.walls);
+    }
     copy(lot.openings, s.lot.openings);
     lot.roof = s.lot.roof;
     lot.roomNames = s.lot.roomNames;
+    if (s.objDiff) {
+      // 바뀐 것만 되돌림: 새로 생긴 것 치우고, 없어지거나 바뀐 것은 전 모습으로
+      for (const uid of s.objDiff.added) {
+        if (!w.byUid.has(uid)) continue;
+        this.host.abortUsing(uid);
+        w.removeObject(uid);
+      }
+      for (const k of s.objDiff.old) {
+        const o = w.byUid.get(k.uid);
+        if (!o) {
+          w.restoreObject({ ...k, state: { ...k.state } });
+          continue;
+        }
+        this.host.abortUsing(o.uid);
+        w.grid.clearObject(o, w.footprint(o));
+        o.x = k.x;
+        o.y = k.y;
+        if (k.rot) o.rot = k.rot;
+        else delete o.rot;
+        if (k.variant) o.variant = k.variant;
+        else delete o.variant;
+      }
+      return;
+    }
     const keep = new Map(s.objects.map((o) => [o.uid, o]));
     for (const o of [...w.objects]) {
       if (o.defId === WINDOW_OBJECT_ID || o.defId === EXIT_OBJECT_ID || o.defId === FIRE_OBJECT_ID || o.defId === SITE_OBJECT_ID) continue;
