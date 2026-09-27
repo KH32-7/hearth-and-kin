@@ -497,7 +497,7 @@ export class Hud {
         if (cv) {
           cv.className = 'member-img';
           b.appendChild(cv);
-        } else el('span', 'member-name fl s', b, p.name.slice(0, 2));
+        } else el('i', 'member-ph', b); // 그림 합성 전 (1초 안쪽): 글자 대신 빈 자리
         el('i', 'member-warn', b).appendChild(iconEl('cute.exclaim', 1));
         b.addEventListener('click', () => {
           pop(b, 'press');

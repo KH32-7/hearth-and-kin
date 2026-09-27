@@ -1115,3 +1115,4 @@ button.nb-cell:hover { transform: translateY(-1px); }
 .sel-act:active { transform: translateY(1px); }
 .cons-lb { font-size: 14px; margin-left: 6px; white-space: nowrap; }
 .dock-detail.placed .cons { display: none; }
+.member-ph { width: 28px; height: 28px; }
