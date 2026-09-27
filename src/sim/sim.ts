@@ -1683,7 +1683,13 @@ export class Simulation {
     this.stats.minutesByInteraction[a.item.interactionId] = (this.stats.minutesByInteraction[a.item.interactionId] ?? 0) + 1;
     if (this.childcare) this.childMinute(p, ia as unknown as { teach?: Record<string, number>; homework?: number; steps?: { minutes: number }[] });
     let done = a.remaining <= 0;
-    if (step.until && p.need(step.until.need) >= step.until.gte) done = true;
+    if (step.until && p.need(step.until.need) >= step.until.gte) {
+      // 밤잠은 기운이 차도 아침까지 (balance.sleep.stayAsleep): 두세 시간 자고 한밤중에 깨어 돌아다니던 것
+      const st = this.data.balance.sleep.stayAsleep;
+      const h = this.world.hour();
+      const night = !!st && !!step.sleep && (st.from > st.to ? h >= st.from || h < st.to : h >= st.from && h < st.to);
+      if (!night) done = true;
+    }
     // 근무: 퇴근 시각이 되면 끝 (늦게 왔으면 그만큼 짧게 일함). 여정은 정한 날 수가 차면
     if (p.career && a.item.interactionId === `work.${p.career.id}`) {
       const def = this.data.careers?.[p.career.id];

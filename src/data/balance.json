@@ -118,6 +118,8 @@
       "bed_double": 12.5,
       "floor": 6
     },
+    "$stayAsleep": "밤잠(시각 from~to 사이)은 기운이 다 차도 to 시까지 이어 잠 (급한 욕구 wakeIf 는 깸)",
+    "stayAsleep": { "from": 21, "to": 6 },
     "wakeIf": {
       "bladder": 15,
       "hunger": 8

@@ -79,6 +79,8 @@ export const balanceSchema = z.object({
     decayMultiplier: numRec,
     bedEnergyPerHour: numRec.refine((r) => 'floor' in r, 'floor 필요'),
     wakeIf: numRec,
+    /** 밤잠: from~to 시 사이면 기운이 다 차도 이어 잠 */
+    stayAsleep: z.object({ from: z.number().int().min(0).max(23), to: z.number().int().min(0).max(23) }).optional(),
   }),
   interrupt: numRec,
   collapse: z.object({ bladderAccidentHygiene: num }),
