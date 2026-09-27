@@ -414,7 +414,7 @@ export class Hud {
     }
     // 머리 위 생각 풍선: 지금 원하는 것 (소원 앞 셋, 머리 가운데에 맞춤)
     const wants = (inner?.wishes ?? []).filter((w) => w.kind === 'wish').slice(0, 3);
-    const sig = wants.map((w) => w.id).join(',');
+    const sig = `${p.id}|` + wants.map((w) => w.id).join(',');
     if (sig !== this.wantsSig) {
       this.wantsSig = sig;
       this.meWants.textContent = '';
@@ -425,7 +425,12 @@ export class Hud {
         el('i', `wt ${['l', 'c', 'r'][k]}`, b);
         el('div', 'wb', b).appendChild(iconEl(defs?.wishDef(w.id)?.icon ?? 'emo.excited', 2));
         b.title = defs?.wishDef(w.id) ? t(defs.wishDef(w.id)!.textKey) : '';
-        b.addEventListener('click', () => this.setPopup('wish'));
+        // 누르면 소원 창 + 이룰 수 있는 곳으로 바로 (한 번에)
+        b.addEventListener('click', () => {
+          this.setPopup('wish');
+          pop(b, 'press');
+          void this.h.wishHint?.(p.id, w.id);
+        });
         pop(b);
       });
     }
