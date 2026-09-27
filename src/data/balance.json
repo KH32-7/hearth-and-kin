@@ -8,10 +8,10 @@
       "2": 3,
       "3": 10
     },
-    "autoAccelMinutesPerSecond": 10,
+    "autoAccelMinutesPerSecond": 50,
     "startMinuteOfDay": 420,
     "dayMinutes": 1440,
-    "$autoAccel": "식구가 모두 자면 3단 속도(10분/초)로 (심즈처럼). 30배는 마을 사람이 화면에서 날아다녀 사용자가 이상하다고 함"
+    "$autoAccel": "식구가 모두 자면 3단의 5배(50분/초)로 (심즈 울트라 속도, 사용자 결정 2026-09-27). 예전 30배는 마을 사람이 날아다닌다고 했으나 밤이라 밖에 사람이 적음"
   },
   "movement": {
     "walkTilesPerMinute": 2,

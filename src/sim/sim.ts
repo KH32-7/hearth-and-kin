@@ -453,7 +453,14 @@ export class Simulation {
 
   /** 가족 전원이 자는 중이면 자동 가속 (GDD 13-8, 27-7) */
   shouldAutoAccelerate(): boolean {
-    return this.persons.length > 0 && this.persons.every((p) => p.sleeping || p.hidden);
+    // 조작 가족만 봄 (마을 모드에서 NPC 까지 보면 누군가는 늘 깨어 있어 가속이 켜지지 않던 것). 손님은 빼고
+    let any = false;
+    for (const p of this.persons) {
+      if (p.household !== 1 || p.visitor) continue;
+      any = true;
+      if (!p.sleeping && !p.hidden) return false;
+    }
+    return any;
   }
 
   // ------------------------------------------------------------------ 명령
