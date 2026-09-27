@@ -257,8 +257,11 @@ export class Town {
    */
   doorHousehold(cell: number): number {
     const g = this.host.world.grid;
-    const x = cell % g.w;
-    const y = Math.floor(cell / g.w);
+    return this.privateOwnerAt(cell % g.w, Math.floor(cell / g.w));
+  }
+
+  /** 그 칸이 사람이 사는 남의 집이면 그 가구 (문 출입과 같은 규칙: 장소 · 일터 · 빈 집이면 0) */
+  privateOwnerAt(x: number, y: number): number {
     if (this.placeOf(x, y)) return 0;
     const lot = this.lotOf(x, y);
     const hh = lot ? this.lotHousehold.get(lot.id) ?? 0 : 0;

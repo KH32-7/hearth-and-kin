@@ -361,7 +361,8 @@ export class NewGameFlow {
     this.corner('l', 'cute.left', t('ng.back'), 'back', () => void this.openCreator());
     const S = (ECON.estates[r.estate]?.target.net ?? 0) * ECON.presets.savingsDays;
     const cash = presetCash(S, r.cashS, LIFESPAN_MULT[this.lifespan] ?? 1);
-    const funds = Math.max(0, cash) + (tenure === 'owned' ? HOUSE_BUDGET[kind] ?? 0 : 0);
+    // 가진 돈: 시작 현금(몰락이면 빌린 돈) + 집 예산 (sim houseLink.startLotOk 와 같은 셈)
+    const funds = Math.abs(cash) + (tenure === 'owned' ? HOUSE_BUDGET[kind] ?? 0 : 0);
     const go = this.corner('r', 'cute.right', t('ng.start'), 'start', () => void this.start(d, this.lot), 'go big');
     const panel = el('div', 'ng-panel g ng-house', this.stage);
     const head = el('div', 'ng-house-funds', panel);

@@ -13,7 +13,7 @@ import type { HeirloomRef, Heirloom } from './house/heirlooms';
 import { Estates, parseEstates, type EstatesHost, type EstateId } from './house/estates';
 import { FiefSystem, parseFief, type FiefHost } from './house/fief';
 import { Sumptuary, parseSumptuary, tierIndex, estateTier, type SumptuaryHost, type WornItem } from './house/sumptuary';
-import { applyPreset, parsePresets, presetIds, resolvePreset, type PresetHost, type PresetResult, type PresetsData, type PresetPersonSpec } from './house/presets';
+import { applyPreset, parsePresets, presetCash, presetIds, resolvePreset, type PresetHost, type PresetResult, type PresetsData, type PresetPersonSpec } from './house/presets';
 import { randomMember, type FamilySpec, type RelSpec } from './family/creation';
 
 /** Simulation 의 내부 창구 (private 포함). 구조 캐스팅으로만 씀 */
@@ -679,7 +679,7 @@ export class HouseLink {
       if (price) {
         const budget = this.houseBudget(r.house.kind);
         if (budget) this.earnF(r.household, budget, 'start');
-        this.spendF(r.household, price, 'house', true);
+        this.spendF(r.household, price, 'house');
       }
       r.house.lot = l.id;
       r.house.price = price;
@@ -706,6 +706,11 @@ export class HouseLink {
     if (!t || !r || !l || l.kind !== 'residential' || (owner !== undefined && owner !== 1) || t.sealed.has(lotId)) return false;
     if (RESIDENCE[r.assets.house.kind]) return false;
     if (r.assets.house.tenure === 'lord' && l.size !== 'small') return false;
+    // 소유 신분: 시작 돈(빚이면 빌린 돈) + 집 예산 안에서만 (화면 NewGame 집 고르기와 같은 셈)
+    if (r.assets.house.tenure === 'owned') {
+      const cash = presetCash(this.savingsS(r.estate), r.cashS, this.s.settings.lifespan);
+      if (l.price > Math.abs(cash) + this.houseBudget(r.assets.house.kind)) return false;
+    }
     return true;
   }
 

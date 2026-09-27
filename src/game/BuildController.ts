@@ -554,7 +554,7 @@ export class BuildController {
     this.sel = { kind: 'object', uid, sig: `${o.x},${o.y},${o.rot ?? 0},${o.variant ?? ''}` };
     this.d.world.setHighlightMany([uid]);
     this.panel.showPlaced(
-      { kind: 'object', id: o.defId, nameKey: def?.nameKey ?? o.defId, variant: o.variant ?? null, variants: def?.variants ?? [], sell: Math.round(price * (this.d.build.resellRatio ?? 0.6) * cond), recolor: Math.round(price * ((this.d.build as { recolorRatio?: number }).recolorRatio ?? 0.2)) },
+      { kind: 'object', id: o.defId, nameKey: def?.nameKey ?? o.defId, variant: o.variant ?? def?.variants?.[0] ?? null, variants: def?.variants ?? [], sell: Math.round(price * (this.d.build.resellRatio ?? 0.6) * cond), recolor: Math.round(price * ((this.d.build as { recolorRatio?: number }).recolorRatio ?? 0.2)) },
       {
         move: () => this.moveSelected(),
         rotate: () => void this.send({ op: 'move', uid, x: o.x, y: o.y, rot: ((o.rot ?? 0) + 1) % 4 }),

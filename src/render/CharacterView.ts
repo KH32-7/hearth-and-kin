@@ -78,7 +78,7 @@ class CharacterNode {
   /** 틱 사이 예측 위치 (워커 motion, 세계 px): 있으면 여기로 실시간으로 따라감 */
   pred: { x: number; y: number; at: number } | null = null;
   /** 예측 위치 열쇠 그림 (시각, 자리): 조금 늦춘 시각으로 두 열쇠 사이를 보간 → 고른 속도 */
-  keys: { t: number; x: number; y: number }[] = [];
+  keys: { t: number; x: number; y: number; start?: boolean }[] = [];
   /** 최근 예측 걸음 속도 (px/ms, 0 = 모름) */
   vk = 0;
   /** 현재 그려진 발 위치 (세계 px) */
@@ -247,11 +247,11 @@ export class CharacterView {
       const pr = this.world.project(xy[i * 2], xy[i * 2 + 1]);
       if (!n.pred || !n.keys.length) {
         n.path = [];
-        n.keys = [{ t: nowMs - 34, x: n.fx, y: n.fy }];
+        n.keys = [{ t: nowMs - 34, x: n.fx, y: n.fy, start: true }];
       }
       // 최근 예측 걸음 속도 (px/ms): 따라잡기 속도 상한의 기준
       const lk = n.keys[n.keys.length - 1];
-      if (lk && nowMs - lk.t > 5 && nowMs - lk.t <= 80) {
+      if (lk && !lk.start && nowMs - lk.t > 5 && nowMs - lk.t <= 80) {
         const dd = Math.hypot(pr.x - lk.x, pr.y - lk.y);
         if (dd > 0.01 && dd < this.world.tile * 2) {
           const v = dd / (nowMs - lk.t);

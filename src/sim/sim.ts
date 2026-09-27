@@ -287,7 +287,7 @@ export class Simulation {
     if (this.builder && data.build?.construction.defaultOn) this.builder.construction = true;
     if (data.town) {
       this.world.stepAllow = (pid, o) => {
-        const owner = this.town?.ownerOf(o.x, o.y) ?? 0;
+        const owner = this.town?.privateOwnerAt(o.x, o.y) ?? 0;
         if (owner <= 0) return true;
         const p = this.persons.find((q) => q.id === pid);
         return !p || p.household === owner || this.mayEnter(p, owner);
@@ -2676,7 +2676,7 @@ export class Simulation {
       if (t.engagedWith && t.engagedWith !== p.id) return { ok: false, reasonKey: 'reason.target_busy' };
       if (t.action && (!t.action.item.autonomous || this.data.social[t.action.item.interactionId])) return { ok: false, reasonKey: 'reason.target_busy' };
       // 남의 집 안에 있는 사람에게는 자율로 말 걸러 가지 않음 (들어갈 수 없어 길을 못 찾던 것)
-      const owner = this.town?.ownerOf(t.x, t.y) ?? 0;
+      const owner = this.town?.privateOwnerAt(Math.floor(t.x), Math.floor(t.y)) ?? 0;
       if (owner > 0 && owner !== p.household && !this.mayEnter(p, owner)) return { ok: false, reasonKey: 'reason.target_busy' };
     }
     // 자율로 거는 말은 상대가 한가하거나 쉬는 중일 때만 (하던 일을 끊는 것은 플레이어 명령만)

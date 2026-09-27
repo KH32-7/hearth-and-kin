@@ -137,7 +137,7 @@ export class HearthGame {
     app.appendChild(this.hoverTag);
     // Shift 를 누르는 동안: 화면 안 쓸 수 있는 물건 모두 외곽선
     window.addEventListener('keydown', (e) => {
-      if (e.key !== 'Shift' || e.repeat || !this.ready) return;
+      if (e.key !== 'Shift' || e.repeat || !this.ready || this.build?.active || e.target instanceof HTMLInputElement) return;
       const objs = this.client.snap?.objects ?? [];
       const vr = this.renderer.viewRect();
       const T = this.pack.tilePx;
@@ -149,9 +149,11 @@ export class HearthGame {
       }).map((o) => o.uid));
     });
     window.addEventListener('keyup', (e) => {
-      if (e.key === 'Shift') this.world.setHighlightMany([]);
+      if (e.key === 'Shift' && !this.build?.active) this.world.setHighlightMany([]);
     });
-    window.addEventListener('blur', () => this.world.setHighlightMany([]));
+    window.addEventListener('blur', () => {
+      if (!this.build?.active) this.world.setHighlightMany([]);
+    });
     window.addEventListener('error', (e) => this.errors.push(String(e.message)));
     window.addEventListener('unhandledrejection', (e) => this.errors.push(String(e.reason)));
   }
@@ -497,6 +499,8 @@ export class HearthGame {
           f?.(ev.data);
         };
         w.onerror = () => {
+          // 워커가 죽음: 끄고 남은 일은 메인에서 (대체 경로)
+          w.terminate();
           this.composeWorker = null;
           for (const f of this.composeJobs.values()) f({ error: 'worker' });
           this.composeJobs.clear();
@@ -510,10 +514,19 @@ export class HearthGame {
     if (!w) return null;
     const id = this.composeSeq++;
     const r = await new Promise<{ bmp?: ImageBitmap; meta?: Record<string, unknown>; error?: string }>((resolve) => {
-      this.composeJobs.set(id, resolve);
+      // 답이 없으면(워커가 조용히 멈춤) 15초 뒤 메인에서 합성
+      const timer = setTimeout(() => {
+        if (this.composeJobs.delete(id)) resolve({ error: 'worker' });
+      }, 15000);
+      this.composeJobs.set(id, (v) => {
+        clearTimeout(timer);
+        resolve(v);
+      });
       w.postMessage({ id, spec, base: import.meta.env.BASE_URL ?? '/' });
     });
     if (r.error === 'worker') return null;
+    // 그림 파일을 못 읽음: QA 도구가 보는 실패 목록에도 남김
+    if (r.error?.includes('이미지 로드 실패')) this.assets.failed.push(r.error.replace(/^.*이미지 로드 실패: /, ''));
     if (!r.bmp || !r.meta) throw new Error(r.error ?? 'compose failed');
     const c = document.createElement('canvas');
     c.width = r.bmp.width;
@@ -1410,10 +1423,11 @@ export class HearthGame {
     let k = -1;
     for (let y = rect[1]; y <= rect[3] && k < 0; y++) for (let x = rect[0]; x <= rect[2] && k < 0; x++) k = this.world.shells.at(x, y % H);
     this.interiorOwner = -1;
-    if (k >= 0 && k !== this.interior) this.switchView(k);
-    else if (k < 0 && this.interior >= 0) this.switchView(-1);
-    // 왼쪽 판에 가리지 않게 화면 가운데에서 dx 만큼 오른쪽에 (지붕 들기 카메라 목표도)
-    if (this.camGlide && dx) this.camGlide.x -= dx / Math.max(1, this.renderer.zoom);
+    if (k >= 0 && k !== this.interior) {
+      this.switchView(k);
+      // 왼쪽 판에 가리지 않게 화면 가운데에서 dx 만큼 오른쪽에 (이번에 연 집의 지붕 들기 카메라 목표만)
+      if (this.camGlide && dx) this.camGlide.x -= dx / Math.max(1, this.renderer.zoom);
+    } else if (k < 0 && this.interior >= 0) this.switchView(-1);
   }
 
   /** 칸 좌표 → 화면 CSS 좌표 */

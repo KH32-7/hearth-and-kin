@@ -518,7 +518,8 @@ export class Builder {
         if (!o || VIRTUAL.has(o.defId)) return fail('no_object');
         const d = this.host.data.objects[o.defId];
         if (op.variant !== null && !(d?.variants ?? []).includes(op.variant)) return fail('variant');
-        if ((o.variant ?? null) === op.variant) return fail('same');
+        // 색이 안 정해진 물건은 첫 색(기본 그림)으로 봄
+        if ((o.variant ?? d?.variants?.[0] ?? null) === op.variant) return fail('same');
         if (op.variant) o.variant = op.variant;
         else delete o.variant;
         return { ok: true, cost: Math.round((d?.price ?? 0) * (this.b.recolorRatio ?? 0.2)), warnings: [] };
@@ -688,6 +689,9 @@ export class Builder {
     if (this.isFence(cur)) return fail('fence');
     if (cur === op.style) return fail('same');
     const cells = this.wallRun(op.x, op.y, op.all);
+    // 공사 예정인 칠하기가 이미 이 벽에 있으면 겹쳐 맡기지 않음 (완공 전이라 옛 재질이 남아 같은 칠하기가 두 번 들어가던 것)
+    const set = new Set(cells);
+    if (this.pending.some((q) => q.op.op === 'paintWall' && set.has(this.idx(q.op.x, q.op.y)))) return fail('pending');
     for (const i of cells) this.lot.walls[i] = op.style;
     return { ok: true, cost: part.price * cells.length, cells: cells.length, warnings: [] };
   }

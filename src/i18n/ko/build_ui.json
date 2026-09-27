@@ -185,5 +185,6 @@
   "build.sel.rotate": "돌리기",
   "build.sel.sell": "팔기",
   "build.sel.erase": "허물기",
-  "build.err.fence": "울타리는 칠할 수 없습니다."
+  "build.err.fence": "울타리는 칠할 수 없습니다.",
+  "build.err.pending": "이미 공사를 맡긴 곳입니다."
 }
